@@ -10,12 +10,12 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
 
-from CodeGen.xgenPackage import *
-from CodeGen.xgen_v_entity import *
-from CodeGen.rollingCounter import *
-from CodeGen.clk_generator import *
-from CodeGen.axiPrint import *
-from CodeGen.axi_fifo  import *
+from argg_hdl.xgenPackage import *
+from argg_hdl.xgen_v_entity import *
+from argg_hdl.rollingCounter import *
+from argg_hdl.clk_generator import *
+from argg_hdl.axiPrint import *
+from argg_hdl.axi_fifo  import *
 
 class test_bench_e123(v_entity):
     def __init__(self):

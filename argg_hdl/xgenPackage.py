@@ -4,17 +4,17 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgenAST import *
-    from CodeGen.xgen_to_v_object import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgenAST import *
+    from argg_hdl.xgen_to_v_object import *
 else:
-    from .xgenBase import *
+    from .argg_hdl_base import *
     from .xgenAST import *
     from .xgen_to_v_object import *
 
 
 
-class v_package_converter(vhdl_converter_base):
+class v_package_converter(hdl_converter_base):
     def parse_file(self,obj):
         
         for t  in obj.PackageContent:

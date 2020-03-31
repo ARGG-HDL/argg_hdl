@@ -3,12 +3,12 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
+    from argg_hdl.argg_hdl_base import *
 else:
-    from .xgenBase import * 
+    from .argg_hdl_base import * 
 
 
-class v_procedure_converter(vhdl_converter_base):
+class v_procedure_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
     def getHeader(self, obj,name, parent):
@@ -65,7 +65,7 @@ class v_procedure(vhdl_base):
 
     
 
-class v_function_converter(vhdl_converter_base):
+class v_function_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
     def getHeader(self, obj, name, parent):
@@ -125,7 +125,7 @@ class v_function(vhdl_base):
 
 
 
-class v_process_converter(vhdl_converter_base):
+class v_process_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
     def getBody(self, obj,name,parent):
@@ -154,7 +154,7 @@ class v_process(vhdl_base):
 
 
 
-class v_Arch_converter(vhdl_converter_base):
+class v_Arch_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
 

@@ -3,12 +3,12 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgen_v_function import *
-    from CodeGen.xgen_v_entity_list import *
-    from CodeGen.xgen_simulation import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgen_v_function import *
+    from argg_hdl.xgen_v_entity_list import *
+    from argg_hdl.xgen_simulation import *
 else:
-    from .xgenBase import * 
+    from .argg_hdl_base import * 
     from .xgen_v_function import *
     from .xgen_v_entity_list import *
     from .xgen_simulation import *
@@ -22,7 +22,7 @@ def _get_connector(symb):
     
     return n_connector
 
-class v_class_converter(vhdl_converter_base):
+class v_class_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
         self.__BeforePull__ = ""

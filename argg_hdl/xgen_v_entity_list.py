@@ -5,15 +5,15 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgen_v_symbol import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgen_v_symbol import *
 else:
-    from .xgenBase import *
+    from .argg_hdl_base import *
     from .xgen_v_symbol import *
 
 
 
-class v_entity_list_converter(vhdl_converter_base):
+class v_entity_list_converter(hdl_converter_base):
         def __init__(self):
             super().__init__()
         def get_architecture_header(self, obj):
@@ -58,7 +58,7 @@ class v_entity_list_converter(vhdl_converter_base):
 
             return ret
 
-class v_entity_list(vhdl_base0):
+class v_entity_list(argg_hdl_base0):
     def __init__(self):
         super().__init__()
         self.hdl_conversion__ = v_entity_list_converter()

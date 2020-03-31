@@ -3,14 +3,14 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgen_simulation import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgen_simulation import *
 else:
-    from .xgenBase import *
+    from .argg_hdl_base import *
     from .xgen_simulation import *
 
 
-class v_symbol_converter(vhdl_converter_base):
+class v_symbol_converter(hdl_converter_base):
     def __init__(self,inc_str):
         super().__init__()
         self.inc_str  = inc_str
@@ -140,7 +140,7 @@ class v_symbol_converter(vhdl_converter_base):
 
     def _vhdl__reasign_std_logic(self, obj, rhs, target, astParser=None,context_str=None):
         asOp = obj.hdl_conversion__.get_assiment_op(obj)
-        if issubclass(type(rhs),vhdl_base0):
+        if issubclass(type(rhs),argg_hdl_base0):
             return target + asOp + str(rhs.hdl_conversion__._vhdl__getValue(rhs, obj.type)) 
         return target + asOp+  str(rhs) 
 
@@ -176,7 +176,7 @@ class v_symbol_converter(vhdl_converter_base):
         if obj.varSigConst == varSig.signal_t and not (context_str and (context_str == "archetecture" or context_str== "process")):
             target = target.replace(".","_")
 
-        if issubclass(type(rhs),vhdl_base0)  and str( obj.__Driver__) != 'process':
+        if issubclass(type(rhs),argg_hdl_base0)  and str( obj.__Driver__) != 'process':
             obj.__Driver__ = rhs
         
         if isProcess():
@@ -473,7 +473,7 @@ class v_symbol(vhdl_base):
     def _Conect_Not_running(self,rhs):
         if self.__Driver__ != None and not isConverting2VHDL():#todo: there is a bug with double assigment in the conversion to vhdl
             raise Exception("symbol has already a driver", str(self))
-        elif not issubclass(type(rhs),vhdl_base0):
+        elif not issubclass(type(rhs),argg_hdl_base0):
             self.nextValue = rhs
             self.value_list[self.value_index] = rhs
             return

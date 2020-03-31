@@ -7,11 +7,11 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgen_v_enum import * 
-    from CodeGen.xgen_to_v_object import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgen_v_enum import * 
+    from argg_hdl.xgen_to_v_object import *
 else:
-    from .xgenBase import *
+    from .argg_hdl_base import *
     from .xgen_v_enum import * 
     from .xgen_to_v_object import *
 

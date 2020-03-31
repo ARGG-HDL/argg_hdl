@@ -5,12 +5,12 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgen_v_symbol import *
-    from CodeGen.xgen_v_entity_list import *
-    from CodeGen.xgenAST import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgen_v_symbol import *
+    from argg_hdl.xgen_v_entity_list import *
+    from argg_hdl.xgenAST import *
 else:
-    from .xgenBase import *
+    from .argg_hdl_base import *
     from .xgen_v_symbol import *
     from .xgen_v_entity_list import *
     from .xgenAST import *
@@ -67,7 +67,7 @@ def addPullsPushes_from_closure(Pull_list, Push_list, closure):
         return
     for x in closure:
         y = x.cell_contents
-        if issubclass(type(y), vhdl_base0):
+        if issubclass(type(y), argg_hdl_base0):
             y._sim_set_push_pull(Pull_list, Push_list)
             
 
@@ -165,7 +165,7 @@ def v_entity_getMember_expand(entity):
         
 
 
-class v_entity_converter(vhdl_converter_base):
+class v_entity_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
         self.astTree = None
@@ -341,7 +341,7 @@ class v_entity_converter(vhdl_converter_base):
         ret = obj.hdl_conversion__.get_definition(obj)
         return ret.strip()
 
-class v_entity(vhdl_base0):
+class v_entity(argg_hdl_base0):
     def __init__(self,srcFileName=None):
         super().__init__()
 

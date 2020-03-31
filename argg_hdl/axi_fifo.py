@@ -5,7 +5,7 @@ import argparse
 import os,sys,inspect
 import copy
 
-from .xgenBase import *
+from .argg_hdl_base import *
 from .xgen_v_symbol import *
 from .axiStream import *
 from .xgen_v_entity import *

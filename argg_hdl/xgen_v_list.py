@@ -3,15 +3,15 @@ if __name__== "__main__":
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
-    from CodeGen.xgenBase import *
-    from CodeGen.xgen_v_symbol import *
+    from argg_hdl.argg_hdl_base import *
+    from argg_hdl.xgen_v_symbol import *
 else:
 
-    from .xgenBase import * 
+    from .argg_hdl_base import * 
     from .xgen_v_symbol import *
     
     
-class v_list_converter(vhdl_converter_base):
+class v_list_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
     def includes(self,obj, name,parent):
@@ -85,7 +85,7 @@ end {objType}_pack;
         return "v_list getHeader"    
 
     def _vhdl_slice(self,obj, sl,astParser=None):
-        if issubclass(type(sl),vhdl_base0):
+        if issubclass(type(sl),argg_hdl_base0):
             sl = sl.hdl_conversion__._vhdl__getValue(sl,ReturnToObj="integer",astParser=astParser)
         
         ret = v_copy(obj.Internal_Type)

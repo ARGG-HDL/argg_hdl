@@ -6,12 +6,12 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
-from CodeGen.xgenBase      import *
-from CodeGen.xgenPackage   import *
-from CodeGen.xgenDB        import *
-from CodeGen.xgen_v_class  import *
-from CodeGen.xgen_v_enum   import *
-from CodeGen.xgen_v_symbol import *
+from argg_hdl.argg_hdl_base      import *
+from argg_hdl.xgenPackage   import *
+from argg_hdl.xgenDB        import *
+from argg_hdl.xgen_v_class  import *
+from argg_hdl.xgen_v_enum   import *
+from argg_hdl.xgen_v_symbol import *
 
 class SerialDataRout_s_state(Enum):
     idle           = 0

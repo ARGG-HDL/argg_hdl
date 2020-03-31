@@ -76,7 +76,7 @@ def get_variables_from_function_in_callstack(FunctionName):
 def add_symbols_to_entiy():
     f_locals = get_variables_from_function_in_callstack("architecture")
     for y in f_locals:
-        if y != "self" and issubclass(type(f_locals[y]), vhdl_base0):
+        if y != "self" and issubclass(type(f_locals[y]), argg_hdl_base0):
             f_locals["self"]._add_symbol(y,f_locals[y])
             
 
@@ -131,7 +131,7 @@ def make_unique_includes(incs,exclude=None):
 
 
 def get_type(symbol):
-    if issubclass(type(symbol), vhdl_base0):
+    if issubclass(type(symbol), argg_hdl_base0):
         return symbol.get_type()
     if symbol == None:
         return "None"
@@ -140,7 +140,7 @@ def get_type(symbol):
     return symbol["symbol"].get_type()
 
 def get_symbol(symbol):
-    if issubclass(type(symbol), vhdl_base0):
+    if issubclass(type(symbol), argg_hdl_base0):
         return symbol.get_symbol()
     if symbol ==None:
         return None 
@@ -161,7 +161,7 @@ def isSameArgs(args1,args2, hasDefaults = False):
         if get_symbol(args1[i]).varSigConst != get_symbol(args2[i]).varSigConst:
             return False
     return True  
-class vhdl_converter_base:
+class hdl_converter_base:
     __VHDL__OPS_to2str= {
         "Gt": ">",
         "Eq" : "=",
@@ -478,13 +478,13 @@ class vhdl_converter_base:
     def to_arglist(self,obj, name,parent,withDefault = False):
         raise Exception("not implemented for class: ", type(obj).__name__)
 
-class vhdl_base0:
+class argg_hdl_base0:
     def __init__(self):
         super().__init__()
         if not isConverting2VHDL():
             gHDL_objectList.append(self)
         self._isInstance = False
-        self.hdl_conversion__ = vhdl_converter_base()
+        self.hdl_conversion__ = hdl_converter_base()
         self.__Driver__ = None
         self.__receiver__ = []
 
@@ -547,7 +547,7 @@ class vhdl_base0:
         return self
     
     def _issubclass_(self,test):
-        return "vhdl_base0" == test
+        return "argg_hdl_base0" == test
     def _remove_drivers(self):
         self.__Driver__ = None
 
@@ -555,7 +555,7 @@ class vhdl_base0:
         raise Exception("update not implemented")                
 
 
-class vhdl_base(vhdl_base0):
+class vhdl_base(argg_hdl_base0):
 
     def __init__(self):
         super().__init__()
