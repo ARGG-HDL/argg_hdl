@@ -8,12 +8,12 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgenAST_Classes import * 
-    from argg_hdl.xgen_v_function import *
+    from argg_hdl.argg_hdl_AST_Classes import * 
+    from argg_hdl.argg_hdl_v_function import *
 else:
     from .argg_hdl_base import *
-    from .xgenAST_Classes import *
-    from .xgen_v_function import *
+    from .argg_hdl_AST_Classes import *
+    from .argg_hdl_v_function import *
 
 
 import cProfile, pstats, io

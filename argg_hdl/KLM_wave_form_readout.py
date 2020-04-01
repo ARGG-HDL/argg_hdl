@@ -13,7 +13,7 @@ from argg_hdl.axiStream import *
 from argg_hdl.argg_hdl_v_entity import *
 
 
-from argg_hdl.xgen_simulation import *
+from argg_hdl.argg_hdl_simulation import *
 
 from argg_hdl.klm_scrod_bus import *
 from argg_hdl.serialdatarout import *

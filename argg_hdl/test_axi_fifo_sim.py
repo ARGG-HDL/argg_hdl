@@ -9,7 +9,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
-from argg_hdl.xgenPackage import *
+from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.argg_hdl_v_entity import *
 from argg_hdl.rollingCounter import *
 from argg_hdl.clk_generator import *

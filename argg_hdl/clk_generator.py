@@ -7,11 +7,10 @@ import copy
 
 from .argg_hdl_base import *
 from .argg_hdl_v_symbol import *
-from .axiStream import *
 from .argg_hdl_v_entity import *
 from .argg_hdl_v_list import *
 
-from .xgen_simulation import *
+
 
 
 class clk_generator(v_entity):

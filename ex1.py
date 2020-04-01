@@ -5,17 +5,10 @@ import os,sys,inspect
 import copy
 
 
-from argg_hdl.argg_hdl_base import *
-from argg_hdl.xgen_v_symbol import *
-from argg_hdl.axiStream import *
-from argg_hdl.xgen_v_entity import *
+from argg_hdl import *
 
-from argg_hdl.axi_stream_delay import *
-
-
-from argg_hdl.xgen_simulation import *
 from argg_hdl.clk_generator import *
-
+from argg_hdl.axi_stream_delay import *
 
 
 class SerialDataConfig(v_class):
@@ -169,7 +162,7 @@ def profile(fnc):
 #@profile
 def main():
     tb  =v_create(InputDelay_tb())
-    #gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
-    tb.hdl_conversion__.convert_all(tb,"pyhdl_waveform")
+    gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
+    #tb.hdl_conversion__.convert_all(tb,"pyhdl_waveform")
 
 main()

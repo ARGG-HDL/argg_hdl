@@ -4,10 +4,10 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgen_simulation import *
+    from argg_hdl.argg_hdl_simulation import *
 else:
     from .argg_hdl_base import *
-    from .xgen_simulation import *
+    from .argg_hdl_simulation import *
 
 
 class v_symbol_converter(hdl_converter_base):

@@ -5,7 +5,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
 from argg_hdl.argg_hdl_base import *
-from argg_hdl.xgenPackage import *
+from argg_hdl.argg_hdl_v_Package import *
 
 
 class TX_DAC_control(v_class):

@@ -5,7 +5,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
 from argg_hdl.argg_hdl_base import *
-from argg_hdl.xgenPackage import *
+from argg_hdl.argg_hdl_v_Package import *
 
 class B2TT(v_class):
     def __init__(self):

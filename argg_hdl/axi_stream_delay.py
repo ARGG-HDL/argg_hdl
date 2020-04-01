@@ -10,7 +10,7 @@ from .argg_hdl_v_symbol import *
 from .axiStream import *
 from .argg_hdl_v_entity import *
 from .argg_hdl_v_list import *
-from .xgen_simulation import *
+
 
 
 class stream_delay_one(v_clk_entity):

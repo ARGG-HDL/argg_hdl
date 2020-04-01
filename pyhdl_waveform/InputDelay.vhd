@@ -119,39 +119,67 @@ begin
     Axi_out_m2s => pipe2_7_stream_delay_one_Axi_out_m2s,
     clk => pipe2_7_stream_delay_one_clk
   );
+  ConfigIn_m2s.ready <= ready;
   ---------------------------------------------------------------------
 --  ConfigOut << pipe2_7_stream_delay_one_Axi_out
 ConfigOut_m2s <= pipe2_7_stream_delay_one_Axi_out_m2s;
 pipe2_7_stream_delay_one_Axi_out_s2m <= ConfigOut_s2m;
+  ConfigOut_m2s.data <= data;
+  ConfigOut_m2s.last <= last;
+  ConfigOut_m2s.valid <= valid;
   ---------------------------------------------------------------------
 --  pipe2_2_stream_delay_one_Axi_in << ConfigIn
 pipe2_2_stream_delay_one_Axi_in_m2s <= ConfigIn_m2s;
 ConfigIn_s2m <= pipe2_2_stream_delay_one_Axi_in_s2m;
+  data <= ConfigIn_s2m.data;
+  last <= ConfigIn_s2m.last;
+  valid <= ConfigIn_s2m.valid;
+  ready <= ready;
   pipe2_2_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_3_stream_delay_one_Axi_in << pipe2_2_stream_delay_one_Axi_out
 pipe2_3_stream_delay_one_Axi_in_m2s <= pipe2_2_stream_delay_one_Axi_out_m2s;
 pipe2_2_stream_delay_one_Axi_out_s2m <= pipe2_3_stream_delay_one_Axi_in_s2m;
+  data <= data;
+  last <= last;
+  valid <= valid;
+  ready <= ready;
   pipe2_3_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_4_stream_delay_one_Axi_in << pipe2_3_stream_delay_one_Axi_out
 pipe2_4_stream_delay_one_Axi_in_m2s <= pipe2_3_stream_delay_one_Axi_out_m2s;
 pipe2_3_stream_delay_one_Axi_out_s2m <= pipe2_4_stream_delay_one_Axi_in_s2m;
+  data <= data;
+  last <= last;
+  valid <= valid;
+  ready <= ready;
   pipe2_4_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_5_stream_delay_one_Axi_in << pipe2_4_stream_delay_one_Axi_out
 pipe2_5_stream_delay_one_Axi_in_m2s <= pipe2_4_stream_delay_one_Axi_out_m2s;
 pipe2_4_stream_delay_one_Axi_out_s2m <= pipe2_5_stream_delay_one_Axi_in_s2m;
+  data <= data;
+  last <= last;
+  valid <= valid;
+  ready <= ready;
   pipe2_5_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_6_stream_delay_one_Axi_in << pipe2_5_stream_delay_one_Axi_out
 pipe2_6_stream_delay_one_Axi_in_m2s <= pipe2_5_stream_delay_one_Axi_out_m2s;
 pipe2_5_stream_delay_one_Axi_out_s2m <= pipe2_6_stream_delay_one_Axi_in_s2m;
+  data <= data;
+  last <= last;
+  valid <= valid;
+  ready <= ready;
   pipe2_6_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_7_stream_delay_one_Axi_in << pipe2_6_stream_delay_one_Axi_out
 pipe2_7_stream_delay_one_Axi_in_m2s <= pipe2_6_stream_delay_one_Axi_out_m2s;
 pipe2_6_stream_delay_one_Axi_out_s2m <= pipe2_7_stream_delay_one_Axi_in_s2m;
+  data <= data;
+  last <= last;
+  valid <= valid;
+  ready <= ConfigOut_s2m.ready;
   pipe2_7_stream_delay_one_clk <= globals.clk;
   
 end architecture;

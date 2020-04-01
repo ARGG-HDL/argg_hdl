@@ -13,7 +13,7 @@ import argg_hdl.Example1
 import argg_hdl.example2 
 import argg_hdl.example3 
 import argg_hdl.example4 
-from argg_hdl.xgenPackage import *
+from argg_hdl.argg_hdl_v_Package import *
 
 def file_set_content(filename,content):
     with open(filename,'w') as f:

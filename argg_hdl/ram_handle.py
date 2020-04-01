@@ -8,7 +8,7 @@ sys.path.insert(0,parentdir)
 
 from .argg_hdl_base import *
 from .argg_hdl_v_entity import *
-from .xgenPackage import *
+from .argg_hdl_v_Package import *
 from .xgenDB import *
 
 

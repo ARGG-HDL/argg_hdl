@@ -11,7 +11,7 @@ from .axiStream import *
 from .argg_hdl_v_entity import *
 from .argg_hdl_v_list import *
 
-from .xgen_simulation import *
+from .argg_hdl_simulation import *
 
 
 class axiFifo(v_clk_entity):

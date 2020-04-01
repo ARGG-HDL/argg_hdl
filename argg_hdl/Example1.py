@@ -12,7 +12,7 @@ from .axiStream import *
 from .argg_hdl_v_entity import *
 
 
-from .xgen_simulation import *
+from .argg_hdl_simulation import *
 
 
 class tb_entity(v_entity):

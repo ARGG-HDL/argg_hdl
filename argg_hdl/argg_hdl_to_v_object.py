@@ -5,12 +5,12 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgen_v_enum import *
+    from argg_hdl.argg_hdl_v_enum import *
     from argg_hdl.argg_hdl_v_symbol import *
 
 else:
     from .argg_hdl_base import *
-    from .xgen_v_enum import * 
+    from .argg_hdl_v_enum import * 
     from .argg_hdl_v_symbol import * 
 
 

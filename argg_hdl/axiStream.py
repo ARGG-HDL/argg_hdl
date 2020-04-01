@@ -7,12 +7,12 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgenPackage import *
+    from argg_hdl.argg_hdl_v_Package import *
     from argg_hdl.xgenDB import *
     from argg_hdl.argg_hdl_v_class import *
 else:
     from .argg_hdl_base import *
-    from .xgenPackage import *
+    from .argg_hdl_v_Package import *
     from .xgenDB import *
     from .argg_hdl_v_class import *
 
