@@ -14,7 +14,7 @@ else:
     from .argg_hdl_base import *
     from .argg_hdl_AST_Classes import *
     from .argg_hdl_v_function import *
-
+    from .argg_hdl_v_symbol  import *
 
 import cProfile, pstats, io
 

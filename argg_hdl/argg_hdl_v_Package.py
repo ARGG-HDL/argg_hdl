@@ -5,11 +5,11 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgenAST import *
+    from argg_hdl.argg_hdl_AST import *
     from argg_hdl.argg_hdl_to_v_object import *
 else:
     from .argg_hdl_base import *
-    from .xgenAST import *
+    from .argg_hdl_AST import *
     from .argg_hdl_to_v_object import *
 
 

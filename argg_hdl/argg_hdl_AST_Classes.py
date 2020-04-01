@@ -14,6 +14,7 @@ else:
     from .argg_hdl_base import *
     from .argg_hdl_v_enum import * 
     from .argg_hdl_to_v_object import *
+    from .argg_hdl_v_symbol  import *
 
 
 def Node_line_col_2_str(astParser, Node):

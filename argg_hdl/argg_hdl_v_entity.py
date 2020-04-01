@@ -8,12 +8,12 @@ if __name__== "__main__":
     from argg_hdl.argg_hdl_base import *
     from argg_hdl.argg_hdl_v_symbol import *
     from argg_hdl.argg_hdl_v_entity_list import *
-    from argg_hdl.xgenAST import *
+    from argg_hdl.argg_hdl_AST import *
 else:
     from .argg_hdl_base import *
     from .argg_hdl_v_symbol import *
     from .argg_hdl_v_entity_list import *
-    from .xgenAST import *
+    from .argg_hdl_AST import *
     from .argg_hdl_simulation import *
 
 

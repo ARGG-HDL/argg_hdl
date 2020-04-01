@@ -1,36 +1,26 @@
 
 import os,sys,inspect
-if __name__== "__main__":
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    parentdir = os.path.dirname(currentdir)
-    sys.path.insert(0,parentdir) 
-    from argg_hdl.argg_hdl_base import *
-    from argg_hdl.argg_hdl_v_enum import *
-    from argg_hdl.argg_hdl_v_symbol import *
 
-else:
-    from .argg_hdl_base import *
-    from .argg_hdl_v_enum import * 
-    from .argg_hdl_v_symbol import * 
+import argg_hdl as ah
 
 
 
 
 def to_v_object(ObjIn):
-    if issubclass(type(ObjIn),argg_hdl_base):
+    if issubclass(type(ObjIn),ah.base):
         return ObjIn
-    if issubclass(type(ObjIn),argg_hdl_base0):
+    if issubclass(type(ObjIn),ah.base0):
         return ObjIn
     elif type(ObjIn).__name__ == "v_stream_assigne":
         return ObjIn
     elif type(ObjIn).__name__ == "EnumMeta":
-        return v_enum(ObjIn)
+        return ah.v_enum(ObjIn)
     elif type(ObjIn).__name__ == 'bool':
-        return v_symbol("boolean", str(ObjIn))
+        return ah.v_symbol("boolean", str(ObjIn))
     elif type(ObjIn).__name__ == 'v_Num':
-        return v_symbol("integer", str(ObjIn))
+        return ah.v_symbol("integer", str(ObjIn))
     elif type(ObjIn).__name__ == 'str':
-        return v_symbol("undef", str(ObjIn))
+        return ah.v_symbol("undef", str(ObjIn))
     
     elif type(ObjIn).__name__ == 'v_call':
         return ObjIn.symbol
@@ -41,7 +31,7 @@ def to_v_object(ObjIn):
 
 
     elif ObjIn == None:
-        return v_symbol("None", str(ObjIn))
+        return ah.v_symbol("None", str(ObjIn))
 
         
     raise Exception("unknown type")
