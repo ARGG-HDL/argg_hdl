@@ -1188,8 +1188,8 @@ class v_class(argg_hdl_base):
 
         self.__Driver__ = rhs
         rhs.__receiver__.append(self)
-        if not isConverting2VHDL():
-            self._conect_members(rhs)
+#       if not isConverting2VHDL():
+        self._conect_members(rhs)
             
 
 

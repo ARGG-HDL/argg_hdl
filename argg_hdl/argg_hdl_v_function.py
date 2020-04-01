@@ -230,7 +230,8 @@ class v_Arch_converter(hdl_converter_base):
         obj.hdl_conversion__.make_signal_list(obj,retList,  obj.ports)
         obj.hdl_conversion__.make_signal_list(obj,retList,  obj.Arch_vars)
         retlist2 = list_make_unque(retList)
-        conections = obj.hdl_conversion__.make_signal_connections2(obj, retlist2)
+        retList3 = list_remove_sub_connections(retlist2)
+        conections = obj.hdl_conversion__.make_signal_connections2(obj, retList3)
         print("====================")
         print(conections)
         print("--------------------")
@@ -273,5 +274,49 @@ def list_make_unque(objList):
         if not list_is_in_list(x["symbol"],ret):
             ret.append(x)
 
+    return ret
+
+
+def is_sub_connection(obj, class_obj):
+    mem = class_obj.getMember()
+    for m in mem:
+        if not obj is m["symbol"]:
+            continue
+        
+        if obj.Inout == InOut_t.input_t and class_obj.__Driver__:
+            return True
+        
+        if obj.Inout == InOut_t.output_t and class_obj.__receiver__:
+            return True
+        
+        if class_obj.__v_classType__ == v_classType_t.Record_t and class_obj.__Driver__:
+            return True
+        
+    
+    return False
+
+def list_is_sub_connection(obj, objList):
+    for x in objList:
+        if x["symbol"] is obj:
+            continue
+        if not x["symbol"]._issubclass_("v_class"):
+            continue
+        
+        if is_sub_connection(obj,x["symbol"] ):
+            return True
+        if list_is_sub_connection( obj , x["symbol"].getMember() ):
+            return True 
+
+    return False 
+
+def list_remove_sub_connections(objList):
+    ret = []
+    for x in objList:
+        print(x["name"])
+        if not list_is_sub_connection(x["symbol"],objList):
+            print("not Subclass ", x["name"])
+            ret.append(x)
+        else:
+            print("Subclass ", x["name"])
     return ret
 

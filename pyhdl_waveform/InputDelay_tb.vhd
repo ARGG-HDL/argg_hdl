@@ -78,25 +78,11 @@ proc : process(clkgen_clk) is
     globals => axprint_globals
   );
   k_globals.clk <= clkgen_clk;
-  ConfigOut_s2m.ready <= ConfigIn_m2s.ready;
   dut_globals <= k_globals;
-  globals.clk <= k_globals.clk;
-  globals.reg <= k_globals.reg;
-  globals.reg.address <= k_globals.reg.address;
-  globals.reg.value <= k_globals.reg.value;
-  globals.rst <= k_globals.rst;
   ---------------------------------------------------------------------
 --  axprint_ConfigIn << dut_ConfigOut
 axprint_ConfigIn_m2s <= dut_ConfigOut_m2s;
 dut_ConfigOut_s2m <= axprint_ConfigIn_s2m;
-  ConfigIn_s2m.data <= ConfigOut_m2s.data;
-  ConfigIn_s2m.last <= ConfigOut_m2s.last;
-  ConfigIn_s2m.valid <= ConfigOut_m2s.valid;
   axprint_globals <= k_globals;
-  globals.clk <= k_globals.clk;
-  globals.reg <= k_globals.reg;
-  globals.reg.address <= k_globals.reg.address;
-  globals.reg.value <= k_globals.reg.value;
-  globals.rst <= k_globals.rst;
   
 end architecture;
