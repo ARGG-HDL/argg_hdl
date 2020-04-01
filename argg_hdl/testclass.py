@@ -9,7 +9,7 @@ sys.path.insert(0,parentdir)
 from argg_hdl.argg_hdl_base      import *
 from argg_hdl.xgenPackage   import *
 from argg_hdl.xgenDB        import *
-from argg_hdl.argg_hdl_v_entity  import *
+from argg_hdl.argg_hdl_v_class  import *
 from argg_hdl.xgen_v_enum   import *
 from argg_hdl.argg_hdl_v_symbol import *
 
