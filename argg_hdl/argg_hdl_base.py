@@ -374,13 +374,7 @@ class hdl_converter_base:
         astParser.Missing_template = True
         return None
 
-        if name =="Connect":
-            return str(obj)
-        args_str = [ x.vhdl_name for x in args]
-        args_str = [str(obj)] + args_str
 
-        ret = join_str(args_str, Delimeter=", ", start= name+"(" ,end=")")
-        return ret
 
     
 
@@ -602,14 +596,6 @@ class argg_hdl_base(argg_hdl_base0):
     def isInOutType(self,Inout):
         return False
         
-    def getVMember(self):
-        for x in self.__dict__.items():
-            t = getattr(self, x[0])
-            print(type(t).__name__)
-            if issubclass(type(t),argg_hdl_base):
-                yield t, x[0]
-            elif type(t).__name__ == "EnumMeta":
-                yield v_enum(t), x[0]
 
 
 
