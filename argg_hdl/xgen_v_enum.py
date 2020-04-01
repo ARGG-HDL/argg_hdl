@@ -9,7 +9,7 @@ else:
 
 
 
-class v_enum(vhdl_base):
+class v_enum(argg_hdl_base):
     def __init__(self,EnumIn,EnumVal=None,name=None):
         super().__init__()
         if type(EnumIn).__name__ == "EnumMeta":

@@ -71,7 +71,7 @@ class v_symbol_converter(hdl_converter_base):
 
     def _vhdl__compare(self,obj, ops, rhs):
         obj._add_input()
-        if issubclass(type(rhs),vhdl_base):
+        if issubclass(type(rhs),argg_hdl_base):
             rhs._add_input()
     
         if obj.type == "integer":
@@ -148,7 +148,7 @@ class v_symbol_converter(hdl_converter_base):
         asOp = obj.hdl_conversion__.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " (others => '0')"
-        elif  issubclass(type(rhs),vhdl_base):
+        elif  issubclass(type(rhs),argg_hdl_base):
             return target + asOp +  str(rhs.hdl_conversion__._vhdl__getValue(rhs, obj.type)) 
         elif  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
@@ -231,7 +231,7 @@ class v_symbol_converter(hdl_converter_base):
 
         return varSigstr + name + " : " + inoutstr +" " + obj.getType() + default_str
 
-class v_symbol(vhdl_base):
+class v_symbol(argg_hdl_base):
     value_list = []
     def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t):
         super().__init__()

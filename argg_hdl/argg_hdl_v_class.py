@@ -5,12 +5,12 @@ if __name__== "__main__":
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
     from argg_hdl.xgen_v_function import *
-    from argg_hdl.xgen_v_entity_list import *
+    from argg_hdl.argg_hdl_v_entity_list import *
     from argg_hdl.xgen_simulation import *
 else:
     from .argg_hdl_base import * 
     from .xgen_v_function import *
-    from .xgen_v_entity_list import *
+    from .argg_hdl_v_entity_list import *
     from .xgen_simulation import *
 
 
@@ -36,7 +36,7 @@ class v_class_converter(hdl_converter_base):
         ret = ""
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
-            if issubclass(type(t),vhdl_base):
+            if issubclass(type(t),argg_hdl_base):
                         
                 ret += t.hdl_conversion__.includes(t,x[0],obj)
         
@@ -141,7 +141,7 @@ class v_class_converter(hdl_converter_base):
         
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
-            if issubclass(type(t),vhdl_base) and not issubclass(type(t),v_class):
+            if issubclass(type(t),argg_hdl_base) and not issubclass(type(t),v_class):
                 ret += t.hdl_conversion__.getHeader(t,x[0],obj)
 
         funlist =[]
@@ -377,7 +377,7 @@ class v_class_converter(hdl_converter_base):
   
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
-            if issubclass(type(t),vhdl_base):
+            if issubclass(type(t),argg_hdl_base):
                 start += t.hdl_conversion__.getBody(t,x[0],obj)
 
         content2 =  [
@@ -940,7 +940,7 @@ class v_class_converter(hdl_converter_base):
         r =join_str(ret,Delimeter="; ",IgnoreIfEmpty=True)
         return r
 
-class v_class(vhdl_base):
+class v_class(argg_hdl_base):
 
     def __init__(self,Name,varSigConst=None):
         super().__init__()
@@ -1129,7 +1129,7 @@ class v_class(vhdl_base):
         ret = list()
         for x in self.__dict__.items():
             t = getattr(self, x[0])
-            if not issubclass(type(t),vhdl_base) :
+            if not issubclass(type(t),argg_hdl_base) :
                 continue 
             if not t.isInOutType(InOut_Filter):
                 continue

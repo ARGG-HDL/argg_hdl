@@ -50,7 +50,7 @@ class v_procedure_converter(hdl_converter_base):
         )
         return ret
 
-class v_procedure(vhdl_base):
+class v_procedure(argg_hdl_base):
     def __init__(self, argumentList="", body="",VariableList="",name=None,IsEmpty=False,isFreeFunction=False):
         super().__init__()
         self.hdl_conversion__ = v_procedure_converter()
@@ -108,7 +108,7 @@ class v_function_converter(hdl_converter_base):
         )
         return ret
 
-class v_function(vhdl_base):
+class v_function(argg_hdl_base):
     def __init__(self,body="", returnType="", argumentList="",VariableList="",name=None,IsEmpty=False,isFreeFunction=False):
         super().__init__()
         self.hdl_conversion__ = v_function_converter()
@@ -139,7 +139,7 @@ class v_process_converter(hdl_converter_base):
         return ret
 
 
-class v_process(vhdl_base):
+class v_process(argg_hdl_base):
     def __init__(self,body="", SensitivityList=None,VariableList="",prefix=None,name=None,IsEmpty=False):
         super().__init__()
         self.hdl_conversion__ = v_process_converter()
@@ -248,7 +248,7 @@ class v_Arch_converter(hdl_converter_base):
         print("getHeader is dep")
         return ""
 
-class v_Arch(vhdl_base):
+class v_Arch(argg_hdl_base):
     def __init__(self,body, Symbols,Arch_vars,ports):
         super().__init__()
         self.body = body 

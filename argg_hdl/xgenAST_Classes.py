@@ -449,7 +449,7 @@ class v_compare(v_ast_base):
         self.ops = ops
 
     def __str__(self):
-        if issubclass(type(self.lhs),vhdl_base):
+        if issubclass(type(self.lhs),argg_hdl_base):
             return self.lhs.hdl_conversion__._vhdl__compare(self.lhs, self.ops, self.rhs)
         
         return  str(self.lhs)  + " = " +   str(self.rhs) 
@@ -770,7 +770,7 @@ def body_expr(astParser,Node):
 def body_RShift(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),vhdl_base):
+    if issubclass( type(lhs),argg_hdl_base):
         rhs = rhs.hdl_conversion__._vhdl__reasign_type(rhs)
         lhs = lhs._vhdl__getValue(lhs,astParser)
         lhs >> rhs
@@ -792,7 +792,7 @@ class v_re_assigne(v_ast_base):
  
 
     def __str__(self):
-        if issubclass(type(self.lhs),vhdl_base):
+        if issubclass(type(self.lhs),argg_hdl_base):
             return self.lhs.hdl_conversion__._vhdl__reasign(self.lhs, self.rhs, astParser=self.astParser, context_str=self.context )
 
         return str(self.lhs) + " := " +  str(self.rhs) 
@@ -800,14 +800,14 @@ class v_re_assigne(v_ast_base):
 def body_LShift(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),vhdl_base):
+    if issubclass( type(lhs),argg_hdl_base):
         lhs = lhs.hdl_conversion__._vhdl__reasign_type(lhs)
-        if issubclass( type(rhs),vhdl_base):
+        if issubclass( type(rhs),argg_hdl_base):
             rhs = rhs.hdl_conversion__._vhdl__getValue(rhs, lhs,astParser)
         else:
             rhs = rhs._vhdl__getValue(lhs,astParser)
 
-        if astParser.ContextName[-1] == 'process' and issubclass( type(rhs),vhdl_base):
+        if astParser.ContextName[-1] == 'process' and issubclass( type(rhs),argg_hdl_base):
             rhs.__Driver__ = 'process' # looks wrong 
 
         if astParser.ContextName[-1] == 'process':
@@ -842,7 +842,7 @@ class v_add(v_ast_base):
 
 
     def __str__(self):
-        if issubclass(type(self.lhs),vhdl_base):
+        if issubclass(type(self.lhs),argg_hdl_base):
             return self.lhs.hdl_conversion__._vhdl__add(self.lhs, self.rhs)
 
         return str(self.lhs) + " + " +  str(self.rhs) 
@@ -850,7 +850,7 @@ class v_add(v_ast_base):
 def body_add(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),vhdl_base):
+    if issubclass( type(lhs),argg_hdl_base):
         return v_add(lhs, rhs)
 
     if hasNumericalValue(lhs) and hasNumericalValue(rhs):
@@ -870,7 +870,7 @@ class v_sub(v_ast_base):
         
 
     def __str__(self):
-        if issubclass(type(self.lhs),vhdl_base):
+        if issubclass(type(self.lhs),argg_hdl_base):
             return self.lhs.hdl_conversion__._vhdl__Sub(self.lhs, self.rhs)
 
         return str(self.lhs) + " - " +  str(self.rhs) 
@@ -878,7 +878,7 @@ class v_sub(v_ast_base):
 def body_sub(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),vhdl_base):
+    if issubclass( type(lhs),argg_hdl_base):
         return v_sub(lhs, rhs)
 
     var = astParser.get_variable(lhs.Value, Node)
@@ -904,7 +904,7 @@ class v_stream_assigne(v_ast_base):
         if issubclass(type(self.lhsEntity), v_ast_base):
             ret+= str(self.lhsEntity) +";\n  "
             
-        if issubclass(type(self.lhs),vhdl_base):
+        if issubclass(type(self.lhs),argg_hdl_base):
             ret += self.lhs.hdl_conversion__._vhdl__reasign(self.lhs, self.rhs)
 
         else:
@@ -954,7 +954,7 @@ def v_type_to_bool(astParser,obj):
     if type(obj).__name__ == "v_compare":
         return obj._vhdl__to_bool( astParser)
 
-    if issubclass(type(obj),vhdl_base):
+    if issubclass(type(obj),argg_hdl_base):
         return obj.hdl_conversion__._vhdl__to_bool(obj, astParser)
 
     if type(obj).__name__ == "v_call":

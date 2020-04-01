@@ -9,12 +9,12 @@ if __name__== "__main__":
     from argg_hdl.argg_hdl_base import *
     from argg_hdl.xgenPackage import *
     from argg_hdl.xgenDB import *
-    from argg_hdl.xgen_v_class import *
+    from argg_hdl.argg_hdl_v_class import *
 else:
     from .argg_hdl_base import *
     from .xgenPackage import *
     from .xgenDB import *
-    from .xgen_v_class import *
+    from .argg_hdl_v_class import *
 
 
 class axisStream_converter(v_class_converter):

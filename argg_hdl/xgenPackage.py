@@ -68,7 +68,7 @@ def Fill_AST_Tree(package,SourceFile):
             fun= package.astTree.extractFunctionsForClass(x ,package )
             x.hdl_conversion__.__ast_functions__ += fun
     
-class v_package(vhdl_base):
+class v_package(argg_hdl_base):
     def __init__(self, PackageName,PackageContent, sourceFile=None):
         super().__init__()
         self.hdl_conversion__ = v_package_converter()

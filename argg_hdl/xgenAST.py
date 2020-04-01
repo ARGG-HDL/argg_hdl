@@ -571,7 +571,7 @@ class xgenAST:
         return self._Unfold_body[x_type](self,x)
 
     def getInstantByName(self,SymbolName):
-        if issubclass(type(SymbolName),vhdl_base):
+        if issubclass(type(SymbolName),argg_hdl_base):
             return SymbolName
 
         for x in self.FuncArgs:

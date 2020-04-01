@@ -4,11 +4,11 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgen_v_symbol import *
+    from argg_hdl.argg_hdl_v_symbol import *
 else:
 
     from .argg_hdl_base import * 
-    from .xgen_v_symbol import *
+    from .argg_hdl_v_symbol import *
     
     
 class v_list_converter(hdl_converter_base):
@@ -156,7 +156,9 @@ end {objType}_pack;
         ret = v_int()
         ret.vhdl_name=str(obj)+"'length"
         return ret  
-class v_list(vhdl_base):
+
+        
+class v_list(argg_hdl_base):
     def __init__(self,Internal_Type,size,varSigConst=None):
         super().__init__()
         self.hdl_conversion__ = v_list_converter()

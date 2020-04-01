@@ -4,13 +4,11 @@ import argparse
 import os,sys,inspect
 import copy
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+
 from argg_hdl.argg_hdl_base import *
-from argg_hdl.argg_hdl_v_symbol import *
+from argg_hdl.xgen_v_symbol import *
 from argg_hdl.axiStream import *
-from argg_hdl.argg_hdl_v_entity import *
+from argg_hdl.xgen_v_entity import *
 
 from argg_hdl.axi_stream_delay import *
 

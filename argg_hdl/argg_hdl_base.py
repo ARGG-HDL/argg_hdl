@@ -555,7 +555,7 @@ class argg_hdl_base0:
         raise Exception("update not implemented")                
 
 
-class vhdl_base(argg_hdl_base0):
+class argg_hdl_base(argg_hdl_base0):
 
     def __init__(self):
         super().__init__()
@@ -606,7 +606,7 @@ class vhdl_base(argg_hdl_base0):
         for x in self.__dict__.items():
             t = getattr(self, x[0])
             print(type(t).__name__)
-            if issubclass(type(t),vhdl_base):
+            if issubclass(type(t),argg_hdl_base):
                 yield t, x[0]
             elif type(t).__name__ == "EnumMeta":
                 yield v_enum(t), x[0]
@@ -616,7 +616,7 @@ class vhdl_base(argg_hdl_base0):
     def _issubclass_(self,test):
         if super()._issubclass_(test):
             return True
-        return "vhdl_base" == test
+        return "argg_hdl_base" == test
 
    
 
@@ -628,7 +628,7 @@ class vhdl_base(argg_hdl_base0):
 
 
 def value(Input):
-    if issubclass(type(Input), vhdl_base):
+    if issubclass(type(Input), argg_hdl_base):
         return Input._sim_get_value()
     
     if type(Input).__name__ == "v_Num":

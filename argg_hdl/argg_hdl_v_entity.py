@@ -6,14 +6,15 @@ if __name__== "__main__":
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0,parentdir) 
     from argg_hdl.argg_hdl_base import *
-    from argg_hdl.xgen_v_symbol import *
+    from argg_hdl.argg_hdl_v_symbol import *
     from argg_hdl.xgen_v_entity_list import *
     from argg_hdl.xgenAST import *
 else:
     from .argg_hdl_base import *
-    from .xgen_v_symbol import *
+    from .argg_hdl_v_symbol import *
     from .xgen_v_entity_list import *
     from .xgenAST import *
+    from .xgen_simulation import *
 
 
 
@@ -133,7 +134,7 @@ def v_entity_getMember(entity):
                 continue
 
             t = getattr(entity, x[0])
-            if issubclass(type(t),vhdl_base):
+            if issubclass(type(t),argg_hdl_base):
                 ret.append({
                         "name": x[0],
                         "symbol": t
@@ -153,7 +154,7 @@ def v_entity_getMember_expand(entity):
                         "name": x[0],
                         "symbol": t
                     })
-            elif t._issubclass_("vhdl_base"):
+            elif t._issubclass_("argg_hdl_base"):
                 ret.append({
                         "name": x[0],
                         "symbol": t
@@ -363,7 +364,7 @@ class v_entity(argg_hdl_base0):
         ret = list()
         for x in self.__dict__.items():
             t = getattr(self, x[0])
-            if not issubclass(type(t),vhdl_base) :
+            if not issubclass(type(t),argg_hdl_base) :
                 continue 
             if not t.isInOutType(InOut_Filter):
                 continue
