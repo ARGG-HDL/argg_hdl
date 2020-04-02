@@ -107,31 +107,3 @@ class counter(v_class):
         if self.isRunning() and TimeSpan.min <= self.Count and self.Count < TimeSpan.max:
             DataOut << 1  
         return DataOut
-
-
-def main():
-    
-    parser = argparse.ArgumentParser(description='Generate Packages')
-    parser.add_argument('--OutputPath',    help='Path to where the build system is located',default="build/xgen/xgen_Counter.vhd")
-    parser.add_argument('--PackageName',   help='package Name',default="xgen_Counter")
-   
-    args = parser.parse_args()
-    sp = args.PackageName.split("_")
-    ax = v_package(args.PackageName,sourceFile=__file__,
-    PackageContent = [
-      v_enum ( counter_state),        
-      time_span(16),
-      counter(16)
-    ]
-    
-    
-    )
-    fileContent = ax.to_string()
-    with open(args.OutputPath, "w", newline="\n") as f:
-        f.write(fileContent)
-
-
-
-
-if __name__== "__main__":
-    main()

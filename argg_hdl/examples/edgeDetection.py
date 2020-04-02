@@ -30,27 +30,4 @@ class edgeDetection(v_class):
         return  self.oldRX1 and not self.oldRX
 
         
-def main():
-    
-    parser = argparse.ArgumentParser(description='Generate Packages')
-    parser.add_argument('--OutputPath',    help='Path to where the build system is located',default="build/xgen/xgen_edgeDetection.vhd")
-    parser.add_argument('--PackageName',   help='package Name',default="xgen_edgeDetection")
-   
-    args = parser.parse_args()
-    sp = args.PackageName.split("_")
-    ax = v_package(args.PackageName,sourceFile=__file__,
-    PackageContent = [
-      edgeDetection()
-    ]
-    
-    
-    )
-    fileContent = ax.to_string()
-    with open(args.OutputPath, "w", newline="\n") as f:
-        f.write(fileContent)
 
-
-
-
-if __name__== "__main__":
-    main()

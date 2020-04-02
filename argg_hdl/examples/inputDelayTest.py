@@ -15,7 +15,7 @@ from argg_hdl.argg_hdl_v_entity import *
 from argg_hdl.examples.axiStream import *
 from argg_hdl.examples.axi_stream_delay import *
 from argg_hdl.examples.clk_generator import *
-
+from argg_hdl.examples.system_globals import *
 
 
 class SerialDataConfig(v_class):
@@ -31,27 +31,12 @@ class SerialDataConfig(v_class):
         self.sample_stop           =  v_slv(5)
 
 
-class register_t(v_class):
-    def __init__(self):
-        super().__init__("register_t")
-        self.__v_classType__       = v_classType_t.Record_t
-        self.address   = v_slv(16) 
-        self.value     = v_slv(16) 
-        
 
-
-class klm_globals(v_class):
-    def __init__(self):
-        super().__init__("klm_globals")
-        self.__v_classType__       = v_classType_t.Record_t
-        self.clk   =  v_sl() 
-        self.rst   =  v_sl() 
-        self.reg   =  register_t() 
 
 class InputDelay(v_entity):
     def __init__(self,k_globals =None,InputType = v_slv(32),Delay=0):
         super().__init__(__file__)
-        self.globals  = port_Slave(klm_globals())
+        self.globals  = port_Slave(system_globals())
         if k_globals != None:
             self.globals  << k_globals
         self.ConfigIn = port_Stream_Slave(axisStream( InputType))
@@ -61,12 +46,6 @@ class InputDelay(v_entity):
 
     @architecture
     def architecture(self):
-        
-#        pipe = self.ConfigIn \
-#            | stream_delay_one(self.globals.clk, self.ConfigIn.data,0) \
-#            | stream_delay_one(self.globals.clk, self.ConfigIn.data,1) \
-#            | \
-#        self.ConfigOut   
         pipe2 = delay(times=self.Delay,obj=self)
         end_architecture()
 
@@ -83,7 +62,7 @@ def delay(times,obj):
 class InputDelay_print(v_entity):
     def __init__(self,k_globals =None,InputType =v_slv(32)):
         super().__init__(__file__)
-        self.globals  = port_Slave(klm_globals())
+        self.globals  = port_Slave(system_globals())
         if k_globals != None:
             self.globals << k_globals
         self.ConfigIn = port_Stream_Slave(axisStream( InputType))
@@ -115,7 +94,7 @@ class InputDelay_tb(v_entity):
     @architecture
     def architecture(self):
         clkgen = v_create(clk_generator())
-        k_globals =klm_globals()
+        k_globals = system_globals()
         data = v_slv(32,5)
 
 
@@ -144,9 +123,4 @@ class InputDelay_tb(v_entity):
 
 
 
-def main():
-    tb  =v_create(InputDelay_tb())
-    #gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
-    tb.hdl_conversion__.convert_all(tb,"pyhdl_waveform")
 
-main()

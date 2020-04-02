@@ -9,15 +9,15 @@ use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
 use work.axisStream_slv32.all;
 use work.hlpydlcore.all;
-use work.klm_globals_pack.all;
 use work.register_t_pack.all;
+use work.system_globals_pack.all;
 
 
 entity InputDelay_print is 
   port(
     ConfigIn_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
     ConfigIn_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    globals :  in  klm_globals := klm_globals_null
+    globals :  in  system_globals := system_globals_null
   );
 end entity;
 
