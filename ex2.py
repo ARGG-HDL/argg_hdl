@@ -36,9 +36,16 @@ class small_buffer(v_class_master):
     
     def read_data(self, data):
         data << self.mem[self.tail]
+        self.tail << self.tail + 1
+        if self.tail > len(self.mem):
+            self.tail << 0 
 
     def send_data(self, data):
         self.mem[self.head] << data 
+        self.head << self.head + 1
+        if self.head > len(self.mem):
+            self.head << 0 
+
 
 
     def ready_to_send(self):

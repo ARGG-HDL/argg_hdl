@@ -935,9 +935,10 @@ class v_class_converter(hdl_converter_base):
             inoutstr = ""
             varSignal = "signal "
             if x["symbol"].varSigConst == varSig.variable_t:
-                x["symbol"].hdl_conversion__.get_inout_type_recursive( x["symbol"])
+                #x["symbol"].hdl_conversion__.get_inout_type_recursive( x["symbol"])
 
-                inoutstr =  x["symbol"].hdl_conversion__.InOut_t2str( x["symbol"])
+                #inoutstr =  x["symbol"].hdl_conversion__.InOut_t2str( x["symbol"])
+                inoutstr =  " inout " # fixme 
                 varSignal = ""
             Default_str = ""
             if withDefault and obj._writtenRead != InOut_t.output_t and obj.Inout != InOut_t.output_t:
