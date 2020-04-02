@@ -1142,7 +1142,7 @@ def handle_rising_edge(astParser, symb,keyword=None):
 
 
 def handle_v_create(astParser, symb):
-    print("asd")
+    raise Exception("function not implemented")
 
 
 class v_yield(v_ast_base):

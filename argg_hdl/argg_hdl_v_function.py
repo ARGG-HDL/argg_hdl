@@ -233,9 +233,9 @@ class v_Arch_converter(hdl_converter_base):
         obj.hdl_conversion__.make_signal_list(obj,retList,  obj.Arch_vars)
         retlist2 = list_make_unque(retList)
         conections = obj.hdl_conversion__.make_signal_connections2(obj, retlist2)
-        print("====================")
-        print(conections)
-        print("--------------------")
+        #print("====================")
+        #print(conections)
+        #print("--------------------")
         body += conections
         #body +=obj.hdl_conversion__.make_signal_connections(obj, obj.Arch_vars)
  

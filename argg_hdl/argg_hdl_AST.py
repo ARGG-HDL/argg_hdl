@@ -16,28 +16,7 @@ else:
     from .argg_hdl_v_function import *
     from .argg_hdl_v_symbol  import *
 
-import cProfile, pstats, io
 
-
-
-def profile(fnc):
-    
-    """A decorator that uses cProfile to profile a function"""
-    
-    def inner(*args, **kwargs):
-        
-        pr = cProfile.Profile()
-        pr.enable()
-        retval = fnc(*args, **kwargs)
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        print(s.getvalue())
-        return retval
-
-    return inner
 
 
 def checkIfFunctionexists(cl_instant, name, funcArg ):
@@ -100,7 +79,6 @@ def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
         return None
     localArgs = copy.copy(FunctionArgs) #deepcopy
     for x,y in zip(localArgs,TemplateDescription["args"]):
-        #print(x,y)
         if y == None:
             return None  
         if x["symbol"] == None or x["symbol"].type != y.type or x['symbol'].varSigConst != y.varSigConst:
@@ -275,7 +253,7 @@ class xgenAST:
             self.Missing_template = False
             ClassInstance.hdl_conversion__.reset_TemplateMissing(ClassInstance)
             self.local_function ={}
-            # print(f.name)
+
             self.parent = parent
             self.FuncArgs = list()
             self.LocalVar = list()
@@ -311,7 +289,7 @@ class xgenAST:
             self.local_function ={}
             if  f.name in self.functionNameVetoList:
                 continue
-            #print(f.name)
+
             self.parent = parent
             self.FuncArgs = list()
             self.LocalVar = list()
@@ -383,7 +361,7 @@ class xgenAST:
             body = self.Unfold_body(funcDef)
 
             bodystr= str(body)
-            print("----------" , funcDef.name)
+            #print("----------" , funcDef.name)
             argList = [x["symbol"].hdl_conversion__.to_arglist(x["symbol"], x['name'],ClassName, withDefault = setDefault and  (x["name"] != "self")) for x in FuncArgsLocal]
             ArglistProcedure = join_str(argList,Delimeter="; ")
             
@@ -462,7 +440,7 @@ class xgenAST:
         #ClassInstance_local._remove_connections()
         
         cl = self.getClassByName(ClassName)
-        print("processing ", ClassName, " MemfunctionCalls ",len(ClassInstance.hdl_conversion__.MemfunctionCalls))
+        #print("processing ", ClassName, " MemfunctionCalls ",len(ClassInstance.hdl_conversion__.MemfunctionCalls))
         for f in cl.body:
             index += 1000
             if  f.name in self.functionNameVetoList:
@@ -479,7 +457,7 @@ class xgenAST:
                     #fun_ret.append(arc)
                         pass
                 continue
-            print("start create function for template", f.name)
+            #print("start create function for template", f.name)
             #print(ClassInstance.hdl_conversion__.MemfunctionCalls)
 
             ArglistLocal = []
@@ -498,7 +476,7 @@ class xgenAST:
 
             exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
             if exist == False:
-                print("is new Function", f.name)
+                #print("is new Function", f.name)
                 len_Arglist = len(Arglist)
 
                 if len(ArglistLocal) == 0:
@@ -547,17 +525,17 @@ class xgenAST:
             newArglist = GetNewArgList(f[0].name, ArglistLocal, temp)
 
             if newArglist != None:
-                print("is new template", f[0].name)
+                #print("is new template", f[0].name)
                 index += 100000
                 ret = self.extractFunctionsForClass_impl(ClassInstance_local, parent, f[0], newArglist , temp["setDefault"]  )
                 temp["call_func"] = call_func
                 temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
-                print("end create function for template ",f[0].name)
+                #print("end create function for template ",f[0].name)
                 if ret:
                     fun_ret.append( ret )
         
         elapsed = time.time() - t
-        print ("extractFunctionsForClass", elapsed ,index)      
+        #print ("extractFunctionsForClass", elapsed ,index)      
         return fun_ret
 
     def Unfold_body(self,FuncDef):

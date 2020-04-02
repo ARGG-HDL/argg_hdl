@@ -165,7 +165,7 @@ def isSameArgs(args1,args2, hasDefaults = False):
 def convert_to_hdl(Obj, FolderPath):
     return Obj.hdl_conversion__.convert_all(Obj,  FolderPath)
 
-    
+
 class hdl_converter_base:
     __VHDL__OPS_to2str= {
         "Gt": ">",
@@ -208,11 +208,9 @@ class hdl_converter_base:
         FilesDone = ['']
         while len(FilesDone) > 0:
             FilesDone = []
-            print("==================")
+            #print("==================")
             for x in gHDL_objectList:
-                if "axis"  in type(x).__name__ :
-                    #print("axi")
-                    pass
+
                 #print("----------------")
                 
                 if x.hdl_conversion__.IsSucessfullConverted(x):
@@ -368,9 +366,9 @@ class hdl_converter_base:
         if call_obj == None:
             primary.hdl_conversion__.MissingTemplate=True
             astParser.Missing_template = True
-            print("Missing Template",name)
+            #print("Missing Template",name)
             return None
-        print("use function of template ",name)
+        #print("use function of template ",name)
         call_func = call_obj["call_func"]
         if call_func:
             return call_func(obj, name, args, astParser, call_obj["func_args"])

@@ -606,7 +606,7 @@ class v_class_converter(hdl_converter_base):
                         
                         members_args.append(varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + " : out "  + sig[0]["symbol"].getType()+suffix)
                             
-                    print(m)
+                    
         
         members = obj.getMember(InOut_Filter,VaribleSignalFilter=varSig.variable_t) 
        
