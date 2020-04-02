@@ -73,7 +73,8 @@ v_entity_list = ah_entity_list.v_entity_list
 v_class = ah_v_class.v_class
 get_master = ah_v_class.get_master
 get_salve = ah_v_class.get_salve
-
+v_class_master  = ah_v_class.v_class_master
+v_class_slave  = ah_v_class.v_class_slave
 
 ## argg_hdl.argg_hdl_simulation 
 #gsimulation = ah_simulation.gsimulation

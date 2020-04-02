@@ -24,6 +24,7 @@ def flatten_list(In_list):
 
 def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="", IgnoreIfEmpty=False, RemoveEmptyElements = False):
     ret = ""
+    content = flatten_list(content)
     if len(content) == 0 and IgnoreIfEmpty:
         return ret
     elif len(content) == 0:
@@ -32,7 +33,6 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
         return ret
 
     ret += start
-    content = flatten_list(content)
     if RemoveEmptyElements:
         content = [x for x in content if x]
 
@@ -62,6 +62,22 @@ def get_value_or_default(value,default):
 
     return value
 
+def get_fileName_of_object_def(obj):
+    funcrec = inspect.stack()
+    FileName = ""
+    for x in funcrec[1:]:
+        f_locals = x.frame.f_locals
+        
+        objectFound = False
+        for y in f_locals:
+            if f_locals[y] is obj:
+                objectFound = True
+
+        if objectFound == False:
+            return FileName
+        FileName =   x.filename
+    return ""
+    
 def get_variables_from_function_in_callstack(FunctionName):
     funcrec = inspect.stack()
     for x in funcrec:
@@ -203,12 +219,16 @@ class hdl_converter_base:
 
     def convert_all(self, obj, ouputFolder):
 
-        
+        counter = 0
         
         FilesDone = ['']
         while len(FilesDone) > 0:
+            counter += 1
+            if counter > 10:
+                raise Exception("unable to convert ")
+            
             FilesDone = []
-            #print("==================")
+            print("==================")
             for x in gHDL_objectList:
 
                 #print("----------------")
@@ -219,13 +239,13 @@ class hdl_converter_base:
 
                 packetName =  x.hdl_conversion__.get_packet_file_name(x)
                 if packetName not in FilesDone:
-                    #print("<"+type(x).__name__ +">")
+                    print("<"+type(x).__name__ +">")
                     x.hdl_conversion__.reset_TemplateMissing(x)
                     packet = x.hdl_conversion__.get_packet_file_content(x)
                     if packet:
                         file_set_content(ouputFolder+"/" +packetName,packet)
                     FilesDone.append(packetName)
-                    #print("</"+ type(x).__name__, x.hdl_conversion__.MissingTemplate, ">")
+                    print("</"+ type(x).__name__, x.hdl_conversion__.MissingTemplate, ">")
                     #print(type(x).__name__)
                     #print("processing")
                     
@@ -233,13 +253,13 @@ class hdl_converter_base:
                 entiyFileName =  x.hdl_conversion__.get_entity_file_name(x)
 
                 if entiyFileName not in FilesDone:
-                    #print("<"+type(x).__name__ +">")
+                    print("<"+type(x).__name__ +">")
                     x.hdl_conversion__.reset_TemplateMissing(x)
                     entity_content = x.hdl_conversion__.get_enity_file_content(x)
                     if entity_content:
                         file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
                     FilesDone.append(entiyFileName)
-                    #print("</"+ type(x).__name__, x.hdl_conversion__.MissingTemplate, ">")
+                    print("</"+ type(x).__name__, x.hdl_conversion__.MissingTemplate, ">")
                     #print("processing")
                 
                 x.hdl_conversion__.IsConverted = True
@@ -366,9 +386,9 @@ class hdl_converter_base:
         if call_obj == None:
             primary.hdl_conversion__.MissingTemplate=True
             astParser.Missing_template = True
-            #print("Missing Template",name)
+            print("Missing Template",name)
             return None
-        #print("use function of template ",name)
+        print("use function of template ",name)
         call_func = call_obj["call_func"]
         if call_func:
             return call_func(obj, name, args, astParser, call_obj["func_args"])
@@ -485,6 +505,7 @@ class argg_hdl_base0:
         self.__Driver__ = None
         self._Driver_SubConnection = False
         self.__receiver__ = []
+        self._srcFileName = get_fileName_of_object_def(self)
         
 
     def _set_to_sub_connection(self):

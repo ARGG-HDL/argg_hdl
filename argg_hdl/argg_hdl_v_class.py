@@ -5,7 +5,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_simulation import *
-
+import argg_hdl.argg_hdl_v_Package as argg_pack
 
 
 def _get_connector(symb):
@@ -46,6 +46,20 @@ class v_class_converter(hdl_converter_base):
         return obj.hdl_conversion__.get_type_simple(obj)+"_pack.vhd"
 
     def get_packet_file_content(self, obj):
+        PackageName = obj.hdl_conversion__.get_type_simple(obj)+"_pack"
+        s = isConverting2VHDL()
+        set_isConverting2VHDL(True)
+
+
+        pack  = argg_pack.v_package(PackageName,sourceFile=obj._srcFileName,
+            PackageContent = [
+                obj
+            ])
+
+        fileContent = pack.to_string()
+        set_isConverting2VHDL(s)
+        return fileContent
+
         if obj.__vetoHDLConversion__  == True:
             return ""
         PackageName = obj.hdl_conversion__.get_type_simple(obj)+"_pack"
@@ -341,7 +355,7 @@ class v_class_converter(hdl_converter_base):
 
         Connecting = obj.hdl_conversion__.getMemeber_Connect(obj, InOut_Filter,PushPull, ClassName)
         internal_connections = obj.hdl_conversion__.getMember_InternalConnections(obj, InOut_Filter,PushPull)
-        Connecting = join_str([Connecting, internal_connections],LineEnding="\n",LineBeginning="    ")
+        Connecting = join_str([Connecting, internal_connections],LineEnding="\n",LineBeginning="    " ,IgnoreIfEmpty = True )
 
         IsEmpty=len(Connecting.strip()) == 0 and len(beforeConnecting.strip()) == 0 and  len(AfterConnecting.strip()) == 0
         ret        = v_procedure(name=procedureName, argumentList=argumentList , body='''
@@ -936,9 +950,10 @@ class v_class_converter(hdl_converter_base):
 
 class v_class(argg_hdl_base):
 
-    def __init__(self,Name,varSigConst=None):
+    def __init__(self,Name=None,varSigConst=None):
         super().__init__()
         self.hdl_conversion__ = v_class_converter()
+        Name = get_value_or_default( Name , type(self).__name__)
 
         self.name = Name
         self.type = Name
@@ -1314,7 +1329,7 @@ class v_class(argg_hdl_base):
 
 class v_class_master(v_class):
 
-    def __init__(self,Name,varSigConst=None):
+    def __init__(self,Name=None,varSigConst=None):
         super().__init__(Name,varSigConst)
         self.__vectorPush__   = True
         self.__vectorPull__   = True
@@ -1324,7 +1339,7 @@ class v_class_master(v_class):
 
 class v_class_slave(v_class):
 
-    def __init__(self,Name,varSigConst=None):
+    def __init__(self,Name=None,varSigConst=None):
         super().__init__(Name,varSigConst)
         self.__vectorPush__   = True
         self.__vectorPull__   = True

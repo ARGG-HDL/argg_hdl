@@ -433,7 +433,7 @@ class xgenAST:
         #ClassInstance_local._remove_connections()
         
         cl = self.getClassByName(ClassName)
-        #print("processing ", ClassName, " MemfunctionCalls ",len(ClassInstance.hdl_conversion__.MemfunctionCalls))
+        print("processing ", ClassName, " MemfunctionCalls ",len(ClassInstance.hdl_conversion__.MemfunctionCalls))
         for f in cl.body:
             index += 1000
             if  f.name in self.functionNameVetoList:
@@ -450,8 +450,8 @@ class xgenAST:
                     #fun_ret.append(arc)
                         pass
                 continue
-            #print("start create function for template", f.name)
-            #print(ClassInstance.hdl_conversion__.MemfunctionCalls)
+            print("start create function for template", f.name)
+            print(ClassInstance.hdl_conversion__.MemfunctionCalls)
 
             ArglistLocal = []
             ClassInstance.set_vhdl_name ( "self",True)
@@ -469,7 +469,7 @@ class xgenAST:
 
             exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
             if exist == False:
-                #print("is new Function", f.name)
+                print("is new Function", f.name)
                 len_Arglist = len(Arglist)
 
                 if len(ArglistLocal) == 0:

@@ -343,7 +343,7 @@ class v_entity(argg_hdl_base0):
         setDefaultVarSig(varSig.signal_t)
         name = type(self).__name__
         self._name = name
-        self._srcFileName = srcFileName
+        #self._srcFileName = srcFileName
         self.__processList__ = list()
         self.Inout = InOut_t.Internal_t
         self.vhdl_name = None

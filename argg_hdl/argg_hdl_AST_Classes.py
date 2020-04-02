@@ -951,7 +951,7 @@ def v_type_to_bool(astParser,obj):
         return obj.hdl_conversion__._vhdl__to_bool(obj, astParser)
 
     if type(obj).__name__ == "v_call":
-        return  obj.symbol._vhdl__to_bool(astParser)
+        return  obj.symbol.hdl_conversion__._vhdl__to_bool(obj.symbol,astParser)
 
 
 
