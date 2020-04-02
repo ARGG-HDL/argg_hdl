@@ -1,11 +1,6 @@
 import os,sys,inspect
-if __name__== "__main__":
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    parentdir = os.path.dirname(currentdir)
-    sys.path.insert(0,parentdir) 
-    from argg_hdl.argg_hdl_base import *
-else:
-    from .argg_hdl_base import * 
+ 
+from argg_hdl.argg_hdl_base import *
 
 
 class v_procedure_converter(hdl_converter_base):
