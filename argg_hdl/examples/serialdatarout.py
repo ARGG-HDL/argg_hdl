@@ -6,7 +6,7 @@ import copy
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.examples.klm_scrod_bus import *
-
+from argg_hdl.argg_hdl_v_enum import *
 
 
 Bitwidth = v_int(15,varSigConst=varSig.const_t)
