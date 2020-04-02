@@ -480,10 +480,16 @@ class argg_hdl_base0:
         self._isInstance = False
         self.hdl_conversion__ = hdl_converter_base()
         self.__Driver__ = None
+        self._Driver_SubConnection = False
         self.__receiver__ = []
+        
+
+    def _set_to_sub_connection(self):
+        self._Driver_SubConnection = True
 
     def _remove_connections(self):
         self.__Driver__ = None
+        self._Driver_SubConnection = False
         self.__receiver__ = []
         xs = self.getMember()
         for x in xs:

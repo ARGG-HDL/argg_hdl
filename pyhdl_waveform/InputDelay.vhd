@@ -127,25 +127,31 @@ pipe2_7_stream_delay_one_Axi_out_s2m <= ConfigOut_s2m;
 --  pipe2_2_stream_delay_one_Axi_in << ConfigIn
 pipe2_2_stream_delay_one_Axi_in_m2s <= ConfigIn_m2s;
 ConfigIn_s2m <= pipe2_2_stream_delay_one_Axi_in_s2m;
+  pipe2_2_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_3_stream_delay_one_Axi_in << pipe2_2_stream_delay_one_Axi_out
 pipe2_3_stream_delay_one_Axi_in_m2s <= pipe2_2_stream_delay_one_Axi_out_m2s;
 pipe2_2_stream_delay_one_Axi_out_s2m <= pipe2_3_stream_delay_one_Axi_in_s2m;
+  pipe2_3_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_4_stream_delay_one_Axi_in << pipe2_3_stream_delay_one_Axi_out
 pipe2_4_stream_delay_one_Axi_in_m2s <= pipe2_3_stream_delay_one_Axi_out_m2s;
 pipe2_3_stream_delay_one_Axi_out_s2m <= pipe2_4_stream_delay_one_Axi_in_s2m;
+  pipe2_4_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_5_stream_delay_one_Axi_in << pipe2_4_stream_delay_one_Axi_out
 pipe2_5_stream_delay_one_Axi_in_m2s <= pipe2_4_stream_delay_one_Axi_out_m2s;
 pipe2_4_stream_delay_one_Axi_out_s2m <= pipe2_5_stream_delay_one_Axi_in_s2m;
+  pipe2_5_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_6_stream_delay_one_Axi_in << pipe2_5_stream_delay_one_Axi_out
 pipe2_6_stream_delay_one_Axi_in_m2s <= pipe2_5_stream_delay_one_Axi_out_m2s;
 pipe2_5_stream_delay_one_Axi_out_s2m <= pipe2_6_stream_delay_one_Axi_in_s2m;
+  pipe2_6_stream_delay_one_clk <= globals.clk;
   ---------------------------------------------------------------------
 --  pipe2_7_stream_delay_one_Axi_in << pipe2_6_stream_delay_one_Axi_out
 pipe2_7_stream_delay_one_Axi_in_m2s <= pipe2_6_stream_delay_one_Axi_out_m2s;
 pipe2_6_stream_delay_one_Axi_out_s2m <= pipe2_7_stream_delay_one_Axi_in_s2m;
+  pipe2_7_stream_delay_one_clk <= globals.clk;
   
 end architecture;
