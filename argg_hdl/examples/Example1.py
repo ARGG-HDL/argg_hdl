@@ -17,7 +17,7 @@ from argg_hdl.argg_hdl_simulation import *
 
 class tb_entity(v_entity):
     def __init__(self):
-        super().__init__(__file__)
+        super().__init__()
         self.architecture()
 
 

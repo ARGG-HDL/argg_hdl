@@ -336,7 +336,7 @@ class v_entity_converter(hdl_converter_base):
         return ret.strip()
 
 class v_entity(argg_hdl_base0):
-    def __init__(self,srcFileName=None):
+    def __init__(self):
         super().__init__()
 
         self.hdl_conversion__= v_entity_converter()
@@ -467,8 +467,8 @@ class v_entity(argg_hdl_base0):
         return "v_entity" == test
         
 class v_clk_entity(v_entity):
-    def __init__(self,srcFileName=None,clk=None):
-        super().__init__(srcFileName)
+    def __init__(self,clk=None):
+        super().__init__()
         self.clk    =  port_in(v_sl())
         if clk != None:
             self.clk <<  clk

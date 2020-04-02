@@ -451,7 +451,7 @@ class xgenAST:
                         pass
                 continue
             print("start create function for template", f.name)
-            print(ClassInstance.hdl_conversion__.MemfunctionCalls)
+            #print(ClassInstance.hdl_conversion__.MemfunctionCalls)
 
             ArglistLocal = []
             ClassInstance.set_vhdl_name ( "self",True)

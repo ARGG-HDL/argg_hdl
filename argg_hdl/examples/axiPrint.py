@@ -15,7 +15,7 @@ from argg_hdl.argg_hdl_simulation import *
 
 class axiPrint(v_clk_entity):
     def __init__(self,clk=None):
-        super().__init__(__file__, clk)
+        super().__init__(clk)
         self.Axi_in =  port_Stream_Slave(axisStream(v_slv(32)))
         self.architecture()
 

@@ -35,7 +35,7 @@ class SerialDataConfig(v_class):
 
 class InputDelay(v_entity):
     def __init__(self,k_globals =None,InputType = v_slv(32),Delay=0):
-        super().__init__(__file__)
+        super().__init__()
         self.globals  = port_Slave(system_globals())
         if k_globals != None:
             self.globals  << k_globals
@@ -61,7 +61,7 @@ def delay(times,obj):
 
 class InputDelay_print(v_entity):
     def __init__(self,k_globals =None,InputType =v_slv(32)):
-        super().__init__(__file__)
+        super().__init__()
         self.globals  = port_Slave(system_globals())
         if k_globals != None:
             self.globals << k_globals
@@ -88,7 +88,7 @@ class InputDelay_print(v_entity):
 
 class InputDelay_tb(v_entity):
     def __init__(self):
-        super().__init__(srcFileName=__file__)
+        super().__init__()
         self.architecture()
 
     @architecture

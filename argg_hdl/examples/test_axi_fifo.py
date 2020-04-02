@@ -17,7 +17,7 @@ from argg_hdl.examples.axi_fifo  import *
 
 class test_bench_e123(v_entity):
     def __init__(self):
-        super().__init__(__file__)
+        super().__init__()
         self.architecture()
 
     def architecture(self):

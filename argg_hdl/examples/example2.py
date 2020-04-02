@@ -18,7 +18,7 @@ gData= {
 
 class axiPrint(v_clk_entity):
     def __init__(self,clk=None):
-        super().__init__(__file__, clk)
+        super().__init__(clk)
         self.Axi_in = port_Slave(axisStream(v_slv(32)))
         self.architecture()
 
@@ -41,7 +41,7 @@ class axiPrint(v_clk_entity):
 
 class clk_generator(v_entity):
     def __init__(self):
-        super().__init__(__file__)
+        super().__init__()
         self.clk = port_out(v_sl())
         self.architecture()
 
@@ -64,7 +64,7 @@ class clk_generator(v_entity):
 
 class tb_entity(v_entity):
     def __init__(self):
-        super().__init__(__file__)
+        super().__init__()
         self.architecture()
         
 

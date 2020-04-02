@@ -9,8 +9,8 @@ use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
 use work.axisStream_slv32.all;
 use work.hlpydlcore.all;
+use work.klm_globals_pack.all;
 use work.register_t_pack.all;
-use work.system_globals_pack.all;
 
 
 entity InputDelay_tb is 
@@ -24,20 +24,20 @@ architecture rtl of InputDelay_tb is
 --------------------------clkgen-----------------
   signal clkgen_clk : std_logic := '0'; 
 -------------------------- end clkgen-----------------
-  signal k_globals : system_globals := system_globals_null;
+  signal k_globals : klm_globals := klm_globals_null;
+  signal data : std_logic_vector(31 downto 0) := x"00000005"; 
 --------------------------dut-----------------
   signal dut_ConfigIn_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
   signal dut_ConfigIn_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
   signal dut_ConfigOut_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
   signal dut_ConfigOut_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal dut_globals : system_globals := system_globals_null;
+  signal dut_globals : klm_globals := klm_globals_null;
 -------------------------- end dut-----------------
 --------------------------axprint-----------------
   signal axprint_ConfigIn_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
   signal axprint_ConfigIn_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal axprint_globals : system_globals := system_globals_null;
+  signal axprint_globals : klm_globals := klm_globals_null;
 -------------------------- end axprint-----------------
-  signal data : std_logic_vector(31 downto 0) := x"00000005"; 
 -------------------------- end InputDelay_tb-----------------
 
 begin

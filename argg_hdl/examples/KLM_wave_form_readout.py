@@ -26,7 +26,7 @@ class klm_globals(v_class):
 
 class InputDelay(v_clk_entity):
     def __int__(self,k_globals =klm_globals()):
-        super().__init__(__file__, k_globals.clk)
+        super().__init__( k_globals.clk)
         self.globals  = port_in(k_globals)
         InputType = SerialDataConfig()
         self.ConfigIn = port_Stream_Slave(axisStream(InputType))
@@ -47,7 +47,7 @@ class InputDelay(v_clk_entity):
 
 class TXWaveFormReadout(v_clk_entity):
     def __init__(self,k_globals =klm_globals()):
-       super().__init__(__file__, k_globals.clk)
+       super().__init__( k_globals.clk)
        InputType = SerialDataConfig()
        self.globals  = port_in(k_globals)
        self.ConfigIn = port_Stream_Slave(axisStream(InputType))

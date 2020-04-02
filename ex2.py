@@ -7,7 +7,7 @@ from  argg_hdl.examples import *
 
 class tb(v_entity):
     def __init__(self):
-        super().__init__(srcFileName=__file__)
+        super().__init__()
         self.architecture()
 
     @architecture
@@ -58,7 +58,7 @@ class ram_handler(v_class):
 
 class ram_block(v_entity):
     def __init__(self):
-        super().__init__(__file__ )
+        super().__init__( )
         self.clk     =  port_in(v_sl())
         self.DataIO  =  port_Slave(ram_handler())
         
