@@ -445,7 +445,7 @@ class v_class_converter(hdl_converter_base):
             ret, 
             LineBeginning="  "
             )
-        ret=ret.replace("!!SELF!!", obj.vhdl_name)
+        ret=ret.replace("!!SELF!!",str(obj.vhdl_name))
         return ret
 
 
@@ -879,7 +879,7 @@ class v_class_converter(hdl_converter_base):
             x.__vetoHDLConversion__  = True
             x.Inout= obj.Inout
             x._writtenRead = obj._writtenRead
-            x.vhdl_name = obj.vhdl_name+"_sig"
+            x.vhdl_name = str(obj.vhdl_name)+"_sig"
             ys= obj.getMember(VaribleSignalFilter=varSig.signal_t)
             if len(ys)>0:
                 for y in ys: 

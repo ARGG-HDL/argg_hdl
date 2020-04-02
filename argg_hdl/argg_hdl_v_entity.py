@@ -446,7 +446,8 @@ class v_entity(argg_hdl_base0):
 
 
 
-
+    def _sim_append_update_list(self,up):
+        pass
 
     def set_vhdl_name(self,name, Overwrite = False):
         if self.vhdl_name and self.vhdl_name != name and Overwrite == False:

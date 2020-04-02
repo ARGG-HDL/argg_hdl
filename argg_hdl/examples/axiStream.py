@@ -13,7 +13,6 @@ if __name__== "__main__":
 else:
     from .argg_hdl_base import *
     from .argg_hdl_v_Package import *
-    from .xgenDB import *
     from .argg_hdl_v_class import *
 
 
@@ -250,167 +249,6 @@ class axisStream_master(v_class_master):
 
 
 
-class axisStream_slave_signal_converter(axisStream_converter):
-    def __init__(self):
-        super().__init__()
-
-    def includes(self,obj, name,parent):
-        ret = obj.rx.hdl_conversion__.includes(obj.rx,None,None)
-        return ret
-
-    def get_packet_file_name(self, obj):
-        ret = obj.rx.hdl_conversion__.get_packet_file_name(obj.rx)
-        return ret
-
-    def get_packet_file_content(self, obj):
-        ret = obj.rx.hdl_conversion__.get_packet_file_content(obj.rx)
-        return ret
-
-class axisStream_slave_signal(v_class):
-    def __init__(self, Axi_Out):
-        super().__init__(Axi_Out.type + "_master_signal")
-        self.__v_classType__         = v_classType_t.Master_t
-        self.hdl_conversion__ =axisStream_slave_signal_converter()
-        self.rx = signal_port_Slave(Axi_Out)
-        self.rx << Axi_Out
-
-        self.internal     =  v_signal(Axi_Out)
-        self.v_internal   =  v_variable(Axi_Out)
-        self.v_internal   << self.internal
-        
-
-
-
-#    @architecture
-#    def connect(self):
-#        @combinational()
-#        def p1():
-#            self.rx.ready       << v_switch(0, 
-#                [v_case( self.rx.valid and self.internal.ready , 1)]
-#                )
-#            self.internal.data  << self.rx.data
-#            self.internal.last  << self.rx.last
-#            self.internal.valid << self.rx.valid
-
-
-
-class axisStream_master_with_strean_counter(v_class):
-    def __init__(self, Axi_in):
-        super().__init__(Axi_in.type + "_master_with_counter")
-        self.AxiTX =  port_Master(axisStream_master(Axi_in))
-        self.__v_classType__         = v_classType_t.Master_t
-        self.Counter = v_variable(v_int(0))
-        self.SendingData =v_variable(v_sl())
-        self.EndOfStream =v_variable( v_sl())
-        self.EOF_Counter_max = v_variable(v_int(0))
-
-
-        self.__BeforePush__ ='''
-        if self.SendingData = '1' then
-            self.counter := self.counter + 1;
-        end if;
-       
-        if self.SendingData = '1' and self.counter = 0 and self.EndOfStream ='1' then
-            
-            Send_end_Of_Stream(self.AxiTX);
-            self.EndOfStream :='0';
-            
-        elsif  self.SendingData = '1' and self.counter > 0 and self.EndOfStream ='1' then
-            self.counter := self.EOF_Counter_max;
-        end if;
-
-        self.SendingData := '0';
-        '''
-        self.ready_to_send = v_function(returnType="boolean",body = '''
-        return ready_to_send(self.AxiTX); 
-        ''')
-        self.ready_to_send_at_pos = v_function(argumentList="position : integer", returnType="boolean",body = '''
-        if self.counter = position then
-            return ready_to_send(self); 
-        end if;
-
-        return false;
-        ''')
-        
-        self.send_data = v_procedure(argumentList= "datain : in " + self.AxiTX.tx.data.type, body='''
-        if ready_to_send(self) then
-            send_data(self.AxiTX,datain);
-            self.SendingData := '1';
-        end if;
-   ''')
-        self.Send_end_Of_Stream = v_procedure(argumentList= "EndOfStream : in boolean := true",body='''
-        if EndOfStream then
-            self.EndOfStream := '1';
-        else
-            self.EndOfStream := '0';
-        end if;
-        
-   
-''')
-
-        self.send_data_at = v_procedure(argumentList= "position : integer ;  datain : in " + self.AxiTX.tx.data.type , body='''
-        if ready_to_send_at_pos(self, position) then
-            send_data(self, datain);
-        end if;
-        
-        if position < self.EOF_Counter_max then
-            self.EOF_Counter_max := position;
-        end if;
-   ''')
-        self.send_data_begining_at = v_procedure(argumentList= "position : integer ;  datain : in " + self.AxiTX.tx.data.type , body='''
-        if ready_to_send_begining_at(self,position) then
-            send_data(self, datain);
-        end if;
-        
-        if position < self.EOF_Counter_max then
-            self.EOF_Counter_max := position;
-        end if;
-   ''')
-        self.ready_to_send_begining_at = v_function(argumentList="position : integer", returnType="boolean",body = '''
-        if self.counter >= position  then
-            return ready_to_send(self); 
-        end if;
-        return false;
-        ''')
-
-
-
-class  axiStream_package(v_package):
-    def __init__(self,PackageName, AXiName):
-        super().__init__(PackageName)
-        if AXiName.isdigit():
-            AxiType = v_slv(int(AXiName))
-        else:
-            pac = get_package_for_type(AXiName)
-            if  pac:
-                include = pac["packageDef"][0]
-                include =  "use work."+include+".all;\n"
-
-            else:
-                include= "-- Unable to locate package which contains class: '" +AXiName+"'  $$$missingInclude$$$"
-            AxiType = v_symbol(AXiName,AXiName+"_null", includes = include)
-
-        self.axi = axisStream(AXiName,AxiType)
-        self.axi_slave = axisStream_slave(AXiName,AxiType)
-        self.axi_master = axisStream_master(AXiName,AxiType)
-        self.axisStream_master_with_strean_counter =axisStream_master_with_strean_counter(AXiName,AxiType)
- 
-
-
-def arg2type(AXiName):
-    if AXiName.isdigit():
-        AxiType = v_slv(int(AXiName))
-    else:
-        pac = get_package_for_type(AXiName)
-        if  pac:
-            include = pac["packageDef"][0]
-            include =  "use work."+include+".all;\n"
-
-        else:
-            include= "-- Unable to locate package which contains class: '" +AXiName+"'  $$$missingInclude$$$"
-        AxiType = v_symbol(AXiName,AXiName+"_null", includes = include)
-
-    return AXiName,AxiType
 
 
 def make_package(PackageName,AxiType):
@@ -433,22 +271,5 @@ def make_package(PackageName,AxiType):
     set_isConverting2VHDL(s)
     return fileContent
 
-def main():
-    
-    parser = argparse.ArgumentParser(description='Generate Packages')
-    parser.add_argument('--OutputPath',    help='Path to where the build system is located',default="build/xgen/xgen_axiStream_32.vhd")
-    parser.add_argument('--PackageName',   help='package Name',default="xgen_axistream_32_SD")
 
-    args = parser.parse_args()
-    sp = args.PackageName.split("_")
-    AXiName,AxiType = arg2type(sp[2])
-    fileContent = make_package(args.PackageName,AxiType)
-
-    with open(args.OutputPath, "w", newline="\n") as f:
-        f.write(fileContent)
-        
-
-
-if __name__== "__main__":
-    main()
 

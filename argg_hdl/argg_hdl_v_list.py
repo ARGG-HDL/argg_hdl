@@ -213,9 +213,9 @@ class v_list(argg_hdl_base):
         for x in range(len(self.content)):
             self.content[x] << rhs.content[x]
 
-    def _sim_set_push_pull(self, symbol):
+    def _sim_set_push_pull(self, Pull_list, Push_list):
         for x in self.content:
-            x._sim_set_push_pull( symbol)
+            x._sim_set_push_pull( Pull_list, Push_list)
 
 
     def get_master(self):

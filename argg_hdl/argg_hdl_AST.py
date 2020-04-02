@@ -647,7 +647,7 @@ def call_func(obj, name, args, astParser=None,func_args=None):
     for x in range(len(args)):
         ys =func_args[x]["symbol"].hdl_conversion__.extract_conversion_types(func_args[x]["symbol"])
         for y in ys:
-            line = func_args[x]["name"] + y["suffix"]+ " => " + args[x].vhdl_name + y["suffix"]
+            line = func_args[x]["name"] + y["suffix"]+ " => " + str(args[x].vhdl_name) + y["suffix"]
             ret.append(line)
             if y["symbol"].varSigConst ==varSig.signal_t:
                 members = y["symbol"].getMember()

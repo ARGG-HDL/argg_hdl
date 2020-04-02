@@ -614,7 +614,7 @@ def  body_unfold_assign(astParser,Node):
     lhs = v_name (Node.targets[0].id)
     rhs =  astParser.Unfold_body(Node.value)
     rhs =  to_v_object(rhs)
-    rhs.set_vhdl_name(lhs.Value)
+    rhs.set_vhdl_name(lhs.Value, True)
     astParser.LocalVar.append(rhs)
     return v_variable_cration( lhs,  rhs)
 
