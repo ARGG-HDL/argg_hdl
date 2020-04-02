@@ -1157,7 +1157,7 @@ class v_class(argg_hdl_base):
         if self.vhdl_name:
             return str(self.vhdl_name)
 
-        raise Exception("Unable convert to string class: ", type(self)._name__)
+        raise Exception("Unable convert to string class: ", type(self).__name__)
 
 
     def _set_to_sub_connection(self):
