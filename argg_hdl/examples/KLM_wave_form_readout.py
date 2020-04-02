@@ -4,19 +4,17 @@ import argparse
 import os,sys,inspect
 import copy
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
-from argg_hdl.axiStream import *
+from argg_hdl.examples.axiStream import *
 from argg_hdl.argg_hdl_v_entity import *
 
 
 from argg_hdl.argg_hdl_simulation import *
 
-from argg_hdl.klm_scrod_bus import *
-from argg_hdl.serialdatarout import *
+from argg_hdl.examples.klm_scrod_bus import *
+from argg_hdl.examples.serialdatarout import *
 
 class klm_globals(v_class):
     def __init__(self):
@@ -31,12 +29,12 @@ class InputDelay(v_clk_entity):
         super().__init__(__file__, k_globals.clk)
         self.globals  = port_in(k_globals)
         InputType = SerialDataConfig()
-        self.ConfigIn = port_Stream_Slave(axisStream( type(InputType).__name__ ,InputType))
-        self.ConfigOut = port_Stream_Master(axisStream( type(InputType).__name__ ,InputType))
+        self.ConfigIn = port_Stream_Slave(axisStream(InputType))
+        self.ConfigOut = port_Stream_Master(axisStream( InputType))
     
     def architecture(self):
         self.ConfigIn \
-            | serialize(self.globals,axisStream("32",v_slv(32))) \
+            | serialize(self.globals,axisStream(v_slv(32))) \
             | axiStreamDelayBuffer(self.globals) \
             | ax_fifo(self.globals)  \
             | deserialize(self.globals) \
@@ -52,10 +50,10 @@ class TXWaveFormReadout(v_clk_entity):
        super().__init__(__file__, k_globals.clk)
        InputType = SerialDataConfig()
        self.globals  = port_in(k_globals)
-       self.ConfigIn = port_Stream_Slave(axisStream( type(InputType).__name__ ,InputType))
+       self.ConfigIn = port_Stream_Slave(axisStream(InputType))
        self.TX_Bus   = port_Slave(DataBus())
        self.TX_stream_data = port_out(v_slv(16))
-       self.Data_out  = port_Stream_Master(axisStream("32",v_slv(32)))
+       self.Data_out  = port_Stream_Master(axisStream(v_slv(32)))
        self.architecture()
 
     def architecture(self):

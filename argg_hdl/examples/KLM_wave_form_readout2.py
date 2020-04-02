@@ -4,19 +4,17 @@ import argparse
 import os,sys,inspect
 import copy
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
-from argg_hdl.axiStream import *
-from argg_hdl.argg_hdl_v_entity import *
-
-from argg_hdl.axi_stream_delay import *
-
 
 from argg_hdl.argg_hdl_simulation import *
-from argg_hdl.clk_generator import *
+from argg_hdl.argg_hdl_v_entity import *
+
+
+from argg_hdl.examples.axiStream import *
+from argg_hdl.examples.axi_stream_delay import *
+from argg_hdl.examples.clk_generator import *
 
 
 
@@ -145,30 +143,7 @@ class InputDelay_tb(v_entity):
 
 
 
-import cProfile, pstats, io
 
-
-
-def profile(fnc):
-    
-    """A decorator that uses cProfile to profile a function"""
-    
-    def inner(*args, **kwargs):
-        
-        pr = cProfile.Profile()
-        pr.enable()
-        retval = fnc(*args, **kwargs)
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        print(s.getvalue())
-        return retval
-
-    return inner
-
-#@profile
 def main():
     tb  =v_create(InputDelay_tb())
     #gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")

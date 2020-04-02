@@ -3,13 +3,12 @@ import os,sys,inspect
 import copy
 from enum import Enum 
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+
 
 from argg_hdl.argg_hdl_base import *
+from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.argg_hdl_v_Package import *
-from argg_hdl.xgenDB import *
+from argg_hdl.argg_hdl_v_class import *
 
 
 class counter_state(Enum):

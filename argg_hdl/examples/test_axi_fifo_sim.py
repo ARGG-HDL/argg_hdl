@@ -5,16 +5,14 @@ import functools
 import argparse
 import os,sys,inspect
 import copy
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+
 
 from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.argg_hdl_v_entity import *
-from argg_hdl.rollingCounter import *
-from argg_hdl.clk_generator import *
-from argg_hdl.axiPrint import *
-from argg_hdl.axi_fifo  import *
+from argg_hdl.examples.rollingCounter import *
+from argg_hdl.examples.clk_generator import *
+from argg_hdl.examples.axiPrint import *
+from argg_hdl.examples.axi_fifo  import *
 
 class test_bench_axiFifo(v_entity):
     def __init__(self):

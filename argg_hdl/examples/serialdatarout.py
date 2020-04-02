@@ -1,15 +1,13 @@
 import argparse
 import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
+from enum import Enum 
+import copy 
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_Package import *
-from argg_hdl.klm_scrod_bus import *
+from argg_hdl.examples.klm_scrod_bus import *
 
-from enum import Enum 
-import copy 
+
 
 Bitwidth = v_int(15,varSigConst=varSig.const_t)
 asicN= v_slv(4)
@@ -196,36 +194,3 @@ class TX_WaveFormRO(v_class):
 
         
 
-
-def main():
-    
-    parser = argparse.ArgumentParser(description='Generate Packages')
-    parser.add_argument('--OutputPath',    help='Path to where the build system is located',default="build/xgen/xgen_serialdatarout_p.vhd")
-    parser.add_argument('--PackageName',   help='package Name',default="xgen_serialdatarout_p")
-   
-    args = parser.parse_args()
-    sp = args.PackageName.split("_")
-    ax = v_package(args.PackageName,sourceFile=__file__,
-    PackageContent = [
-        Bitwidth,
-        SerialDataRout_s_state,
-        SerialDataConfig(),
-        #SerialDataRout(),
-        readOutConfig(),
-        SerialDataRout_s(),
-        TX_timeSpan(),
-        TX_SamplingControls(),
-        TX_SamplingConfigs()
-    ]
-    
-    
-    )
-    fileContent = ax.to_string()
-    with open(args.OutputPath, "w", newline="\n") as f:
-        f.write(fileContent)
-
-
-
-
-if __name__== "__main__":
-    main()

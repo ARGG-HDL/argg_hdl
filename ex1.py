@@ -7,9 +7,9 @@ import copy
 
 from argg_hdl import *
 
-import argg_hdl.clk_generator as  clk_gen 
-import argg_hdl.axi_stream_delay as stream_deley
-import argg_hdl.axiStream as ax
+import argg_hdl.examples.clk_generator as  clk_gen 
+import argg_hdl.examples.axi_stream_delay as stream_deley
+import argg_hdl.examples.axiStream as ax
 
 class SerialDataConfig(v_class):
     def __init__(self):
@@ -139,7 +139,7 @@ class InputDelay_tb(v_entity):
 
 def main():
     tb  =v_create(InputDelay_tb())
-    gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
-    #convert_to_hdl(tb, "pyhdl_waveform")
+    #gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
+    convert_to_hdl(tb, "pyhdl_waveform")
 
 main()

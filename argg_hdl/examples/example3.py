@@ -5,13 +5,12 @@ import os,sys,inspect
 import copy
 
 
-from .argg_hdl_base import *
-from .argg_hdl_v_symbol import *
-from .axiStream import *
-from .argg_hdl_v_entity import *
+from argg_hdl.argg_hdl_base import *
+from argg_hdl.argg_hdl_v_symbol import *
+from argg_hdl.examples.axiStream import *
+from argg_hdl.argg_hdl_v_entity import *
 
-
-from .argg_hdl_simulation import *
+from argg_hdl.argg_hdl_simulation import *
 
 
 
@@ -19,8 +18,8 @@ from .argg_hdl_simulation import *
 class axiFilter(v_clk_entity):
     def __init__(self,clk=None):
         super().__init__(__file__, clk)
-        self.Axi_in = port_Stream_Slave(axisStream(32,v_slv(32)))
-        self.Axi_out = port_Stream_Master(axisStream(32,v_slv(32)))
+        self.Axi_in = port_Stream_Slave(axisStream(v_slv(32)))
+        self.Axi_out = port_Stream_Master(axisStream(v_slv(32)))
         self.architecture()
 
         
@@ -44,7 +43,7 @@ class axiFilter(v_clk_entity):
 class axiPrint(v_clk_entity):
     def __init__(self,clk=None):
         super().__init__(__file__, clk)
-        self.Axi_in =  port_Stream_Slave(axisStream(32,v_slv(32)))
+        self.Axi_in =  port_Stream_Slave(axisStream(v_slv(32)))
         self.architecture()
 
         
@@ -87,7 +86,7 @@ class clk_generator(v_entity):
 class rollingCounter(v_clk_entity):
     def __init__(self,clk=None,MaxCount=v_slv(32,100)):
         super().__init__(__file__, clk)
-        self.Axi_out = port_Stream_Master( axisStream(32,v_slv(32)))
+        self.Axi_out = port_Stream_Master( axisStream(v_slv(32)))
         self.MaxCount = port_in(v_slv(32,10))
         self.MaxCount << MaxCount
         self.architecture()

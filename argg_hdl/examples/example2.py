@@ -5,13 +5,12 @@ import os,sys,inspect
 import copy
 
 
-from .argg_hdl_base import *
-from .argg_hdl_v_symbol import *
-from .axiStream import *
-from .argg_hdl_v_entity import *
+from argg_hdl.argg_hdl_base import *
+from argg_hdl.argg_hdl_v_symbol import *
+from argg_hdl.argg_hdl_v_entity import *
+from argg_hdl.argg_hdl_simulation import *
 
-
-from .argg_hdl_simulation import *
+from argg_hdl.examples.axiStream import *
 
 gData= {
     "data":1
@@ -20,7 +19,7 @@ gData= {
 class axiPrint(v_clk_entity):
     def __init__(self,clk=None):
         super().__init__(__file__, clk)
-        self.Axi_in = port_Slave(axisStream(32,v_slv(32)))
+        self.Axi_in = port_Slave(axisStream(v_slv(32)))
         self.architecture()
 
         
@@ -73,7 +72,7 @@ class tb_entity(v_entity):
     def architecture(self):
         clkgen = v_create(clk_generator())
 
-        Axi_out = axisStream(32,v_slv(32))
+        Axi_out = axisStream(v_slv(32))
         counter = v_slv(32)
         axFil = v_create(axiPrint(clkgen.clk))
         axFil.Axi_in << Axi_out

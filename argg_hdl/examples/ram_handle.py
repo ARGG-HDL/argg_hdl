@@ -2,14 +2,12 @@ import argparse
 import os,sys,inspect
 import copy
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
 
-from .argg_hdl_base import *
-from .argg_hdl_v_entity import *
-from .argg_hdl_v_Package import *
-from .xgenDB import *
+
+from argg_hdl.argg_hdl_base       import *
+from argg_hdl.argg_hdl_v_entity   import *
+from argg_hdl.argg_hdl_v_Package  import *
+from argg_hdl.argg_hdl_v_class    import *
 
 
 class ram_handle(v_class):
@@ -84,48 +82,3 @@ class ram_handle_master(v_class):
             Data << self.readData1
             self.readData0_was_read << 1
 
-
-def arg2type(AXiName):
-    if AXiName.isdigit():
-        AxiType = v_slv(int(AXiName))
-    else:
-        pac = get_package_for_type(AXiName)
-        if  pac:
-            include = pac["packageDef"][0]
-            include =  "use work."+include+".all;\n"
-
-        else:
-            include= "-- Unable to locate package which contains class: '" +AXiName+"'  $$$missingInclude$$$"
-        AxiType = v_symbol(AXiName,AXiName+"_null", includes = include)
-
-    return AXiName,AxiType
-
-def main():
-    
-    parser = argparse.ArgumentParser(description='Generate Packages')
-    parser.add_argument('--OutputPath',    help='Path to where the build system is located',default="build/xgen/xgen_ramHandler_32_5.vhd")
-    parser.add_argument('--PackageName',   help='package Name',default="xgen_ramHandler_32_5")
-    s = isConverting2VHDL()
-    set_isConverting2VHDL(True)
-    args = parser.parse_args()
-    sp = args.PackageName.split("_")
-    AXiName, AxiType = arg2type(sp[2])
-
-    ax_t = ram_handle(AXiName,int(sp[3]), AxiType)
-    ax = v_package(args.PackageName,sourceFile=__file__,
-    PackageContent = [
-        ax_t,
-        ram_handle_master(ax_t)
-    ]
-    
-    
-    )
-    fileContent = ax.to_string()
-    with open(args.OutputPath, "w", newline="\n") as f:
-        f.write(fileContent)
-        
-    set_isConverting2VHDL(s)
-
-
-if __name__== "__main__":
-    main()

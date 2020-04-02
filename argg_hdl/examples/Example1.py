@@ -6,13 +6,13 @@ import os,sys,inspect
 import copy
 
 
-from .argg_hdl_base import *
-from .argg_hdl_v_symbol import *
-from .axiStream import *
-from .argg_hdl_v_entity import *
+from argg_hdl.argg_hdl_base import *
+from argg_hdl.argg_hdl_v_symbol import *
+from argg_hdl.examples.axiStream import *
+from argg_hdl.argg_hdl_v_entity import *
 
 
-from .argg_hdl_simulation import *
+from argg_hdl.argg_hdl_simulation import *
 
 
 class tb_entity(v_entity):
@@ -43,8 +43,8 @@ class tb_entity(v_entity):
         def p2():
             v_counter << v_counter +1
             counter << counter + 1
-            print("counter", counter.value)
-            print("v_counter", v_counter.value)
+            print("counter", value(counter))
+            print("v_counter", value(v_counter))
 
         end_architecture()
 

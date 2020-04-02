@@ -5,11 +5,11 @@ import argparse
 import os,sys,inspect
 import copy
 
-from .argg_hdl_base import *
-from .argg_hdl_v_symbol import *
-from .axiStream import *
-from .argg_hdl_v_entity import *
-from .argg_hdl_v_list import *
+from argg_hdl.argg_hdl_base import *
+from argg_hdl.argg_hdl_v_symbol import *
+from argg_hdl.examples.axiStream import *
+from argg_hdl.argg_hdl_v_entity import *
+from argg_hdl.argg_hdl_v_list import *
 
 
 
