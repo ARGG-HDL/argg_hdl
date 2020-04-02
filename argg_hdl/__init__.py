@@ -76,7 +76,8 @@ get_salve = ah_v_class.get_salve
 
 
 ## argg_hdl.argg_hdl_simulation 
-gsimulation = ah_simulation.gsimulation
+#gsimulation = ah_simulation.gsimulation
+run_simulation = ah_simulation.run_simulation
 
 ## argg_hdl.argg_hdl_v_enum 
 v_enum = ah_v_enum.v_enum

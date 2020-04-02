@@ -10,7 +10,7 @@ import os,sys,inspect
 
 
 def getNameOf(obj):
-    funcrec = inspect.stack()[2]
+    funcrec = inspect.stack()[3]
 
     f_locals = funcrec.frame.f_locals
     for y in f_locals:
@@ -116,3 +116,6 @@ class v_simulation():
 
 
 gsimulation = v_simulation()
+
+def run_simulation(testBench, time, outputFile):
+    gsimulation.run_timed(testBench, time,outputFile)
