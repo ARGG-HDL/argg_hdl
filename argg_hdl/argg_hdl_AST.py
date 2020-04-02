@@ -455,7 +455,7 @@ class xgenAST:
 
             ArglistLocal = []
             ClassInstance.set_vhdl_name ( "self",True)
-            ClassInstance.Inout  = InOut_t.InOut_tt
+           # ClassInstance.Inout  = InOut_t.InOut_tt
             Arglist = []
             Arglist.append(
                 {
@@ -465,6 +465,7 @@ class xgenAST:
 
                 }
             )
+            Arglist[-1]["symbol"].Inout  = InOut_t.InOut_tt
             Arglist += list(self.get_func_args_list(f))
 
             exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)

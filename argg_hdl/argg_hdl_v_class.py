@@ -543,6 +543,11 @@ class v_class_converter(hdl_converter_base):
             Delimeter=", "
             )
 
+        if not hasattr(obj, pushpull):
+            return ""
+        pushPull_function = getattr(obj, pushpull)
+        if pushPull_function.isEmpty:
+            return ""
         return ret        
         
     def _vhdl__Pull(self,obj):
@@ -930,7 +935,9 @@ class v_class_converter(hdl_converter_base):
             inoutstr = ""
             varSignal = "signal "
             if x["symbol"].varSigConst == varSig.variable_t:
-                inoutstr = obj.hdl_conversion__.InOut_t2str(obj)
+                x["symbol"].hdl_conversion__.get_inout_type_recursive( x["symbol"])
+
+                inoutstr =  x["symbol"].hdl_conversion__.InOut_t2str( x["symbol"])
                 varSignal = ""
             Default_str = ""
             if withDefault and obj._writtenRead != InOut_t.output_t and obj.Inout != InOut_t.output_t:
@@ -947,6 +954,21 @@ class v_class_converter(hdl_converter_base):
 
         r =join_str(ret,Delimeter="; ",IgnoreIfEmpty=True)
         return r
+    def get_inout_type_recursive(self, obj):
+        if obj.varSigConst != varSig.variable_t:
+            if  obj.Inout != InOut_t.Internal_t:
+                return obj.Inout
+            return obj._writtenRead  
+
+        mem = obj.getMember()
+        obj._writtenRead = obj.Inout
+        for m in mem:
+            if m["symbol"].hdl_conversion__.get_inout_type_recursive(m["symbol"]) == InOut_t.input_t:
+                obj._add_input()
+            elif m["symbol"].hdl_conversion__.get_inout_type_recursive(m["symbol"]) == InOut_t.output_t:
+                obj._add_output()
+
+        return obj._writtenRead
 
 class v_class(argg_hdl_base):
 

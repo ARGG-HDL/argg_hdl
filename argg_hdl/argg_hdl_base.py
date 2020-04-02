@@ -495,6 +495,12 @@ class hdl_converter_base:
     def to_arglist(self,obj, name,parent,withDefault = False):
         raise Exception("not implemented for class: ", type(obj).__name__)
 
+    def get_inout_type_recursive(self, obj):
+        if  obj.Inout != InOut_t.Internal_t:
+            return obj.Inout
+        return obj._writtenRead  
+
+        
 class argg_hdl_base0:
     def __init__(self):
         super().__init__()
@@ -578,6 +584,12 @@ class argg_hdl_base0:
     def set_vhdl_name(self,name,Overwrite = False):
         raise Exception("update not implemented")                
 
+    def _add_input(self):
+        pass
+    def _add_output(self):
+        pass
+    def _add_used(self):
+        pass
 
 class argg_hdl_base(argg_hdl_base0):
 
