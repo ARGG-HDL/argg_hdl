@@ -36,8 +36,8 @@ signal_port_Slave     = ahb.signal_port_Slave
 port_Slave            = ahb.port_Slave          
 variable_port_Slave   = ahb.variable_port_Slave                  
 port_Stream_Slave     = ahb.port_Stream_Slave                  
-
-
+v_copy                = ahb.v_copy
+convert_to_hdl        = ahb.convert_to_hdl
 
 v_symbol = ah_symbol.v_symbol
 
@@ -71,6 +71,9 @@ v_entity_list = ah_entity_list.v_entity_list
 
 ## argg_hdl_v_class
 v_class = ah_v_class.v_class
+get_master = ah_v_class.get_master
+get_salve = ah_v_class.get_salve
+
 
 ## argg_hdl.argg_hdl_simulation 
 gsimulation = ah_simulation.gsimulation

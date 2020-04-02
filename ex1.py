@@ -7,9 +7,9 @@ import copy
 
 from argg_hdl import *
 
-from argg_hdl.clk_generator import *
-from argg_hdl.axi_stream_delay import *
-
+import argg_hdl.clk_generator as  clk_gen 
+import argg_hdl.axi_stream_delay as stream_deley
+import argg_hdl.axiStream as ax
 
 class SerialDataConfig(v_class):
     def __init__(self):
@@ -47,8 +47,8 @@ class InputDelay(v_entity):
         self.globals  = port_Slave(klm_globals())
         if k_globals != None:
             self.globals  << k_globals
-        self.ConfigIn = port_Stream_Slave(axisStream( InputType))
-        self.ConfigOut = port_Stream_Master(axisStream( InputType))
+        self.ConfigIn = port_Stream_Slave(ax.axisStream( InputType))
+        self.ConfigOut = port_Stream_Master(ax.axisStream( InputType))
         self.Delay = Delay
         self.architecture()
 
@@ -65,9 +65,9 @@ class InputDelay(v_entity):
 
 
 def delay(times,obj):
-    pipe1 = obj.ConfigIn |  stream_delay_one(obj.globals.clk,  obj.ConfigIn.data) 
-    for x in range(times):
-        pipe1 |   stream_delay_one(obj.globals.clk,  obj.ConfigIn.data) 
+    pipe1 = obj.ConfigIn |  stream_deley.stream_delay_one(obj.globals.clk,  obj.ConfigIn.data) 
+    for _ in range(times):
+        pipe1 |   stream_deley.stream_delay_one(obj.globals.clk,  obj.ConfigIn.data) 
             
 
     pipe1 |   obj.ConfigOut
@@ -79,7 +79,7 @@ class InputDelay_print(v_entity):
         self.globals  = port_Slave(klm_globals())
         if k_globals != None:
             self.globals << k_globals
-        self.ConfigIn = port_Stream_Slave(axisStream( InputType))
+        self.ConfigIn = port_Stream_Slave(ax.axisStream( InputType))
         self.architecture()
 
     @architecture
@@ -107,7 +107,7 @@ class InputDelay_tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
+        clkgen = v_create(clk_gen.clk_generator())
         k_globals =klm_globals()
         data = v_slv(32,5)
 
@@ -136,33 +136,10 @@ class InputDelay_tb(v_entity):
 
 
 
-import cProfile, pstats, io
 
-
-
-def profile(fnc):
-    
-    """A decorator that uses cProfile to profile a function"""
-    
-    def inner(*args, **kwargs):
-        
-        pr = cProfile.Profile()
-        pr.enable()
-        retval = fnc(*args, **kwargs)
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        print(s.getvalue())
-        return retval
-
-    return inner
-
-#@profile
 def main():
     tb  =v_create(InputDelay_tb())
-    #gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
-    tb.hdl_conversion__.convert_all(tb,"pyhdl_waveform")
+    gsimulation.run_timed(tb, 3000,"InputDelay_tb.vcd")
+    #convert_to_hdl(tb, "pyhdl_waveform")
 
 main()

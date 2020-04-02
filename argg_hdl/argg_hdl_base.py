@@ -161,6 +161,11 @@ def isSameArgs(args1,args2, hasDefaults = False):
         if get_symbol(args1[i]).varSigConst != get_symbol(args2[i]).varSigConst:
             return False
     return True  
+
+def convert_to_hdl(Obj, FolderPath):
+    return Obj.hdl_conversion__.convert_all(Obj,  FolderPath)
+
+    
 class hdl_converter_base:
     __VHDL__OPS_to2str= {
         "Gt": ">",
