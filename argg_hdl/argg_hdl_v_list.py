@@ -75,8 +75,37 @@ end {objType}_pack;
         return ret
 
     def getHeader(self,obj, name,parent):
-        return "v_list getHeader"    
+        return "-- v_list getHeader\n"    
+    
+    def recordMember(self,obj, name,parent,Inout=None):
+        ret =""
+        if not parent._issubclass_("v_class"):
+            return ""
+        obj1 =obj.Internal_Type.hdl_conversion__.extract_conversion_types(obj.Internal_Type)
+        for x in obj1:
 
+            ret += """{objName} : {objType}({size} - 1 downto 0)""".format(
+                objName=name,
+                objType=x["symbol"].hdl_conversion__.get_Name_array(x["symbol"]),
+                size = obj.size
+            )
+        return ret
+    
+    def recordMemberDefault(self, obj, name,parent,Inout=None):
+        ret =""
+        if not parent._issubclass_("v_class"):
+            return ""
+        obj1 =obj.Internal_Type.hdl_conversion__.extract_conversion_types(obj.Internal_Type)
+        for x in obj1:
+
+            ret += """{objName} => (others => {defaults})""".format(
+                objName=name,
+                defaults=x["symbol"].hdl_conversion__.get_default_value(x["symbol"]),
+                size = obj.size
+            )
+        return ret
+        
+    
     def _vhdl_slice(self,obj, sl,astParser=None):
         if issubclass(type(sl),argg_hdl_base0):
             sl = sl.hdl_conversion__._vhdl__getValue(sl,ReturnToObj="integer",astParser=astParser)
@@ -258,3 +287,17 @@ class v_list(argg_hdl_base):
         if super()._issubclass_(test):
             return True
         return "v_list" == test
+
+    def isInOutType(self,Inout):
+        if Inout == None:
+            return True
+        if self.Inout == InOut_t.InOut_tt:
+            return True
+
+        return self.Inout == Inout
+
+    def isVarSigType(self, varSigType):
+        if varSigType == None:
+            return True
+
+        return self.varSigConst == varSigType
