@@ -149,5 +149,5 @@ class tb(v_entity):
 
 tb1 = v_create(tb())
 
-#run_simulation(tb1, 30000,"ram_tb.vcd")
-convert_to_hdl(tb1,"tests")
+run_simulation(tb1, 30000,"ram_tb.vcd")
+#convert_to_hdl(tb1,"tests")
