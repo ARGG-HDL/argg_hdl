@@ -532,7 +532,11 @@ class hdl_converter_base:
             return obj.Inout
         return obj._writtenRead  
 
-        
+    def Has_pushpull_function(self,obj, pushpull):
+        return False
+    
+
+
 class argg_hdl_base0:
     def __init__(self):
         super().__init__()

@@ -543,10 +543,7 @@ class v_class_converter(hdl_converter_base):
             Delimeter=", "
             )
 
-        if not hasattr(obj, pushpull):
-            return ""
-        pushPull_function = getattr(obj, pushpull)
-        if pushPull_function.isEmpty:
+        if  not obj.hdl_conversion__.Has_pushpull_function(obj, pushpull):
             return ""
         return ret        
         
@@ -559,7 +556,28 @@ class v_class_converter(hdl_converter_base):
 
         return obj.hdl_conversion__.__vhdl__Pull_Push(obj,InOut_t.output_t)
 
+    def Has_pushpull_function(self,obj, pushpull):
+        
+        pushpull = pushpull.lower()
+        a= obj.__dir__()
+        a= [x.lower()  for x in a]
+        if pushpull == "pull":
+            if "_onpull" in a:
+                return True
+            
+            mem = obj.getMember(InOut_t.input_t)
+            if len(mem) >0:
+                return True
 
+        if pushpull == "push":
+            if "_onpush" in a:
+                return True
+            
+            mem = obj.getMember(InOut_t.output_t)
+            if len(mem) >0:
+                return True   
+
+        return False
 
    
     def getMemberArgsImpl(self, obj, InOut_Filter,InOut,suffix="",PushPull=""):
