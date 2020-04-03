@@ -263,7 +263,10 @@ class xgenAST:
             #self.local_function = p.__globals__
             self.local_function = ClassInstance.__init__.__globals__
             self.Archetecture_vars = ClassInstance.__local_symbols__
-            body = self.Unfold_body(f)  ## get local vars 
+            try:
+                body = self.Unfold_body(f)  ## get local vars 
+            except Exception as inst:
+                raise Exception(["Entity name: "+ClassName , "Function Name: "+f.name],ClassInstance,inst)
 
             if self.Missing_template == True:
                 ClassInstance.hdl_conversion__.FlagFor_TemplateMissing(ClassInstance)
@@ -540,8 +543,17 @@ class xgenAST:
         return fun_ret
 
     def Unfold_body(self,FuncDef):
-        ftype = type(FuncDef).__name__
-        return self._Unfold_body[ftype](self,FuncDef)
+        try:
+            ftype = type(FuncDef).__name__
+            return self._Unfold_body[ftype](self,FuncDef)
+        except Exception as inst:
+            flat_list = flatten_list([FuncDef])
+            er = []
+            for x in flat_list:
+                er.append('File "' + self.sourceFileName + '", line ' +str(x.lineno) + ", Column: " + str(x.col_offset) +", type: " + type(x).__name__ )
+
+            raise Exception(er,FuncDef, inst)
+        
 
     def unfold_argList(self,x):
         x_type = type(x).__name__

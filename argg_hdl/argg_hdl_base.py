@@ -178,8 +178,28 @@ def isSameArgs(args1,args2, hasDefaults = False):
             return False
     return True  
 
+
+def unfold_errors(error):
+    er_list = []
+    er_list += error.args[0]
+
+    if type(error.args[-1]).__name__ == "Exception":
+        er_list += unfold_errors(error.args[-1])
+    else:
+        print("final")
+        for x in error.args:
+            er_list.append(str(x))
+
+    return er_list
+    
+
 def convert_to_hdl(Obj, FolderPath):
-    return Obj.hdl_conversion__.convert_all(Obj,  FolderPath)
+    try:
+        return Obj.hdl_conversion__.convert_all(Obj,  FolderPath)
+    except Exception as inst:
+        er_list  =  unfold_errors(inst)
+        ret = join_str(er_list, Delimeter="\n")
+        print(ret)
 
 
 class hdl_converter_base:
@@ -255,7 +275,11 @@ class hdl_converter_base:
                 if entiyFileName not in FilesDone:
                     print("<"+type(x).__name__ +">")
                     x.hdl_conversion__.reset_TemplateMissing(x)
-                    entity_content = x.hdl_conversion__.get_enity_file_content(x)
+                    try:
+                        entity_content = x.hdl_conversion__.get_enity_file_content(x)
+                    except Exception as inst:
+                        raise Exception(["Error in entity Converion:\nEntityFileName: "+ entiyFileName], x,inst)
+
                     if entity_content:
                         file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
                     FilesDone.append(entiyFileName)
