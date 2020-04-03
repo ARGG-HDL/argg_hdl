@@ -78,7 +78,7 @@ class v_symbol_converter(hdl_converter_base):
 
         return str(obj) + " "+ obj.hdl_conversion__.ops2str(ops)+" " +   str(rhs)
 
-    def _vhdl__to_bool(self,obj, astParser):
+    def _to_hdl___bool__(self,obj, astParser):
         obj._add_input()
         if obj.type == "std_logic":
             return str(obj) + " = '1'"
@@ -522,7 +522,7 @@ library work;
   use IEEE.std_logic_1164.all;
   use UNISIM.VComponents.all;
   use ieee.std_logic_unsigned.all;
-  use work.hlpydlcore.all;
+  use work.argg_hdl_core.all;
 """
 
 

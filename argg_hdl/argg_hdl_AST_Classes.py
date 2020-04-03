@@ -450,7 +450,7 @@ class v_compare(v_ast_base):
     def get_type(self):
         return "boolean"
 
-    def _vhdl__to_bool(self,astParser):
+    def _to_hdl___bool__(self,astParser):
         if type(self.rhs).__name__ == "v_name":
             rhs = astParser.get_variable(self.rhs.Value,None)
         else:
@@ -945,13 +945,13 @@ def v_type_to_bool(astParser,obj):
         obj = astParser.get_variable(obj.Value,None)
 
     if type(obj).__name__ == "v_compare":
-        return obj._vhdl__to_bool( astParser)
+        return obj._to_hdl___bool__( astParser)
 
     if issubclass(type(obj),argg_hdl_base):
-        return obj.hdl_conversion__._vhdl__to_bool(obj, astParser)
+        return obj.hdl_conversion__._to_hdl___bool__(obj, astParser)
 
     if type(obj).__name__ == "v_call":
-        return  obj.symbol.hdl_conversion__._vhdl__to_bool(obj.symbol,astParser)
+        return  obj.symbol.hdl_conversion__._to_hdl___bool__(obj.symbol,astParser)
 
 
 

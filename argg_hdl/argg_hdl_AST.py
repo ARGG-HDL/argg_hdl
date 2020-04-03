@@ -112,8 +112,7 @@ class xgenAST:
             "__init__",
             "create",
             "__lshift__",
-            "__bool__",
-            '_vhdl__to_bool',
+            '_to_hdl___bool__',
             '_vhdl__getValue',
             "_vhdl__reasign",
             '_connect',
@@ -360,11 +359,13 @@ class xgenAST:
             
 
          
-            
+            actual_function_name = ClassInstance.hdl_conversion__.function_name_modifier(ClassInstance, funcDef.name, varSigSuffix)
+
+
             if "return" in bodystr:
                 ArglistProcedure = ArglistProcedure.replace(" in "," ").replace(" out "," ").replace(" inout "," ")
                 ret = v_function(
-                    name=funcDef.name+varSigSuffix, 
+                    name=actual_function_name, 
                     body=bodystr,
                     VariableList=self.get_local_var_def(), 
                     returnType=body.get_type(),
@@ -373,7 +374,7 @@ class xgenAST:
                 )
             else:
                 ret = v_procedure(
-                    name=funcDef.name+varSigSuffix,
+                    name=actual_function_name,
                     body=bodystr,
                     VariableList=self.get_local_var_def(), 
                     argumentList=ArglistProcedure,
@@ -438,6 +439,8 @@ class xgenAST:
             index += 1000
             if  f.name in self.functionNameVetoList:
                 continue
+
+
             
             if f.decorator_list and f.decorator_list[0].id == 'architecture' :
                 if f.name not in [x["name"] for x in ClassInstance.hdl_conversion__.archetecture_list ]:
@@ -521,12 +524,16 @@ class xgenAST:
             if newArglist != None:
                 #print("is new template", f[0].name)
                 index += 100000
+                self.Missing_template = False
                 ret = self.extractFunctionsForClass_impl(ClassInstance_local, parent, f[0], newArglist , temp["setDefault"]  )
-                temp["call_func"] = call_func
-                temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
+                if self.Missing_template:
+                    ClassInstance.hdl_conversion__.MissingTemplate = True
+                else:
+                    temp["call_func"] = call_func
+                    temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
                 #print("end create function for template ",f[0].name)
-                if ret:
-                    fun_ret.append( ret )
+                    if ret:
+                        fun_ret.append( ret )
         
         elapsed = time.time() - t
         #print ("extractFunctionsForClass", elapsed ,index)      
@@ -631,7 +638,7 @@ def call_func(obj, name, args, astParser=None,func_args=None):
             
 
 
-
-    ret = join_str(ret, Delimeter=", ", start= name + varSigSuffix +"(" ,end=")")
+    actual_function_name = func_args[0]["symbol"].hdl_conversion__.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)
+    ret = join_str(ret, Delimeter=", ", start= actual_function_name +"(" ,end=")")
     #print(ret)
     return ret

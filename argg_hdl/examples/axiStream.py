@@ -54,7 +54,7 @@ class axisStream_slave_converter(axisStream_converter):
     def __init__(self):
         super().__init__()
 
-    def _vhdl__to_bool(self, obj, astParser):
+    def _to_hdl___bool__(self, obj, astParser):
         hdl = obj.hdl_conversion__._vhdl__call_member_func(obj, "isReceivingData",[obj],astParser)
 
         if hdl == None:
@@ -170,7 +170,7 @@ class axisStream_master_converter(axisStream_converter):
     def __init__(self):
         super().__init__()
 
-    def _vhdl__to_bool(self, obj, astParser):
+    def _to_hdl___bool__(self, obj, astParser):
         ret =  obj.hdl_conversion__._vhdl__call_member_func(obj, "ready_to_send",[obj],astParser)
         if ret == None:
             astParser.Missing_template=True

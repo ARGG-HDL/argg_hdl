@@ -28,7 +28,8 @@ def to_v_object(ObjIn):
     elif type(ObjIn).__name__ == "v_named_C":
         return to_v_object(ObjIn.Value)
 
-
+    elif type(ObjIn).__name__ == "int":
+        return ah.v_symbol("integer", str(ObjIn))
 
     elif ObjIn == None:
         return ah.v_symbol("None", str(ObjIn))

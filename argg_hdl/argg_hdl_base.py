@@ -336,8 +336,15 @@ class hdl_converter_base:
     def _vhdl__Sub(self,obj,args):
         return str(obj) + " - " + str(args)
 
-    def _vhdl__to_bool(self,obj, astParser):
-        return "pyhdl_to_bool(" + str(obj) + ") "
+    def _to_hdl___bool__(self,obj, astParser):
+        return "to_bool(" + str(obj) + ") "
+
+    def function_name_modifier(self,obj,name, varSigSuffix):
+        if name == "__bool__":
+            return "to_bool"
+        elif name == "__len__":
+            return "length"
+        return name + varSigSuffix
 
     def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
         obj._add_input()
@@ -490,7 +497,7 @@ class hdl_converter_base:
         return obj.hdl_conversion__.get_type_simple(obj)+"_a"
 
     def length(self,obj):
-        return str(obj)+"'length"
+        return "length(" +str(obj)+")"
 
     def to_arglist(self,obj, name,parent,withDefault = False):
         raise Exception("not implemented for class: ", type(obj).__name__)
