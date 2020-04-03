@@ -1,6 +1,7 @@
 from enum import Enum 
 import copy
 import  inspect 
+import argg_hdl.argg_hdl_core_pack_generator as core_gen
 
 
 def architecture(func):
@@ -196,6 +197,7 @@ def unfold_errors(error):
 
 def convert_to_hdl(Obj, FolderPath):
     try:
+        core_gen.generate_files_in_folder(FolderPath)
         return Obj.hdl_conversion__.convert_all(Obj,  FolderPath)
     except Exception as inst:
         er_list  =  unfold_errors(inst)
