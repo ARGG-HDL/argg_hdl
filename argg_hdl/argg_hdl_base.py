@@ -37,9 +37,9 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
         content = [x for x in content if x]
 
     for x in content[0:-1]:
-        ret += LineBeginning + x + Delimeter + LineEnding
+        ret += LineBeginning + str(x) + Delimeter + LineEnding
 
-    ret += LineBeginning + content[-1] +  LineEnding
+    ret += LineBeginning + str(content[-1]) +  LineEnding
     ret += end
     return ret
 
@@ -181,14 +181,15 @@ def isSameArgs(args1,args2, hasDefaults = False):
 
 def unfold_errors(error):
     er_list = []
-    er_list += error.args[0]
+    er_list += [error.args[0]]
 
     if type(error.args[-1]).__name__ == "Exception":
         er_list += unfold_errors(error.args[-1])
     else:
-        print("final")
-        for x in error.args:
+        for x in error.args[1:]:
             er_list.append(str(x))
+        if type(error.args[0][0]).__name__ == "argg_hdl_error":
+            er_list.append(error.args[0][0].Show_Error())
 
     return er_list
     

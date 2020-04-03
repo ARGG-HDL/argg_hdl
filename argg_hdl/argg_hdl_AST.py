@@ -87,7 +87,30 @@ def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
                 m["symbol"].Inout  = InOut_t.Internal_t
     return localArgs
 
-    
+
+class argg_hdl_error:
+    def __init__(self,FileName,LineNo,Column,typeName, msg):
+        super().__init__()
+        self.FileName  = FileName
+        self.LineNo    = LineNo
+        self.Column    = Column
+        self.typeName  = typeName
+        self.msg       = msg
+
+    def __str__(self):
+        ret = 'File "' + self.FileName + '", line ' +str(self.LineNo) + ", Column: " + str(self.Column) +", type: " + self.typeName + ", msg: " + self.msg
+        return ret
+
+    def Show_Error(self):
+        with open(self.FileName) as f:
+            content =  f.readlines()
+        
+        ROI = content[max(0,self.LineNo-6 ) : self.LineNo]
+        ROI=join_str(ROI)
+        ROI = ROI.rstrip()
+        s = ' ' * self.Column
+        ret = [str(self), ROI, s+"^",s+"| error msg: "+self.msg ]
+        return ret 
 class xgenAST:
 
     def __init__(self,sourceFileName):
@@ -266,7 +289,15 @@ class xgenAST:
             try:
                 body = self.Unfold_body(f)  ## get local vars 
             except Exception as inst:
-                raise Exception(["Entity name: "+ClassName , "Function Name: "+f.name],ClassInstance,inst)
+                err_msg = argg_hdl_error(
+                    self.sourceFileName,
+                    f.lineno, 
+                    f.col_offset,
+                    ClassName, 
+                    "Function Name: " + f.name  +", Unable to Unfold AST, Error In extractArchetectureForEntity: body = self.Unfold_body(f)"
+                )
+                raise Exception(err_msg,ClassInstance,inst)
+            
 
             if self.Missing_template == True:
                 ClassInstance.hdl_conversion__.FlagFor_TemplateMissing(ClassInstance)
@@ -301,7 +332,21 @@ class xgenAST:
             
             #self.local_function = p.__globals__
             self.local_function = ClassInstance.__init__.__globals__
-            body = self.Unfold_body(f)  ## get local vars 
+
+            try:
+                body = self.Unfold_body(f)  ## get local vars 
+            except Exception as inst:
+                err_msg = argg_hdl_error(
+                    self.sourceFileName,
+                    f.lineno, 
+                    f.col_offset,
+                    ClassName, 
+                    "Function Name: " + f.name  +", Unable to Convert AST to String, Error In extractFunctionsForEntity: body = self.Unfold_body(f)"
+                )
+                raise Exception(err_msg,ClassInstance,inst)
+
+
+            
 
             header =""
             for x in self.LocalVar:
@@ -353,9 +398,33 @@ class xgenAST:
                     varSigSuffix += "0"
 
 
-            body = self.Unfold_body(funcDef)
 
-            bodystr= str(body)
+              
+            try:
+                body = self.Unfold_body(funcDef)
+            except Exception as inst:
+                err_msg = argg_hdl_error(
+                    self.sourceFileName,
+                    funcDef.lineno, 
+                    funcDef.col_offset,
+                    ClassName, 
+                    "Function Name: " + funcDef.name  +", Unable to Unfold AST.  Error In extractFunctionsForClass_impl: body = self.Unfold_body(funcDef)"
+                )
+                raise Exception(err_msg,ClassInstance,inst)
+              
+
+            try:
+                bodystr= str(body)
+            except Exception as inst:
+                err_msg = argg_hdl_error(
+                    self.sourceFileName,
+                    funcDef.lineno, 
+                    funcDef.col_offset,
+                    ClassName, 
+                    "Function Name: " + funcDef.name  +", Unable to Convert AST to String, Error In extractFunctionsForClass_impl: bodystr= str(body)"
+                )
+                raise Exception(err_msg,ClassInstance,inst)
+
             #print("----------" , funcDef.name)
             argList = [x["symbol"].hdl_conversion__.to_arglist(x["symbol"], x['name'],ClassName, withDefault = setDefault and  (x["name"] != "self")) for x in FuncArgsLocal]
             ArglistProcedure = join_str(argList,Delimeter="; ")
@@ -408,7 +477,21 @@ class xgenAST:
         self.local_function = ClassInstance.__init__.__globals__
         ClassInstance.vhdl_name = "!!SELF!!"
 #        self.Archetecture_vars = ClassInstance.__local_symbols__
-        body = self.Unfold_body(Arc)  ## get local vars 
+
+        try:
+            body = self.Unfold_body(Arc)  ## get local vars 
+        
+        except Exception as inst:
+            err_msg = argg_hdl_error(
+                self.sourceFileName, 
+                Arc.lineno, 
+                Arc.col_offset, 
+                type(ClassInstance).__name__, 
+                "FileName: " + Arc.name +", Unable to Unfold AST, Error In extractArchetectureForClass:  body = self.Unfold_body(Arc)"
+            )
+            raise Exception(err_msg,ClassInstance,inst)
+              
+
 
         if self.Missing_template == True:
             ClassInstance.hdl_conversion__.FlagFor_TemplateMissing(ClassInstance)
@@ -550,7 +633,7 @@ class xgenAST:
             flat_list = flatten_list([FuncDef])
             er = []
             for x in flat_list:
-                er.append('File "' + self.sourceFileName + '", line ' +str(x.lineno) + ", Column: " + str(x.col_offset) +", type: " + type(x).__name__ )
+                er.append(argg_hdl_error(self.sourceFileName,x.lineno, x.col_offset,type(x).__name__, "Error In unfolding"))
 
             raise Exception(er,FuncDef, inst)
         
