@@ -7,7 +7,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
-use work.hlpydlcore.all;
+use work.argg_hdl_core.all;
 
 
 entity clk_generator is 

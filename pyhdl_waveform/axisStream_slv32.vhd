@@ -7,7 +7,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
-use work.hlpydlcore.all;
+use work.argg_hdl_core.all;
 
 
 package axisStream_slv32 is 
@@ -105,6 +105,7 @@ end record;
   procedure pull (self :  inout  axiStream_slv32_slave_a;  signal rx :  in  axiStream_slv32_m2s_a);
   procedure push (self :  inout  axiStream_slv32_slave_a;  signal rx :  out  axiStream_slv32_s2m_a);
   procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0));
+  function to_bool (self :   axiStream_slv32_slave) return boolean;
   function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean;
   function isReceivingData_0 (self :   axiStream_slv32_slave) return boolean;
   procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0));
@@ -134,6 +135,7 @@ end record;
   procedure push (self :  inout  axiStream_slv32_master_a;  signal tx :  out  axiStream_slv32_m2s_a);
   procedure send_data_00 (self :  inout  axiStream_slv32_master; dataIn :  in  std_logic_vector(31 downto 0));
   procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector(31 downto 0));
+  function to_bool (self :   axiStream_slv32_master) return boolean;
   procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStream :  in  boolean := True);
   function ready_to_send_0 (self :   axiStream_slv32_master) return boolean;
 ------- End Psuedo Class axiStream_slv32_master -------------------------
@@ -305,6 +307,13 @@ function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean is
    
 end function;
 
+function to_bool (self :   axiStream_slv32_slave) return boolean is
+   
+  begin 
+ return isReceivingData_0(self => self);
+   
+end function;
+
 procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0)) is
    
   begin 
@@ -395,6 +404,13 @@ procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStr
     end if;
    
 end procedure;
+
+function to_bool (self :   axiStream_slv32_master) return boolean is
+   
+  begin 
+ return ready_to_send_0(self => self);
+   
+end function;
 
 procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector(31 downto 0)) is
    
