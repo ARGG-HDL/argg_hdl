@@ -34,10 +34,11 @@ end record;
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
+  procedure set_value_01_lshift (self :  inout  optional_t; signal rhs :  in  std_logic_vector(31 downto 0));
   function to_bool (self :   optional_t) return boolean;
   procedure set_inValid_0 (self :  inout  optional_t);
   function is_valid_0 (self :   optional_t) return boolean;
-  procedure set_data_00 (self :  inout  optional_t; data :  in  std_logic_vector(31 downto 0));
+  procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector(31 downto 0));
   procedure reset_0 (self :  inout  optional_t);
   procedure get_data_01 (self :  inout  optional_t; signal data :  out  std_logic_vector(31 downto 0));
 ------- End Psuedo Class optional_t -------------------------
@@ -73,11 +74,11 @@ procedure reset_0 (self :  inout  optional_t) is
    
 end procedure;
 
-procedure set_data_00 (self :  inout  optional_t; data :  in  std_logic_vector(31 downto 0)) is
+procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector(31 downto 0)) is
    
   begin 
  self.valid := '1';
-  self.data := data;
+  self.data := rhs;
    
 end procedure;
 
@@ -101,6 +102,14 @@ function to_bool (self :   optional_t) return boolean is
  return is_valid_0(self => self);
    
 end function;
+
+procedure set_value_01_lshift (self :  inout  optional_t; signal rhs :  in  std_logic_vector(31 downto 0)) is
+   
+  begin 
+ self.valid := '1';
+  self.data := rhs;
+   
+end procedure;
 
 ------- End Psuedo Class optional_t -------------------------
   -------------------------------------------------------------------------

@@ -757,12 +757,14 @@ class v_class_converter(hdl_converter_base):
         elif rhs.Inout == InOut_t.output_t:
             raise Exception("cannot read from Output")
 
-        if rhs.type != obj.type:
-            raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
+        #if rhs.type != obj.type:
+        #    raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
 
         
         t = obj.getTypes()
         if len(t) ==3 and obj.__v_classType__ ==  v_classType_t.transition_t:
+            if rhs.type != obj.type:
+                raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
             ret ="---------------------------------------------------------------------\n--  " + obj.get_vhdl_name() +" << " + rhs.get_vhdl_name()+"\n" 
             
             ret += obj.get_vhdl_name(InOut_t.output_t) + asOp + rhs.get_vhdl_name(InOut_t.output_t) +";\n" 
@@ -770,7 +772,28 @@ class v_class_converter(hdl_converter_base):
             return ret 
 
         obj._add_output()
+        
+        if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
+            hdl = obj.hdl_conversion__._vhdl__call_member_func(obj, "__lshift__",[obj, rhs],astParser)
+            if hdl == None:
+                astParser.Missing_template=True
+                return "-- $$ template missing $$"
+            return hdl
+
+            print("SD")
+            
+        if rhs.type != obj.type:
+            raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
         return obj.get_vhdl_name() + asOp +  rhs.get_vhdl_name()
+    
+    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
+        if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
+            hdl = obj.hdl_conversion__._vhdl__call_member_func(obj, "__rshift__",[obj, rhs],astParser)
+            if hdl == None:
+                astParser.Missing_template=True
+                return "-- $$ template missing $$"
+            return hdl
+        raise Exception("Unsupported r shift", str(obj), rhs.type, obj.type )
 
     def get_self_func_name(self, obj, IsFunction = False, suffix = ""):
         xs = obj.hdl_conversion__.extract_conversion_types(obj ,filter_inout=InOut_t.Internal_t)

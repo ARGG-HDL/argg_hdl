@@ -760,18 +760,38 @@ def body_expr(astParser,Node):
     return    astParser.Unfold_body(Node.value)
 
 
+class v_re_assigne_rhsift(v_ast_base):
+    def __init__(self,lhs, rhs,context=None, astParser=None):
+        self.lhs = lhs
+        self.rhs = rhs
+        self.context =context
+        self.astParser = astParser
+        
+
+ 
+
+    def __str__(self):
+        if issubclass(type(self.lhs),argg_hdl_base):
+            return self.lhs.hdl_conversion__._vhdl__reasign_rshift_(self.lhs, self.rhs, astParser=self.astParser, context_str=self.context )
+
+        return str(self.lhs) + " := " +  str(self.rhs) 
+
 def body_RShift(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),argg_hdl_base):
-        rhs = rhs.hdl_conversion__._vhdl__reasign_type(rhs)
-        lhs = lhs._vhdl__getValue(lhs,astParser)
-        lhs >> rhs
-        return v_re_assigne(rhs, lhs,context=astParser.ContextName[-1],astParser=astParser)
+    if issubclass( type(lhs),argg_hdl_base) and issubclass( type(rhs),argg_hdl_base):
+        rhs.__Driver__ = astParser.ContextName[-1]
+         
+        return v_re_assigne_rhsift(lhs, rhs,context=astParser.ContextName[-1],astParser=astParser)
 
-    var = astParser.get_variable(rhs.Value,context=astParser.ContextName[-1],astParser=astParser)
-
-    return v_re_assigne(lhs, var,None, astParser)
+    err_msg = argg_hdl_error(
+        astParser.sourceFileName,
+        Node.lineno, 
+        Node.col_offset,
+        type(lhs).__name__, 
+        "right shift is only supported for argg_hdl objects"
+    )
+    raise Exception(err_msg,lhs)
 
 
 class v_re_assigne(v_ast_base):
@@ -800,8 +820,6 @@ def body_LShift(astParser,Node):
         else:
             rhs = rhs._vhdl__getValue(lhs,astParser)
 
-        if astParser.ContextName[-1] == 'process' and issubclass( type(rhs),argg_hdl_base):
-            rhs.__Driver__ = 'process' # looks wrong 
 
         if astParser.ContextName[-1] == 'process':
             lhs.__Driver__ = 'process'
@@ -1160,11 +1178,11 @@ class v_for(v_ast_base):
         self.body = body
 
     def __str__(self):
-        ret = "for " + str(self.arg) +" loop \n"
-        for x in self.body:
-            ret += str(x)
-        ret += ";\n"
-        ret += "end loop"
+        start = "for " + str(self.arg) +" loop \n"
+        ind = str(gIndent)
+        gIndent.inc()
+        ret = join_str( self.body , start=start,end=ind+"end loop",LineEnding=";\n", LineBeginning=str(gIndent),IgnoreIfEmpty=True, RemoveEmptyElements = True)
+        gIndent.deinc()
         return ret
 
 def body_unfold_for(astParser,Node):

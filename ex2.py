@@ -32,7 +32,10 @@ class optional_t(v_class_master):
         self.valid << 1
         self.data << data
 
-    
+    def __lshift__(self,rhs):
+        self.valid << 1
+        self.data << rhs
+
     def __bool__(self):
         return self.is_valid()
 
@@ -53,7 +56,19 @@ class small_buffer(v_class_master):
         data.reset()
 
         if self.count > 0:
-            data.set_data(self.mem[self.tail])
+            data << self.mem[self.tail]
+            self.tail << self.tail + 1
+            self.count << self.count - 1
+        
+
+        if self.tail > len(self.mem) - 1:
+            self.tail << 0 
+
+    def __rshift__(self, rhs):
+        rhs.reset()
+
+        if self.count > 0:
+            rhs << self.mem[self.tail]
             self.tail << self.tail + 1
             self.count << self.count - 1
         
@@ -64,6 +79,14 @@ class small_buffer(v_class_master):
     def send_data(self, data):
         if self.ready_to_send():
             self.mem[self.head] << data 
+            self.head << self.head + 1
+            self.count << self.count + 1
+            if self.head > len(self.mem) - 1:
+                self.head << 0 
+                
+    def __lshift__(self,rhs):
+        if self.ready_to_send():
+            self.mem[self.head] << rhs 
             self.head << self.head + 1
             self.count << self.count + 1
             if self.head > len(self.mem) - 1:
@@ -131,14 +154,18 @@ class tb(v_entity):
         @rising_edge(clkgen.clk)
         def proc():
             m_counter << m_counter + 1 
+            m_counter >> s_counter
             if m_counter > 15 and s_mem:
                 data << data + 1
                 s_mem.send_data(data)
+                s_mem << data
             
+            opt_data << m_counter
             if m_counter > 20:
                 m_counter << 0
                 for index in range( len(s_mem) ):
                     s_mem.read_data(opt_data)
+                    s_mem >> opt_data
                     if opt_data:
                     
                         opt_data.get_data(adsdata)
@@ -149,5 +176,5 @@ class tb(v_entity):
 
 tb1 = v_create(tb())
 
-run_simulation(tb1, 30000,"ram_tb.vcd")
-#convert_to_hdl(tb1,"tests")
+#run_simulation(tb1, 30000,"ram_tb.vcd")
+convert_to_hdl(tb1,"tests")

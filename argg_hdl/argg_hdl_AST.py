@@ -134,7 +134,6 @@ class xgenAST:
         self.functionNameVetoList = [
             "__init__",
             "create",
-            "__lshift__",
             '_to_hdl___bool__',
             '_vhdl__getValue',
             "_vhdl__reasign",

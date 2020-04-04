@@ -371,6 +371,10 @@ class hdl_converter_base:
             return "to_bool"
         elif name == "__len__":
             return "length"
+        elif name == "__lshift__":
+            return "set_value" + varSigSuffix+"_lshift"
+        elif name == "__rshift__":
+            return "get_value" + varSigSuffix+"_rshift"
         return name + varSigSuffix
 
     def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
@@ -382,6 +386,9 @@ class hdl_converter_base:
 
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
         return str(obj) + " := " +  str(rhs)
+
+    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
+        return rhs.hdl_conversion__._vhdl__reasign(rhs, obj,astParser,context_str)
 
     def get_get_call_member_function(self, obj, name, args):
         args = [x.get_symbol() for x in args ]
@@ -629,6 +636,9 @@ class argg_hdl_base0:
     def _add_used(self):
         pass
 
+    def __rshift__(self, rhs):
+        rhs << self
+        
 class argg_hdl_base(argg_hdl_base0):
 
     def __init__(self):

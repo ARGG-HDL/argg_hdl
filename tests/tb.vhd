@@ -40,29 +40,34 @@ begin
   
 -----------------------------------
 proc : process(clkgen_clk) is
+  variable s_counter : std_logic_vector(31 downto 0) := x"00000005";
   variable s_mem : small_buffer := small_buffer_null;
   variable opt_data : optional_t := optional_t_null;
-  variable s_counter : std_logic_vector(31 downto 0) := x"00000005";
   begin
     if rising_edge(clkgen_clk) then 
   m_counter <= m_counter + 1;
+    s_counter := m_counter;
     
       if (( m_counter > 15 and to_bool(s_mem) ) ) then 
         data <= data + 1;
         send_data_01(self => s_mem, data => data);
+        set_value_01_lshift(self => s_mem, rhs => data);
         
       end if;
+    set_value_01_lshift(self => opt_data, rhs => m_counter);
     
       if (m_counter > 20) then 
         m_counter <=  (others => '0');
-        for i2 in 0 to length(s_mem) -1 loop 
-    read_data_00(self => s_mem, data => opt_data)
-        if (to_bool(opt_data) ) then 
-          get_data_01(self => opt_data, data => adsdata);
-          s_counter := s_counter + 1;
+        for i3 in 0 to length(s_mem) -1 loop 
+          read_data_00(self => s_mem, data => opt_data);
+          get_value_00_rshift(self => s_mem, rhs => opt_data);
           
-        end if;
-    end loop;
+          if (to_bool(opt_data) ) then 
+            get_data_01(self => opt_data, data => adsdata);
+            s_counter := s_counter + 1;
+            
+          end if;
+        end loop;
         
       end if;
     end if;
