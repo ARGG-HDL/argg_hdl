@@ -90,7 +90,7 @@ class InputDelay_print(v_entity):
         def proc():
             counter << counter + 1
             if ax_slave :
-               d << ax_slave
+               ax_slave >> d  
                #print("InputDelay_print", value(d))
             
             if counter > 15:

@@ -104,6 +104,7 @@ end record;
   procedure push (self :  inout  axiStream_slv32_slave;  signal rx :  out  axiStream_slv32_s2m);
   procedure pull (self :  inout  axiStream_slv32_slave_a;  signal rx :  in  axiStream_slv32_m2s_a);
   procedure push (self :  inout  axiStream_slv32_slave_a;  signal rx :  out  axiStream_slv32_s2m_a);
+  procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs :  out  std_logic_vector(31 downto 0));
   procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0));
   function to_bool (self :   axiStream_slv32_slave) return boolean;
   function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean;
@@ -320,6 +321,19 @@ procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  st
  
     if (self.data_internal_isvalid2 = '1') then 
       dataOut := self.data_internal2;
+      self.data_internal_was_read2 := '1';
+      
+    end if;
+   
+end procedure;
+
+procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs :  out  std_logic_vector(31 downto 0)) is
+   
+  begin 
+ rhs <= (others => '0');
+  
+    if (self.data_internal_isvalid2 = '1') then 
+      rhs <= self.data_internal2;
       self.data_internal_was_read2 := '1';
       
     end if;

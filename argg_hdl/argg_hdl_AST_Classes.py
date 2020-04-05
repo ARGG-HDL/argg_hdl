@@ -40,19 +40,6 @@ class GNames:
     process = "process"
 
 
-class indent:
-    def __init__(self):
-        self.ind = 2
-
-    def inc(self):
-        self.ind += 2
-    
-    def deinc(self):
-        self.ind -= 2
-
-    def __str__(self):
-        ret  = ''.ljust(self.ind)
-        return ret
 
 gIndent = indent()
 

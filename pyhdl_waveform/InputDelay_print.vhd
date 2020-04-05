@@ -36,15 +36,13 @@ begin
 -----------------------------------
 proc : process(globals.clk) is
   variable ax_slave : axiStream_slv32_slave := axiStream_slv32_slave_null;
-  variable ax_slave_buff : std_logic_vector(31 downto 0) := (others => '0');
   begin
     if rising_edge(globals.clk) then 
       pull( self  =>  ax_slave, rx => ConfigIn_m2s);
   counter <= counter + 1;
     
       if (isReceivingData_0(self => ax_slave)) then 
-        read_data_00(self => ax_slave, dataOut => ax_slave_buff);
-        d <= ax_slave_buff;
+        get_value_01_rshift(self => ax_slave, rhs => d);
         
       end if;
     

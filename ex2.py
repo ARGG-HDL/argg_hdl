@@ -1,6 +1,6 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
-from argg_hdl.argg_hdl_v_class import *
+
 
 #tb3 = InputDelay_tb()
 #convert_to_hdl(tb3, "pyhdl_waveform")
@@ -17,6 +17,12 @@ class optional_t(v_class_master):
     def get_data(self, data):
         if self.valid:
             data << self.data
+
+
+    def __rhsift__(self, rhs):
+        rhs.reset()
+        if self.valid:
+            rhs << self.data
 
 
     def is_valid(self):

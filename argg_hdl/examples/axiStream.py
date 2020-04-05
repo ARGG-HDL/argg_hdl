@@ -126,6 +126,12 @@ class axisStream_slave(v_class_slave):
             self.data_internal_was_read2 << 1
     
 
+    def __rshift__(self, rhs):
+        rhs.reset()
+        if self.data_internal_isvalid2:
+            rhs << self.data_internal2
+            self.data_internal_was_read2 << 1
+
     def isReceivingData(self):
         return  self.data_internal_isvalid2 == 1
 

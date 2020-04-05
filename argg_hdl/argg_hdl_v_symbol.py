@@ -9,12 +9,27 @@ class v_symbol_converter(hdl_converter_base):
         super().__init__()
         self.inc_str  = inc_str
 
+
     def includes(self,obj, name,parent):
         ret = slv_includes
         ret += self.inc_str
         return ret
 
+    def get_get_call_member_function(self, obj, name, args):
+        ret = None
+        args = [x.get_symbol() for x in args ]
+        if name =="reset":
+            ret = {
+            "name" : name,
+            "args": args,
+            "self" :obj,
+            "call_func" : call_func_symb_reset,
+            "func_args" : None,
+            "setDefault" : False
 
+        }
+        return ret
+        
     def recordMember(self,obj, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
             return name + " : " +obj.type
@@ -448,7 +463,8 @@ class v_symbol(argg_hdl_base):
     def __bool__(self):
         return value(self) > 0
 
-
+    def reset(self):
+        self.value_list[self.value_index]  = 0
     def _Connect_running(self, rhs):
         self.nextValue = value(rhs)
         #print("assing: ", self.value_index , self._Simulation_name ,  value(rhs))
@@ -594,3 +610,17 @@ def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
         varSigConst=varSigConst
     )
 
+def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
+    asOp = args[0].hdl_conversion__.get_assiment_op(args[0])
+    val = None
+    if obj.type == "std_logic":
+        val = "'0'"
+    elif "std_logic_vector" in obj.type:
+        val = "(others => '0')"
+    elif obj.type == "integer":
+        val = '0'
+    
+    if val == None:
+        raise Exception("unable to reset symbol")
+    ret =  str(args[0])  + asOp + val
+    return ret

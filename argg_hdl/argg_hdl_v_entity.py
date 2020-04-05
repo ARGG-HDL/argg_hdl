@@ -186,6 +186,7 @@ class v_entity_converter(hdl_converter_base):
         if astparser.Missing_template == True:
                 obj.hdl_conversion__.FlagFor_TemplateMissing(obj)
                 obj.hdl_conversion__.MissingTemplate = True
+                print(str(gTemplateIndent)+'<Failed_to_convert name="' + type(obj).__name__ +'"/>')
 
         obj._instantiate_()
         set_isConverting2VHDL(s)

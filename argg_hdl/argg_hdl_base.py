@@ -101,8 +101,21 @@ def add_symbols_to_entiy():
 
         
 
+class indent:
+    def __init__(self):
+        self.ind = 2
 
+    def inc(self):
+        self.ind += 2
+    
+    def deinc(self):
+        self.ind -= 2
 
+    def __str__(self):
+        ret  = ''.ljust(self.ind)
+        return ret
+
+gTemplateIndent = indent()
 gStatus = {
     "isConverting2VHDL" : False,
     "isProcess" : False,
@@ -251,7 +264,8 @@ class hdl_converter_base:
                 raise Exception("unable to convert ")
             
             FilesDone = []
-            print("==================")
+            print("<!--=======================-->")
+            print(str(gTemplateIndent)+ '<Converting Index="'+str(counter) +'">')
             for x in gHDL_objectList:
 
                 #print("----------------")
@@ -259,16 +273,22 @@ class hdl_converter_base:
                 if x.hdl_conversion__.IsSucessfullConverted(x):
                     continue
                 
-
+                gTemplateIndent.inc()
                 packetName =  x.hdl_conversion__.get_packet_file_name(x)
                 if packetName not in FilesDone:
-                    print("<"+type(x).__name__ +">")
+                    print(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
+                    gTemplateIndent.inc()
                     x.hdl_conversion__.reset_TemplateMissing(x)
                     packet = x.hdl_conversion__.get_packet_file_content(x)
                     if packet:
                         file_set_content(ouputFolder+"/" +packetName,packet)
                     FilesDone.append(packetName)
-                    print("</"+ type(x).__name__, x.hdl_conversion__.MissingTemplate, ">")
+                    if x.hdl_conversion__.MissingTemplate:
+                        print(str(gTemplateIndent)+'<status ="failed">')
+                    else:
+                        print(str(gTemplateIndent)+'<status ="sucess">')
+                    gTemplateIndent.deinc()
+                    print(str(gTemplateIndent)+ '</package_conversion>')
                     #print(type(x).__name__)
                     #print("processing")
                     
@@ -276,7 +296,8 @@ class hdl_converter_base:
                 entiyFileName =  x.hdl_conversion__.get_entity_file_name(x)
 
                 if entiyFileName not in FilesDone:
-                    print("<"+type(x).__name__ +">")
+                    print(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
+                    gTemplateIndent.inc()
                     x.hdl_conversion__.reset_TemplateMissing(x)
                     try:
                         entity_content = x.hdl_conversion__.get_enity_file_content(x)
@@ -286,10 +307,17 @@ class hdl_converter_base:
                     if entity_content:
                         file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
                     FilesDone.append(entiyFileName)
-                    print("</"+ type(x).__name__, x.hdl_conversion__.MissingTemplate, ">")
+                    if x.hdl_conversion__.MissingTemplate:
+                        print(str(gTemplateIndent)+'<status ="failed">')
+                    else:
+                        print(str(gTemplateIndent)+'<status ="sucess">')
+                    gTemplateIndent.deinc()
+                    print(str(gTemplateIndent)+"</entity_conversion>")
                     #print("processing")
                 
                 x.hdl_conversion__.IsConverted = True
+                gTemplateIndent.deinc()
+            print(str(gTemplateIndent)+ '</Converting>')
 
     def get_primary_object(self,obj):
         obj_packetName =  obj.hdl_conversion__.get_packet_file_name(obj)
@@ -423,13 +451,16 @@ class hdl_converter_base:
         
         
         call_obj = obj.hdl_conversion__.get_get_call_member_function(obj, name, args)
-
+        
+        args_str = [str(x.get_type()) for x in args]
+        args_str=join_str(args_str, Delimeter=", ")
         if call_obj == None:
             primary.hdl_conversion__.MissingTemplate=True
             astParser.Missing_template = True
-            print("Missing Template",name)
+
+            print(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
             return None
-        print("use function of template ",name)
+        print(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
         call_func = call_obj["call_func"]
         if call_func:
             return call_func(obj, name, args, astParser, call_obj["func_args"])
