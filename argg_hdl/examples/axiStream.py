@@ -16,6 +16,8 @@ class axisStream_converter(v_class_converter):
         ret =""
         typeName = obj.data.hdl_conversion__.get_type_simple(obj.data)
         
+        depobj  = obj.hdl_conversion__.get_dependency_objects(obj)
+        
         ret += "use work.axisStream_"+str(typeName)+".all;\n"
         members = obj.getMember() 
         for x in members:
@@ -86,8 +88,9 @@ class axisStream_slave_converter(axisStream_converter):
         return buff
 
     def includes(self,obj, name,parent):
-        ret = obj.rx.hdl_conversion__.includes(obj.rx,None,None)
-        return ret
+        
+        depobj  = obj.hdl_conversion__.get_dependency_objects(obj)
+        return ""
 
     def get_packet_file_name(self, obj):
         ret = obj.rx.hdl_conversion__.get_packet_file_name(obj.rx)
@@ -192,9 +195,6 @@ class axisStream_master_converter(axisStream_converter):
 
 
     
-    def includes(self,obj, name,parent):
-        ret = obj.tx.hdl_conversion__.includes(obj.tx,None,None)
-        return ret
 
     def get_packet_file_name(self, obj):
         ret = obj.tx.hdl_conversion__.get_packet_file_name(obj.tx)

@@ -9,7 +9,9 @@ class v_symbol_converter(hdl_converter_base):
         super().__init__()
         self.inc_str  = inc_str
 
-
+    def get_dependency_objects(self, obj):
+        return obj
+        
     def includes(self,obj, name,parent):
         ret = slv_includes
         ret += self.inc_str

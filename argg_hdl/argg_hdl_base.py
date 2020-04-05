@@ -11,7 +11,24 @@ def architecture(func):
 
 def end_architecture():
     add_symbols_to_entiy()
-    
+
+
+def isInList(check_list, obj):
+    for x in  check_list:
+        if x is obj:
+            return True
+
+    return False
+
+
+def remove_duplications(In_list):
+    ret=[]
+    for x in  In_list:
+        if not isInList(ret, x):
+            ret.append(x)
+
+    return ret
+
 def flatten_list(In_list):
     ret = []
     for x in  In_list:
@@ -233,6 +250,37 @@ class hdl_converter_base:
         self.IsConverted = False
         self.MissingTemplate = False
 
+    def get_dependency_objects(self, obj):
+
+        ret = [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base)]
+
+        primary = obj.hdl_conversion__.get_primary_object(obj)
+        for x in primary.hdl_conversion__.MemfunctionCalls:
+            ret += x["args"]
+
+        ret = flatten_list(ret)
+        ret = remove_duplications(ret)
+
+        old_length = 0
+        newLength = len(ret)
+        while newLength > old_length:
+            old_length = newLength
+            ret1 = []
+            for x in ret:
+                if x is obj:
+                    continue
+
+                ret1.append(x.hdl_conversion__.get_dependency_objects(x))
+            
+            ret1.append(obj)
+            ret1 = flatten_list(ret1)
+            ret1 = remove_duplications(ret1)
+            ret = ret1
+            newLength = len(ret)
+        
+
+        return ret
+        
     def ops2str(self, ops):
         return  self.__VHDL__OPS_to2str[ops]
 
