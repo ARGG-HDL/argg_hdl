@@ -21,8 +21,9 @@ class v_package_converter(hdl_converter_base):
         bufffer  = ""
         for t  in obj.PackageContent:
             t = to_v_object(t)
-            
-            bufffer += t.hdl_conversion__.includes(t,"",obj)
+            dep_list = t.hdl_conversion__.get_dependency_objects(t,[])
+            for y in dep_list:
+                bufffer += y.hdl_conversion__.includes(y,"",obj)
         ret = make_unique_includes(bufffer, obj.PackageName)
         return ret
 

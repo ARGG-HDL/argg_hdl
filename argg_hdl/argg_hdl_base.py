@@ -29,6 +29,27 @@ def remove_duplications(In_list):
 
     return ret
 
+
+def isInList_type(check_list, obj):
+    for x in  check_list:
+        if type(x).__name__ == "list":
+            if isInList_type(x,obj):
+                return True 
+        elif x.get_type() ==  obj.get_type():
+            return True
+
+    return False
+
+
+def remove_duplications_types(In_list):
+    ret=[]
+    for x in  In_list:
+        if x == None:
+            continue
+        if not isInList_type(ret, x):
+            ret.append(x)
+    return ret
+
 def flatten_list(In_list):
     ret = []
     for x in  In_list:
@@ -244,23 +265,27 @@ class hdl_converter_base:
         "Lt"  :"<"
     }
 
-
+    get_dependency_objects_index = 0
     def __init__(self):
         self.MemfunctionCalls=[]
         self.IsConverted = False
         self.MissingTemplate = False
 
-    def get_dependency_objects(self, obj):
+    def get_dependency_objects(self, obj, dep_list):
+        self.get_dependency_objects_index += 1
+        if self.get_dependency_objects_index > 10:
+            self.get_dependency_objects_index -= 1
+            return []
 
-        ret = [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base)]
+        dep_list += [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base)]
 
         primary = obj.hdl_conversion__.get_primary_object(obj)
         for x in primary.hdl_conversion__.MemfunctionCalls:
-            ret += x["args"]
+            dep_list += x["args"]
 
-        ret = flatten_list(ret)
-        ret = remove_duplications(ret)
-
+        dep_list = flatten_list(dep_list)
+        ret     = remove_duplications(dep_list)
+        ret     = remove_duplications_types(ret)
         old_length = 0
         newLength = len(ret)
         while newLength > old_length:
@@ -269,16 +294,20 @@ class hdl_converter_base:
             for x in ret:
                 if x is obj:
                     continue
-
-                ret1.append(x.hdl_conversion__.get_dependency_objects(x))
+                if x == None:
+                    continue
+                if isInList_type(ret1, x):
+                    continue
+                ret1.append(x.hdl_conversion__.get_dependency_objects(x,ret))
             
             ret1.append(obj)
             ret1 = flatten_list(ret1)
             ret1 = remove_duplications(ret1)
+            ret1 = remove_duplications_types(ret1)
             ret = ret1
             newLength = len(ret)
         
-
+        self.get_dependency_objects_index -= 1
         return ret
         
     def ops2str(self, ops):
