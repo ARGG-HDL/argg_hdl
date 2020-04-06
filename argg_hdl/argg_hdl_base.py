@@ -277,7 +277,7 @@ class hdl_converter_base:
             self.get_dependency_objects_index -= 1
             return []
 
-        dep_list += [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base)]
+        dep_list += [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base) and getattr(obj, x[0])._issubclass_("v_class")]
 
         primary = obj.hdl_conversion__.get_primary_object(obj)
         for x in primary.hdl_conversion__.MemfunctionCalls:

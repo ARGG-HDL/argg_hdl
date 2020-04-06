@@ -57,7 +57,8 @@ class v_procedure(argg_hdl_base):
         self.isEmpty = IsEmpty
         self.isFreeFunction =isFreeFunction
     
-
+    def get_type(self):
+        return type(self).__name__
     
 
 class v_function_converter(hdl_converter_base):
@@ -117,7 +118,8 @@ class v_function(argg_hdl_base):
         self.isEmpty = IsEmpty
         self.isFreeFunction =isFreeFunction
 
-
+    def get_type(self):
+        return type(self).__name__
 
 
 class v_process_converter(hdl_converter_base):
@@ -146,7 +148,8 @@ class v_process(argg_hdl_base):
         self.prefix = prefix
 
 
-
+    def get_type(self):
+        return type(self).__name__
 
 
 class v_Arch_converter(hdl_converter_base):
@@ -255,7 +258,8 @@ class v_Arch(argg_hdl_base):
         self.ports = ports
         self.name = "arc"
         
-
+    def get_type(self):
+        return type(self).__name__
 
 
 def list_is_in_list(obj, ret):

@@ -9,8 +9,13 @@ from argg_hdl.argg_hdl_AST_Classes import *
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_symbol  import *
 
+def get_function_definition(b_list, name):
+    ret = []
+    for x in b_list:
+        if x.name == name:
+            ret.append(x)
 
-
+    return ret
 
 def checkIfFunctionexists(cl_instant, name, funcArg ):
     for x in cl_instant.hdl_conversion__.MemfunctionCalls:
@@ -505,25 +510,46 @@ class xgenAST:
         self.Archetecture_vars =[]
         return ret
 
-      
-    #@profile
-    def extractFunctionsForClass(self,ClassInstance,parent ):
-        t = time.time()
-        index = 0
+    def extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent):
         fun_ret = []
-        primary = ClassInstance.hdl_conversion__.get_primary_object(ClassInstance)
-        ClassInstance.hdl_conversion__ = primary.hdl_conversion__
-        ClassInstance.hdl_conversion__.MissingTemplate = False
-        ClassName  = type(ClassInstance).__name__
-        ClassInstance_local = v_deepcopy(ClassInstance)
-        #ClassInstance_local._remove_connections()
-        
-        cl = self.getClassByName(ClassName)
-        #print(str(gTemplateIndent)+'<processing name="' + str(ClassName)+'" MemfunctionCalls="'+str(len(ClassInstance.hdl_conversion__.MemfunctionCalls)+'">')
-        print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.hdl_conversion__.MemfunctionCalls)) +'">')
-        gTemplateIndent.inc()
-        for f in cl.body:
-            index += 1000
+        for temp in ClassInstance.hdl_conversion__.MemfunctionCalls:
+            if temp["call_func"] != None:
+                continue
+                
+              
+            ArglistLocal = []
+            ArglistLocal.append({
+                        "name":"self",
+                        "symbol": v_deepcopy(ClassInstance),
+                        "ScopeType": InOut_t.InOut_tt
+
+            })
+            f =  get_function_definition(cl_body,temp["name"])
+            if len(f) == 0:
+                raise Exception("unable to find function template: ",temp["name"],ClassInstance)
+                
+            ArglistLocal += list(self.get_func_args_list(f[0]))
+            newArglist = GetNewArgList(f[0].name, ArglistLocal, temp)
+
+            if newArglist != None:
+                #print("is new template", f[0].name)
+
+                self.Missing_template = False
+                ret = self.extractFunctionsForClass_impl(ClassInstance_local, parent, f[0], newArglist , temp["setDefault"]  )
+                if self.Missing_template:
+                    ClassInstance.hdl_conversion__.MissingTemplate = True
+                else:
+                    temp["call_func"] = call_func
+                    temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
+                #print("end create function for template ",f[0].name)
+                    if ret:
+                        fun_ret.append( ret )
+        return fun_ret
+    #@profile
+
+    def extractFunctionsForClass1(self,ClassInstance,parent,cl_body ):
+        for f in cl_body:
+
             if  f.name in self.functionNameVetoList:
                 continue
 
@@ -587,43 +613,39 @@ class xgenAST:
                             "setDefault" : True
                         }
                     )
+    def extractFunctionsForClass(self,ClassInstance,parent ):
+        t = time.time()
+
+        fun_ret = []
+        primary = ClassInstance.hdl_conversion__.get_primary_object(ClassInstance)
+        ClassInstance.hdl_conversion__ = primary.hdl_conversion__
+        ClassInstance.hdl_conversion__.MissingTemplate = False
+        ClassName  = type(ClassInstance).__name__
+        ClassInstance_local = v_deepcopy(ClassInstance)
+        #ClassInstance_local._remove_connections()
+        
+        cl = self.getClassByName(ClassName)
+        
+        print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.hdl_conversion__.MemfunctionCalls)) +'">')
+        gTemplateIndent.inc()
+        self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
         gTemplateIndent.deinc()
         print(str(gTemplateIndent)+'</processing>')   
             
-
-        for temp in ClassInstance.hdl_conversion__.MemfunctionCalls:
-            if temp["call_func"] != None:
-                continue
-                
-                
-            index += 1
-            ArglistLocal = []
-            ArglistLocal.append({
-                        "name":"self",
-                        "symbol": v_deepcopy(ClassInstance),
-                        "ScopeType": InOut_t.InOut_tt
-
-            })
-            f = [x for x in  cl.body if x.name == temp["name"]]
-            ArglistLocal += list(self.get_func_args_list(f[0]))
-            newArglist = GetNewArgList(f[0].name, ArglistLocal, temp)
-
-            if newArglist != None:
-                #print("is new template", f[0].name)
-                index += 100000
-                self.Missing_template = False
-                ret = self.extractFunctionsForClass_impl(ClassInstance_local, parent, f[0], newArglist , temp["setDefault"]  )
-                if self.Missing_template:
-                    ClassInstance.hdl_conversion__.MissingTemplate = True
-                else:
-                    temp["call_func"] = call_func
-                    temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
-                #print("end create function for template ",f[0].name)
-                    if ret:
-                        fun_ret.append( ret )
+        try:
+            fun_ret += self.extractFunctionsForClass2( ClassInstance,cl.body,ClassInstance_local,parent)
+        except Exception as inst:
+            err_msg = argg_hdl_error(
+                self.sourceFileName,
+                cl.lineno, 
+                cl.col_offset,
+                ClassName, 
+                "error while creating function from template"
+            )
+            raise Exception(err_msg,ClassInstance,inst)
         
         elapsed = time.time() - t
-        #print ("extractFunctionsForClass", elapsed ,index)      
+ 
         return fun_ret
 
     def Unfold_body(self,FuncDef):

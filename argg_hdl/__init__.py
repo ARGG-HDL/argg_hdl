@@ -73,6 +73,7 @@ v_entity_list = ah_entity_list.v_entity_list
 v_class = ah_v_class.v_class
 get_master = ah_v_class.get_master
 get_salve = ah_v_class.get_salve
+get_handle =  ah_v_class.get_handle
 v_class_master  = ah_v_class.v_class_master
 v_class_slave  = ah_v_class.v_class_slave
 

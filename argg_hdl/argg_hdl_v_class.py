@@ -1416,3 +1416,11 @@ def get_master(transObj):
 
 def get_salve(transObj):
     return transObj.get_slave()
+
+def get_handle(transObj):
+    if transObj.Inout == InOut_t.Slave_t:
+        return get_salve(transObj)
+    elif transObj.Inout  == InOut_t.Master_t:
+        return get_master(transObj)
+    
+    raise Exception("Unable to determint requiered handle")

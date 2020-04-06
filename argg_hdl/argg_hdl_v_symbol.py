@@ -466,7 +466,7 @@ class v_symbol(argg_hdl_base):
         return value(self) > 0
 
     def reset(self):
-        self.value_list[self.value_index]  = 0
+        self << 0
     def _Connect_running(self, rhs):
         self.nextValue = value(rhs)
         #print("assing: ", self.value_index , self._Simulation_name ,  value(rhs))
