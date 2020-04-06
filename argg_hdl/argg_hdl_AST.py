@@ -563,8 +563,6 @@ class xgenAST:
                         "name"   : f.name,
                         "symbol" : arc
                         })
-                    #fun_ret.append(arc)
-                        pass
                 continue
             #print(str(gTemplateIndent) +'<request_template name="' + f.name +'"/>')
             #print(ClassInstance.hdl_conversion__.MemfunctionCalls)
@@ -625,13 +623,24 @@ class xgenAST:
         #ClassInstance_local._remove_connections()
         
         cl = self.getClassByName(ClassName)
-        
-        print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.hdl_conversion__.MemfunctionCalls)) +'">')
-        gTemplateIndent.inc()
-        self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
-        gTemplateIndent.deinc()
-        print(str(gTemplateIndent)+'</processing>')   
-            
+        try:
+            print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.hdl_conversion__.MemfunctionCalls)) +'">')
+            gTemplateIndent.inc()
+            self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
+            gTemplateIndent.deinc()
+            print(str(gTemplateIndent)+'</processing>')   
+        except Exception as inst:
+            err_msg = argg_hdl_error(
+                self.sourceFileName,
+                cl.lineno, 
+                cl.col_offset,
+                ClassName, 
+                "error while processing templates"
+            )
+            raise Exception(err_msg,ClassInstance,inst)
+        finally:
+            gTemplateIndent.deinc
+
         try:
             fun_ret += self.extractFunctionsForClass2( ClassInstance,cl.body,ClassInstance_local,parent)
         except Exception as inst:
