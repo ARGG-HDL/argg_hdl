@@ -9,7 +9,7 @@ class v_procedure_converter(hdl_converter_base):
     def getHeader(self, obj,name, parent):
         classDef =""
         if parent != None and not obj.isFreeFunction:
-            classDef = parent.hdl_conversion__.get_self_func_name (parent)
+            classDef = parent.__hdl_converter__.get_self_func_name (parent)
 
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
         if obj.name:
@@ -28,7 +28,7 @@ class v_procedure_converter(hdl_converter_base):
     def getBody(self, obj, name,parent):
         classDef =""
         if parent != None and not obj.isFreeFunction:
-            classDef = parent.hdl_conversion__.get_self_func_name (parent)
+            classDef = parent.__hdl_converter__.get_self_func_name (parent)
 
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
         if obj.name:
@@ -48,7 +48,7 @@ class v_procedure_converter(hdl_converter_base):
 class v_procedure(argg_hdl_base):
     def __init__(self, argumentList="", body="",VariableList="",name=None,IsEmpty=False,isFreeFunction=False):
         super().__init__()
-        self.hdl_conversion__ = v_procedure_converter()
+        self.__hdl_converter__ = v_procedure_converter()
         self.argumentList = argumentList
 
         self.body = body
@@ -67,7 +67,7 @@ class v_function_converter(hdl_converter_base):
     def getHeader(self, obj, name, parent):
         classDef =""
         if parent != None and not obj.isFreeFunction:
-            classDef = parent.hdl_conversion__.get_self_func_name (parent,True)
+            classDef = parent.__hdl_converter__.get_self_func_name (parent,True)
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
         if obj.name:
             name = obj.name
@@ -86,7 +86,7 @@ class v_function_converter(hdl_converter_base):
     def getBody(self, obj, name,parent):
         classDef =""
         if parent != None and not obj.isFreeFunction:
-            classDef = parent.hdl_conversion__.get_self_func_name(parent,True)
+            classDef = parent.__hdl_converter__.get_self_func_name(parent,True)
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
         
         if obj.name:
@@ -107,7 +107,7 @@ class v_function_converter(hdl_converter_base):
 class v_function(argg_hdl_base):
     def __init__(self,body="", returnType="", argumentList="",VariableList="",name=None,IsEmpty=False,isFreeFunction=False):
         super().__init__()
-        self.hdl_conversion__ = v_function_converter()
+        self.__hdl_converter__ = v_function_converter()
         self.body = body
         self.returnType = returnType
         self.argumentList = argumentList
@@ -139,7 +139,7 @@ class v_process_converter(hdl_converter_base):
 class v_process(argg_hdl_base):
     def __init__(self,body="", SensitivityList=None,VariableList="",prefix=None,name=None,IsEmpty=False):
         super().__init__()
-        self.hdl_conversion__ = v_process_converter()
+        self.__hdl_converter__ = v_process_converter()
         self.body = body 
         self.SensitivityList = SensitivityList
         self.VariableList = VariableList
@@ -159,10 +159,10 @@ class v_Arch_converter(hdl_converter_base):
     def includes(self,obj, name,parent):
         inc_str = ""
         for x in obj.Symbols:
-            inc_str +=  x.hdl_conversion__.includes(x, x.vhdl_name,obj)
+            inc_str +=  x.__hdl_converter__.includes(x, x.vhdl_name,obj)
         
         for x in obj.Arch_vars:
-            inc_str +=  x['symbol'].hdl_conversion__.includes(x['symbol'], x['name'],obj)
+            inc_str +=  x['symbol'].__hdl_converter__.includes(x['symbol'], x['name'],obj)
         return inc_str
 
     def get_architecture_header(self, obj):
@@ -170,10 +170,10 @@ class v_Arch_converter(hdl_converter_base):
         for x in obj.Symbols:
             if x.type == "undef":
                 continue
-            header += x.hdl_conversion__.get_architecture_header(x)
+            header += x.__hdl_converter__.get_architecture_header(x)
         
         for x in obj.Arch_vars:
-            header += x['symbol'].hdl_conversion__.get_architecture_header(x['symbol'])    
+            header += x['symbol'].__hdl_converter__.get_architecture_header(x['symbol'])    
         return header
 
 
@@ -181,7 +181,7 @@ class v_Arch_converter(hdl_converter_base):
         
         for x in objList:
             retList.append(x)
-            obj.hdl_conversion__.make_signal_list(
+            obj.__hdl_converter__.make_signal_list(
                 obj,
                 retList, 
                 x['symbol'].getMember(VaribleSignalFilter=varSig.signal_t)
@@ -206,9 +206,9 @@ class v_Arch_converter(hdl_converter_base):
                 continue 
             if not list_is_in_list(x['symbol'].__Driver__, objList):
                 continue
-            if x['symbol']._Driver_SubConnection:
+            if x['symbol'].__Driver_Is_SubConnection__:
                 continue
-            ret += x['symbol'].hdl_conversion__._vhdl__reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
+            ret += x['symbol'].__hdl_converter__._vhdl__reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
 
         return ret
     def get_architecture_body(self, obj):
@@ -217,25 +217,25 @@ class v_Arch_converter(hdl_converter_base):
         for x in obj.Symbols:
             if x.type == "undef":
                 continue
-            line = x.hdl_conversion__.get_architecture_body(x) 
+            line = x.__hdl_converter__.get_architecture_body(x) 
             if line.strip():
                 body += "\n  " +line+";\n  "
         
         for x in obj.Arch_vars:
-            line = x['symbol'].hdl_conversion__.get_architecture_body(x['symbol'])
+            line = x['symbol'].__hdl_converter__.get_architecture_body(x['symbol'])
             if line.strip():
                 body += "\n  " + line  +";\n  "
         
         retList =[]
-        obj.hdl_conversion__.make_signal_list(obj,retList,  obj.ports)
-        obj.hdl_conversion__.make_signal_list(obj,retList,  obj.Arch_vars)
+        obj.__hdl_converter__.make_signal_list(obj,retList,  obj.ports)
+        obj.__hdl_converter__.make_signal_list(obj,retList,  obj.Arch_vars)
         retlist2 = list_make_unque(retList)
-        conections = obj.hdl_conversion__.make_signal_connections2(obj, retlist2)
+        conections = obj.__hdl_converter__.make_signal_connections2(obj, retlist2)
         #print("====================")
         #print(conections)
         #print("--------------------")
         body += conections
-        #body +=obj.hdl_conversion__.make_signal_connections(obj, obj.Arch_vars)
+        #body +=obj.__hdl_converter__.make_signal_connections(obj, obj.Arch_vars)
  
         return body
 
@@ -254,7 +254,7 @@ class v_Arch(argg_hdl_base):
         self.body = body 
         self.Symbols = Symbols
         self.Arch_vars = Arch_vars
-        self.hdl_conversion__ = v_Arch_converter()
+        self.__hdl_converter__ = v_Arch_converter()
         self.ports = ports
         self.name = "arc"
         

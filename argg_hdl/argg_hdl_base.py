@@ -249,7 +249,7 @@ def unfold_errors(error):
 def convert_to_hdl(Obj, FolderPath):
     try:
         core_gen.generate_files_in_folder(FolderPath)
-        return Obj.hdl_conversion__.convert_all(Obj,  FolderPath)
+        return Obj.__hdl_converter__.convert_all(Obj,  FolderPath)
     except Exception as inst:
         er_list  =  unfold_errors(inst)
         ret = join_str(er_list, Delimeter="\n")
@@ -279,8 +279,8 @@ class hdl_converter_base:
 
         dep_list += [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base) and getattr(obj, x[0])._issubclass_("v_class")]
 
-        primary = obj.hdl_conversion__.get_primary_object(obj)
-        for x in primary.hdl_conversion__.MemfunctionCalls:
+        primary = obj.__hdl_converter__.get_primary_object(obj)
+        for x in primary.__hdl_converter__.MemfunctionCalls:
             dep_list += x["args"]
 
         dep_list = flatten_list(dep_list)
@@ -298,7 +298,7 @@ class hdl_converter_base:
                     continue
                 if isInList_type(ret1, x):
                     continue
-                ret1.append(x.hdl_conversion__.get_dependency_objects(x,ret))
+                ret1.append(x.__hdl_converter__.get_dependency_objects(x,ret))
             
             ret1.append(obj)
             ret1 = flatten_list(ret1)
@@ -314,19 +314,19 @@ class hdl_converter_base:
         return  self.__VHDL__OPS_to2str[ops]
 
     def FlagFor_TemplateMissing(self, obj):
-        primary = obj.hdl_conversion__.get_primary_object(obj)
-        primary.hdl_conversion__.MissingTemplate  = True
+        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary.__hdl_converter__.MissingTemplate  = True
 
     def reset_TemplateMissing(self, obj):
-        primary = obj.hdl_conversion__.get_primary_object(obj)
-        primary.hdl_conversion__.MissingTemplate  = False  
+        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary.__hdl_converter__.MissingTemplate  = False  
 
     def isTemplateMissing(self,obj):
-        primary = obj.hdl_conversion__.get_primary_object(obj)
-        return primary.hdl_conversion__.MissingTemplate  == True  
+        primary = obj.__hdl_converter__.get_primary_object(obj)
+        return primary.__hdl_converter__.MissingTemplate  == True  
 
     def IsSucessfullConverted(self,obj):
-        if obj.hdl_conversion__.isTemplateMissing(obj):
+        if obj.__hdl_converter__.isTemplateMissing(obj):
             return False
         return self.IsConverted
 
@@ -347,20 +347,20 @@ class hdl_converter_base:
 
                 #print("----------------")
                 
-                if x.hdl_conversion__.IsSucessfullConverted(x):
+                if x.__hdl_converter__.IsSucessfullConverted(x):
                     continue
                 
                 gTemplateIndent.inc()
-                packetName =  x.hdl_conversion__.get_packet_file_name(x)
+                packetName =  x.__hdl_converter__.get_packet_file_name(x)
                 if packetName not in FilesDone:
                     print(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
                     gTemplateIndent.inc()
-                    x.hdl_conversion__.reset_TemplateMissing(x)
-                    packet = x.hdl_conversion__.get_packet_file_content(x)
+                    x.__hdl_converter__.reset_TemplateMissing(x)
+                    packet = x.__hdl_converter__.get_packet_file_content(x)
                     if packet:
                         file_set_content(ouputFolder+"/" +packetName,packet)
                     FilesDone.append(packetName)
-                    if x.hdl_conversion__.MissingTemplate:
+                    if x.__hdl_converter__.MissingTemplate:
                         print(str(gTemplateIndent)+'<status ="failed">')
                     else:
                         print(str(gTemplateIndent)+'<status ="sucess">')
@@ -370,21 +370,21 @@ class hdl_converter_base:
                     #print("processing")
                     
                 
-                entiyFileName =  x.hdl_conversion__.get_entity_file_name(x)
+                entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
 
                 if entiyFileName not in FilesDone:
                     print(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
                     gTemplateIndent.inc()
-                    x.hdl_conversion__.reset_TemplateMissing(x)
+                    x.__hdl_converter__.reset_TemplateMissing(x)
                     try:
-                        entity_content = x.hdl_conversion__.get_enity_file_content(x)
+                        entity_content = x.__hdl_converter__.get_enity_file_content(x)
                     except Exception as inst:
                         raise Exception(["Error in entity Converion:\nEntityFileName: "+ entiyFileName], x,inst)
 
                     if entity_content:
                         file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
                     FilesDone.append(entiyFileName)
-                    if x.hdl_conversion__.MissingTemplate:
+                    if x.__hdl_converter__.MissingTemplate:
                         print(str(gTemplateIndent)+'<status ="failed">')
                     else:
                         print(str(gTemplateIndent)+'<status ="sucess">')
@@ -392,18 +392,18 @@ class hdl_converter_base:
                     print(str(gTemplateIndent)+"</entity_conversion>")
                     #print("processing")
                 
-                x.hdl_conversion__.IsConverted = True
+                x.__hdl_converter__.IsConverted = True
                 gTemplateIndent.deinc()
             print(str(gTemplateIndent)+ '</Converting>')
 
     def get_primary_object(self,obj):
-        obj_packetName =  obj.hdl_conversion__.get_packet_file_name(obj)
-        obj_entiyFileName =  obj.hdl_conversion__.get_entity_file_name(obj)
+        obj_packetName =  obj.__hdl_converter__.get_packet_file_name(obj)
+        obj_entiyFileName =  obj.__hdl_converter__.get_entity_file_name(obj)
         i = 0 
         for x in gHDL_objectList:
             i +=1 
-            packetName =  x.hdl_conversion__.get_packet_file_name(x)
-            entiyFileName =  x.hdl_conversion__.get_entity_file_name(x)
+            packetName =  x.__hdl_converter__.get_packet_file_name(x)
+            entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
             if obj_packetName ==  packetName and obj_entiyFileName == entiyFileName and type(obj) == type(x):
                 #print(i)
                 return x
@@ -460,7 +460,7 @@ class hdl_converter_base:
 
     
     def _vhdl__compare(self,obj, ops, rhs):
-        return str(obj) + " " + obj.hdl_conversion__.ops2str(ops)+" " + str(rhs)
+        return str(obj) + " " + obj.__hdl_converter__.ops2str(ops)+" " + str(rhs)
 
     def _vhdl__add(self,obj,args):
         return str(obj) + " + " + str(args)
@@ -493,13 +493,13 @@ class hdl_converter_base:
         return str(obj) + " := " +  str(rhs)
 
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        return rhs.hdl_conversion__._vhdl__reasign(rhs, obj,astParser,context_str)
+        return rhs.__hdl_converter__._vhdl__reasign(rhs, obj,astParser,context_str)
 
     def get_get_call_member_function(self, obj, name, args):
         args = [x.get_symbol() for x in args ]
 
         needAdding =True
-        for x  in obj.hdl_conversion__.MemfunctionCalls:
+        for x  in obj.__hdl_converter__.MemfunctionCalls:
             if x["name"] != name:
                 continue
             if not isSameArgs(args, x["args"] ,x['setDefault']):
@@ -509,7 +509,7 @@ class hdl_converter_base:
                 continue
             return x
         if needAdding:
-            obj.hdl_conversion__.MemfunctionCalls.append({
+            obj.__hdl_converter__.MemfunctionCalls.append({
             "name" : name,
             "args": args,
             "self" :obj,
@@ -522,17 +522,17 @@ class hdl_converter_base:
         return None
     def _vhdl__call_member_func(self, obj, name, args, astParser=None):
         
-        primary = obj.hdl_conversion__.get_primary_object(obj)
+        primary = obj.__hdl_converter__.get_primary_object(obj)
         if  primary is not obj:
-            return primary.hdl_conversion__._vhdl__call_member_func( primary, name, args, astParser)
+            return primary.__hdl_converter__._vhdl__call_member_func( primary, name, args, astParser)
         
         
-        call_obj = obj.hdl_conversion__.get_get_call_member_function(obj, name, args)
+        call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
         
         args_str = [str(x.get_type()) for x in args]
         args_str=join_str(args_str, Delimeter=", ")
         if call_obj == None:
-            primary.hdl_conversion__.MissingTemplate=True
+            primary.__hdl_converter__.MissingTemplate=True
             astParser.Missing_template = True
 
             print(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
@@ -542,7 +542,7 @@ class hdl_converter_base:
         if call_func:
             return call_func(obj, name, args, astParser, call_obj["func_args"])
 
-        primary.hdl_conversion__.MissingTemplate=True
+        primary.__hdl_converter__.MissingTemplate=True
         astParser.Missing_template = True
         return None
 
@@ -556,7 +556,7 @@ class hdl_converter_base:
         #return " -- No Generic symbol definition for object " + self.getName()
 
     def get_architecture_header(self, obj):
-        if obj.Inout != InOut_t.Internal_t:
+        if obj._Inout != InOut_t.Internal_t:
             return ""
         
         if obj.varSigConst != varSig.signal_t or obj.varSigConst != varSig.signal_t:
@@ -579,7 +579,7 @@ class hdl_converter_base:
         return ""
 
     def get_process_header(self,obj):
-        if obj.Inout != InOut_t.Internal_t:
+        if obj._Inout != InOut_t.Internal_t:
             return ""
         
         if obj.varSigConst != varSig.variable_t:
@@ -609,7 +609,7 @@ class hdl_converter_base:
         return asOp
 
     def InOut_t2str(self, obj):
-        inOut = obj.Inout
+        inOut = obj._Inout
         if inOut == InOut_t.input_t:
             return " in "
         elif inOut == InOut_t.output_t:
@@ -617,7 +617,7 @@ class hdl_converter_base:
         elif inOut == InOut_t.InOut_tt:
             return " inout "
         
-        inOut = obj._writtenRead
+        inOut = obj.__writeRead__
         if inOut == InOut_t.input_t:
             return " in "
         elif inOut == InOut_t.output_t:
@@ -631,12 +631,12 @@ class hdl_converter_base:
 
 
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
-        if filter_inout and obj.Inout != filter_inout: 
+        if filter_inout and obj._Inout != filter_inout: 
             return []
         return [{ "suffix":"", "symbol": obj}]
 
     def get_Name_array(self,obj):
-        return obj.hdl_conversion__.get_type_simple(obj)+"_a"
+        return obj.__hdl_converter__.get_type_simple(obj)+"_a"
 
     def length(self,obj):
         return "length(" +str(obj)+")"
@@ -645,9 +645,9 @@ class hdl_converter_base:
         raise Exception("not implemented for class: ", type(obj).__name__)
 
     def get_inout_type_recursive(self, obj):
-        if  obj.Inout != InOut_t.Internal_t:
-            return obj.Inout
-        return obj._writtenRead  
+        if  obj._Inout != InOut_t.Internal_t:
+            return obj._Inout
+        return obj.__writeRead__  
 
     def Has_pushpull_function(self,obj, pushpull):
         return False
@@ -659,20 +659,20 @@ class argg_hdl_base0:
         super().__init__()
         if not isConverting2VHDL():
             gHDL_objectList.append(self)
-        self._isInstance = False
-        self.hdl_conversion__ = hdl_converter_base()
+        self.__isInst__ = False
+        self.__hdl_converter__ = hdl_converter_base()
         self.__Driver__ = None
-        self._Driver_SubConnection = False
+        self.__Driver_Is_SubConnection__ = False
         self.__receiver__ = []
-        self._srcFileName = get_fileName_of_object_def(self)
+        self.__srcFilePath__ = get_fileName_of_object_def(self)
         
 
     def _set_to_sub_connection(self):
-        self._Driver_SubConnection = True
+        self.__Driver_Is_SubConnection__ = True
 
     def _remove_connections(self):
         self.__Driver__ = None
-        self._Driver_SubConnection = False
+        self.__Driver_Is_SubConnection__ = False
         self.__receiver__ = []
         xs = self.getMember()
         for x in xs:
@@ -720,11 +720,11 @@ class argg_hdl_base0:
         raise Exception("update not implemented")
     
     def _instantiate_(self):
-        self._isInstance = True
+        self.__isInst__ = True
         return self
     
     def _un_instantiate_(self, Name = ""):
-        self._isInstance = False
+        self.__isInst__ = False
         if Name:
             self.set_vhdl_name(Name,True)
         return self
@@ -751,30 +751,30 @@ class argg_hdl_base(argg_hdl_base0):
 
     def __init__(self):
         super().__init__()
-        self.Inout         = InOut_t.Internal_t
-        self._writtenRead  = InOut_t.Internal_t
+        self._Inout         = InOut_t.Internal_t
+        self.__writeRead__  = InOut_t.Internal_t
 
     def _add_input(self):
-        if self._writtenRead == InOut_t.Internal_t:
-            self._writtenRead = InOut_t.input_t
-        elif self._writtenRead == InOut_t.output_t:
-            self._writtenRead = InOut_t.InOut_tt
-        elif self._writtenRead == InOut_t.Used_t:
-            self._writtenRead = InOut_t.input_t
+        if self.__writeRead__ == InOut_t.Internal_t:
+            self.__writeRead__ = InOut_t.input_t
+        elif self.__writeRead__ == InOut_t.output_t:
+            self.__writeRead__ = InOut_t.InOut_tt
+        elif self.__writeRead__ == InOut_t.Used_t:
+            self.__writeRead__ = InOut_t.input_t
 
     def _add_output(self):
-        if self._writtenRead == InOut_t.Internal_t:
-            self._writtenRead = InOut_t.output_t
-        elif self._writtenRead == InOut_t.input_t:
-            self._writtenRead = InOut_t.InOut_tt
-        elif self._writtenRead == InOut_t.Used_t:
-            self._writtenRead = InOut_t.output_t
+        if self.__writeRead__ == InOut_t.Internal_t:
+            self.__writeRead__ = InOut_t.output_t
+        elif self.__writeRead__ == InOut_t.input_t:
+            self.__writeRead__ = InOut_t.InOut_tt
+        elif self.__writeRead__ == InOut_t.Used_t:
+            self.__writeRead__ = InOut_t.output_t
 
     def _add_used(self):
-        if self._writtenRead == InOut_t.Internal_t:
-            self._writtenRead = InOut_t.Used_t
-        elif self._writtenRead == InOut_t.Unset_t:
-            self._writtenRead = InOut_t.Used_t
+        if self.__writeRead__ == InOut_t.Internal_t:
+            self.__writeRead__ = InOut_t.Used_t
+        elif self.__writeRead__ == InOut_t.Unset_t:
+            self.__writeRead__ = InOut_t.Used_t
 
     def flipInout(self):
         pass
@@ -889,7 +889,7 @@ class v_classType_t(Enum):
 def v_variable(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Internal_t)
     ret.set_varSigConst(varSig.variable_t)
     ret._remove_drivers()
@@ -899,7 +899,7 @@ def v_variable(symbol):
 def v_signal(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Internal_t)
     ret.set_varSigConst(varSig.signal_t)
     ret._remove_drivers()
@@ -908,7 +908,7 @@ def v_signal(symbol):
 def v_const(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Internal_t)
     ret.set_varSigConst(varSig.const_t)
     ret._remove_drivers()
@@ -917,7 +917,7 @@ def v_const(symbol):
 def port_out(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.output_t)
     ret.set_varSigConst(getDefaultVarSig())
     ret._remove_drivers()
@@ -926,7 +926,7 @@ def port_out(symbol):
 def variable_port_out(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.output_t)
     ret.set_varSigConst(varSig.variable_t)
     ret._remove_drivers()
@@ -935,7 +935,7 @@ def variable_port_out(symbol):
 def port_in(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.input_t)
     ret.set_varSigConst(getDefaultVarSig())
     ret._remove_drivers()
@@ -944,7 +944,7 @@ def port_in(symbol):
 def variable_port_in(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.input_t)
     ret.set_varSigConst(varSig.variable_t)
     ret._remove_drivers()
@@ -953,7 +953,7 @@ def variable_port_in(symbol):
 def port_Master(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Master_t)
     ret.set_varSigConst(getDefaultVarSig())
     ret._remove_drivers()
@@ -962,7 +962,7 @@ def port_Master(symbol):
 def variable_port_Master(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Master_t)
     ret.set_varSigConst(varSig.variable_t)
     ret._remove_drivers()
@@ -971,7 +971,7 @@ def variable_port_Master(symbol):
 def signal_port_Master(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Master_t)
     ret.set_varSigConst(varSig.signal_t)
     ret._remove_drivers()
@@ -980,7 +980,7 @@ def signal_port_Master(symbol):
 def port_Stream_Master(symbol):
     ret = port_Master(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     funcrec = inspect.stack()[1]
         
     f_locals = funcrec.frame.f_locals
@@ -994,7 +994,7 @@ def port_Stream_Master(symbol):
 def signal_port_Slave(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Slave_t)
     ret.set_varSigConst(varSig.signal_t)
     ret._remove_drivers()
@@ -1004,7 +1004,7 @@ def signal_port_Slave(symbol):
 def port_Slave(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Slave_t)
     ret.set_varSigConst(getDefaultVarSig())
     ret._remove_drivers()
@@ -1013,7 +1013,7 @@ def port_Slave(symbol):
 def variable_port_Slave(symbol):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.setInout(InOut_t.Slave_t)
     ret.set_varSigConst(varSig.variable_t)
     ret._remove_drivers()
@@ -1022,7 +1022,7 @@ def variable_port_Slave(symbol):
 def port_Stream_Slave(symbol):
     ret = port_Slave(symbol)
     ret._sim_get_new_storage()
-    ret._isInstance = False
+    ret.__isInst__ = False
     funcrec = inspect.stack()[1]
         
     f_locals = funcrec.frame.f_locals
@@ -1035,7 +1035,7 @@ def v_copy(symbol,varSig=None):
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.resetInout()
-    ret._isInstance = False
+    ret.__isInst__ = False
     ret.vhdl_name = None
     ret._remove_drivers()
     if varSig == None:
@@ -1043,15 +1043,15 @@ def v_copy(symbol,varSig=None):
     return ret
 
 def v_deepcopy(symbol):
-    hdl = symbol.hdl_conversion__
+    hdl = symbol.__hdl_converter__
     driver = symbol.__Driver__ 
     receiver = symbol.__receiver__
     symbol.__receiver__ = None
     symbol.__Driver__=None
-    symbol.hdl_conversion__ =None
+    symbol.__hdl_converter__ =None
     ret  = copy.deepcopy(symbol)
-    symbol.hdl_conversion__ = hdl
-    ret.hdl_conversion__ = hdl
+    symbol.__hdl_converter__ = hdl
+    ret.__hdl_converter__ = hdl
     symbol.__Driver__ = driver
     ret.__Driver__ = driver
     symbol.__receiver__ = receiver

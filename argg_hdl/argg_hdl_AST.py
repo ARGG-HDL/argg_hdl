@@ -18,7 +18,7 @@ def get_function_definition(b_list, name):
     return ret
 
 def checkIfFunctionexists(cl_instant, name, funcArg ):
-    for x in cl_instant.hdl_conversion__.MemfunctionCalls:
+    for x in cl_instant.__hdl_converter__.MemfunctionCalls:
         if x["name"] != name:
             continue
         
@@ -80,16 +80,16 @@ def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
         if y == None:
             return None  
         if x["symbol"] == None or x["symbol"].type != y.type or x['symbol'].varSigConst != y.varSigConst:
-            #y.Inout =  x["symbol"].Inout
+            #y._Inout =  x["symbol"]._Inout
             y.set_vhdl_name(x["name"],True)
             
             x["symbol"] = copy.deepcopy(y)
-            x["symbol"]._writtenRead  = InOut_t.Internal_t
-            x["symbol"].Inout  = InOut_t.Internal_t
+            x["symbol"].__writeRead__  = InOut_t.Internal_t
+            x["symbol"]._Inout  = InOut_t.Internal_t
             mem = x["symbol"].getMember()
             for m in mem:
-                m["symbol"]._writtenRead  = InOut_t.Internal_t
-                m["symbol"].Inout  = InOut_t.Internal_t
+                m["symbol"].__writeRead__  = InOut_t.Internal_t
+                m["symbol"]._Inout  = InOut_t.Internal_t
     return localArgs
 
 
@@ -256,7 +256,7 @@ class xgenAST:
     def get_local_var_def(self):
         ret =""
         for x in self.LocalVar:
-            ret += x.hdl_conversion__._vhdl__DefineSymbol(x)
+            ret += x.__hdl_converter__._vhdl__DefineSymbol(x)
         
         return ret
 
@@ -270,7 +270,7 @@ class xgenAST:
                 continue
 
             self.Missing_template = False
-            ClassInstance.hdl_conversion__.reset_TemplateMissing(ClassInstance)
+            ClassInstance.__hdl_converter__.reset_TemplateMissing(ClassInstance)
             self.local_function ={}
 
             self.parent = parent
@@ -304,8 +304,8 @@ class xgenAST:
             
 
             if self.Missing_template == True:
-                ClassInstance.hdl_conversion__.FlagFor_TemplateMissing(ClassInstance)
-                ClassInstance.hdl_conversion__.MissingTemplate = True
+                ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
+                ClassInstance.__hdl_converter__.MissingTemplate = True
             else:
                 proc = v_Arch(body=body,Symbols=self.LocalVar, Arch_vars=self.Archetecture_vars,ports=ClassInstance.getMember())
                 ClassInstance.__processList__.append(proc)
@@ -356,7 +356,7 @@ class xgenAST:
             for x in self.LocalVar:
                 if x.type == "undef":
                     continue
-                header += x.hdl_conversion__._vhdl__DefineSymbol(x, "variable")
+                header += x.__hdl_converter__._vhdl__DefineSymbol(x, "variable")
 
             pull =""
             for x in self.LocalVar:
@@ -430,12 +430,12 @@ class xgenAST:
                 raise Exception(err_msg,ClassInstance,inst)
 
             #print("----------" , funcDef.name)
-            argList = [x["symbol"].hdl_conversion__.to_arglist(x["symbol"], x['name'],ClassName, withDefault = setDefault and  (x["name"] != "self")) for x in FuncArgsLocal]
+            argList = [x["symbol"].__hdl_converter__.to_arglist(x["symbol"], x['name'],ClassName, withDefault = setDefault and  (x["name"] != "self")) for x in FuncArgsLocal]
             ArglistProcedure = join_str(argList,Delimeter="; ")
             
 
          
-            actual_function_name = ClassInstance.hdl_conversion__.function_name_modifier(ClassInstance, funcDef.name, varSigSuffix)
+            actual_function_name = ClassInstance.__hdl_converter__.function_name_modifier(ClassInstance, funcDef.name, varSigSuffix)
 
 
             if "return" in bodystr:
@@ -498,8 +498,8 @@ class xgenAST:
 
 
         if self.Missing_template == True:
-            ClassInstance.hdl_conversion__.FlagFor_TemplateMissing(ClassInstance)
-            ClassInstance.hdl_conversion__.MissingTemplate = True
+            ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
+            ClassInstance.__hdl_converter__.MissingTemplate = True
 
         else:
             ret = v_Arch(body=body,Symbols=self.LocalVar, Arch_vars=self.Archetecture_vars,ports=ClassInstance.getMember())
@@ -512,7 +512,7 @@ class xgenAST:
 
     def extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent):
         fun_ret = []
-        for temp in ClassInstance.hdl_conversion__.MemfunctionCalls:
+        for temp in ClassInstance.__hdl_converter__.MemfunctionCalls:
             if temp["call_func"] != None:
                 continue
                 
@@ -537,7 +537,7 @@ class xgenAST:
                 self.Missing_template = False
                 ret = self.extractFunctionsForClass_impl(ClassInstance_local, parent, f[0], newArglist , temp["setDefault"]  )
                 if self.Missing_template:
-                    ClassInstance.hdl_conversion__.MissingTemplate = True
+                    ClassInstance.__hdl_converter__.MissingTemplate = True
                 else:
                     temp["call_func"] = call_func
                     temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
@@ -556,20 +556,20 @@ class xgenAST:
 
             
             if f.decorator_list and f.decorator_list[0].id == 'architecture' :
-                if f.name not in [x["name"] for x in ClassInstance.hdl_conversion__.archetecture_list ]:
+                if f.name not in [x["name"] for x in ClassInstance.__hdl_converter__.archetecture_list ]:
                     arc = self.extractArchetectureForClass(ClassInstance,f)
                     if arc:
-                        ClassInstance.hdl_conversion__.archetecture_list.append({
+                        ClassInstance.__hdl_converter__.archetecture_list.append({
                         "name"   : f.name,
                         "symbol" : arc
                         })
                 continue
             #print(str(gTemplateIndent) +'<request_template name="' + f.name +'"/>')
-            #print(ClassInstance.hdl_conversion__.MemfunctionCalls)
+            #print(ClassInstance.__hdl_converter__.MemfunctionCalls)
 
             ArglistLocal = []
             ClassInstance.set_vhdl_name ( "self",True)
-           # ClassInstance.Inout  = InOut_t.InOut_tt
+           # ClassInstance._Inout  = InOut_t.InOut_tt
             Arglist = []
             Arglist.append(
                 {
@@ -579,7 +579,7 @@ class xgenAST:
 
                 }
             )
-            Arglist[-1]["symbol"].Inout  = InOut_t.InOut_tt
+            Arglist[-1]["symbol"]._Inout  = InOut_t.InOut_tt
             Arglist += list(self.get_func_args_list(f))
 
             exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
@@ -601,7 +601,7 @@ class xgenAST:
                     ArglistLocal += list(self.get_func_args_list(f))
                 
 
-                ClassInstance.hdl_conversion__.MemfunctionCalls.append(
+                ClassInstance.__hdl_converter__.MemfunctionCalls.append(
                         {
                             "name" : f.name,
                             "args":  [x["symbol"] for x in   Arglist[0:len_Arglist]],
@@ -615,16 +615,16 @@ class xgenAST:
         t = time.time()
 
         fun_ret = []
-        primary = ClassInstance.hdl_conversion__.get_primary_object(ClassInstance)
-        ClassInstance.hdl_conversion__ = primary.hdl_conversion__
-        ClassInstance.hdl_conversion__.MissingTemplate = False
+        primary = ClassInstance.__hdl_converter__.get_primary_object(ClassInstance)
+        ClassInstance.__hdl_converter__ = primary.__hdl_converter__
+        ClassInstance.__hdl_converter__.MissingTemplate = False
         ClassName  = type(ClassInstance).__name__
         ClassInstance_local = v_deepcopy(ClassInstance)
         #ClassInstance_local._remove_connections()
         
         cl = self.getClassByName(ClassName)
         try:
-            print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.hdl_conversion__.MemfunctionCalls)) +'">')
+            print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.__hdl_converter__.MemfunctionCalls)) +'">')
             gTemplateIndent.inc()
             self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
             gTemplateIndent.deinc()
@@ -751,21 +751,21 @@ def call_func(obj, name, args, astParser=None,func_args=None):
     ret = []
 
     for x in range(len(args)):
-        ys =func_args[x]["symbol"].hdl_conversion__.extract_conversion_types(func_args[x]["symbol"])
+        ys =func_args[x]["symbol"].__hdl_converter__.extract_conversion_types(func_args[x]["symbol"])
         for y in ys:
             line = func_args[x]["name"] + y["suffix"]+ " => " + str(args[x].vhdl_name) + y["suffix"]
             ret.append(line)
             if y["symbol"].varSigConst ==varSig.signal_t:
                 members = y["symbol"].getMember()
                 for m in members:
-                    if m["symbol"]._writtenRead == InOut_t.output_t:
+                    if m["symbol"].__writeRead__ == InOut_t.output_t:
                         line = func_args[x]["name"] + y["suffix"]+"_"+ m["name"] +" => " + args[x].vhdl_name + y["suffix"]  +"."+m["name"]
                         ret.append(line)
                         #print(line)
             
 
 
-    actual_function_name = func_args[0]["symbol"].hdl_conversion__.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)
+    actual_function_name = func_args[0]["symbol"].__hdl_converter__.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)
     ret = join_str(ret, Delimeter=", ", start= actual_function_name +"(" ,end=")")
     #print(ret)
     return ret

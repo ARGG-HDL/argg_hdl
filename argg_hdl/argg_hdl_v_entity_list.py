@@ -19,7 +19,7 @@ class v_entity_list_converter(hdl_converter_base):
                 if x["temp"]:
                     tempName = obj.vhdl_name +"_"+ str(i) + "_" +type(x["symbol"]).__name__
                     x["symbol"].set_vhdl_name(tempName)
-                    ret += x["symbol"].hdl_conversion__.get_architecture_header(x["symbol"])
+                    ret += x["symbol"].__hdl_converter__.get_architecture_header(x["symbol"])
             ret += "-------------------------- end "+ obj.vhdl_name  +"-----------------\n"
             return ret
 
@@ -35,7 +35,7 @@ class v_entity_list_converter(hdl_converter_base):
                     tempName = str(obj.vhdl_name) +"_"+  str(i) + "_" +type(x["symbol"]).__name__
                     if not x["symbol"].vhdl_name:
                         x["symbol"].set_vhdl_name(tempName)
-                    ret += start + x["symbol"].hdl_conversion__.get_architecture_body(x["symbol"])
+                    ret += start + x["symbol"].__hdl_converter__.get_architecture_body(x["symbol"])
                     start = ";\n  "
             
 
@@ -46,7 +46,7 @@ class v_entity_list_converter(hdl_converter_base):
             bufffer = ""
             
             for x in obj.nexted_entities:
-                bufffer += x["symbol"].hdl_conversion__.includes(x["symbol"], None, None)
+                bufffer += x["symbol"].__hdl_converter__.includes(x["symbol"], None, None)
 
             ret  = make_unique_includes(bufffer)
 
@@ -55,7 +55,7 @@ class v_entity_list_converter(hdl_converter_base):
 class v_entity_list(argg_hdl_base0):
     def __init__(self):
         super().__init__()
-        self.hdl_conversion__ = v_entity_list_converter()
+        self.__hdl_converter__ = v_entity_list_converter()
         self.nexted_entities = list()
 
 
@@ -86,7 +86,7 @@ class v_entity_list(argg_hdl_base0):
                 "symbol" : entity,
                 "temp"   : False
             })
-        elif entity._isInstance == False:
+        elif entity.__isInst__ == False:
             entity._instantiate_()
             self.nexted_entities.append({
                 "symbol" : entity,

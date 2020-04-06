@@ -23,7 +23,7 @@ class v_enum(argg_hdl_base):
         self.type = Enumtype
         self.Value = EnumVal
         self.name = name
-        self.Inout = InOut_t.Internal_t
+        self._Inout = InOut_t.Internal_t
         self.vhdl_name = None
     
 
@@ -52,7 +52,7 @@ class v_enum(argg_hdl_base):
 
     def recordMember(self,name, parent,Inout=None):
         if parent._issubclass_("v_class"):
-            if self.Inout == InOut_t.Slave_t:
+            if self._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
             return "  " + name + " : " +self.name +"; \n"
        
@@ -60,7 +60,7 @@ class v_enum(argg_hdl_base):
 
     def recordMemberDefault(self, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
-            if self.Inout == InOut_t.Slave_t:
+            if self._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
 
             return name + " => " + self.Value.name 
@@ -70,12 +70,12 @@ class v_enum(argg_hdl_base):
 
     def isInOutType(self, Inout):
         
-        if Inout==None or self.Inout == Inout: 
+        if Inout==None or self._Inout == Inout: 
             return True
-        elif self.Inout== InOut_t.Master_t:
+        elif self._Inout== InOut_t.Master_t:
             mem = self.getMember(Inout)
             return len(mem) > 0
-        elif self.Inout == InOut_t.Slave_t:
+        elif self._Inout == InOut_t.Slave_t:
             if Inout == InOut_t.Master_t:
                 Inout = InOut_t.Slave_t
             elif Inout == InOut_t.Slave_t:

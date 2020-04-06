@@ -59,7 +59,7 @@ class v_symbol_converter(hdl_converter_base):
     def _vhdl_slice(self,obj,sl,astParser=None):
         obj._add_input()
         if "std_logic_vector" in obj.type:
-            ret = v_sl(obj.Inout)
+            ret = v_sl(obj._Inout)
             ret.vhdl_name = obj.vhdl_name+"("+str(sl)+")"
             return ret
 
@@ -67,7 +67,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
     def _vhdl__compare_int(self,obj, ops, rhs):
-        return str(obj) + " "+ obj.hdl_conversion__.ops2str(ops) +" " +   str(rhs)
+        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
 
     def _vhdl__compare_std_logic(self,obj, ops, rhs):
         value = str(rhs).lower()
@@ -75,10 +75,10 @@ class v_symbol_converter(hdl_converter_base):
             rhs = "1"
         elif value == "false":
             rhs = "0"            
-        return str(obj) + " "+ obj.hdl_conversion__.ops2str(ops) +" '" +  str(rhs) +"'"
+        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" '" +  str(rhs) +"'"
     
     def _vhdl__compare_std_logic_vector(self,obj, ops, rhs):
-        return str(obj) + " "+ obj.hdl_conversion__.ops2str(ops) +" " +   str(rhs)
+        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
 
     def _vhdl__compare(self,obj, ops, rhs):
         obj._add_input()
@@ -86,14 +86,14 @@ class v_symbol_converter(hdl_converter_base):
             rhs._add_input()
     
         if obj.type == "integer":
-            return obj.hdl_conversion__._vhdl__compare_int(obj, ops, rhs)
+            return obj.__hdl_converter__._vhdl__compare_int(obj, ops, rhs)
         elif obj.type == "std_logic":
-            return obj.hdl_conversion__._vhdl__compare_std_logic(obj, ops, rhs)
+            return obj.__hdl_converter__._vhdl__compare_std_logic(obj, ops, rhs)
         elif "std_logic_vector" in obj.type:
-            return obj.hdl_conversion__._vhdl__compare_std_logic_vector(obj, ops, rhs)
+            return obj.__hdl_converter__._vhdl__compare_std_logic_vector(obj, ops, rhs)
         
 
-        return str(obj) + " "+ obj.hdl_conversion__.ops2str(ops)+" " +   str(rhs)
+        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
 
     def _to_hdl___bool__(self,obj, astParser):
         obj._add_input()
@@ -121,7 +121,7 @@ class v_symbol_converter(hdl_converter_base):
         return  VarSymb+ " " + name + " : " +obj.type +" := " +  obj.DefaultValue  + "; \n"
     def get_architecture_header(self, obj):
 
-        if obj.Inout != InOut_t.Internal_t and obj._isInstance == False:
+        if obj._Inout != InOut_t.Internal_t and obj.__isInst__ == False:
             return ""
         
         if obj.varSigConst == varSig.variable_t:
@@ -139,28 +139,28 @@ class v_symbol_converter(hdl_converter_base):
 
     def get_port_list(self,obj):
         ret = []
-        if obj.Inout == InOut_t.Internal_t:
+        if obj._Inout == InOut_t.Internal_t:
             return ret
         
         if obj.varSigConst != varSig.signal_t:
             return ret
         
-        ret.append( obj.vhdl_name + " : "+ obj.hdl_conversion__.InOut_t2str(obj) + " " + obj.type + " := " + obj.DefaultValue)
+        ret.append( obj.vhdl_name + " : "+ obj.__hdl_converter__.InOut_t2str(obj) + " " + obj.type + " := " + obj.DefaultValue)
         return ret
 
 
     def _vhdl__reasign_std_logic(self, obj, rhs, target, astParser=None,context_str=None):
-        asOp = obj.hdl_conversion__.get_assiment_op(obj)
+        asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
-            return target + asOp + str(rhs.hdl_conversion__._vhdl__getValue(rhs, obj.type)) 
+            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj.type)) 
         return target + asOp+  str(rhs) 
 
     def _vhdl__reasign_std_logic_vector(self, obj, rhs, target, astParser=None,context_str=None):
-        asOp = obj.hdl_conversion__.get_assiment_op(obj)
+        asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " (others => '0')"
         elif  issubclass(type(rhs),argg_hdl_base):
-            return target + asOp +  str(rhs.hdl_conversion__._vhdl__getValue(rhs, obj.type)) 
+            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj.type)) 
         elif  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
                 dest=target,
@@ -168,7 +168,7 @@ class v_symbol_converter(hdl_converter_base):
                 asOp=asOp
             )
     def _vhdl__reasign_int(self, obj, rhs, target, astParser=None,context_str=None):
-        asOp = obj.hdl_conversion__.get_assiment_op(obj)
+        asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " 0"
         elif type(rhs).__name__ == "str":
@@ -195,13 +195,13 @@ class v_symbol_converter(hdl_converter_base):
 
         
         if obj.type == "std_logic":
-            return obj.hdl_conversion__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
+            return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
         elif "std_logic_vector" in obj.type:
-            return obj.hdl_conversion__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
+            return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
         elif obj.type == "integer":
-            return obj.hdl_conversion__._vhdl__reasign_int(obj, rhs,target, astParser,context_str)
+            return obj.__hdl_converter__._vhdl__reasign_int(obj, rhs,target, astParser,context_str)
 
-        asOp = obj.hdl_conversion__.get_assiment_op(obj)            
+        asOp = obj.__hdl_converter__.get_assiment_op(obj)            
         return target +asOp +  str(rhs)
     
     def get_type_simple(self,obj):
@@ -229,7 +229,7 @@ class v_symbol_converter(hdl_converter_base):
         return ret
 
     def to_arglist(self,obj, name,parent,withDefault = False):
-        inoutstr = obj.hdl_conversion__.InOut_t2str(obj)
+        inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
         varSigstr = ""
         if obj.varSigConst == varSig.signal_t:
             varSigstr = "signal "
@@ -237,8 +237,8 @@ class v_symbol_converter(hdl_converter_base):
         if not inoutstr:
             inoutstr = ""
         default_str = ""
-        if withDefault and obj._writtenRead != InOut_t.output_t and obj.Inout != InOut_t.output_t:
-            default_str =  " := " + obj.hdl_conversion__.get_default_value(obj)
+        if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
+            default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
 
         return varSigstr + name + " : " + inoutstr +" " + obj.getType() + default_str
 
@@ -249,10 +249,10 @@ class v_symbol(argg_hdl_base):
         if not varSigConst:
             varSigConst = getDefaultVarSig()
 
-        self.hdl_conversion__= v_symbol_converter(includes)
+        self.__hdl_converter__= v_symbol_converter(includes)
         self.type = v_type
         self.DefaultValue = str(DefaultValue)
-        self.Inout = Inout
+        self._Inout = Inout
         
         self.inc = ""
         self.vhdl_name = None
@@ -286,10 +286,10 @@ class v_symbol(argg_hdl_base):
     def isInOutType(self, Inout):
         if Inout == None:
             return True
-        if self.Inout == InOut_t.InOut_tt:
+        if self._Inout == InOut_t.InOut_tt:
             return True
 
-        return self.Inout == Inout
+        return self._Inout == Inout
 
     def isVarSigType(self, varSigType):
         if varSigType == None:
@@ -316,22 +316,22 @@ class v_symbol(argg_hdl_base):
             "main" : self.type
         }
     def resetInout(self):
-        self.Inout = InOut_t.Internal_t
+        self._Inout = InOut_t.Internal_t
         
     def setInout(self,Inout):
-        if self.Inout == InOut_t.Internal_t and  Inout == InOut_t.Master_t:
-            self.Inout = InOut_t.output_t
+        if self._Inout == InOut_t.Internal_t and  Inout == InOut_t.Master_t:
+            self._Inout = InOut_t.output_t
             return 
         elif Inout == InOut_t.Master_t:
             return 
 
-        elif self.Inout == InOut_t.Internal_t and  Inout == InOut_t.Slave_t:
-            self.Inout = InOut_t.input_t
+        elif self._Inout == InOut_t.Internal_t and  Inout == InOut_t.Slave_t:
+            self._Inout = InOut_t.input_t
             return 
         elif Inout == InOut_t.Slave_t:
-            self.Inout = InoutFlip(self.Inout)
+            self._Inout = InoutFlip(self._Inout)
             return 
-        self.Inout = Inout
+        self._Inout = Inout
 
 
     def set_varSigConst(self, varSigConst):
@@ -339,7 +339,7 @@ class v_symbol(argg_hdl_base):
         
     
     def flipInout(self):
-        self.Inout = InoutFlip(self.Inout)
+        self._Inout = InoutFlip(self._Inout)
 
     
     
@@ -355,6 +355,9 @@ class v_symbol(argg_hdl_base):
 
         raise Exception("No Name was given to symbol")
 
+    def __repr__(self):
+        return str(value(self))
+        
     def set_simulation_param(self,module, name,writer):
         self._Simulation_name =module+"." +name
         self.__vcd_varobj__ = writer.register_var(module, name, 'integer', size=32)
@@ -452,12 +455,12 @@ class v_symbol(argg_hdl_base):
 
 
     def _instantiate_(self):
-        self._isInstance = True
-        self.Inout = InoutFlip(self.Inout)
+        self.__isInst__ = True
+        self._Inout = InoutFlip(self._Inout)
         return self
         
     def _un_instantiate_(self, Name = ""):
-        self._isInstance = False
+        self.__isInst__ = False
         self.flipInout()
         self.set_vhdl_name(Name,True)
         return self
@@ -613,7 +616,7 @@ def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
     )
 
 def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
-    asOp = args[0].hdl_conversion__.get_assiment_op(args[0])
+    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
     val = None
     if obj.type == "std_logic":
         val = "'0'"

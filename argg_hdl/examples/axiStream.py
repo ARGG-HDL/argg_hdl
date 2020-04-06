@@ -14,23 +14,23 @@ class axisStream_converter(v_class_converter):
 
     def includes(self,obj, name,parent):
         ret =""
-        typeName = obj.data.hdl_conversion__.get_type_simple(obj.data)
+        typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
         
-        depobj  = obj.hdl_conversion__.get_dependency_objects(obj,[])
+        depobj  = obj.__hdl_converter__.get_dependency_objects(obj,[])
         
         ret += "use work.axisStream_"+str(typeName)+".all;\n"
         members = obj.getMember() 
         for x in members:
-            ret += x["symbol"].hdl_conversion__.includes(x["symbol"],name,parent)
+            ret += x["symbol"].__hdl_converter__.includes(x["symbol"],name,parent)
 
         return ret
     
     def get_packet_file_name(self, obj):
-        typeName = obj.data.hdl_conversion__.get_type_simple(obj.data)
+        typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
         return "axisStream_"+str(typeName)+".vhd"
 
     def get_packet_file_content(self, obj):
-        typeName = obj.data.hdl_conversion__.get_type_simple(obj.data)
+        typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
         pack =  "axisStream_"+str(typeName)
 
         fileContent = make_package(pack,  obj.data)
@@ -38,8 +38,8 @@ class axisStream_converter(v_class_converter):
 
 class axisStream(v_class):
     def __init__(self,Axitype):
-        super().__init__("axiStream_"+Axitype.hdl_conversion__.get_type_simple(Axitype))
-        self.hdl_conversion__ =axisStream_converter()
+        super().__init__("axiStream_"+Axitype.__hdl_converter__.get_type_simple(Axitype))
+        self.__hdl_converter__ =axisStream_converter()
         AddDataType( v_copy( Axitype ) )
         self.valid  = port_out( v_sl() )
         self.last   = port_out( v_sl() )
@@ -57,7 +57,7 @@ class axisStream_slave_converter(axisStream_converter):
         super().__init__()
 
     def _to_hdl___bool__(self, obj, astParser):
-        hdl = obj.hdl_conversion__._vhdl__call_member_func(obj, "isReceivingData",[obj],astParser)
+        hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "isReceivingData",[obj],astParser)
 
         if hdl == None:
             astParser.Missing_template=True
@@ -76,7 +76,7 @@ class axisStream_slave_converter(axisStream_converter):
             astParser.LocalVar.append(buff)
 
 
-        hdl = obj.hdl_conversion__._vhdl__call_member_func(obj, "read_data",[obj, buff],astParser)
+        hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "read_data",[obj, buff],astParser)
         if hdl == None:
             astParser.AddStatementBefore("-- $$ template missing $$")
             astParser.Missing_template=True
@@ -93,19 +93,19 @@ class axisStream_slave_converter(axisStream_converter):
         return ""
 
     def get_packet_file_name(self, obj):
-        ret = obj.rx.hdl_conversion__.get_packet_file_name(obj.rx)
+        ret = obj.rx.__hdl_converter__.get_packet_file_name(obj.rx)
         return ret
 
 
     def get_packet_file_content(self, obj):
-        ret = obj.rx.hdl_conversion__.get_packet_file_content(obj.rx)
+        ret = obj.rx.__hdl_converter__.get_packet_file_content(obj.rx)
         return ret
 
 
 class axisStream_slave(v_class_slave):
     def __init__(self, Axi_in):
         super().__init__(Axi_in.type+"_slave")
-        self.hdl_conversion__ =axisStream_slave_converter()
+        self.__hdl_converter__ =axisStream_slave_converter()
         
         self.rx =  variable_port_Slave( Axi_in)
         self.rx  << Axi_in
@@ -180,14 +180,14 @@ class axisStream_master_converter(axisStream_converter):
         super().__init__()
 
     def _to_hdl___bool__(self, obj, astParser):
-        ret =  obj.hdl_conversion__._vhdl__call_member_func(obj, "ready_to_send",[obj],astParser)
+        ret =  obj.__hdl_converter__._vhdl__call_member_func(obj, "ready_to_send",[obj],astParser)
         if ret == None:
             astParser.Missing_template=True
             return "$$missing_template$$"
         return ret
     
     def _vhdl__reasign(self,obj, rhs,astParser,context_str=None):
-        ret =  obj.hdl_conversion__._vhdl__call_member_func(obj, "send_data",[obj, rhs],astParser)
+        ret =  obj.__hdl_converter__._vhdl__call_member_func(obj, "send_data",[obj, rhs],astParser)
         if ret == None:
             astParser.Missing_template=True
             return "$$missing_template$$"
@@ -200,17 +200,17 @@ class axisStream_master_converter(axisStream_converter):
         return "" 
 
     def get_packet_file_name(self, obj):
-        ret = obj.tx.hdl_conversion__.get_packet_file_name(obj.tx)
+        ret = obj.tx.__hdl_converter__.get_packet_file_name(obj.tx)
         return ret
 
     def get_packet_file_content(self, obj):
-        ret = obj.tx.hdl_conversion__.get_packet_file_content(obj.tx)
+        ret = obj.tx.__hdl_converter__.get_packet_file_content(obj.tx)
         return ret
 
 class axisStream_master(v_class_master):
     def __init__(self, Axi_Out):
         super().__init__(Axi_Out.type + "_master")
-        self.hdl_conversion__ =axisStream_master_converter()
+        self.__hdl_converter__ =axisStream_master_converter()
         self.tx =  variable_port_Master( Axi_Out)
         Axi_Out  << self.tx
 
