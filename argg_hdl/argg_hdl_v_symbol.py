@@ -34,7 +34,7 @@ class v_symbol_converter(hdl_converter_base):
         
     def recordMember(self,obj, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
-            return name + " : " +obj.type
+            return name + " : " +obj._type
 
         return ""
 
@@ -45,22 +45,22 @@ class v_symbol_converter(hdl_converter_base):
         return ""
 
     def getHeader(self, obj,name,parent):
-        if obj.vhdl_name:
-            name = obj.vhdl_name
+        if obj.__hdl_name__:
+            name = obj.__hdl_name__
 
         if parent._issubclass_("v_class"):
              return ""
             
-        return name + " : " +obj.type +" := " +  obj.DefaultValue  + "; \n"
+        return name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
 
     def getFuncArg(self,obj, name,parent):
-        return name + " : " + obj.type   
+        return name + " : " + obj._type   
 
     def _vhdl_slice(self,obj,sl,astParser=None):
         obj._add_input()
-        if "std_logic_vector" in obj.type:
+        if "std_logic_vector" in obj._type:
             ret = v_sl(obj._Inout)
-            ret.vhdl_name = obj.vhdl_name+"("+str(sl)+")"
+            ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
             return ret
 
         raise Exception("unexpected type")
@@ -85,11 +85,11 @@ class v_symbol_converter(hdl_converter_base):
         if issubclass(type(rhs),argg_hdl_base):
             rhs._add_input()
     
-        if obj.type == "integer":
+        if obj._type == "integer":
             return obj.__hdl_converter__._vhdl__compare_int(obj, ops, rhs)
-        elif obj.type == "std_logic":
+        elif obj._type == "std_logic":
             return obj.__hdl_converter__._vhdl__compare_std_logic(obj, ops, rhs)
-        elif "std_logic_vector" in obj.type:
+        elif "std_logic_vector" in obj._type:
             return obj.__hdl_converter__._vhdl__compare_std_logic_vector(obj, ops, rhs)
         
 
@@ -97,13 +97,13 @@ class v_symbol_converter(hdl_converter_base):
 
     def _to_hdl___bool__(self,obj, astParser):
         obj._add_input()
-        if obj.type == "std_logic":
+        if obj._type == "std_logic":
             return str(obj) + " = '1'"
-        elif "std_logic_vector" in obj.type:
+        elif "std_logic_vector" in obj._type:
             return str(obj) + " > 1"
-        elif obj.type == "boolean":
+        elif obj._type == "boolean":
             return str(obj)
-        elif obj.type == "integer":
+        elif obj._type == "integer":
             return str(obj) + " > 0"
 
         return "pyhdl_to_bool(" + str(obj) + ") "
@@ -111,30 +111,30 @@ class v_symbol_converter(hdl_converter_base):
     def _vhdl__DefineSymbol(self,obj, VarSymb=None):
         print("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
-            VarSymb = get_varSig(obj.varSigConst)
+            VarSymb = get_varSig(obj._varSigConst)
 
         if  obj.__Driver__ != None and str(obj.__Driver__ ) != 'process':
             return ""
-        name = obj.vhdl_name
+        name = obj.__hdl_name__
 
             
-        return  VarSymb+ " " + name + " : " +obj.type +" := " +  obj.DefaultValue  + "; \n"
+        return  VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
     def get_architecture_header(self, obj):
 
         if obj._Inout != InOut_t.Internal_t and obj.__isInst__ == False:
             return ""
         
-        if obj.varSigConst == varSig.variable_t:
+        if obj._varSigConst == varSig.variable_t:
             return ""
         
         
-        VarSymb = get_varSig(obj.varSigConst)
+        VarSymb = get_varSig(obj._varSigConst)
 
         #if  obj.__Driver__ != None and str(obj.__Driver__ ) != 'process':
         #    return ""
-        name = obj.vhdl_name
+        name = obj.__hdl_name__
 
-        ret = "  " + VarSymb+ " " + name + " : " +obj.type +" := " +  obj.DefaultValue  + "; \n"   
+        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"   
         return  ret
 
     def get_port_list(self,obj):
@@ -142,17 +142,17 @@ class v_symbol_converter(hdl_converter_base):
         if obj._Inout == InOut_t.Internal_t:
             return ret
         
-        if obj.varSigConst != varSig.signal_t:
+        if obj._varSigConst != varSig.signal_t:
             return ret
         
-        ret.append( obj.vhdl_name + " : "+ obj.__hdl_converter__.InOut_t2str(obj) + " " + obj.type + " := " + obj.DefaultValue)
+        ret.append( obj.__hdl_name__ + " : "+ obj.__hdl_converter__.InOut_t2str(obj) + " " + obj._type + " := " + obj.DefaultValue)
         return ret
 
 
     def _vhdl__reasign_std_logic(self, obj, rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
-            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj.type)) 
+            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type)) 
         return target + asOp+  str(rhs) 
 
     def _vhdl__reasign_std_logic_vector(self, obj, rhs, target, astParser=None,context_str=None):
@@ -160,7 +160,7 @@ class v_symbol_converter(hdl_converter_base):
         if str(rhs) == '0':
             return target + asOp+ " (others => '0')"
         elif  issubclass(type(rhs),argg_hdl_base):
-            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj.type)) 
+            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type)) 
         elif  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
                 dest=target,
@@ -174,9 +174,9 @@ class v_symbol_converter(hdl_converter_base):
         elif type(rhs).__name__ == "str":
             return target + asOp+ str(rhs)
                 
-        elif rhs.type == "integer":
+        elif rhs._type == "integer":
             return target + asOp+ str(rhs)
-        elif "std_logic_vector" in rhs.type:
+        elif "std_logic_vector" in rhs._type:
             return target + asOp +" to_integer(signed("+ str(rhs)+"))"
         
         return target +asOp +  str(rhs)
@@ -184,7 +184,7 @@ class v_symbol_converter(hdl_converter_base):
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
         obj._add_output()
         target = str(obj)
-        if obj.varSigConst == varSig.signal_t and not (context_str and (context_str == "archetecture" or context_str== "process")):
+        if obj._varSigConst == varSig.signal_t and not (context_str and (context_str == "archetecture" or context_str== "process")):
             target = target.replace(".","_")
 
         if issubclass(type(rhs),argg_hdl_base0)  and str( obj.__Driver__) != 'process':
@@ -194,18 +194,18 @@ class v_symbol_converter(hdl_converter_base):
             obj.__Driver__ = 'process'
 
         
-        if obj.type == "std_logic":
+        if obj._type == "std_logic":
             return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
-        elif "std_logic_vector" in obj.type:
+        elif "std_logic_vector" in obj._type:
             return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
-        elif obj.type == "integer":
+        elif obj._type == "integer":
             return obj.__hdl_converter__._vhdl__reasign_int(obj, rhs,target, astParser,context_str)
 
         asOp = obj.__hdl_converter__.get_assiment_op(obj)            
         return target +asOp +  str(rhs)
     
     def get_type_simple(self,obj):
-        ret = obj.type
+        ret = obj._type
         if "std_logic_vector" in ret:
             sp1 = int(ret.split("downto")[0].split("(")[1])
             sp2 = int(ret.split("downto")[1].split(")")[0])
@@ -215,7 +215,7 @@ class v_symbol_converter(hdl_converter_base):
 
     def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
         obj._add_input()
-        if ReturnToObj == "integer" and  "std_logic_vector" in obj.type:
+        if ReturnToObj == "integer" and  "std_logic_vector" in obj._type:
             return  "to_integer(signed( " + str(obj)  + "))"
         
         return obj
@@ -225,13 +225,13 @@ class v_symbol_converter(hdl_converter_base):
 
     def length(self,obj):
         ret = v_int()
-        ret.vhdl_name=str(obj)+"'length"
+        ret.__hdl_name__=str(obj)+"'length"
         return ret
 
     def to_arglist(self,obj, name,parent,withDefault = False):
         inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
         varSigstr = ""
-        if obj.varSigConst == varSig.signal_t:
+        if obj._varSigConst == varSig.signal_t:
             varSigstr = "signal "
 
         if not inoutstr:
@@ -243,33 +243,33 @@ class v_symbol_converter(hdl_converter_base):
         return varSigstr + name + " : " + inoutstr +" " + obj.getType() + default_str
 
 class v_symbol(argg_hdl_base):
-    value_list = []
+    __value_list__ = []
     def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t):
         super().__init__()
         if not varSigConst:
             varSigConst = getDefaultVarSig()
 
         self.__hdl_converter__= v_symbol_converter(includes)
-        self.type = v_type
+        self._type = v_type
         self.DefaultValue = str(DefaultValue)
         self._Inout = Inout
         
-        self.inc = ""
-        self.vhdl_name = None
-        self.value_list.append(get_value_or_default(value, DefaultValue))
-        self.value_index = len(self.value_list) -1
+
+        self.__hdl_name__ = None
+        self.__value_list__.append(get_value_or_default(value, DefaultValue))
+        self.__value_Index__ = len(self.__value_list__) -1
         #self.value = get_value_or_default(value, DefaultValue)
         self.nextValue  = get_value_or_default(value, DefaultValue)
-        self.varSigConst=varSigConst
+        self._varSigConst=varSigConst
         self.__Driver__ = None 
-        self._update_list = list()
-        self._update_list_process = list()
-        self._update_list_running =[]
-        self._update_list_process_running = list()
-        self._receiver_list_running = []
-        self._got_update_list = False
-        self._Pull_update_list = list()
-        self._Push_update_list = list()
+        self.__update_list__ = list()
+        self.__update__list_process__ = list()
+        self.__update__list_running__ =[]
+        self.__update__list_process_running__ = list()
+        self.__receiver_list_running__ = []
+        self.__got_update_list__ = False
+        self.__Pull_update_list__ = list()
+        self.__Push_update_list__ = list()
         self.__vcd_varobj__ = None
         self.__vcd_writer__ = None
         self.__UpdateFlag__ = False
@@ -280,7 +280,7 @@ class v_symbol(argg_hdl_base):
 
 
     def _sim_get_value(self):
-        return self.value_list[self.value_index]
+        return self.__value_list__[self.__value_Index__]
 
 
     def isInOutType(self, Inout):
@@ -295,25 +295,25 @@ class v_symbol(argg_hdl_base):
         if varSigType == None:
             return True
 
-        return self.varSigConst == varSigType
+        return self._varSigConst == varSigType
 
 
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.vhdl_name and self.vhdl_name != name and Overwrite==False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite==False:
             raise Exception("double Conversion to vhdl")
         else:
-            self.vhdl_name = name
+            self.__hdl_name__ = name
 
 
 
 
     def getType(self,Inout=None):
-        return self.type
+        return self._type
 
     def getTypes(self):
         return {
-            "main" : self.type
+            "main" : self._type
         }
     def resetInout(self):
         self._Inout = InOut_t.Internal_t
@@ -335,7 +335,7 @@ class v_symbol(argg_hdl_base):
 
 
     def set_varSigConst(self, varSigConst):
-        self.varSigConst = varSigConst
+        self._varSigConst = varSigConst
         
     
     def flipInout(self):
@@ -345,13 +345,13 @@ class v_symbol(argg_hdl_base):
     
 
     def get_type(self):
-        return self.type
+        return self._type
 
 
 
     def __str__(self):
-        if self.vhdl_name:
-            return str(self.vhdl_name)
+        if self.__hdl_name__:
+            return str(self.__hdl_name__)
 
         raise Exception("No Name was given to symbol")
 
@@ -362,33 +362,33 @@ class v_symbol(argg_hdl_base):
         self._Simulation_name =module+"." +name
         self.__vcd_varobj__ = writer.register_var(module, name, 'integer', size=32)
         self.__vcd_writer__ = writer 
-        self.vhdl_name = name
+        self.__hdl_name__ = name
         self.__vcd_writer__.change(self.__vcd_varobj__, self._sim_get_value())
 
     def _sim_write_value(self):
         if self.__vcd_writer__:
             self.__vcd_writer__.change(self.__vcd_varobj__, self._sim_get_value())
         
-        for x in self._receiver_list_running:
+        for x in self.__receiver_list_running__:
             x._sim_write_value()
 
     def update_init(self):# Only needs to run once on init
-        if not self._got_update_list:
-            self._update_list_process_running = list(set(self._sim__update_list_process()))
-            self._update_list_running =     list(set(self._sim_get_update_list()))
-            self._receiver_list_running  = self._sim_get_receiver()
-            self._got_update_list = True
+        if not self.__got_update_list__:
+            self.__update__list_process_running__ = list(set(self._sim__update_list_process()))
+            self.__update__list_running__ =     list(set(self._sim_get_update_list()))
+            self.__receiver_list_running__  = self._sim_get_receiver()
+            self.__got_update_list__ = True
 
 
     def update(self):
         self.update_init() # Wrong Place here but it works 
 
-        self.value_list[self.value_index]  = self.nextValue
+        self.__value_list__[self.__value_Index__]  = self.nextValue
 
         self._sim_write_value()
         
-        gsimulation.append_updateList(self._update_list_running)
-        gsimulation.append_updateList_process(self._update_list_process_running)
+        gsimulation.append_updateList(self.__update__list_running__)
+        gsimulation.append_updateList_process(self.__update__list_process_running__)
 
         self.__UpdateFlag__ = False
 
@@ -412,11 +412,11 @@ class v_symbol(argg_hdl_base):
 ##################### End Operators #############################################
 
     def _sim_get_new_storage(self):
-        self.value_list.append(value(self))
-        self.value_index = len(self.value_list) -1  
+        self.__value_list__.append(value(self))
+        self.__value_Index__ = len(self.__value_list__) -1  
 
     def _sim_get_update_list(self):
-        ret = self._update_list
+        ret = self.__update_list__
         for x in self.__receiver__:
             ret += x._sim_get_update_list()
         return ret
@@ -433,24 +433,24 @@ class v_symbol(argg_hdl_base):
         return ret
 
     def _sim_set_new_value_index(self,Index):
-        self.value_index = Index
+        self.__value_Index__ = Index
         receivers = self._sim_get_receiver()
         for x in receivers:
-            x.value_index = self.value_index
+            x.__value_Index__ = self.__value_Index__
     
     def _sim__update_list_process(self):
-        ret = self._update_list_process
+        ret = self.__update__list_process__
         for x in self.__receiver__:
             ret += x._sim__update_list_process()
         return ret
 
     def _sim_start_simulation(self):
-        self._update_list_process_running = self._sim__update_list_process()
-        self._update_list_running =self._sim_get_update_list()
+        self.__update__list_process_running__ = self._sim__update_list_process()
+        self.__update__list_running__ =self._sim_get_update_list()
 
 
     def _sim_append_update_list(self,up):
-        self._update_list.append(up)
+        self.__update_list__.append(up)
     
 
 
@@ -472,7 +472,7 @@ class v_symbol(argg_hdl_base):
         self << 0
     def _Connect_running(self, rhs):
         self.nextValue = value(rhs)
-        #print("assing: ", self.value_index , self._Simulation_name ,  value(rhs))
+        #print("assing: ", self.__value_Index__ , self._Simulation_name ,  value(rhs))
 
         if self.nextValue !=  value(self):
             def update():
@@ -482,29 +482,29 @@ class v_symbol(argg_hdl_base):
                 gsimulation.append_updateList([update])
                 self.__UpdateFlag__ = True
                 
-        if self.varSigConst == varSig.variable_t:
-            self.value_list[self.value_index]  = self.nextValue
+        if self._varSigConst == varSig.variable_t:
+            self.__value_list__[self.__value_Index__]  = self.nextValue
 
     def _Conect_Not_running(self,rhs):
         if self.__Driver__ != None and not isConverting2VHDL():#todo: there is a bug with double assigment in the conversion to vhdl
             raise Exception("symbol has already a driver", str(self))
         elif not issubclass(type(rhs),argg_hdl_base0):
             self.nextValue = rhs
-            self.value_list[self.value_index] = rhs
+            self.__value_list__[self.__value_Index__] = rhs
             return
 
-        if rhs.varSigConst == varSig.variable_t or self.varSigConst == varSig.variable_t:
-            self.value_list[self.value_index] = value(rhs)
+        if rhs._varSigConst == varSig.variable_t or self._varSigConst == varSig.variable_t:
+            self.__value_list__[self.__value_Index__] = value(rhs)
             def update1():
-                #print("update: ", self.value_index , self._Simulation_name ,  value(rhs))
+                #print("update: ", self.__value_Index__ , self._Simulation_name ,  value(rhs))
                 self.nextValue = value(rhs)
                 self.update()
-            rhs._update_list.append(update1)
+            rhs.__update_list__.append(update1)
         else:
             self.__Driver__ = rhs
             rhs.__receiver__.append(self)
             self.nextValue = rhs.nextValue
-            self._sim_set_new_value_index(  rhs._sim_get_primary_driver().value_index )
+            self._sim_set_new_value_index(  rhs._sim_get_primary_driver().__value_Index__ )
 
         
         
@@ -618,11 +618,11 @@ def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
 def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
     asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
     val = None
-    if obj.type == "std_logic":
+    if obj._type == "std_logic":
         val = "'0'"
-    elif "std_logic_vector" in obj.type:
+    elif "std_logic_vector" in obj._type:
         val = "(others => '0')"
-    elif obj.type == "integer":
+    elif obj._type == "integer":
         val = '0'
     
     if val == None:

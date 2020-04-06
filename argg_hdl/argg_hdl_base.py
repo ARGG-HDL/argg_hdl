@@ -226,7 +226,7 @@ def isSameArgs(args1,args2, hasDefaults = False):
             return False
         if get_type(args1[i]) != get_type( args2[i]):
             return False
-        if get_symbol(args1[i]).varSigConst != get_symbol(args2[i]).varSigConst:
+        if get_symbol(args1[i])._varSigConst != get_symbol(args2[i])._varSigConst:
             return False
     return True  
 
@@ -552,19 +552,19 @@ class hdl_converter_base:
 
     def _vhdl__DefineSymbol(self,obj, VarSymb="variable"):
         print("_vhdl__DefineSymbol is deprecated")
-        return VarSymb +" " +str(obj) + " : " +obj.type +" := " + obj.type+"_null;\n"
+        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
         #return " -- No Generic symbol definition for object " + self.getName()
 
     def get_architecture_header(self, obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
         
-        if obj.varSigConst != varSig.signal_t or obj.varSigConst != varSig.signal_t:
+        if obj._varSigConst != varSig.signal_t or obj._varSigConst != varSig.signal_t:
             return ""
 
-        VarSymb = get_varSig(obj.varSigConst)
+        VarSymb = get_varSig(obj._varSigConst)
 
-        return VarSymb +" " +str(obj) + " : " +obj.type +" := " + obj.type+"_null;\n"
+        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
         
     def get_architecture_body(self, obj):
         return ""
@@ -582,12 +582,12 @@ class hdl_converter_base:
         if obj._Inout != InOut_t.Internal_t:
             return ""
         
-        if obj.varSigConst != varSig.variable_t:
+        if obj._varSigConst != varSig.variable_t:
             return ""
 
-        VarSymb = get_varSig(obj.varSigConst)
+        VarSymb = get_varSig(obj._varSigConst)
 
-        return VarSymb +" " +str(obj) + " : " +obj.type +" := " + obj.DefaultValue +";\n"
+        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.DefaultValue +";\n"
 
 
 
@@ -598,7 +598,7 @@ class hdl_converter_base:
         return ""
 
     def get_assiment_op(self, obj):
-        varSigConst = obj.varSigConst
+        varSigConst = obj._varSigConst
         raise_if(varSigConst== varSig.const_t, "cannot asign to constant")
 
         if varSigConst== varSig.signal_t:
@@ -627,7 +627,7 @@ class hdl_converter_base:
         raise Exception("unkown Inout type",inOut)
 
     def get_default_value(self,obj):
-        return obj.type + "_null"
+        return obj._type + "_null"
 
 
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
@@ -833,12 +833,18 @@ class  InOut_t(Enum):
     Unset_t    = 8 
     Used_t     = 9 
 
+    def __repr__(self):
+        return str(self).split(".")[-1]
+
 class varSig(Enum):
     variable_t = 1
     signal_t =2 
     const_t =3
     reference_t = 4
     combined_t = 5
+
+    def __repr__(self):
+        return str(self).split(".")[-1]
 
 v_defaults ={
 "defVarSig" : varSig.variable_t
@@ -884,7 +890,9 @@ class v_classType_t(Enum):
     Master_t = 2
     Slave_t = 3
     Record_t =4
-
+    
+    def __repr__(self):
+        return str(self).split(".")[-1]
 
 def v_variable(symbol):
     ret= copy.deepcopy(symbol)
@@ -1036,7 +1044,7 @@ def v_copy(symbol,varSig=None):
     ret._sim_get_new_storage()
     ret.resetInout()
     ret.__isInst__ = False
-    ret.vhdl_name = None
+    ret.__hdl_name__ = None
     ret._remove_drivers()
     if varSig == None:
         ret.set_varSigConst(getDefaultVarSig())

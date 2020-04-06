@@ -23,7 +23,7 @@ class ram_handle(v_class):
 
 class ram_handle_master(v_class):
     def __init__(self, ram_handle):
-        super().__init__(ram_handle.type + "_master")
+        super().__init__(ram_handle._type + "_master")
         self.__v_classType__         = v_classType_t.Master_t
         self.txrx = port_Master(ram_handle)
         self.writeEnable_internal  =  v_sl()

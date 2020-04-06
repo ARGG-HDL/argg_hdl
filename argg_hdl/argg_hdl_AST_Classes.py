@@ -168,12 +168,12 @@ class v_process_body_Def(v_ast_base):
     def __str__(self):
         pull =""
         for x in self.LocalVar:
-            if x.type == "undef":
+            if x._type == "undef":
                 continue
             pull += x.__hdl_converter__._vhdl__Pull(x)
         push =""
         for x in self.LocalVar:
-            if x.type == "undef":
+            if x._type == "undef":
                 continue
             push += x.__hdl_converter__._vhdl__push(x)
         
@@ -224,12 +224,12 @@ class v_process_body_timed_Def(v_ast_base):
     def __str__(self):
         pull =""
         for x in self.LocalVar:
-            if x.type == "undef":
+            if x._type == "undef":
                 continue
             pull += x.__hdl_converter__._vhdl__Pull(x)
         push =""
         for x in self.LocalVar:
-            if x.type == "undef":
+            if x._type == "undef":
                 continue
             push += x.__hdl_converter__._vhdl__push(x)
         
@@ -467,7 +467,7 @@ class v_Attribute(v_ast_base):
     def __init__(self,Attribute,Obj):
         self.obj = Obj 
         self.att = getattr(self.obj["symbol"],Attribute)
-        self.att.set_vhdl_name(self.obj["symbol"].vhdl_name+"."+Attribute)
+        self.att.set_vhdl_name(self.obj["symbol"].__hdl_name__+"."+Attribute)
         self.Attribute = Attribute
 
     def __str__(self):
@@ -482,7 +482,7 @@ def body_unfold_Attribute(astParser,Node):
     else:
         obj = val 
     if issubclass(type(obj),v_enum):
-        return v_enum(getattr(obj.type,Node.attr))
+        return v_enum(getattr(obj._type,Node.attr))
     att = getattr(obj,Node.attr)
     
     if type(type(att)).__name__ == "EnumMeta": 
@@ -496,7 +496,7 @@ def body_unfold_Attribute(astParser,Node):
 #    att._Inout =  obj._Inout
     astParser.FuncArgs.append(
                     {
-                    "name":att.vhdl_name,
+                    "name":att.__hdl_name__,
                     "symbol": att,
                     "ScopeType": obj._Inout
 
@@ -514,9 +514,9 @@ class v_Num(v_ast_base):
         return "integer"
 
     def _vhdl__getValue(self,ReturnToObj=None,astParser=None):
-        if ReturnToObj.type =="std_logic":
+        if ReturnToObj._type =="std_logic":
             return  "'" + str(self.value)+ "'"
-        if  "std_logic_vector" in ReturnToObj.type:
+        if  "std_logic_vector" in ReturnToObj._type:
             if str(self) == '0':
                 return " (others => '0')"
             
@@ -525,12 +525,12 @@ class v_Num(v_ast_base):
                     src = str(self.value)
             )
 
-        if ReturnToObj.type =="integer":
+        if ReturnToObj._type =="integer":
             return  str(self.value)
             
         if str(self) == '0':
             ret = v_copy(ReturnToObj)
-            ret.vhdl_name = ReturnToObj.type + "_null"
+            ret.__hdl_name__ = ReturnToObj._type + "_null"
             return ret
 
         return "convert2"+ ReturnToObj.get_type().replace(" ","") + "(" + str(self) +")"
@@ -559,8 +559,8 @@ class v_variable_cration(v_ast_base):
 
 
     def __str__(self):
-        #return str(self.lhs.vhdl_name) +" := "+ str(self.lhs.get_value()) 
-        self.lhs.vhdl_name = self.rhs
+        #return str(self.lhs.__hdl_name__) +" := "+ str(self.lhs.get_value()) 
+        self.lhs.__hdl_name__ = self.rhs
         return self.lhs.__hdl_converter__.get_architecture_body(self.lhs)
 
 
@@ -578,7 +578,7 @@ def  body_unfold_assign(astParser,Node):
             x["symbol"].set_vhdl_name(Node.targets[0].id,True)
             return v_noop()
     for x in astParser.LocalVar:
-        if Node.targets[0].id in x.vhdl_name:
+        if Node.targets[0].id in x.__hdl_name__:
             raise Exception(Node_line_col_2_str(astParser, Node)+" Target already exist. Use << operate to assigne new value to existing object.")
 
     for x in astParser.FuncArgs:
@@ -669,13 +669,13 @@ class v_call(v_ast_base):
         self.memFunc = memFunc    
         self.symbol  =  symbol
         
-        self.vhdl_name =vhdl
+        self.__hdl_name__ =vhdl
     
     def __str__(self):
-        return str(self.vhdl_name) 
+        return str(self.__hdl_name__) 
     
     def get_type(self):
-        return self.symbol.type
+        return self.symbol._type
 
     def get_symbol(self):
         return self.symbol
@@ -832,7 +832,7 @@ class v_add(v_ast_base):
     def __init__(self,lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
-        self.type = lhs.type
+        self._type = lhs._type
         
 
     def get_value(self):
@@ -862,7 +862,7 @@ class v_sub(v_ast_base):
     def __init__(self,lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
-        self.type = lhs.type
+        self._type = lhs._type
         
 
         
@@ -1085,7 +1085,7 @@ class v_UnaryOP(v_ast_base):
     def __init__(self,obj,op):
         self.obj = obj
         self.op = op
-        self.type = "boolean"
+        self._type = "boolean"
 
     def __str__(self):
         op = type(self.op).__name__
@@ -1205,8 +1205,8 @@ def for_loop_ranged_based(astParser,Node):
 
     if buff == None:
         buff = v_copy(obj.Internal_Type)
-        buff.vhdl_name = str(obj) + "("+itt+")"
-        buff.varSigConst = varSig.reference_t
+        buff.__hdl_name__ = str(obj) + "("+itt+")"
+        buff._varSigConst = varSig.reference_t
         astParser.FuncArgs.append({'ScopeType':"", 'name' : vhdl_name,'symbol': buff})
     else:
         raise Exception("name already used")
@@ -1235,8 +1235,8 @@ def for_loop_indexed_based(astParser,Node):
 
     if buff == None:
         buff = v_int()
-        buff.vhdl_name = itt
-        buff.varSigConst = varSig.reference_t
+        buff.__hdl_name__ = itt
+        buff._varSigConst = varSig.reference_t
         astParser.FuncArgs.append({'ScopeType':"", 'name' : vhdl_name,'symbol': buff})
     else:
         raise Exception("name already used")

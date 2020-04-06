@@ -111,7 +111,7 @@ def rising_edge(symbol):
 
         
         addPullsPushes_from_closure(Pull_list,Push_list ,func.__closure__)
-        symbol._update_list_process.append(wrapper_rising_edge)
+        symbol.__update__list_process__.append(wrapper_rising_edge)
         return wrapper_rising_edge
     return decorator_rising_edge
 
@@ -202,8 +202,8 @@ class v_entity_converter(hdl_converter_base):
 
         
     def _vhdl_get_attribute(self,obj, attName):
-        if obj.vhdl_name:
-            return obj.vhdl_name +"_"+ attName
+        if obj.__hdl_name__:
+            return obj.__hdl_name__ +"_"+ attName
         
         return attName
 
@@ -218,8 +218,8 @@ class v_entity_converter(hdl_converter_base):
         return ret 
 
     def get_architecture_header_def(self, obj):
-        if obj.vhdl_name:
-            name = obj.vhdl_name
+        if obj.__hdl_name__:
+            name = obj.__hdl_name__
         else :
             name = obj._name
         ret = "--------------------------"+ name  +"-----------------\n"
@@ -228,7 +228,7 @@ class v_entity_converter(hdl_converter_base):
         for x in members:
             sym = x["symbol"]
             symName = obj.__hdl_converter__._vhdl_get_attribute(obj,x["name"])
-            sym.vhdl_name = symName
+            sym.__hdl_name__ = symName
             
             ret +=  sym.__hdl_converter__.get_architecture_header(sym)
 
@@ -241,8 +241,8 @@ class v_entity_converter(hdl_converter_base):
 
 
     def get_architecture_header(self, obj):
-        if obj.vhdl_name:
-            name = obj.vhdl_name
+        if obj.__hdl_name__:
+            name = obj.__hdl_name__
         else :
             name = obj._name
         ret = "--------------------------"+ name  +"-----------------\n"
@@ -250,10 +250,10 @@ class v_entity_converter(hdl_converter_base):
         
         for x in members:
             sym = x["symbol"]
-            if sym.Inout ==InOut_t.Internal_t:
+            if sym._Inout ==InOut_t.Internal_t:
                 continue
             symName = obj.__hdl_converter__._vhdl_get_attribute(obj,x["name"])
-            sym.vhdl_name = symName
+            sym.__hdl_name__ = symName
             
             ret +=  sym.__hdl_converter__.get_architecture_header(sym)
 
@@ -265,15 +265,15 @@ class v_entity_converter(hdl_converter_base):
         content = []
 
         for x in v_entity_getMember(obj):
-            if x["symbol"].Inout ==InOut_t.Internal_t:
+            if x["symbol"]._Inout ==InOut_t.Internal_t:
                 continue
-            if not x["symbol"].vhdl_name:
-                x["symbol"].set_vhdl_name(obj.vhdl_name+"_"+ x["name"])
+            if not x["symbol"].__hdl_name__:
+                x["symbol"].set_vhdl_name(obj.__hdl_name__+"_"+ x["name"])
 
             content += x["symbol"].__hdl_converter__._vhdl_make_port(x["symbol"], x["name"] )
 
 
-        start = str(obj.vhdl_name) +" : entity work." + obj._name+" port map (\n    "
+        start = str(obj.__hdl_name__) +" : entity work." + obj._name+" port map (\n    "
         ret=join_str(content,start=start ,end="\n  )",Delimeter=",\n    ")
         return ret
  
@@ -307,7 +307,7 @@ class v_entity_converter(hdl_converter_base):
         
         for x in obj.__hdl_converter__.getMember(obj):
             sym = x["symbol"]
-            sym.vhdl_name = x["name"]
+            sym.__hdl_name__ = x["name"]
             portdef += sym.__hdl_converter__.get_port_list(sym)
 
       
@@ -346,9 +346,9 @@ class v_entity(argg_hdl_base0):
         self._name = name
         #self.__srcFilePath__ = srcFileName
         self.__processList__ = list()
-        self.Inout = InOut_t.Internal_t
-        self.vhdl_name = None
-        self.type = "entity"
+        self._Inout = InOut_t.Internal_t
+        self.__hdl_name__ = None
+        self._type = "entity"
         self.__local_symbols__ = list()
         self._StreamOut = None
         self._StreamIn  = None
@@ -444,10 +444,10 @@ class v_entity(argg_hdl_base0):
         pass
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.vhdl_name and self.vhdl_name != name and Overwrite == False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:
             raise Exception("double Conversion to vhdl")
         else:
-            self.vhdl_name = name
+            self.__hdl_name__ = name
 
 
 

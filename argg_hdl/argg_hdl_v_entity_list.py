@@ -11,16 +11,16 @@ class v_entity_list_converter(hdl_converter_base):
         def __init__(self):
             super().__init__()
         def get_architecture_header(self, obj):
-            ret = "--------------------------"+ obj.vhdl_name  +"-----------------\n"
+            ret = "--------------------------"+ obj.__hdl_name__  +"-----------------\n"
             VarSymb = "signal"
             i = 0
             for x in obj.nexted_entities:
                 i+=1
                 if x["temp"]:
-                    tempName = obj.vhdl_name +"_"+ str(i) + "_" +type(x["symbol"]).__name__
+                    tempName = obj.__hdl_name__ +"_"+ str(i) + "_" +type(x["symbol"]).__name__
                     x["symbol"].set_vhdl_name(tempName)
                     ret += x["symbol"].__hdl_converter__.get_architecture_header(x["symbol"])
-            ret += "-------------------------- end "+ obj.vhdl_name  +"-----------------\n"
+            ret += "-------------------------- end "+ obj.__hdl_name__  +"-----------------\n"
             return ret
 
 
@@ -32,8 +32,8 @@ class v_entity_list_converter(hdl_converter_base):
             for x in obj.nexted_entities:
                 i+=1
                 if x["temp"]:
-                    tempName = str(obj.vhdl_name) +"_"+  str(i) + "_" +type(x["symbol"]).__name__
-                    if not x["symbol"].vhdl_name:
+                    tempName = str(obj.__hdl_name__) +"_"+  str(i) + "_" +type(x["symbol"]).__name__
+                    if not x["symbol"].__hdl_name__:
                         x["symbol"].set_vhdl_name(tempName)
                     ret += start + x["symbol"].__hdl_converter__.get_architecture_body(x["symbol"])
                     start = ";\n  "
@@ -59,8 +59,8 @@ class v_entity_list(argg_hdl_base0):
         self.nexted_entities = list()
 
 
-        self.vhdl_name = ""
-        self.type = "v_entity_list"
+        self.__hdl_name__ = ""
+        self._type = "v_entity_list"
         self.astParser = None
     
     def __or__(self,rhs):
@@ -107,10 +107,10 @@ class v_entity_list(argg_hdl_base0):
         return ret
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.vhdl_name and self.vhdl_name != name and Overwrite == False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:
             raise Exception("double Conversion to vhdl")
         else:
-            self.vhdl_name = name
+            self.__hdl_name__ = name
 
 
     
@@ -127,7 +127,7 @@ class v_entity_list(argg_hdl_base0):
 
 
     def  __str__(self):
-        ret = "----  --------- -------- " + self.vhdl_name +'----\n'
+        ret = "----  --------- -------- " + self.__hdl_name__ +'----\n'
         return ret
 
     def _get_Stream_input(self):

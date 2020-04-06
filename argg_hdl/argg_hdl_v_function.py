@@ -159,7 +159,7 @@ class v_Arch_converter(hdl_converter_base):
     def includes(self,obj, name,parent):
         inc_str = ""
         for x in obj.Symbols:
-            inc_str +=  x.__hdl_converter__.includes(x, x.vhdl_name,obj)
+            inc_str +=  x.__hdl_converter__.includes(x, x.__hdl_name__,obj)
         
         for x in obj.Arch_vars:
             inc_str +=  x['symbol'].__hdl_converter__.includes(x['symbol'], x['name'],obj)
@@ -168,7 +168,7 @@ class v_Arch_converter(hdl_converter_base):
     def get_architecture_header(self, obj):
         header = ""
         for x in obj.Symbols:
-            if x.type == "undef":
+            if x._type == "undef":
                 continue
             header += x.__hdl_converter__.get_architecture_header(x)
         
@@ -196,13 +196,13 @@ class v_Arch_converter(hdl_converter_base):
                 continue
             if x['symbol'].DriverIsProcess():
                 continue 
-            if  x['symbol'].__Driver__.vhdl_name == None:
+            if  x['symbol'].__Driver__.__hdl_name__ == None:
                 continue 
-            if  x['symbol'].varSigConst != varSig.signal_t:
+            if  x['symbol']._varSigConst != varSig.signal_t:
                 continue
-            if  x['symbol'].__Driver__.varSigConst != varSig.signal_t:
+            if  x['symbol'].__Driver__._varSigConst != varSig.signal_t:
                 continue
-            if not x['symbol'].vhdl_name:
+            if not x['symbol'].__hdl_name__:
                 continue 
             if not list_is_in_list(x['symbol'].__Driver__, objList):
                 continue
@@ -215,7 +215,7 @@ class v_Arch_converter(hdl_converter_base):
         body = ""  
         body += str(obj.body)
         for x in obj.Symbols:
-            if x.type == "undef":
+            if x._type == "undef":
                 continue
             line = x.__hdl_converter__.get_architecture_body(x) 
             if line.strip():

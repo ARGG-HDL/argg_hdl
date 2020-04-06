@@ -71,8 +71,8 @@ class axisStream_slave_converter(axisStream_converter):
 
         if buff == None:
             buff = v_copy(obj.rx.data)
-            buff.vhdl_name = str(obj) + "_buff"
-            buff.varSigConst = varSig.variable_t
+            buff.__hdl_name__ = str(obj) + "_buff"
+            buff._varSigConst = varSig.variable_t
             astParser.LocalVar.append(buff)
 
 
@@ -104,7 +104,7 @@ class axisStream_slave_converter(axisStream_converter):
 
 class axisStream_slave(v_class_slave):
     def __init__(self, Axi_in):
-        super().__init__(Axi_in.type+"_slave")
+        super().__init__(Axi_in._type+"_slave")
         self.__hdl_converter__ =axisStream_slave_converter()
         
         self.rx =  variable_port_Slave( Axi_in)
@@ -209,7 +209,7 @@ class axisStream_master_converter(axisStream_converter):
 
 class axisStream_master(v_class_master):
     def __init__(self, Axi_Out):
-        super().__init__(Axi_Out.type + "_master")
+        super().__init__(Axi_Out._type + "_master")
         self.__hdl_converter__ =axisStream_master_converter()
         self.tx =  variable_port_Master( Axi_Out)
         Axi_Out  << self.tx

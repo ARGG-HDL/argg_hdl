@@ -94,7 +94,7 @@ class v_class_converter(hdl_converter_base):
         if issubclass(type(parent),v_class):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
-            if obj.varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt:
+            if obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt:
                 ret = []
                 xs = obj.__hdl_converter__.extract_conversion_types(obj,exclude_class_type=v_classType_t.transition_t)
                 for x in xs:
@@ -109,7 +109,7 @@ class v_class_converter(hdl_converter_base):
         if issubclass(type(parent),v_class):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
-            if obj.varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt:
+            if obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt:
                 ret = []
                 xs = obj.__hdl_converter__.extract_conversion_types(obj,exclude_class_type=v_classType_t.transition_t)
                 for x in xs:
@@ -142,7 +142,7 @@ class v_class_converter(hdl_converter_base):
         
         ts = obj.__hdl_converter__.extract_conversion_types(obj)
         for t in ts:
-            ret +=  obj.__hdl_converter__.getHeader_make_record(t["symbol"], name,parent,t["symbol"]._Inout ,t["symbol"].varSigConst)
+            ret +=  obj.__hdl_converter__.getHeader_make_record(t["symbol"], name,parent,t["symbol"]._Inout ,t["symbol"]._varSigConst)
             ret += "\n\n"
         
         obj.__hdl_converter__.make_connection(obj,name,parent)
@@ -280,7 +280,7 @@ class v_class_converter(hdl_converter_base):
                         filter_inout=inout_local
                     )
                     connector = "_"
-                    content.append(obj.vhdl_name+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => "  +obj.vhdl_name+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +"(i)")
+                    content.append(obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => "  +obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +"(i)")
             elif x["type"] == 'var2sig':
                 inout_local =  InOut_Filter
                 if PushPull == "push":
@@ -290,7 +290,7 @@ class v_class_converter(hdl_converter_base):
                         filter_inout=inout_local
                     )
                     connector = "_"
-                    content.append(obj.vhdl_name+"_sig" +connector + x["source"]["name"]+ sig[0]["suffix"] +" => "  +obj.vhdl_name+"_sig" +connector + x["source"]["name"]+ sig[0]["suffix"] +"(i)")
+                    content.append(obj.__hdl_name__+"_sig" +connector + x["source"]["name"]+ sig[0]["suffix"] +" => "  +obj.__hdl_name__+"_sig" +connector + x["source"]["name"]+ sig[0]["suffix"] +"(i)")
     
         members = obj.getMember(InOut_Filter) 
         args=join_str(content + [
@@ -404,7 +404,7 @@ class v_class_converter(hdl_converter_base):
     def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
         print("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
-            VarSymb = get_varSig(obj.varSigConst)
+            VarSymb = get_varSig(obj._varSigConst)
 
         if obj.__Driver__ and str( obj.__Driver__) != 'process':
             return ""
@@ -415,7 +415,7 @@ class v_class_converter(hdl_converter_base):
             ret += VarSymb + " " +str(obj) + "_s2m : " + t["s2m"] +" := " + t["s2m"]+"_null;\n"
             return ret
 
-        return VarSymb +" " +str(obj) + " : " +obj.type +" := " + obj.type+"_null;\n"
+        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
     
 
     def get_architecture_header(self, obj):
@@ -426,12 +426,12 @@ class v_class_converter(hdl_converter_base):
                 continue
             if obj._Inout != InOut_t.Internal_t and obj.__isInst__ == False:
                 continue
-            if x["symbol"].varSigConst == varSig.variable_t:
+            if x["symbol"]._varSigConst == varSig.variable_t:
                 continue
 
-            VarSymb = get_varSig(x["symbol"].varSigConst)
+            VarSymb = get_varSig(x["symbol"]._varSigConst)
 
-            ret.append(VarSymb + " " +x["symbol"].get_vhdl_name() + " : " + x["symbol"].type+" := " + x["symbol"].type+"_null;\n")
+            ret.append(VarSymb + " " +x["symbol"].get_vhdl_name() + " : " + x["symbol"]._type+" := " + x["symbol"]._type+"_null;\n")
         
         for x in obj.__hdl_converter__.archetecture_list:
             ret.append(x["symbol"].__hdl_converter__.get_architecture_header(x["symbol"]))
@@ -453,7 +453,7 @@ class v_class_converter(hdl_converter_base):
             ret, 
             LineBeginning="  "
             )
-        ret=ret.replace("!!SELF!!",str(obj.vhdl_name))
+        ret=ret.replace("!!SELF!!",str(obj.__hdl_name__))
         return ret
 
 
@@ -464,7 +464,7 @@ class v_class_converter(hdl_converter_base):
             if x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
                 continue
             inoutstr = " : "+ x["symbol"].__hdl_converter__.InOut_t2str(x["symbol"]) +" "
-            ret.append( x["symbol"].get_vhdl_name()+ inoutstr +x["symbol"].type + " := " + x["symbol"].type + "_null")
+            ret.append( x["symbol"].get_vhdl_name()+ inoutstr +x["symbol"]._type + " := " + x["symbol"]._type + "_null")
     
         return ret
 
@@ -521,7 +521,7 @@ class v_class_converter(hdl_converter_base):
                             filter_inout=inout_local
                         )
                     connector = "_"
-                    content.append(obj.vhdl_name+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => " +obj.vhdl_name+"_sig."  + x["source"]["name"]+ sig[0]["suffix"])
+                    content.append(obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => " +obj.__hdl_name__+"_sig."  + x["source"]["name"]+ sig[0]["suffix"])
                 elif x["type"] == 'var2sig':
                     inout_local =  Inout
                     sig = x["source"]["symbol"].__hdl_converter__.extract_conversion_types(
@@ -530,7 +530,7 @@ class v_class_converter(hdl_converter_base):
                             filter_inout=inout_local
                         )
                     connector = "_"
-                    content.append(obj.vhdl_name+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => " +obj.vhdl_name+"_sig."  + x["source"]["name"]+ sig[0]["suffix"])
+                    content.append(obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => " +obj.__hdl_name__+"_sig."  + x["source"]["name"]+ sig[0]["suffix"])
 
         pushpull= "push"
         if Inout == InOut_t.input_t:
@@ -613,7 +613,7 @@ class v_class_converter(hdl_converter_base):
             for x in xs:
                 varsig = " "
                 self_InOut = " inout "
-                if x["symbol"].varSigConst == varSig.signal_t :
+                if x["symbol"]._varSigConst == varSig.signal_t :
                     varsig = " signal "
                     self_InOut = " in "  
                 members_args.append(varsig + "self" + x["suffix"]  + " : " + self_InOut + " "  + x["symbol"].getType()+suffix)
@@ -650,7 +650,7 @@ class v_class_converter(hdl_converter_base):
             for x in xs:
                
                 varsig = " "
-                if n_connector.varSigConst == varSig.signal_t :
+                if n_connector._varSigConst == varSig.signal_t :
                     varsig = " signal "
                     
                 members_args.append(varsig + i["name"] + " : " + InOut + " "  + x["symbol"].getType()+suffix)
@@ -670,9 +670,9 @@ class v_class_converter(hdl_converter_base):
             source = [x for x in members if x["symbol"] is d]
             if source:
                 c_type = "Unset"
-                if dest["symbol"].varSigConst == varSig.signal_t and source[0]["symbol"].varSigConst == varSig.variable_t:
+                if dest["symbol"]._varSigConst == varSig.signal_t and source[0]["symbol"]._varSigConst == varSig.variable_t:
                     c_type = "var2sig"
-                elif dest["symbol"].varSigConst ==  varSig.variable_t and source[0]["symbol"].varSigConst == varSig.signal_t:
+                elif dest["symbol"]._varSigConst ==  varSig.variable_t and source[0]["symbol"]._varSigConst == varSig.signal_t:
                     c_type = "sig2var"
                 ret.append({
                     "source" : source[0],
@@ -705,7 +705,7 @@ class v_class_converter(hdl_converter_base):
                         filter_inout=inout_local
                     )
                     connector = "_"
-                ret.append(PushPull + "(" +obj.vhdl_name+"."+x["destination"]["name"] +", "  +obj.vhdl_name+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +")" )
+                ret.append(PushPull + "(" +obj.__hdl_name__+"."+x["destination"]["name"] +", "  +obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +")" )
             elif x["type"] == 'var2sig':
                 inout_local =  InOut_Filter
                 if PushPull == "pull":
@@ -722,7 +722,7 @@ class v_class_converter(hdl_converter_base):
                         filter_inout=inout_local
                     )
                     connector = "_"
-                ret.append(PushPull + "(" +obj.vhdl_name+"."+x["destination"]["name"] +", "  +obj.vhdl_name+"_sig" +connector + x["source"]["name"]+ sig[0]["suffix"] +");" )
+                ret.append(PushPull + "(" +obj.__hdl_name__+"."+x["destination"]["name"] +", "  +obj.__hdl_name__+"_sig" +connector + x["source"]["name"]+ sig[0]["suffix"] +");" )
         return ret
 
 
@@ -757,14 +757,14 @@ class v_class_converter(hdl_converter_base):
         elif rhs._Inout == InOut_t.output_t:
             raise Exception("cannot read from Output")
 
-        #if rhs.type != obj.type:
-        #    raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
+        #if rhs._type != obj._type:
+        #    raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
 
         
         t = obj.getTypes()
         if len(t) ==3 and obj.__v_classType__ ==  v_classType_t.transition_t:
-            if rhs.type != obj.type:
-                raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
+            if rhs._type != obj._type:
+                raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
             ret ="---------------------------------------------------------------------\n--  " + obj.get_vhdl_name() +" << " + rhs.get_vhdl_name()+"\n" 
             
             ret += obj.get_vhdl_name(InOut_t.output_t) + asOp + rhs.get_vhdl_name(InOut_t.output_t) +";\n" 
@@ -782,8 +782,8 @@ class v_class_converter(hdl_converter_base):
 
             print("SD")
             
-        if rhs.type != obj.type:
-            raise Exception("cannot assigne different types.", str(obj), rhs.type, obj.type )
+        if rhs._type != obj._type:
+            raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
         return obj.get_vhdl_name() + asOp +  rhs.get_vhdl_name()
     
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
@@ -793,7 +793,7 @@ class v_class_converter(hdl_converter_base):
                 astParser.Missing_template=True
                 return "-- $$ template missing $$"
             return hdl
-        raise Exception("Unsupported r shift", str(obj), rhs.type, obj.type )
+        raise Exception("Unsupported r shift", str(obj), rhs._type, obj._type )
 
     def get_self_func_name(self, obj, IsFunction = False, suffix = ""):
         xs = obj.__hdl_converter__.extract_conversion_types(obj ,filter_inout=InOut_t.Internal_t)
@@ -804,7 +804,7 @@ class v_class_converter(hdl_converter_base):
             inout = " inout "
             if x["symbol"].__v_classType__ == v_classType_t.transition_t:
                 pass
-            elif x["symbol"].varSigConst != varSig.variable_t:
+            elif x["symbol"]._varSigConst != varSig.variable_t:
                 inout = " in "
 
             if IsFunction:
@@ -827,7 +827,7 @@ class v_class_converter(hdl_converter_base):
 
     def _vhdl_get_attribute(self,obj, attName):
         attName = str(attName)
-        if obj.__v_classType__ == v_classType_t.transition_t and obj.varSigConst != varSig.variable_t:
+        if obj.__v_classType__ == v_classType_t.transition_t and obj._varSigConst != varSig.variable_t:
             for x in obj.getMember():
                 if x["name"] == attName:
 
@@ -838,7 +838,7 @@ class v_class_converter(hdl_converter_base):
 
                     return obj.get_vhdl_name() + suffix + "." +   attName
         
-        if obj.varSigConst == varSig.combined_t:
+        if obj._varSigConst == varSig.combined_t:
             xs = obj.__hdl_converter__.extract_conversion_types(obj)
         else:
             xs =[{
@@ -864,32 +864,32 @@ class v_class_converter(hdl_converter_base):
         
         xs = obj.__hdl_converter__.extract_conversion_types(obj)
         for x in xs:
-            if x["symbol"].varSigConst != varSig.variable_t:
+            if x["symbol"]._varSigConst != varSig.variable_t:
                 continue
 
-            VarSymb = get_varSig(x["symbol"].varSigConst)
-            ret += VarSymb +" " +str(x["symbol"]) + " : " +x["symbol"].type +" := " + x["symbol"].type +"_null;\n"
+            VarSymb = get_varSig(x["symbol"]._varSigConst)
+            ret += VarSymb +" " +str(x["symbol"]) + " : " +x["symbol"]._type +" := " + x["symbol"]._type +"_null;\n"
 
         return ret
 
     def get_NameMaster(self,obj):
-        return obj.type + "_master"
+        return obj._type + "_master"
 
     def get_NameSlave(self,obj):
-        return obj.type + "_slave"
+        return obj._type + "_slave"
 
 
     def get_NameMaster2Slave(self,obj):
-        return obj.type + "_m2s"
+        return obj._type + "_m2s"
 
     def get_NameSlave2Master(self,obj):
-        return obj.type + "_s2m"
+        return obj._type + "_s2m"
 
     def get_NameSignal(self,obj):
-        return obj.type + "_sig"
+        return obj._type + "_sig"
 
     def get_type_simple(self,obj):
-        return obj.type
+        return obj._type
 
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
         ret =[]
@@ -897,10 +897,10 @@ class v_class_converter(hdl_converter_base):
         if obj.__v_classType__ ==  v_classType_t.transition_t:
             
             
-            x = v_class(obj.__hdl_converter__.get_NameSlave2Master(obj), obj.varSigConst)
+            x = v_class(obj.__hdl_converter__.get_NameSlave2Master(obj), obj._varSigConst)
             x.__v_classType__ = v_classType_t.Record_t
             x.__vetoHDLConversion__  = True
-            x.vhdl_name = str(obj.vhdl_name)+"_s2m"
+            x.__hdl_name__ = str(obj.__hdl_name__)+"_s2m"
 
             x._Inout=InOut_t.input_t
             if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
@@ -911,7 +911,7 @@ class v_class_converter(hdl_converter_base):
                 setattr(x, y["name"], y["symbol"])
             ret.append({ "suffix":"_s2m", "symbol": x})
 
-            x = v_class(obj.__hdl_converter__.get_NameMaster2Slave(obj), obj.varSigConst)
+            x = v_class(obj.__hdl_converter__.get_NameMaster2Slave(obj), obj._varSigConst)
             x.__v_classType__ = v_classType_t.Record_t
             x.__vetoHDLConversion__  = True
             x._Inout=InOut_t.output_t
@@ -919,7 +919,7 @@ class v_class_converter(hdl_converter_base):
             if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
                 x._Inout=InOut_t.input_t
                 
-            x.vhdl_name = str(obj.vhdl_name)+"_m2s"
+            x.__hdl_name__ = str(obj.__hdl_name__)+"_m2s"
             ys= obj.getMember(InOut_t.output_t)
             for y in ys: 
                 setattr(x, y["name"], y["symbol"])
@@ -933,7 +933,7 @@ class v_class_converter(hdl_converter_base):
             x.__vetoHDLConversion__  = True
             x._Inout= obj._Inout
             x.__writeRead__ = obj.__writeRead__
-            x.vhdl_name = str(obj.vhdl_name)+"_sig"
+            x.__hdl_name__ = str(obj.__hdl_name__)+"_sig"
             ys= obj.getMember(VaribleSignalFilter=varSig.signal_t)
             if len(ys)>0:
                 for y in ys: 
@@ -941,12 +941,12 @@ class v_class_converter(hdl_converter_base):
                 
                 ret.append({ "suffix":"_sig", "symbol": x})
 
-            x = v_class(obj.type, varSig.variable_t)
+            x = v_class(obj._type, varSig.variable_t)
             x.__v_classType__ = v_classType_t.Record_t
             x.__vetoHDLConversion__  = True
             x._Inout= obj._Inout
             x.__writeRead__ = obj.__writeRead__
-            x.vhdl_name = obj.vhdl_name
+            x.__hdl_name__ = obj.__hdl_name__
             ys= obj.getMember(VaribleSignalFilter=varSig.variable_t)
             if len(ys)>0:
                 for y in ys: 
@@ -975,7 +975,7 @@ class v_class_converter(hdl_converter_base):
         for x in xs:
             inoutstr = ""
             varSignal = "signal "
-            if x["symbol"].varSigConst == varSig.variable_t:
+            if x["symbol"]._varSigConst == varSig.variable_t:
                 #x["symbol"].__hdl_converter__.get_inout_type_recursive( x["symbol"])
 
                 #inoutstr =  x["symbol"].__hdl_converter__.InOut_t2str( x["symbol"])
@@ -987,7 +987,7 @@ class v_class_converter(hdl_converter_base):
 
             ret.append(varSignal + name + x["suffix"] + " : " + inoutstr +" " +  x["symbol"].getType() +Default_str)
 
-            if x["symbol"].varSigConst == varSig.signal_t:
+            if x["symbol"]._varSigConst == varSig.signal_t:
                 members = x["symbol"].getMember()
                 for m in members:
                     if m["symbol"].__writeRead__ == InOut_t.Internal_t:
@@ -997,7 +997,7 @@ class v_class_converter(hdl_converter_base):
         r =join_str(ret,Delimeter="; ",IgnoreIfEmpty=True)
         return r
     def get_inout_type_recursive(self, obj):
-        if obj.varSigConst != varSig.variable_t:
+        if obj._varSigConst != varSig.variable_t:
             if  obj._Inout != InOut_t.Internal_t:
                 return obj._Inout
             return obj.__writeRead__  
@@ -1019,8 +1019,8 @@ class v_class(argg_hdl_base):
         self.__hdl_converter__ = v_class_converter()
         Name = get_value_or_default( Name , type(self).__name__)
 
-        self.name = Name
-        self.type = Name
+
+        self._type = Name
         self.__v_classType__ = v_classType_t.transition_t 
 
 
@@ -1028,23 +1028,23 @@ class v_class(argg_hdl_base):
         self.__vectorPull__ = False
         self.__vetoHDLConversion__ = False
         
-        self.vhdl_name =None
+        self.__hdl_name__ =None
         self.__Driver__ = None
 
 
         
         if not varSigConst:
             varSigConst = getDefaultVarSig()
-        self.varSigConst = varSigConst
+        self._varSigConst = varSigConst
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.vhdl_name and self.vhdl_name != name and Overwrite == False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:
             raise Exception("double Conversion to vhdl")
         
-        self.vhdl_name = name
+        self.__hdl_name__ = name
 
 
-        if self.varSigConst == varSig.variable_t:
+        if self._varSigConst == varSig.variable_t:
             mem = self.getMember()
             for x in mem:
                 x["symbol"].set_vhdl_name(name+"."+x["name"],Overwrite)
@@ -1066,10 +1066,10 @@ class v_class(argg_hdl_base):
         raise Exception("not yet implemented")
 
     def getName(self):
-        return self.name
+        return self._type
 
     def get_type(self):
-        return self.type
+        return self._type
 
     def __repr__(self):
         
@@ -1080,23 +1080,23 @@ class v_class(argg_hdl_base):
         return ret
     def get_vhdl_name(self,Inout=None):
         if Inout== None:
-            return str(self.vhdl_name)
+            return str(self.__hdl_name__)
         
         if self.__v_classType__ == v_classType_t.Slave_t:
             Inout = InoutFlip(Inout)
 
         if Inout== InOut_t.input_t:
-            return str(self.vhdl_name)+"_s2m"
+            return str(self.__hdl_name__)+"_s2m"
         
         elif Inout== InOut_t.output_t:
-            return str(self.vhdl_name)+"_m2s"
+            return str(self.__hdl_name__)+"_m2s"
         return None
 
 
 
     def getType(self,Inout=None,varSigType=None):
         if self.__v_classType__ == v_classType_t.Record_t:
-             return self.type 
+             return self._type 
         if Inout == InOut_t.input_t:
             return self.__hdl_converter__.get_NameSlave2Master(self)
         elif Inout == InOut_t.output_t:
@@ -1104,11 +1104,11 @@ class v_class(argg_hdl_base):
         elif varSigType== varSig.signal_t:
             return self.__hdl_converter__.get_NameSignal(self) 
         else:    
-            return self.type 
+            return self._type 
 
     def getTypes(self):
         return {
-            "main" : self.type,
+            "main" : self._type,
             "m2s"  : self.__hdl_converter__.get_NameMaster2Slave(self),
             "s2m"  : self.__hdl_converter__.get_NameSlave2Master(self)
 
@@ -1158,7 +1158,7 @@ class v_class(argg_hdl_base):
 
 
     def set_varSigConst(self, varSigConst):
-        self.varSigConst = varSigConst
+        self._varSigConst = varSigConst
         for x  in self.getMember():
             x["symbol"].set_varSigConst(varSigConst)
              
@@ -1188,7 +1188,7 @@ class v_class(argg_hdl_base):
         if varSigType == None:
             return True
 
-        return self.varSigConst == varSigType
+        return self._varSigConst == varSigType
 
         
 
@@ -1240,8 +1240,8 @@ class v_class(argg_hdl_base):
         if self.__Driver__ and str( self.__Driver__) != 'process':
             return str(self.__Driver__)
 
-        if self.vhdl_name:
-            return str(self.vhdl_name)
+        if self.__hdl_name__:
+            return str(self.__hdl_name__)
 
         raise Exception("Unable convert to string class: ", type(self).__name__)
 
@@ -1405,7 +1405,7 @@ class v_class_master(v_class):
         self.__vectorPush__   = True
         self.__vectorPull__   = True
         self.__v_classType__  = v_classType_t.Master_t
-        self.varSigConst       = varSig.combined_t
+        self._varSigConst       = varSig.combined_t
 
 
 class v_class_slave(v_class):
@@ -1415,7 +1415,7 @@ class v_class_slave(v_class):
         self.__vectorPush__   = True
         self.__vectorPull__   = True
         self.__v_classType__  = v_classType_t.Slave_t
-        self.varSigConst       = varSig.combined_t
+        self._varSigConst       = varSig.combined_t
 
 
 def get_master(transObj):

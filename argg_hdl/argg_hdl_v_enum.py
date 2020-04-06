@@ -20,20 +20,20 @@ class v_enum(argg_hdl_base):
         if name == None:
             name = Enumtype.__name__
 
-        self.type = Enumtype
+        self._type = Enumtype
         self.Value = EnumVal
         self.name = name
         self._Inout = InOut_t.Internal_t
-        self.vhdl_name = None
+        self.__hdl_name__ = None
     
 
 
         
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.vhdl_name and self.vhdl_name != name and Overwrite == False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:
             raise Exception("double Conversion to vhdl")
         else:
-            self.vhdl_name = name
+            self.__hdl_name__ = name
 
     def getHeader(self, name,parent):
         if  parent._issubclass_("v_class"):
@@ -41,7 +41,7 @@ class v_enum(argg_hdl_base):
             
         # type T_STATE is (RESET, START, EXECUTE, FINISH);
         name = self.name
-        enumNames =[e for e in self.type ] 
+        enumNames =[e for e in self._type ] 
         start = "" 
         ret =  "\n  type " + name + " is ( \n    " 
         for x in enumNames:
@@ -92,8 +92,8 @@ class v_enum(argg_hdl_base):
 
 
     def __str__(self):
-        if self.vhdl_name:
-            return self.vhdl_name
+        if self.__hdl_name__:
+            return self.__hdl_name__
 
         return str(self.Value.name)
 

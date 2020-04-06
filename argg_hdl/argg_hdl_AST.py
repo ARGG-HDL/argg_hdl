@@ -79,7 +79,7 @@ def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
     for x,y in zip(localArgs,TemplateDescription["args"]):
         if y == None:
             return None  
-        if x["symbol"] == None or x["symbol"].type != y.type or x['symbol'].varSigConst != y.varSigConst:
+        if x["symbol"] == None or x["symbol"]._type != y._type or x['symbol']._varSigConst != y._varSigConst:
             #y._Inout =  x["symbol"]._Inout
             y.set_vhdl_name(x["name"],True)
             
@@ -99,11 +99,11 @@ class argg_hdl_error:
         self.FileName  = FileName
         self.LineNo    = LineNo
         self.Column    = Column
-        self.typeName  = typeName
+        self._typeName  = typeName
         self.msg       = msg
 
     def __str__(self):
-        ret = 'File "' + self.FileName + '", line ' +str(self.LineNo) + ", Column: " + str(self.Column) +", type: " + self.typeName + ", msg: " + self.msg
+        ret = 'File "' + self.FileName + '", line ' +str(self.LineNo) + ", Column: " + str(self.Column) +", type: " + self._typeName + ", msg: " + self.msg
         return ret
 
     def Show_Error(self):
@@ -225,7 +225,7 @@ class xgenAST:
         
     def try_get_variable(self,name):
         for x in self.LocalVar:
-            if name == x.vhdl_name:
+            if name == x.__hdl_name__:
                 return x
 
 
@@ -354,19 +354,19 @@ class xgenAST:
 
             header =""
             for x in self.LocalVar:
-                if x.type == "undef":
+                if x._type == "undef":
                     continue
                 header += x.__hdl_converter__._vhdl__DefineSymbol(x, "variable")
 
             pull =""
             for x in self.LocalVar:
-                if x.type == "undef":
+                if x._type == "undef":
                     continue
                 pull += x._vhdl__Pull()
 
             push =""
             for x in self.LocalVar:
-                if x.type == "undef":
+                if x._type == "undef":
                     continue
                 push += x._vhdl__push()
             
@@ -396,7 +396,7 @@ class xgenAST:
             FuncArgsLocal = copy.copy(FuncArgs)
             varSigSuffix = "_"
             for x in FuncArgsLocal:
-                if x["symbol"].varSigConst == varSig.signal_t:
+                if x["symbol"]._varSigConst == varSig.signal_t:
                     varSigSuffix += "1"
                 else:
                     varSigSuffix += "0"
@@ -479,7 +479,7 @@ class xgenAST:
             
             #self.local_function = p.__globals__
         self.local_function = ClassInstance.__init__.__globals__
-        ClassInstance.vhdl_name = "!!SELF!!"
+        ClassInstance.__hdl_name__ = "!!SELF!!"
 #        self.Archetecture_vars = ClassInstance.__local_symbols__
 
         try:
@@ -685,14 +685,14 @@ class xgenAST:
                 return x["symbol"]
 
         for x in self.LocalVar:
-            if x.vhdl_name == SymbolName:
+            if x.__hdl_name__ == SymbolName:
                 return x
 
         for x in self.varScope:
             index = -1
             for y in x:
                 index = index + 1
-                if y.vhdl_name == SymbolName:
+                if y.__hdl_name__ == SymbolName:
                     self.LocalVar.append(y)
                     return y
 
@@ -744,7 +744,7 @@ class xgenAST:
 def call_func(obj, name, args, astParser=None,func_args=None):
     varSigSuffix = "_"
     for x in func_args:
-        if get_symbol(x).varSigConst == varSig.signal_t:
+        if get_symbol(x)._varSigConst == varSig.signal_t:
             varSigSuffix += "1"
         else:
             varSigSuffix += "0"
@@ -753,13 +753,13 @@ def call_func(obj, name, args, astParser=None,func_args=None):
     for x in range(len(args)):
         ys =func_args[x]["symbol"].__hdl_converter__.extract_conversion_types(func_args[x]["symbol"])
         for y in ys:
-            line = func_args[x]["name"] + y["suffix"]+ " => " + str(args[x].vhdl_name) + y["suffix"]
+            line = func_args[x]["name"] + y["suffix"]+ " => " + str(args[x].__hdl_name__) + y["suffix"]
             ret.append(line)
-            if y["symbol"].varSigConst ==varSig.signal_t:
+            if y["symbol"]._varSigConst ==varSig.signal_t:
                 members = y["symbol"].getMember()
                 for m in members:
                     if m["symbol"].__writeRead__ == InOut_t.output_t:
-                        line = func_args[x]["name"] + y["suffix"]+"_"+ m["name"] +" => " + args[x].vhdl_name + y["suffix"]  +"."+m["name"]
+                        line = func_args[x]["name"] + y["suffix"]+"_"+ m["name"] +" => " + args[x].__hdl_name__ + y["suffix"]  +"."+m["name"]
                         ret.append(line)
                         #print(line)
             
