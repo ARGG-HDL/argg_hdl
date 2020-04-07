@@ -1142,10 +1142,12 @@ class v_class(argg_hdl_base):
         
         if Inout is None or self._Inout == Inout: 
             return True
-        elif self._Inout== InOut_t.Master_t:
+        
+        if self._Inout== InOut_t.Master_t:
             mem = self.getMember(Inout)
             return len(mem) > 0
-        elif self._Inout == InOut_t.Slave_t:
+        
+        if self._Inout == InOut_t.Slave_t:
             if Inout == InOut_t.Master_t:
                 Inout = InOut_t.Slave_t
             elif Inout == InOut_t.Slave_t:
@@ -1406,4 +1408,3 @@ def get_handle(transObj):
         return get_master(transObj)
     
     raise Exception("Unable to determint requiered handle")
-
