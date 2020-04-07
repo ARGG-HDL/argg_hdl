@@ -8,7 +8,7 @@ import copy
 from argg_hdl import *
 
 import argg_hdl.examples as  ahe
-
+import argg_hdl.argg_hdl_debug_vis as debug_vis
 
 class SerialDataConfig(v_class):
     def __init__(self):
@@ -99,6 +99,26 @@ class InputDelay_print(v_entity):
 
         end_architecture()
 
+class dataSource(v_entity):
+    def __init__(self,clk,outputType =v_slv(32)):
+        super().__init__()
+        self.clk = port_in(v_sl())
+
+        self.DataOut = port_Stream_Master(ahe.axisStream( outputType))
+        self.architecture()
+
+    @architecture
+    def architecture(self):
+        mast = get_handle(self.DataOut)
+        data = v_slv(32,5)
+
+        @rising_edge(self.clk)
+        def proc():
+            if mast:
+                mast << data
+                data << data + 1
+           
+
 class InputDelay_tb(v_entity):
     def __init__(self):
         super().__init__()
@@ -117,19 +137,12 @@ class InputDelay_tb(v_entity):
 
         axprint.ConfigIn << dut.ConfigOut
         k_globals.clk << clkgen.clk
-        mast = get_master(dut.ConfigIn)
+
+        d_source  =  v_create( dataSource(k_globals.clk))
+        dut.ConfigIn << d_source.DataOut
 
 
 
-
-
-
-        @rising_edge(clkgen.clk)
-        def proc():
-            if mast:
-                mast << data
-                data << data + 1
-           
 
         end_architecture()
 
@@ -137,8 +150,9 @@ class InputDelay_tb(v_entity):
 
 
 def main():
+
     tb  =v_create(InputDelay_tb())
-    #run_simulation(tb, 3000,"InputDelay_tb.vcd")
-    convert_to_hdl(tb, "pyhdl_waveform")
+    run_simulation(tb, 3000,"InputDelay_tb.vcd")
+    #convert_to_hdl(tb, "InputDelay_tb")
 
 main()

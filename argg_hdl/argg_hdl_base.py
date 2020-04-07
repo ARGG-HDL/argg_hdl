@@ -1,8 +1,9 @@
 from enum import Enum 
 import copy
 import  inspect 
-import argg_hdl.argg_hdl_core_pack_generator as core_gen
 
+import argg_hdl.argg_hdl_core_pack_generator as core_gen
+import argg_hdl.argg_hdl_debug_vis as debug_vis
 
 def architecture(func):
     def wrap(self): 
@@ -157,7 +158,8 @@ gTemplateIndent = indent()
 gStatus = {
     "isConverting2VHDL" : False,
     "isProcess" : False,
-    "isPrimaryConnection" : True
+    "isPrimaryConnection" : True,
+    "MakeGraph"           : True
 }
 
 def isConverting2VHDL():
@@ -178,10 +180,17 @@ def isPrimaryConnection():
 def set_isPrimaryConnection(newStatus):
     gStatus["isPrimaryConnection"] = newStatus
 
+def MakeGraph():
+    return gStatus["MakeGraph"]
+
+def set_MakeGraph(newState):
+    gStatus["MakeGraph"]  = newState
+
+
 gHDL_objectList = []
 
 
-        
+
 
 def make_unique_includes(incs,exclude=None):
     sp = incs.split(";")
@@ -659,6 +668,9 @@ class argg_hdl_base0:
         super().__init__()
         if not isConverting2VHDL():
             gHDL_objectList.append(self)
+        if MakeGraph():
+            debug_vis.append(self)
+
         self.__isInst__ = False
         self.__hdl_converter__ = hdl_converter_base()
         self.__Driver__ = None
@@ -708,7 +720,8 @@ class argg_hdl_base0:
         if hasattr(self, "_onPush"):
             Push_list.append(getattr(self, '_onPush'))
 
-
+    def js_dump(self):
+        return debug_vis.js_dump()
 
     def _sim_append_update_list(self,up):
         raise Exception("update not implemented")
