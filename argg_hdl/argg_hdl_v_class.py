@@ -75,8 +75,8 @@ class v_class_converter(hdl_converter_base):
                 for x in xs:
                     ret.append(name + x["suffix"] + " : " + x["symbol"].getType())
                 return ret
-            else: 
-                return name + " : " +obj.getType(Inout)
+            
+            return name + " : " +obj.getType(Inout)
         return []
 
     def recordMemberDefault(self, obj, name,parent,Inout=None):
@@ -90,8 +90,8 @@ class v_class_converter(hdl_converter_base):
                 for x in xs:
                     ret.append(name + x["suffix"] + " => " + x["symbol"].getType() + "_null" )
                 return ret
-            else: 
-                return name + " => " + obj.getType(Inout) + "_null"
+            
+            return name + " => " + obj.getType(Inout) + "_null"
 
         return []
 
@@ -1063,8 +1063,9 @@ class v_class(argg_hdl_base):
         if Inout== InOut_t.input_t:
             return str(self.__hdl_name__)+"_s2m"
         
-        elif Inout== InOut_t.output_t:
+        if Inout== InOut_t.output_t:
             return str(self.__hdl_name__)+"_m2s"
+        
         return None
 
 
@@ -1072,14 +1073,17 @@ class v_class(argg_hdl_base):
     def getType(self,Inout=None,varSigType=None):
         if self.__v_classType__ == v_classType_t.Record_t:
              return self._type 
+        
         if Inout == InOut_t.input_t:
             return self.__hdl_converter__.get_NameSlave2Master(self)
-        elif Inout == InOut_t.output_t:
+        
+        if Inout == InOut_t.output_t:
             return self.__hdl_converter__.get_NameMaster2Slave(self)
-        elif varSigType== varSig.signal_t:
+        
+        if varSigType== varSig.signal_t:
             return self.__hdl_converter__.get_NameSignal(self) 
-        else:    
-            return self._type 
+            
+        return self._type 
 
     def getTypes(self):
         return {
@@ -1109,7 +1113,8 @@ class v_class(argg_hdl_base):
     def setInout(self,Inout):
         if self._Inout == Inout:
             return 
-        elif self.__v_classType__ == v_classType_t.transition_t :
+        
+        if self.__v_classType__ == v_classType_t.transition_t :
             self._Inout = Inout
         elif self.__v_classType__ == v_classType_t.Record_t  and Inout == InOut_t.Master_t:
             self._Inout = InOut_t.output_t
@@ -1335,14 +1340,15 @@ class v_class(argg_hdl_base):
             self_members = self.getMember()
             return self_members
                 
-        elif  self._Inout == InOut_t.Master_t:
+        if  self._Inout == InOut_t.Master_t:
             self_members = self.getMember(louput)
             return self_members
             
-        elif  self._Inout == InOut_t.Slave_t:
+        if  self._Inout == InOut_t.Slave_t:
             self_members = self.getMember(linput)
             return self_members
-        elif  self._Inout == InOut_t.Internal_t:
+        
+        if  self._Inout == InOut_t.Internal_t:
             self_members = self.getMember(louput)
             return self_members            
         
@@ -1353,17 +1359,17 @@ class v_class(argg_hdl_base):
 
 
         if self.__v_classType__ ==v_classType_t.Record_t:
-            
             return []
         
-        elif  self._Inout == InOut_t.Master_t:
+        if  self._Inout == InOut_t.Master_t:
             self_members = self.getMember(linput)
             return self_members
             
-        elif  self._Inout == InOut_t.Slave_t:
+        if  self._Inout == InOut_t.Slave_t:
             self_members = self.getMember(louput)
             return self_members
-        elif  self._Inout == InOut_t.Internal_t:
+        
+        if  self._Inout == InOut_t.Internal_t:
             self_members = self.getMember(linput)
             return self_members      
             
@@ -1404,7 +1410,8 @@ def get_salve(transObj):
 def get_handle(transObj):
     if transObj._Inout == InOut_t.Slave_t:
         return get_salve(transObj)
-    elif transObj._Inout  == InOut_t.Master_t:
+    
+    if transObj._Inout  == InOut_t.Master_t:
         return get_master(transObj)
     
     raise Exception("Unable to determint requiered handle")
