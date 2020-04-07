@@ -216,6 +216,8 @@ class axisStream_master(v_class_master):
 
 
    
+    def reset(self):
+        self.tx.valid   << 0
 
         
     def send_data(self, dataIn ):

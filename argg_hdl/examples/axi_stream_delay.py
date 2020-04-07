@@ -29,7 +29,7 @@ class stream_delay_one(v_clk_entity):
         @rising_edge(self.clk)
         def proc():
             if axiSalve and axMaster:
-                axMaster << axiSalve
+                axiSalve >> axMaster 
                 axMaster.Send_end_Of_Stream( axiSalve.IsEndOfStream())
 
 

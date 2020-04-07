@@ -104,8 +104,8 @@ end record;
   procedure push (self :  inout  axiStream_slv32_slave;  signal rx :  out  axiStream_slv32_s2m);
   procedure pull (self :  inout  axiStream_slv32_slave_a;  signal rx :  in  axiStream_slv32_m2s_a);
   procedure push (self :  inout  axiStream_slv32_slave_a;  signal rx :  out  axiStream_slv32_s2m_a);
+  procedure get_value_00_rshift (self :  inout  axiStream_slv32_slave; rhs :  inout  axiStream_slv32_master);
   procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs :  out  std_logic_vector(31 downto 0));
-  procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0));
   function to_bool (self :   axiStream_slv32_slave) return boolean;
   function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean;
   function isReceivingData_0 (self :   axiStream_slv32_slave) return boolean;
@@ -138,6 +138,7 @@ end record;
   procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector(31 downto 0));
   function to_bool (self :   axiStream_slv32_master) return boolean;
   procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStream :  in  boolean := True);
+  procedure reset_0 (self :  inout  axiStream_slv32_master);
   function ready_to_send_0 (self :   axiStream_slv32_master) return boolean;
 ------- End Psuedo Class axiStream_slv32_master -------------------------
 -------------------------------------------------------------------------
@@ -315,18 +316,6 @@ function to_bool (self :   axiStream_slv32_slave) return boolean is
    
 end function;
 
-procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0)) is
-   
-  begin 
- 
-    if (self.data_internal_isvalid2 = '1') then 
-      dataOut := self.data_internal2;
-      self.data_internal_was_read2 := '1';
-      
-    end if;
-   
-end procedure;
-
 procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs :  out  std_logic_vector(31 downto 0)) is
    
   begin 
@@ -334,6 +323,19 @@ procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs 
   
     if (self.data_internal_isvalid2 = '1') then 
       rhs <= self.data_internal2;
+      self.data_internal_was_read2 := '1';
+      
+    end if;
+   
+end procedure;
+
+procedure get_value_00_rshift (self :  inout  axiStream_slv32_slave; rhs :  inout  axiStream_slv32_master) is
+   
+  begin 
+ reset_0(self => rhs);
+  
+    if (self.data_internal_isvalid2 = '1') then 
+      send_data_00(self => rhs, dataIn => self.data_internal2);
       self.data_internal_was_read2 := '1';
       
     end if;
@@ -404,6 +406,13 @@ function ready_to_send_0 (self :   axiStream_slv32_master) return boolean is
  return  not  ( self.tx.valid = '1' ) ;
    
 end function;
+
+procedure reset_0 (self :  inout  axiStream_slv32_master) is
+   
+  begin 
+ self.tx.valid := '0';
+   
+end procedure;
 
 procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStream :  in  boolean := True) is
    

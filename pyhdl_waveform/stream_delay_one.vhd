@@ -34,15 +34,13 @@ begin
   proc : process(clk) is
     variable axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_null;
     variable axMaster : axiStream_slv32_master := axiStream_slv32_master_null;
-    variable axiSalve_buff : std_logic_vector(31 downto 0) := (others => '0');
     begin
       if rising_edge(clk) then 
         pull( self  =>  axiSalve, rx => Axi_in_m2s);
         pull( self  =>  axMaster, tx => Axi_out_s2m);
     
         if (( isReceivingData_0(self => axiSalve) and ready_to_send_0(self => axMaster)) ) then 
-          read_data_00(self => axiSalve, dataOut => axiSalve_buff);
-          send_data_00(self => axMaster, dataIn => axiSalve_buff);
+          get_value_00_rshift(self => axiSalve, rhs => axMaster);
           Send_end_Of_Stream_00(self => axMaster, EndOfStream => IsEndOfStream_0(self => axiSalve));
           
         end if;
