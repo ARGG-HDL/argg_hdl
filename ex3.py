@@ -41,7 +41,7 @@ class tb(v_entity):
         @rising_edge(clkgen.clk)
         def proc():
             cnt_out >> data
-            cnt_out >> opt_data 
+            #cnt_out >> opt_data 
             
            
 
@@ -49,5 +49,5 @@ class tb(v_entity):
 
 tb1 = v_create(tb())
 
-run_simulation(tb1, 30000,"optional_t.vcd")
-#convert_to_hdl(tb1,"ex3")
+#run_simulation(tb1, 30000,"optional_t.vcd")
+convert_to_hdl(tb1,"ex3")

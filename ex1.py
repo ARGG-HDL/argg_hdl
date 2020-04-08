@@ -116,7 +116,7 @@ class dataSource(v_entity):
         def proc():
             if mast:
                 mast << data
-                data << data + 1
+                data << data + 2
            
 
 class InputDelay_tb(v_entity):
@@ -152,7 +152,7 @@ class InputDelay_tb(v_entity):
 def main():
 
     tb  =v_create(InputDelay_tb())
-    run_simulation(tb, 3000,"InputDelay_tb.vcd")
-    #convert_to_hdl(tb, "InputDelay_tb")
+    #run_simulation(tb, 3000,"InputDelay_tb.vcd")
+    convert_to_hdl(tb, "InputDelay_tb")
 
 main()
