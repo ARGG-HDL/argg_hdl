@@ -159,7 +159,8 @@ gStatus = {
     "isConverting2VHDL" : False,
     "isProcess" : False,
     "isPrimaryConnection" : True,
-    "MakeGraph"           : True
+    "MakeGraph"           : True,
+    "saveUnfinishFiles"   : False
 }
 
 def isConverting2VHDL():
@@ -186,6 +187,8 @@ def MakeGraph():
 def set_MakeGraph(newState):
     gStatus["MakeGraph"]  = newState
 
+def saveUnfinishedFiles():
+    return gStatus["saveUnfinishFiles"]
 
 gHDL_objectList = []
 
@@ -366,8 +369,9 @@ class hdl_converter_base:
                     gTemplateIndent.inc()
                     x.__hdl_converter__.reset_TemplateMissing(x)
                     packet = x.__hdl_converter__.get_packet_file_content(x)
-                    if packet:
+                    if packet and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
                         file_set_content(ouputFolder+"/" +packetName,packet)
+
                     FilesDone.append(packetName)
                     if x.__hdl_converter__.MissingTemplate:
                         print(str(gTemplateIndent)+'<status ="failed">')
@@ -390,8 +394,9 @@ class hdl_converter_base:
                     except Exception as inst:
                         raise Exception(["Error in entity Converion:\nEntityFileName: "+ entiyFileName], x,inst)
 
-                    if entity_content:
+                    if entity_content and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
                         file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
+
                     FilesDone.append(entiyFileName)
                     if x.__hdl_converter__.MissingTemplate:
                         print(str(gTemplateIndent)+'<status ="failed">')

@@ -255,14 +255,17 @@ class axisStream_master(v_class_master):
 
 def make_package(PackageName,AxiType):
     s = isConverting2VHDL()
+    ax_t = axisStream(AxiType)
+    ax_m = axisStream_master(ax_t)
+    ax_s = axisStream_slave(ax_t)
     set_isConverting2VHDL(True)
 
-    ax_t = axisStream(AxiType)
+    
     ax = v_package(PackageName,sourceFile=__file__,
     PackageContent = [
         ax_t,
-        axisStream_slave(ax_t),
-        axisStream_master(ax_t),
+        ax_m,
+        ax_s,
         #axisStream_slave_signal(ax_t)
         #axisStream_master_with_strean_counter(ax_t)
     ]

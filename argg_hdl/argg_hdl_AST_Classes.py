@@ -317,7 +317,7 @@ class architecure_body(v_ast_base):
             v = str(x)
             if v.strip():
                 ret += "  " + v + ";\n"
-        ret += "  -- end " + self.Name 
+        ret += "  -- end " + self.Name +"\n"
         return ret
 
 def body_unfold_architecture_body(astParser,Node):
