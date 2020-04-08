@@ -72,6 +72,7 @@ class axisStream_slave_converter(axisStream_converter):
         if buff == None:
             buff = v_copy(obj.rx.data)
             buff.__hdl_name__ = str(obj) + "_buff"
+            buff.__hdl_name__ = buff.__hdl_name__.replace("(","").replace(")","")
             buff._varSigConst = varSig.variable_t
             astParser.LocalVar.append(buff)
 

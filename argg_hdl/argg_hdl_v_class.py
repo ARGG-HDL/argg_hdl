@@ -18,6 +18,17 @@ def _get_connector(symb):
     
     return n_connector
 
+
+def append_hdl_name(name, suffix):
+    ret = ""    
+    name_sp = str(name).split("(")
+    if len(name_sp) == 2:
+        ret = name_sp[0]+suffix+"("+ name_sp[1]
+    else:
+        ret = name_sp[0]+suffix
+    
+    return ret
+
 class v_class_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
@@ -875,7 +886,9 @@ class v_class_converter(hdl_converter_base):
             x = v_class(obj.__hdl_converter__.get_NameSlave2Master(obj), obj._varSigConst)
             x.__v_classType__ = v_classType_t.Record_t
             x.__vetoHDLConversion__  = True
-            x.__hdl_name__ = str(obj.__hdl_name__)+"_s2m"
+            x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_s2m")
+
+
 
             x._Inout=InOut_t.input_t
             if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
@@ -894,7 +907,8 @@ class v_class_converter(hdl_converter_base):
             if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
                 x._Inout=InOut_t.input_t
                 
-            x.__hdl_name__ = str(obj.__hdl_name__)+"_m2s"
+            
+            x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_m2s")
             ys= obj.getMember(InOut_t.output_t)
             for y in ys: 
                 setattr(x, y["name"], y["symbol"])
@@ -1061,10 +1075,10 @@ class v_class(argg_hdl_base):
             Inout = InoutFlip(Inout)
 
         if Inout== InOut_t.input_t:
-            return str(self.__hdl_name__)+"_s2m"
+            return append_hdl_name(str(self.__hdl_name__), "_s2m")
         
         if Inout== InOut_t.output_t:
-            return str(self.__hdl_name__)+"_m2s"
+            return append_hdl_name(str(self.__hdl_name__), "_m2s")
         
         return None
 

@@ -192,22 +192,34 @@ class v_Arch_converter(hdl_converter_base):
     def make_signal_connections2(self, obj, objList):
         ret = ""
         for x in objList:
+            print("=====")
+            print(str(x["name"]))
+            #print(str(x["symbol"]))
             if x['symbol'].__Driver__ == None:
+                print("Has no Driver")
                 continue
             if x['symbol'].DriverIsProcess():
+                print("Driver is process")
                 continue 
             if  x['symbol'].__Driver__.__hdl_name__ == None:
+                print("Driver has no HDL Name")
                 continue 
             if  x['symbol']._varSigConst != varSig.signal_t:
+                print("Is not signal")
                 continue
             if  x['symbol'].__Driver__._varSigConst != varSig.signal_t:
+                print("Driver is not signal")
                 continue
             if not x['symbol'].__hdl_name__:
+                print("Has no HDL Name")
                 continue 
             if not list_is_in_list(x['symbol'].__Driver__, objList):
+                print("Driver is not in list")
                 continue
             if x['symbol'].__Driver_Is_SubConnection__:
+                print("Is sub connection")
                 continue
+            print("Connecting " +str(x['name']) )
             ret += x['symbol'].__hdl_converter__._vhdl__reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
 
         return ret

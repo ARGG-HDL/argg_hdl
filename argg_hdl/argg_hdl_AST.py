@@ -192,7 +192,9 @@ class xgenAST:
             'Subscript'     : body_subscript,
             "Index"         : body_index,
             'Yield'         : body_unfold_yield,
-            "For"           : body_unfold_for
+            "For"           : body_unfold_for,
+            "Break"         : body_unfold_Break,
+            "Continue"      : body_unfold_Continue
         }
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())
@@ -721,9 +723,9 @@ class xgenAST:
         
 
         for i in range(len(funcDef.args.args),1,-1):
-            try:
+            if len(funcDef.args.defaults ) >= i-2 +1:
                 default = funcDef.args.defaults[i-2]
-            except:
+            else:
                 default = None
             yield (funcDef.args.args[i-1].arg,default)
 

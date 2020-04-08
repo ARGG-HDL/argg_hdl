@@ -1,45 +1,79 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
 
-class tb(v_entity):
-    def __init__(self):
+class axiStreamMux(v_entity):
+    def __init__(self, clk):
         super().__init__()
         self.clk = port_in(v_sl())
-        self.data_in = port_Slave(axisStream(v_slv(32)))
+        self.clk << clk
+        self.data_in = port_Slave(v_list(axisStream(v_slv(32)),4))
         self.data_out = port_Master(axisStream( v_slv(32)))
         self.architecture()
 
 
     @architecture
     def architecture(self):
-        
-        data_buffer = v_slv(32)
-        v_data_buffer = v_variable(v_slv(32))
-        d_out = get_handle(self.data_out)
         d_in = get_handle(self.data_in)
+        d_out = get_handle(self.data_out)
 
-        memo = v_list(v_slv(32), 100)
-
-        counter1 = v_slv(32)
-        counter2  = v_slv(32)
-        op_data = optional_t(v_slv())
+        data_buffer = v_slv(32)
+        ChannelUsed = v_int()
+        sending= v_sl()
         @rising_edge(self.clk)
         def proc():
+            if not sending:
+                for i12 in range(len(d_in)):
+                    if i12 == ChannelUsed:
+                        ChannelUsed << len(d_in) + 1
+                        continue
 
-            if d_in:
-                d_in >> op_data 
-                op_data >>  memo[counter1] 
+                    if d_in[i12] and d_out:
+                        ChannelUsed << i12
+                        d_in[i12] >> data_buffer
+                          
+                        d_out.Send_end_Of_Stream(d_in[i12].IsEndOfStream())
+                        if not d_in[i12].IsEndOfStream():
+                            sending << 1
+                        break
 
-
-            if d_out:
-                d_out << memo[counter2]
-                counter2 << counter2 + 1
-
-            if counter2 > len(memo):
-                counter2 << 0
-
+            elif sending and  d_in[ChannelUsed] and d_out:
+                d_in[ChannelUsed] >> d_out
+                d_out.Send_end_Of_Stream(d_in[ChannelUsed].IsEndOfStream())
+                if d_in[ChannelUsed].IsEndOfStream():
+                    sending << 0
 
         end_architecture()
+
+
+class d_source(v_entity):
+    def __init__(self, clk):
+        super().__init__()
+        self.clk = port_in(clk)
+        self.clk << clk
+        self.data_out = port_Master(axisStream( v_slv(32)))
+        self.architecture()
+    
+    @architecture
+    def architecture(self):
+        
+        
+        end_architecture()
+
+class tb(v_entity):
+    def __init__(self):
+        super().__init__()
+        self.architecture()
+
+
+    @architecture
+    def architecture(self):
+        clkgen = v_create( clk_generator()) 
+        axmux = v_create(axiStreamMux(clkgen.clk))
+        d_s   = v_create(d_source(clkgen.clk))
+        axmux.data_in[0] << d_s.data_out
+        end_architecture()
+
+
 
 
 

@@ -56,13 +56,43 @@ end {objType}_pack;
 )
         return ret
 
+    def get_port_list(self,obj):
+        ret = []
+        obj.Internal_Type._Inout = obj._Inout
+        xs = obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
+
+        for x in xs:
+            if x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
+                continue
+            inoutstr = " : "+ x["symbol"].__hdl_converter__.InOut_t2str(x["symbol"]) +" "
+            ret.append( obj.get_vhdl_name() +x["suffix"] + inoutstr +x["symbol"]._type + "_a("+ str(obj.size)   +" downto 0) := (others => " + x["symbol"]._type + "_null)")
+    
+        return ret
+
+
+    def _vhdl_make_port(self, obj, name):
+        ret = []
+        obj.Internal_Type.set_vhdl_name(obj.__hdl_name__, True)
+
+        xs =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type, 
+                exclude_class_type= v_classType_t.transition_t
+            )
+        for x in xs:
+            ret.append( name + x["suffix"] + " => " + x["symbol"].get_vhdl_name())
+
+        return ret
+
     def get_architecture_header(self, obj):
         ret =""
 
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
         
         for x in obj1:
+            if  x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
+                continue
             if x["symbol"]._varSigConst == varSig.variable_t:
+                continue
+            if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
                 continue
 
             ret += """  {VarSymb} {objName} : {objType}({size} - 1 downto 0)  := (others => {defaults});\n""".format(
@@ -210,6 +240,9 @@ class v_list(argg_hdl_base):
     def get_size(self):
         return self.size
 
+    def get_type(self):
+        return self._type
+
     def __getitem__(self,sl):
         return self.content[value(sl)]
 
@@ -251,10 +284,10 @@ class v_list(argg_hdl_base):
 
 
     def get_slave(self):
-        master_t =  self.Internal_Type.get_master() 
+        master_t =  self.Internal_Type.get_slave() 
         ret = v_list(master_t,0,master_t._varSigConst)
         for x in self.content:
-            ret.append(x.get_master())
+            ret.append(x.get_slave())
         
         ret.driver = self
         return ret
@@ -265,6 +298,18 @@ class v_list(argg_hdl_base):
     def __len__(self):
         return len(self.content)
 
+    def getMember(self,InOut_Filter=None, VaribleSignalFilter = None):
+        ret = []
+        i = 0
+        for x in self.content:
+            x.set_vhdl_name(str(self)+"("+str(i)+")",True)
+            ret.append({
+                "name" : str(self)+"("+str(i)+")",
+                "symbol" : x
+            })
+            i+=1 
+
+        return ret
 
         
     def get_vhdl_name(self,Inout=None):

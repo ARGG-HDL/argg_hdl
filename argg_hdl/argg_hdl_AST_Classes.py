@@ -708,7 +708,8 @@ def body_unfold_call(astParser,Node):
             raise Exception("unknown function")
 
     elif hasattr(Node.func, 'value'):
-        obj = astParser.getInstantByName(Node.func.value.id)
+        obj = astParser.Unfold_body(Node.func.value)
+        #obj = astParser.getInstantByName(Node.func.value.id)
         memFunc = Node.func.attr
         f = getattr(obj,memFunc)
 
@@ -1255,3 +1256,8 @@ def  body_end_architecture(astParser,args,keywords=None):
     return v_noop()
 
 
+def body_unfold_Break(astParser,args,keywords=None):
+    return "exit"
+
+def body_unfold_Continue(astParser,args,keywords=None):
+    return "next"
