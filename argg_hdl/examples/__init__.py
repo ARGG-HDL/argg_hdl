@@ -1,13 +1,14 @@
-import argg_hdl.examples.axiStream as ax
-import argg_hdl.examples.clk_generator as clk_gen 
-import  argg_hdl.examples.counter   as cntr
-import argg_hdl.examples.edgeDetection  as e_detection
-import argg_hdl.examples.inputDelayTest  as iDelay
-import argg_hdl.examples.ram_handle  as ram_h
-import argg_hdl.examples.rollingCounter as r_counter
-import argg_hdl.examples.system_globals  as sys_globals
-import argg_hdl.examples.axi_stream_delay  as ax_s_delay
-import argg_hdl.examples.optional_t as opt_t
+from argg_hdl.examples import axiStream as ax
+#import argg_hdl.examples.axiStream as ax
+from argg_hdl.examples import clk_generator as clk_gen 
+from argg_hdl.examples import counter   as cntr
+from argg_hdl.examples import edgeDetection  as e_detection
+from argg_hdl.examples import inputDelayTest  as iDelay
+from argg_hdl.examples import ram_handle  as ram_h
+from argg_hdl.examples import rollingCounter as r_counter
+from argg_hdl.examples import system_globals  as sys_globals
+from argg_hdl.examples import axi_stream_delay  as ax_s_delay
+from argg_hdl.examples import optional_t as opt_t
 
 ## argg_hdl.examples.axiStream
 axisStream = ax.axisStream
