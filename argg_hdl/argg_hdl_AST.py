@@ -463,6 +463,8 @@ class xgenAST:
 
     def extractArchetectureForClass(self,ClassInstance,Arc):
         ret = None
+        primary = ClassInstance.__hdl_converter__.get_primary_object(ClassInstance)
+        ClassInstance.__hdl_converter__ = primary.__hdl_converter__
         ClassInstance = copy.deepcopy(ClassInstance)
         self.local_function ={}
         
