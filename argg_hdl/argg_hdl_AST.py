@@ -183,6 +183,7 @@ class xgenAST:
             "BitOr"         : body_bitOr,
             "Str"           : body_unfold_str,
             'NameConstant'  : body_Named_constant,
+            "Constant"      : body_Constant,
             "If"            : body_if,
             "list"          : body_list,
             "BoolOp"        : body_BoolOp,

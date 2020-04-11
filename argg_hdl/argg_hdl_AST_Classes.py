@@ -1261,3 +1261,6 @@ def body_unfold_Break(astParser,args,keywords=None):
 
 def body_unfold_Continue(astParser,args,keywords=None):
     return "next"
+
+def body_Constant(astParser,Node,keywords=None):
+    return v_named_C(Node.value)
