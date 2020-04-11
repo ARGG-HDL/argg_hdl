@@ -88,7 +88,7 @@ end {objType}_pack;
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
         
         for x in obj1:
-            if  x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
+            if x["symbol"]._issubclass_("v_class") and x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
                 continue
             if x["symbol"]._varSigConst == varSig.variable_t:
                 continue

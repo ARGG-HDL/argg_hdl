@@ -705,8 +705,9 @@ class xgenAST:
             if ret:
                 return ret 
                 
-        try: 
-            return self.local_function[SymbolName]
+        try:
+            if SymbolName in self.local_function: 
+                return self.local_function[SymbolName]
         except:
             pass
         
@@ -723,16 +724,18 @@ class xgenAST:
 
     def get_func_args(self, funcDef):
         
-
+        ret =[]
         for i in range(len(funcDef.args.args),1,-1):
             if len(funcDef.args.defaults ) >= i-2 +1:
                 default = funcDef.args.defaults[i-2]
             else:
                 default = None
-            yield (funcDef.args.args[i-1].arg,default)
+            ret.append((funcDef.args.args[i-1].arg,default))
+        ret.reverse()
+        return ret
 
     def get_func_args_list(self, funcDef):
-        
+        ret =[]
     
         for args in self.get_func_args(funcDef): 
             inArg = None
@@ -740,10 +743,11 @@ class xgenAST:
                 inArg = self.unfold_argList(args[1])
                 inArg = to_v_object(inArg)
                 inArg.set_vhdl_name(args[0],True)
-            yield {
+            ret.append({
                     "name": args[0],
                     "symbol": inArg
-                }
+                })
+        return ret
 
 def call_func(obj, name, args, astParser=None,func_args=None):
     varSigSuffix = "_"

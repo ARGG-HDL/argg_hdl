@@ -38,7 +38,7 @@ variable_port_Slave   = ahb.variable_port_Slave
 port_Stream_Slave     = ahb.port_Stream_Slave                  
 v_copy                = ahb.v_copy
 convert_to_hdl        = ahb.convert_to_hdl
-
+value                 = ahb.value
 v_symbol = ah_symbol.v_symbol
 
 

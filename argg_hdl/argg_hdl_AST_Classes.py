@@ -715,7 +715,7 @@ def body_unfold_call(astParser,Node):
 
         args = list()
         for x in Node.args:
-            args.append(astParser.Unfold_body(Node.args[0]))
+            args.append(astParser.Unfold_body(x))
         
         if len(args) == 0:
             r = f()  # find out how to forward args 
