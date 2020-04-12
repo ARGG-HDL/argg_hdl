@@ -1,8 +1,10 @@
 import ast
-import os,sys,inspect
+import os
+import sys
+import inspect
 import time
 
-import os,sys,inspect
+
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_AST_Classes import * 
@@ -50,7 +52,7 @@ def dataType(astParser=None, args=None):
         Name = args[0]
 
     if dataType_:
-        if Name == None:
+        if Name is None:
             return dataType_[-1]["symbol"]
         
         else:
@@ -77,9 +79,9 @@ def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
         return None
     localArgs = copy.copy(FunctionArgs) #deepcopy
     for x,y in zip(localArgs,TemplateDescription["args"]):
-        if y == None:
+        if y is None:
             return None  
-        if x["symbol"] == None or x["symbol"]._type != y._type or x['symbol']._varSigConst != y._varSigConst:
+        if x["symbol"] is None or x["symbol"]._type != y._type or x['symbol']._varSigConst != y._varSigConst:
             #y._Inout =  x["symbol"]._Inout
             y.set_vhdl_name(x["name"],True)
             
@@ -205,7 +207,7 @@ class xgenAST:
         self.ast_v_Entities.extend( list(get_subclasses(self.tree.body,['v_clk_entity'])))
     
     def AddStatementBefore(self,Statement):
-        if not self.Context == None:
+        if self.Context is not None:
             self.Context.append(Statement)
 
     def push_scope(self,NewContextName=None):
@@ -306,7 +308,7 @@ class xgenAST:
                 raise Exception(err_msg,ClassInstance,inst)
             
 
-            if self.Missing_template == True:
+            if self.Missing_template:
                 ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
                 ClassInstance.__hdl_converter__.MissingTemplate = True
             else:
@@ -388,7 +390,7 @@ class xgenAST:
     def extractFunctionsForClass_impl(self, ClassInstance,parent, funcDef, FuncArgs , setDefault = False ):
             self.push_scope("function")
             for x in FuncArgs:
-                if x["symbol"] == None:
+                if x["symbol"] is None:
                     return None
 
             ClassName  = type(ClassInstance).__name__
@@ -502,7 +504,7 @@ class xgenAST:
               
 
 
-        if self.Missing_template == True:
+        if self.Missing_template:
             ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
             ClassInstance.__hdl_converter__.MissingTemplate = True
 
@@ -518,7 +520,7 @@ class xgenAST:
     def extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent):
         fun_ret = []
         for temp in ClassInstance.__hdl_converter__.MemfunctionCalls:
-            if temp["call_func"] != None:
+            if temp["call_func"] is not None:
                 continue
                 
               
@@ -536,7 +538,7 @@ class xgenAST:
             ArglistLocal += list(self.get_func_args_list(f[0]))
             newArglist = GetNewArgList(f[0].name, ArglistLocal, temp)
 
-            if newArglist != None:
+            if newArglist is not None:
                 #print("is new template", f[0].name)
 
                 self.Missing_template = False
@@ -588,7 +590,7 @@ class xgenAST:
             Arglist += list(self.get_func_args_list(f))
 
             exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
-            if exist == False:
+            if not exist:
                 print(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
                 len_Arglist = len(Arglist)
 
@@ -706,11 +708,10 @@ class xgenAST:
             if ret:
                 return ret 
                 
-        try:
-            if SymbolName in self.local_function: 
-                return self.local_function[SymbolName]
-        except:
-            pass
+
+        if SymbolName in self.local_function: 
+            return self.local_function[SymbolName]
+
         
         for x in self.Archetecture_vars:
             if x["name"] == SymbolName:
@@ -740,7 +741,7 @@ class xgenAST:
     
         for args in self.get_func_args(funcDef): 
             inArg = None
-            if args[1] != None:
+            if args[1] is not None:
                 inArg = self.unfold_argList(args[1])
                 inArg = to_v_object(inArg)
                 inArg.set_vhdl_name(args[0],True)
@@ -759,16 +760,16 @@ def call_func(obj, name, args, astParser=None,func_args=None):
             varSigSuffix += "0"
     ret = []
 
-    for x in range(len(args)):
-        ys =func_args[x]["symbol"].__hdl_converter__.extract_conversion_types(func_args[x]["symbol"])
+    for arg,func_arg  in zip(args,func_args ):
+        ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
         for y in ys:
-            line = func_args[x]["name"] + y["suffix"]+ " => " + str(args[x].__hdl_name__) + y["suffix"]
+            line = func_arg["name"] + y["suffix"]+ " => " + str(arg.__hdl_name__) + y["suffix"]
             ret.append(line)
             if y["symbol"]._varSigConst ==varSig.signal_t:
                 members = y["symbol"].getMember()
                 for m in members:
                     if m["symbol"].__writeRead__ == InOut_t.output_t:
-                        line = func_args[x]["name"] + y["suffix"]+"_"+ m["name"] +" => " + args[x].__hdl_name__ + y["suffix"]  +"."+m["name"]
+                        line = func_arg["name"] + y["suffix"]+"_"+ m["name"] +" => " + arg.__hdl_name__ + y["suffix"]  +"."+m["name"]
                         ret.append(line)
                         #print(line)
             
