@@ -384,17 +384,14 @@ class hdl_converter_base:
     def convert_all_impl(self, obj, ouputFolder, FilesDone):
         FilesDone.clear()
         for x in gHDL_objectList:
-            #print("----------------")
             
             if x.__hdl_converter__.IsSucessfullConverted(x):
                 continue
             
-#            gTemplateIndent.inc()
             self.convert_all_packages(obj, ouputFolder,x,FilesDone)
 
             self.convert_all_entities(obj, ouputFolder,x,FilesDone)
             x.__hdl_converter__.IsConverted = True
-#            gTemplateIndent.deinc()
 
 
     def convert_all(self, obj, ouputFolder):
