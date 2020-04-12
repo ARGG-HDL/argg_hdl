@@ -2,7 +2,10 @@
 import copy
 
 
-import os,sys,inspect
+import os
+import sys
+import inspect
+
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_enum import * 
 from argg_hdl.argg_hdl_to_v_object import *
@@ -80,8 +83,8 @@ def v_slv_to_vhdl(astParser,Node,Keywords=None):
 def v_sl_to_vhdl(astParser,Node,Keywords=None):
     if len(Node) == 1:
         return v_sl(InOut_t.input_t, astParser.unfold_argList(Node[0]) )
-    else:
-        return v_sl(InOut_t.input_t )
+    
+    return v_sl(InOut_t.input_t )
         
         
 def v_int_to_vhdl(astParser,Node,Keywords=None):
@@ -145,7 +148,7 @@ def body_unfold_porcess(astParser,Node, Body = None):
     setDefaultVarSig(varSig.variable_t)
     ret = list()
     astParser.Context = ret
-    if Body == None:
+    if Body is None:
         for x in Node.body:
             ret.append( astParser.Unfold_body(x))
     else:
@@ -352,7 +355,7 @@ class v_funDef(v_ast_base):
     def __str__(self):
         ret = "" 
         for x in self.BodyList:
-            if x == None:
+            if x is None:
                 continue 
             x_str =str(x) 
             if x_str:
@@ -379,16 +382,16 @@ def body_unfold_functionDef(astParser,Node):
     )
     if isDecoratorName(Node.decorator_list, "process" ):
         return body_unfold_porcess(astParser,Node)
-    elif  isDecoratorName(Node.decorator_list, "rising_edge" ):
+    if  isDecoratorName(Node.decorator_list, "rising_edge" ):
         return body_unfold_porcess_body(astParser,Node)
 
-    elif  isDecoratorName(Node.decorator_list, "timed" ):
+    if  isDecoratorName(Node.decorator_list, "timed" ):
         return body_unfold_porcess_body_timed(astParser,Node)
 
-    elif isDecoratorName(Node.decorator_list, "combinational" ): 
+    if isDecoratorName(Node.decorator_list, "combinational" ): 
         return body_unfold_porcess_body_combinational(astParser,Node)
 
-    elif isDecoratorName(Node.decorator_list, "architecture" ):
+    if isDecoratorName(Node.decorator_list, "architecture" ):
         return body_unfold_architecture_body(astParser,Node)
 
 
@@ -447,13 +450,13 @@ class v_compare(v_ast_base):
             obj = astParser.get_variable(self.lhs.Value,None)
             return obj.__hdl_converter__._vhdl__compare(obj, rhs)
 
-        elif self.lhs._issubclass_("v_class"):
+        if self.lhs._issubclass_("v_class"):
             return self.lhs.__hdl_converter__._vhdl__compare(self.lhs,self.ops, self.rhs)
         
-        elif issubclass(type(self.lhs),v_symbol):
+        if issubclass(type(self.lhs),v_symbol):
             return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops ,self.rhs)
 
-        elif issubclass(type(self.lhs),v_enum):
+        if issubclass(type(self.lhs),v_enum):
             return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops ,self.rhs)
         
         raise Exception("unknown type",type(self.lhs).__name__ )
@@ -691,23 +694,17 @@ def body_unfold_call_local_func(astParser,Node):
         kwargs[x.arg] = astParser.Unfold_body(x.value) 
     return astParser.local_function[Node.func.id](*args,**kwargs)
 
-    if len(Node.args) == 0:
-        return astParser.local_function[Node.func.id]()
-    elif len(Node.args) == 1:
-        return astParser.local_function[Node.func.id](astParser.Unfold_body(Node.args[0]))
-    elif len(Node.args) == 2:
-        return astParser.local_function[Node.func.id](astParser.Unfold_body(Node.args[0]),astParser.Unfold_body(Node.args[1]))
 
 def body_unfold_call(astParser,Node):
     if hasattr(Node.func, 'id'):
         if Node.func.id in astParser._unfold_symbol_fun_arg:
             return astParser._unfold_symbol_fun_arg[Node.func.id](astParser, Node.args,Node.keywords)
-        elif Node.func.id in astParser.local_function:
+        if Node.func.id in astParser.local_function:
             return body_unfold_call_local_func( astParser ,Node)
-        else:
-            raise Exception("unknown function")
+        
+        raise Exception("unknown function")
 
-    elif hasattr(Node.func, 'value'):
+    if hasattr(Node.func, 'value'):
         obj = astParser.Unfold_body(Node.func.value)
         #obj = astParser.getInstantByName(Node.func.value.id)
         memFunc = Node.func.attr
@@ -727,14 +724,14 @@ def body_unfold_call(astParser,Node):
 
         r = v_copy(to_v_object(r))
         vhdl = obj.__hdl_converter__._vhdl__call_member_func(obj, memFunc,[obj]+ args,astParser)
-        if vhdl == None:
+        if vhdl is None:
             astParser.Missing_template=True
             vhdl = "$$missing Template$$"
         r.set_vhdl_name(vhdl)
         ret = v_call(memFunc,r, vhdl)
         return ret
 
-    elif hasattr(Node.func, 'func'):
+    if hasattr(Node.func, 'func'):
         return body_unfold_call(astParser,Node.func)
 
 
@@ -891,7 +888,7 @@ class v_stream_assigne(v_ast_base):
         self.rhs = rhs
         self.context =context
         self._StreamOut =None
-        if StreamOut != None:
+        if StreamOut is not None:
             self._StreamOut = StreamOut
 
         
@@ -943,6 +940,7 @@ class v_named_C(v_ast_base):
 
 def body_Named_constant(astParser,Node):
     return v_named_C(Node.value)
+
 
 def v_type_to_bool(astParser,obj):
 
@@ -1204,7 +1202,7 @@ def for_loop_ranged_based(astParser,Node):
     vhdl_name = str(Node.target.id)
     buff =  astParser.try_get_variable(vhdl_name)
 
-    if buff == None:
+    if buff is None:
         buff = v_copy(obj.Internal_Type)
         buff.__hdl_name__ = str(obj) + "("+itt+")"
         buff._varSigConst = varSig.reference_t
@@ -1234,7 +1232,7 @@ def for_loop_indexed_based(astParser,Node):
     vhdl_name = str(Node.target.id)
     buff =  astParser.try_get_variable(vhdl_name)
 
-    if buff == None:
+    if buff is None:
         buff = v_int()
         buff.__hdl_name__ = itt
         buff._varSigConst = varSig.reference_t
