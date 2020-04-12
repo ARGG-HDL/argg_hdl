@@ -47,7 +47,7 @@ proc : process(globals.clk) is
       end if;
     
       if (counter > 15) then 
-        counter <=  0;
+        counter <= 0;
         
       end if;
         push( self  =>  ax_slave, rx => ConfigIn_s2m);

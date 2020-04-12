@@ -289,17 +289,14 @@ class xgenAST:
             self.reset_buffers()
 
             self.parent = parent
-            self.FuncArgs.append(
-                {
-                    "name":"self",
-                    "symbol": ClassInstance,
-                    "ScopeType": InOut_t.InOut_tt
-
-                }
-            )
-            #p=ClassInstance._process1()
+            self.FuncArgs.append({
+                "name":"self",
+                "symbol": ClassInstance,
+                "ScopeType": InOut_t.InOut_tt
+            })
             
-            #self.local_function = p.__globals__
+            
+            
             self.local_function = ClassInstance.__init__.__globals__
             self.Archetecture_vars = ClassInstance.__local_symbols__
             try:
@@ -480,6 +477,22 @@ class xgenAST:
             self.pop_scope()
             return ret
 
+    def extractArchetectureForClass0(self,ClassInstance,Arc):
+        if not (Arc.decorator_list and Arc.decorator_list[0].id == 'architecture') :
+            return 
+        if not (Arc.name not in [x["name"] for x in ClassInstance.__hdl_converter__.archetecture_list ]):
+            return 
+        
+        arc = self.extractArchetectureForClass(ClassInstance,f)
+        
+        if not arc:
+            return
+        
+        ClassInstance.__hdl_converter__.archetecture_list.append({
+        "name"   : Arc.name,
+        "symbol" : arc
+        })
+            
 
     def extractArchetectureForClass(self,ClassInstance,Arc):
         ret = None
@@ -514,7 +527,9 @@ class xgenAST:
 
 
         if self.Missing_template:
-            ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
+            ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(
+                ClassInstance
+            )
             ClassInstance.__hdl_converter__.MissingTemplate = True
 
         else:
@@ -575,6 +590,44 @@ class xgenAST:
                         fun_ret.append( ret )
         return fun_ret
     #@profile
+    def extractFunctionsForClass1a(self,ClassInstance,parent,f ):
+        if f.decorator_list and f.decorator_list[0].id == 'architecture' :
+            return
+
+        ArglistLocal = []
+        ClassInstance.set_vhdl_name ( "self",True)
+        Arglist = []
+        Arglist.append({
+            "name":"self",
+            "symbol": v_deepcopy(ClassInstance),
+            "ScopeType": InOut_t.InOut_tt
+        })
+        Arglist[-1]["symbol"]._Inout  = InOut_t.InOut_tt
+        Arglist += list(self.get_func_args_list(f))
+        exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
+        if  exist:
+            return
+
+        print(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
+        len_Arglist = len(Arglist)
+        if len(ArglistLocal) == 0:
+            ArglistLocal.append(
+            {
+                "name":"self",
+                "symbol": v_deepcopy(ClassInstance),
+                "ScopeType": InOut_t.InOut_tt
+            }
+            )
+            ArglistLocal += list(self.get_func_args_list(f))
+        
+        ClassInstance.__hdl_converter__.MemfunctionCalls.append({
+            "name" : f.name,
+            "args":  [x["symbol"] for x in   Arglist[0:len_Arglist]],
+            "self" :v_deepcopy(ClassInstance),
+            "call_func" : None,
+            "func_args" : None,
+            "setDefault" : True
+        })
 
     def extractFunctionsForClass1(self,ClassInstance,parent,cl_body ):
         for f in cl_body:
@@ -583,60 +636,10 @@ class xgenAST:
                 continue
 
 
+            self.extractArchetectureForClass0(ClassInstance,f)
+            self.extractFunctionsForClass1a(ClassInstance,parent,f)
+
             
-            if f.decorator_list and f.decorator_list[0].id == 'architecture' :
-                if f.name not in [x["name"] for x in ClassInstance.__hdl_converter__.archetecture_list ]:
-                    arc = self.extractArchetectureForClass(ClassInstance,f)
-                    if arc:
-                        ClassInstance.__hdl_converter__.archetecture_list.append({
-                        "name"   : f.name,
-                        "symbol" : arc
-                        })
-                continue
-            #print(str(gTemplateIndent) +'<request_template name="' + f.name +'"/>')
-            #print(ClassInstance.__hdl_converter__.MemfunctionCalls)
-
-            ArglistLocal = []
-            ClassInstance.set_vhdl_name ( "self",True)
-           # ClassInstance._Inout  = InOut_t.InOut_tt
-            Arglist = []
-            Arglist.append({
-                "name":"self",
-                "symbol": v_deepcopy(ClassInstance),
-                "ScopeType": InOut_t.InOut_tt
-            })
-            Arglist[-1]["symbol"]._Inout  = InOut_t.InOut_tt
-            Arglist += list(self.get_func_args_list(f))
-
-            exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
-            if not exist:
-                print(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
-                len_Arglist = len(Arglist)
-
-                if len(ArglistLocal) == 0:
-
-                    ArglistLocal.append(
-                    {
-                        "name":"self",
-                        "symbol": v_deepcopy(ClassInstance),
-                        "ScopeType": InOut_t.InOut_tt
-
-                    }
-                    )
-
-                    ArglistLocal += list(self.get_func_args_list(f))
-                
-
-                ClassInstance.__hdl_converter__.MemfunctionCalls.append(
-                        {
-                            "name" : f.name,
-                            "args":  [x["symbol"] for x in   Arglist[0:len_Arglist]],
-                            "self" :v_deepcopy(ClassInstance),
-                            "call_func" : None,
-                            "func_args" : None,
-                            "setDefault" : True
-                        }
-                    )
     def extractFunctionsForClass(self,ClassInstance,parent ):
         t = time.time()
 
