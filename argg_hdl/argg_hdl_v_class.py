@@ -1036,7 +1036,7 @@ class v_class_converter(hdl_converter_base):
                 for m in members:
                     if m["symbol"].__writeRead__ == InOut_t.Internal_t:
                         continue
-                    ret.append(m["symbol"].to_arglist(name + x["suffix"]+"_"+m["name"],None ,withDefault=withDefault))
+                    ret.append(m["symbol"].__hdl_converter__.to_arglist(m["symbol"], name + x["suffix"]+"_"+m["name"],None ,withDefault=withDefault))
 
         r =join_str(ret,Delimeter="; ",IgnoreIfEmpty=True)
         return r

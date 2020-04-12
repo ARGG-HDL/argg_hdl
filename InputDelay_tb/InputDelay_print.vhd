@@ -26,8 +26,8 @@ end entity;
 architecture rtl of InputDelay_print is
 
 --------------------------InputDelay_print-----------------
-  signal counter : integer := 0; 
   signal d : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal counter : integer := 0; 
 -------------------------- end InputDelay_print-----------------
 
 begin

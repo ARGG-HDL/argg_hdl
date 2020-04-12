@@ -224,8 +224,8 @@ procedure pull (self :  inout  axiStream_slv32_master;  signal tx :  in  axiStre
 -- End Connecting
     
     if (self.tx.ready = '1') then 
-      self.tx.valid := 0;
-      self.tx.last := 0;
+      self.tx.valid := '0';
+      self.tx.last := '0';
       
     end if;
   
@@ -268,7 +268,7 @@ end procedure;
 procedure reset_0 (self :  inout  axiStream_slv32_master) is
    
   begin 
- self.tx.valid := 0;
+ self.tx.valid := '0';
    
 end procedure;
 
@@ -284,10 +284,10 @@ procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStr
   begin 
  
     if (EndOfStream) then 
-      self.tx.last := 1;
+      self.tx.last := '1';
       
     else
-      self.tx.last := 0;
+      self.tx.last := '0';
       
     end if;
    
@@ -303,7 +303,7 @@ end function;
 procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector(32 -1 downto 0)) is
    
   begin 
- self.tx.valid := 1;
+ self.tx.valid := '1';
   self.tx.data := dataIn;
    
 end procedure;
@@ -311,7 +311,7 @@ end procedure;
 procedure send_data_00 (self :  inout  axiStream_slv32_master; dataIn :  in  std_logic_vector(31 downto 0)) is
    
   begin 
- self.tx.valid := 1;
+ self.tx.valid := '1';
   self.tx.data := dataIn;
    
 end procedure;
@@ -333,17 +333,17 @@ procedure pull (self :  inout  axiStream_slv32_slave;  signal rx :  in  axiStrea
 -- End Connecting
     
     if (( self.rx.ready = '1' and self.rx.valid = '1') ) then 
-      self.data_isvalid := 1;
+      self.data_isvalid := '1';
       
     end if;
-  self.data_internal_was_read2 := 0;
-  self.rx.ready := 0;
+  self.data_internal_was_read2 := '0';
+  self.rx.ready := '0';
   
     if (( self.data_isvalid = '1' and  not  ( self.data_internal_isvalid2 = '1' ) ) ) then 
       self.data_internal2 := self.rx.data;
       self.data_internal_isvalid2 := self.data_isvalid;
       self.data_internal_isLast2 := self.rx.last;
-      self.data_isvalid := 0;
+      self.data_isvalid := '0';
       
     end if;
   
@@ -356,12 +356,12 @@ procedure push (self :  inout  axiStream_slv32_slave;  signal rx :  out  axiStre
  
     
     if (self.data_internal_was_read2 = '1') then 
-      self.data_internal_isvalid2 := 0;
+      self.data_internal_isvalid2 := '0';
       
     end if;
   
     if ((  not  ( self.data_isvalid = '1' )  and  not  ( self.data_internal_isvalid2 = '1' ) ) ) then 
-      self.rx.ready := 1;
+      self.rx.ready := '1';
       
     end if;
   
@@ -432,7 +432,7 @@ procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs 
   
     if (self.data_internal_isvalid2 = '1') then 
       rhs <= self.data_internal2;
-      self.data_internal_was_read2 := 1;
+      self.data_internal_was_read2 := '1';
       
     end if;
    
@@ -445,7 +445,7 @@ procedure get_value_00_rshift (self :  inout  axiStream_slv32_slave; rhs :  inou
   
     if (self.data_internal_isvalid2 = '1') then 
       send_data_00(self => rhs, dataIn => self.data_internal2);
-      self.data_internal_was_read2 := 1;
+      self.data_internal_was_read2 := '1';
       
     end if;
    

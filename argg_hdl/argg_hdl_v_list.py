@@ -9,6 +9,7 @@ from argg_hdl.argg_hdl_v_symbol import *
 class v_list_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
+        self.obj_list = []
     def includes(self,obj, name,parent):
         ret  = """
 library IEEE;
@@ -71,6 +72,36 @@ end {objType}_pack;
     
         return ret
 
+    def InOut_t2str(self, obj):
+        inOut = obj._Inout
+        if inOut == InOut_t.input_t:
+            return " in "
+        
+        if inOut == InOut_t.output_t:
+            return " out "
+        
+        if inOut == InOut_t.InOut_tt:
+            return " inout "
+        
+        inOut = obj.__writeRead__
+        if inOut == InOut_t.input_t:
+            return " in "
+        
+        if inOut == InOut_t.output_t:
+            return " out "
+        
+        if inOut == InOut_t.InOut_tt:
+            return " inout "
+        
+        for x in obj.__hdl_converter__.obj_list:
+            try:
+                ret = x.__hdl_converter__.InOut_t2str(x)
+                return ret
+            except:
+                pass
+
+
+        raise Exception("unkown Inout type",inOut)
 
     def _vhdl_make_port(self, obj, name):
         ret = []
@@ -145,6 +176,8 @@ end {objType}_pack;
         ret = v_copy(obj.Internal_Type)
         ret._varSigConst = obj._varSigConst
         ret.__hdl_name__ =  obj.__hdl_name__+"("+str(sl)+")"
+        
+        self.obj_list.append(ret)
 
         return ret
     def get_process_header(self,obj):
@@ -165,7 +198,10 @@ end {objType}_pack;
             )
         return ret
         
-  
+    def to_arglist(self,obj, name,parent,withDefault = False):
+        return name +" : " + obj.__hdl_converter__.InOut_t2str(obj)+"  " +obj.get_type()
+
+
     def _vhdl__reasign(self, obj, rhs, context=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         return str(obj.__hdl_name__) + asOp +  str(rhs.__hdl_name__)

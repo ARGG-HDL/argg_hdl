@@ -157,7 +157,7 @@ class v_symbol_converter(hdl_converter_base):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
             return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type)) 
-        return target + asOp+  str(rhs) 
+        return target + asOp+  "'" +str(rhs) +"'"
 
     def _vhdl__reasign_std_logic_vector(self, obj, rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
@@ -173,16 +173,12 @@ class v_symbol_converter(hdl_converter_base):
                 src = str(rhs.value),
                 asOp=asOp
             )
+        return target + asOp+  str(rhs) 
+
     def _vhdl__reasign_int(self, obj, rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
-        if str(rhs) == '0':
-            return target + asOp+ " 0"
-        if type(rhs).__name__ == "str":
-            return target + asOp+ str(rhs)
-                
-        if rhs._type == "integer":
-            return target + asOp+ str(rhs)
-        if "std_logic_vector" in rhs._type:
+
+        if issubclass(type(rhs),argg_hdl_base) and "std_logic_vector" in rhs._type:
             return target + asOp +" to_integer(signed("+ str(rhs)+"))"
         
         return target +asOp +  str(rhs)
@@ -203,7 +199,7 @@ class v_symbol_converter(hdl_converter_base):
             return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
         
         if "std_logic_vector" in obj._type:
-            return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
+            return obj.__hdl_converter__._vhdl__reasign_std_logic_vector(obj, rhs,target, astParser,context_str)
         
         if obj._type == "integer":
             return obj.__hdl_converter__._vhdl__reasign_int(obj, rhs,target, astParser,context_str)

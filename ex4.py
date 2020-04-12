@@ -59,6 +59,18 @@ class d_source(v_entity):
         
         end_architecture()
 
+class memo(v_class_master):
+    def __init__(self):
+        super().__init__()
+        self.l= v_signal(v_list(v_slv(32),100))
+    
+    def set_data(self, data):
+        self.l[0] << data
+    
+    def get_data(self, data):
+        data << self.l[0]
+    
+
 class tb(v_entity):
     def __init__(self):
         super().__init__()
@@ -71,6 +83,16 @@ class tb(v_entity):
         axmux = v_create(axiStreamMux(clkgen.clk))
         d_s   = v_create(d_source(clkgen.clk))
         axmux.data_in[0] << d_s.data_out
+
+        m = memo()
+        d = v_slv(32)
+        d2 = v_slv(32)
+        
+        @rising_edge(clkgen.clk)
+        def proc():
+            m.set_data(d)
+            m.get_data(d2)
+        
         end_architecture()
 
 

@@ -26,8 +26,8 @@ end entity;
 architecture rtl of axiStreamMux is
 
 --------------------------axiStreamMux-----------------
-  signal ChannelUsed : integer := 0; 
   signal data_buffer : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal ChannelUsed : integer := 0; 
   signal sending : std_logic := '0'; 
 -------------------------- end axiStreamMux-----------------
 
