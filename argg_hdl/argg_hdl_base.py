@@ -343,6 +343,60 @@ class hdl_converter_base:
             return False
         return self.IsConverted
 
+    def convert_all_packages(self, obj, ouputFolder,x,FilesDone):
+        packetName =  x.__hdl_converter__.get_packet_file_name(x)
+        if packetName not in FilesDone:
+            print(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
+            gTemplateIndent.inc()
+            x.__hdl_converter__.reset_TemplateMissing(x)
+            packet = x.__hdl_converter__.get_packet_file_content(x)
+            if packet and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
+                file_set_content(ouputFolder+"/" +packetName,packet)
+            FilesDone.append(packetName)
+            if x.__hdl_converter__.MissingTemplate:
+                print(str(gTemplateIndent)+'<status ="failed">')
+            else:
+                print(str(gTemplateIndent)+'<status ="sucess">')
+            gTemplateIndent.deinc()
+            print(str(gTemplateIndent)+ '</package_conversion>')
+        
+    def convert_all_entities(self, obj, ouputFolder,x,FilesDone):
+        entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
+        if entiyFileName not in FilesDone:
+            print(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
+            gTemplateIndent.inc()
+            x.__hdl_converter__.reset_TemplateMissing(x)
+            try:
+                entity_content = x.__hdl_converter__.get_enity_file_content(x)
+            except Exception as inst:
+                raise Exception(["Error in entity Converion:\nEntityFileName: "+ entiyFileName], x,inst)
+            if entity_content and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
+                file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
+            FilesDone.append(entiyFileName)
+            if x.__hdl_converter__.MissingTemplate:
+                print(str(gTemplateIndent)+'<status ="failed">')
+            else:
+                print(str(gTemplateIndent)+'<status ="sucess">')
+            gTemplateIndent.deinc()
+            print(str(gTemplateIndent)+"</entity_conversion>")
+            #print("processing")
+
+    def convert_all_impl(self, obj, ouputFolder, FilesDone):
+        FilesDone.clear()
+        for x in gHDL_objectList:
+            #print("----------------")
+            
+            if x.__hdl_converter__.IsSucessfullConverted(x):
+                continue
+            
+#            gTemplateIndent.inc()
+            self.convert_all_packages(obj, ouputFolder,x,FilesDone)
+
+            self.convert_all_entities(obj, ouputFolder,x,FilesDone)
+            x.__hdl_converter__.IsConverted = True
+#            gTemplateIndent.deinc()
+
+
     def convert_all(self, obj, ouputFolder):
 
         counter = 0
@@ -352,63 +406,12 @@ class hdl_converter_base:
             counter += 1
             if counter > 10:
                 raise Exception("unable to convert ")
-            
-            FilesDone = []
+           
             print("<!--=======================-->")
             print(str(gTemplateIndent)+ '<Converting Index="'+str(counter) +'">')
-            for x in gHDL_objectList:
-
-                #print("----------------")
-                
-                if x.__hdl_converter__.IsSucessfullConverted(x):
-                    continue
-                
-                gTemplateIndent.inc()
-                packetName =  x.__hdl_converter__.get_packet_file_name(x)
-                if packetName not in FilesDone:
-                    print(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
-                    gTemplateIndent.inc()
-                    x.__hdl_converter__.reset_TemplateMissing(x)
-                    packet = x.__hdl_converter__.get_packet_file_content(x)
-                    if packet and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
-                        file_set_content(ouputFolder+"/" +packetName,packet)
-
-                    FilesDone.append(packetName)
-                    if x.__hdl_converter__.MissingTemplate:
-                        print(str(gTemplateIndent)+'<status ="failed">')
-                    else:
-                        print(str(gTemplateIndent)+'<status ="sucess">')
-                    gTemplateIndent.deinc()
-                    print(str(gTemplateIndent)+ '</package_conversion>')
-                    #print(type(x).__name__)
-                    #print("processing")
-                    
-                
-                entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
-
-                if entiyFileName not in FilesDone:
-                    print(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
-                    gTemplateIndent.inc()
-                    x.__hdl_converter__.reset_TemplateMissing(x)
-                    try:
-                        entity_content = x.__hdl_converter__.get_enity_file_content(x)
-                    except Exception as inst:
-                        raise Exception(["Error in entity Converion:\nEntityFileName: "+ entiyFileName], x,inst)
-
-                    if entity_content and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
-                        file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
-
-                    FilesDone.append(entiyFileName)
-                    if x.__hdl_converter__.MissingTemplate:
-                        print(str(gTemplateIndent)+'<status ="failed">')
-                    else:
-                        print(str(gTemplateIndent)+'<status ="sucess">')
-                    gTemplateIndent.deinc()
-                    print(str(gTemplateIndent)+"</entity_conversion>")
-                    #print("processing")
-                
-                x.__hdl_converter__.IsConverted = True
-                gTemplateIndent.deinc()
+            gTemplateIndent.inc()
+            self.convert_all_impl(obj, ouputFolder, FilesDone)
+            gTemplateIndent.deinc()
             print(str(gTemplateIndent)+ '</Converting>')
 
     def get_primary_object(self,obj):
