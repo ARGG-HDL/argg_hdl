@@ -1254,13 +1254,13 @@ class v_class(argg_hdl_base):
         self_members  = self.get_s2m_signals()
         rhs_members  = rhs.get_s2m_signals()
 
-        for i in range(len(self_members)):
+        for i,x in enumerate(self_members):
             rhs_members[i]['symbol'] << self_members[i]['symbol']
             rhs_members[i]['symbol']._set_to_sub_connection()
 
         self_members  = self.get_m2s_signals()
         rhs_members  = rhs.get_m2s_signals()
-        for i in range(len(self_members)):
+        for i,x in enumerate(self_members):
             self_members[i]['symbol'] << rhs_members[i]['symbol']
             self_members[i]['symbol']._set_to_sub_connection()
 
