@@ -71,6 +71,11 @@ def AddDataType(dType,Name=""):
         }
     )
 
+def hasMissingSymbol(FuncArgs):
+    for x in FuncArgs:
+        if x["symbol"] is None:
+            return True
+    return False
 
 def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
 
@@ -264,6 +269,11 @@ class xgenAST:
             ret += x.__hdl_converter__._vhdl__DefineSymbol(x)
         
         return ret
+    def reset_buffers(self):
+        self.local_function ={}
+        self.FuncArgs = list()
+        self.LocalVar = list()
+        self.Archetecture_vars =[]
 
     def extractArchetectureForEntity(self, ClassInstance, parent):
         setDefaultVarSig(varSig.signal_t)
@@ -276,12 +286,9 @@ class xgenAST:
 
             self.Missing_template = False
             ClassInstance.__hdl_converter__.reset_TemplateMissing(ClassInstance)
-            self.local_function ={}
+            self.reset_buffers()
 
             self.parent = parent
-            self.FuncArgs = list()
-            self.LocalVar = list()
-            self.Archetecture_vars =[]
             self.FuncArgs.append(
                 {
                     "name":"self",
@@ -312,7 +319,12 @@ class xgenAST:
                 ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
                 ClassInstance.__hdl_converter__.MissingTemplate = True
             else:
-                proc = v_Arch(body=body,Symbols=self.LocalVar, Arch_vars=self.Archetecture_vars,ports=ClassInstance.getMember())
+                proc = v_Arch(
+                    body=body,
+                    Symbols=self.LocalVar, 
+                    Arch_vars=self.Archetecture_vars,
+                    ports=ClassInstance.getMember()
+                )
                 ClassInstance.__processList__.append(proc)
 
             return self
@@ -321,14 +333,15 @@ class xgenAST:
         ClassName  = type(ClassInstance).__name__
         cl = self.getClassByName(ClassName)
         for f in cl.body:
-            self.local_function ={}
+            
             if  f.name in self.functionNameVetoList:
                 continue
-
             self.parent = parent
-            self.FuncArgs = list()
-            self.LocalVar = list()
-            self.Archetecture_vars =[]
+            
+            self.reset_buffers()
+            
+            
+            
             self.FuncArgs.append(
                 {
                     "name":"self",
@@ -383,28 +396,31 @@ class xgenAST:
             
             body =pull +"\n" + body +"\n" + push
             
-            proc = v_process(body=body, SensitivityList=b.dec[0].get_sensitivity_list(),prefix=b.dec[0].get_prefix(), VariableList=header)
+            proc = v_process(
+                body=body, 
+                SensitivityList=b.dec[0].get_sensitivity_list(),
+                prefix=b.dec[0].get_prefix(), 
+                VariableList=header
+            )
             ClassInstance.__processList__.append(proc)
             
     
     def extractFunctionsForClass_impl(self, ClassInstance,parent, funcDef, FuncArgs , setDefault = False ):
             self.push_scope("function")
-            for x in FuncArgs:
-                if x["symbol"] is None:
-                    return None
+            if hasMissingSymbol(FuncArgs):
+                return None
+            
+            self.reset_buffers()
 
             ClassName  = type(ClassInstance).__name__
+
             self.parent = parent
             self.FuncArgs = FuncArgs
-            self.LocalVar = list()
-            self.Archetecture_vars =[]
+            
+            
             FuncArgsLocal = copy.copy(FuncArgs)
-            varSigSuffix = "_"
-            for x in FuncArgsLocal:
-                if x["symbol"]._varSigConst == varSig.signal_t:
-                    varSigSuffix += "1"
-                else:
-                    varSigSuffix += "0"
+            varSigSuffix = get_function_varSig_suffix(FuncArgsLocal)
+
 
 
 
@@ -464,30 +480,23 @@ class xgenAST:
             self.pop_scope()
             return ret
 
+
     def extractArchetectureForClass(self,ClassInstance,Arc):
         ret = None
         primary = ClassInstance.__hdl_converter__.get_primary_object(ClassInstance)
         ClassInstance.__hdl_converter__ = primary.__hdl_converter__
         ClassInstance = copy.deepcopy(ClassInstance)
-        self.local_function ={}
+        self.reset_buffers()
         
-        self.FuncArgs = list()
-        self.LocalVar = list()
-        self.Archetecture_vars =[]
-        self.FuncArgs.append(
-                {
-                    "name":"self",
-                    "symbol":  ClassInstance,
-                    "ScopeType": InOut_t.InOut_tt
-
-                }
-        )
-            #p=ClassInstance._process1()
+        self.FuncArgs.append({
+            "name":"self",
+            "symbol":  ClassInstance,
+            "ScopeType": InOut_t.InOut_tt
+        })
             
-            #self.local_function = p.__globals__
         self.local_function = ClassInstance.__init__.__globals__
         ClassInstance.__hdl_name__ = "!!SELF!!"
-#        self.Archetecture_vars = ClassInstance.__local_symbols__
+
 
         try:
             body = self.Unfold_body(Arc)  ## get local vars 
@@ -509,12 +518,15 @@ class xgenAST:
             ClassInstance.__hdl_converter__.MissingTemplate = True
 
         else:
-            ret = v_Arch(body=body,Symbols=self.LocalVar, Arch_vars=self.Archetecture_vars,ports=ClassInstance.getMember())
+            ret = v_Arch(
+                body=body,
+                Symbols=self.LocalVar, 
+                Arch_vars=self.Archetecture_vars,
+                ports=ClassInstance.getMember()
+            )
 
-        self.local_function ={}
-        self.FuncArgs = list()
-        self.LocalVar = list()
-        self.Archetecture_vars =[]
+        self.reset_buffers()
+       
         return ret
 
     def extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent):
@@ -526,14 +538,18 @@ class xgenAST:
               
             ArglistLocal = []
             ArglistLocal.append({
-                        "name":"self",
-                        "symbol": v_deepcopy(ClassInstance),
-                        "ScopeType": InOut_t.InOut_tt
-
+                "name":"self",
+                "symbol": v_deepcopy(ClassInstance),
+                "ScopeType": InOut_t.InOut_tt
             })
+
             f =  get_function_definition(cl_body,temp["name"])
             if len(f) == 0:
-                raise Exception("unable to find function template: ",temp["name"],ClassInstance)
+                raise Exception(
+                    "unable to find function template: ",
+                    temp["name"],
+                    ClassInstance
+                )
                 
             ArglistLocal += list(self.get_func_args_list(f[0]))
             newArglist = GetNewArgList(f[0].name, ArglistLocal, temp)
@@ -542,7 +558,13 @@ class xgenAST:
                 #print("is new template", f[0].name)
 
                 self.Missing_template = False
-                ret = self.extractFunctionsForClass_impl(ClassInstance_local, parent, f[0], newArglist , temp["setDefault"]  )
+                ret = self.extractFunctionsForClass_impl(
+                    ClassInstance_local, 
+                    parent, 
+                    f[0], 
+                    newArglist , 
+                    temp["setDefault"]  
+                )
                 if self.Missing_template:
                     ClassInstance.__hdl_converter__.MissingTemplate = True
                 else:
@@ -578,14 +600,11 @@ class xgenAST:
             ClassInstance.set_vhdl_name ( "self",True)
            # ClassInstance._Inout  = InOut_t.InOut_tt
             Arglist = []
-            Arglist.append(
-                {
-                    "name":"self",
-                    "symbol": v_deepcopy(ClassInstance),
-                    "ScopeType": InOut_t.InOut_tt
-
-                }
-            )
+            Arglist.append({
+                "name":"self",
+                "symbol": v_deepcopy(ClassInstance),
+                "ScopeType": InOut_t.InOut_tt
+            })
             Arglist[-1]["symbol"]._Inout  = InOut_t.InOut_tt
             Arglist += list(self.get_func_args_list(f))
 
@@ -750,14 +769,20 @@ class xgenAST:
                     "symbol": inArg
                 })
         return ret
-
-def call_func(obj, name, args, astParser=None,func_args=None):
+def get_function_varSig_suffix(func_args):
     varSigSuffix = "_"
     for x in func_args:
         if get_symbol(x)._varSigConst == varSig.signal_t:
             varSigSuffix += "1"
         else:
             varSigSuffix += "0"
+
+    return varSigSuffix
+
+
+def call_func(obj, name, args, astParser=None,func_args=None):
+    varSigSuffix = get_function_varSig_suffix(func_args)
+    
     ret = []
 
     for arg,func_arg  in zip(args,func_args ):
