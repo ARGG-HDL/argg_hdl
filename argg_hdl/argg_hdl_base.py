@@ -1094,5 +1094,3 @@ def v_deepcopy(symbol):
     ret.__receiver__ = receiver
 
     return ret
-
-
