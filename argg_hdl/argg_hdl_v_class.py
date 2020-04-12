@@ -909,32 +909,43 @@ class v_class_converter(hdl_converter_base):
         ret.append({ "suffix":"", "symbol": obj})
         return ret
 
-    def extract_conversion_types_Master_Slave(self, obj, exclude_class_type=None,filter_inout=None):
+    def extract_conversion_types_Master_Slave_impl(self, obj, exclude_class_type=None,filter_inout=None,VarSig=None,Suffix=""):
         ret = []
-        x = v_class(obj.__hdl_converter__.get_NameSignal(obj), varSig.signal_t)
+        if VarSig == varSig.signal_t:
+            name = obj.__hdl_converter__.get_NameSignal(obj)
+        else:
+            name = obj._type
+        x = v_class(name, VarSig)
         x.__v_classType__ = v_classType_t.Record_t
         x.__vetoHDLConversion__  = True
         x._Inout= obj._Inout
         x.__writeRead__ = obj.__writeRead__
-        x.__hdl_name__ = str(obj.__hdl_name__)+"_sig"
-        ys= obj.getMember(VaribleSignalFilter=varSig.signal_t)
+        x.__hdl_name__ = str(obj.__hdl_name__)+Suffix
+        ys= obj.getMember(VaribleSignalFilter=VarSig)
         if len(ys)>0:
             for y in ys: 
                 setattr(x, y["name"], y["symbol"])
             
-            ret.append({ "suffix":"_sig", "symbol": x})
-        x = v_class(obj._type, varSig.variable_t)
-        x.__v_classType__ = v_classType_t.Record_t
-        x.__vetoHDLConversion__  = True
-        x._Inout= obj._Inout
-        x.__writeRead__ = obj.__writeRead__
-        x.__hdl_name__ = obj.__hdl_name__
-        ys= obj.getMember(VaribleSignalFilter=varSig.variable_t)
-        if len(ys)>0:
-            for y in ys: 
-                setattr(x, y["name"], y["symbol"])
-            ret.append({ "suffix":"", "symbol": x})
-        #ret.append({ "suffix":"", "symbol": obj})
+            ret.append({ "suffix":Suffix, "symbol": x})
+        return ret
+
+    def extract_conversion_types_Master_Slave(self, obj, exclude_class_type=None,filter_inout=None):
+        ret = []
+        ret += obj.__hdl_converter__.extract_conversion_types_Master_Slave_impl(
+            obj,
+            exclude_class_type,
+            filter_inout,
+            varSig.signal_t,
+            "_sig"
+        )
+        ret += obj.__hdl_converter__.extract_conversion_types_Master_Slave_impl(
+            obj, 
+            exclude_class_type,
+            filter_inout,
+            varSig.variable_t,
+            ""
+        )
+
         return ret
 
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
