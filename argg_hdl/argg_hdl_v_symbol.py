@@ -1,4 +1,7 @@
-import os,sys,inspect
+import os
+import sys
+import inspect
+
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_simulation import *
@@ -87,33 +90,34 @@ class v_symbol_converter(hdl_converter_base):
     
         if obj._type == "integer":
             return obj.__hdl_converter__._vhdl__compare_int(obj, ops, rhs)
-        elif obj._type == "std_logic":
+        
+        if obj._type == "std_logic":
             return obj.__hdl_converter__._vhdl__compare_std_logic(obj, ops, rhs)
-        elif "std_logic_vector" in obj._type:
+        
+        if "std_logic_vector" in obj._type:
             return obj.__hdl_converter__._vhdl__compare_std_logic_vector(obj, ops, rhs)
         
-
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
 
     def _to_hdl___bool__(self,obj, astParser):
         obj._add_input()
         if obj._type == "std_logic":
             return str(obj) + " = '1'"
-        elif "std_logic_vector" in obj._type:
+        if "std_logic_vector" in obj._type:
             return str(obj) + " > 1"
-        elif obj._type == "boolean":
+        if obj._type == "boolean":
             return str(obj)
-        elif obj._type == "integer":
+        if obj._type == "integer":
             return str(obj) + " > 0"
 
-        return "pyhdl_to_bool(" + str(obj) + ") "
+        return "to_bool(" + str(obj) + ") "
 
     def _vhdl__DefineSymbol(self,obj, VarSymb=None):
         print("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 
-        if  obj.__Driver__ != None and str(obj.__Driver__ ) != 'process':
+        if  obj.__Driver__ is not None and str(obj.__Driver__ ) != 'process':
             return ""
         name = obj.__hdl_name__
 
@@ -121,7 +125,7 @@ class v_symbol_converter(hdl_converter_base):
         return  VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
     def get_architecture_header(self, obj):
 
-        if obj._Inout != InOut_t.Internal_t and obj.__isInst__ == False:
+        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
             return ""
         
         if obj._varSigConst == varSig.variable_t:
@@ -159,9 +163,11 @@ class v_symbol_converter(hdl_converter_base):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " (others => '0')"
-        elif  issubclass(type(rhs),argg_hdl_base):
+        
+        if  issubclass(type(rhs),argg_hdl_base):
             return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type)) 
-        elif  type(rhs).__name__=="v_Num":
+        
+        if  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
                 dest=target,
                 src = str(rhs.value),
@@ -171,12 +177,12 @@ class v_symbol_converter(hdl_converter_base):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " 0"
-        elif type(rhs).__name__ == "str":
+        if type(rhs).__name__ == "str":
             return target + asOp+ str(rhs)
                 
-        elif rhs._type == "integer":
+        if rhs._type == "integer":
             return target + asOp+ str(rhs)
-        elif "std_logic_vector" in rhs._type:
+        if "std_logic_vector" in rhs._type:
             return target + asOp +" to_integer(signed("+ str(rhs)+"))"
         
         return target +asOp +  str(rhs)
@@ -192,13 +198,14 @@ class v_symbol_converter(hdl_converter_base):
         
         if isProcess():
             obj.__Driver__ = 'process'
-
         
         if obj._type == "std_logic":
             return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
-        elif "std_logic_vector" in obj._type:
+        
+        if "std_logic_vector" in obj._type:
             return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
-        elif obj._type == "integer":
+        
+        if obj._type == "integer":
             return obj.__hdl_converter__._vhdl__reasign_int(obj, rhs,target, astParser,context_str)
 
         asOp = obj.__hdl_converter__.get_assiment_op(obj)            
@@ -284,7 +291,7 @@ class v_symbol(argg_hdl_base):
 
 
     def isInOutType(self, Inout):
-        if Inout == None:
+        if Inout is None:
             return True
         if self._Inout == InOut_t.InOut_tt:
             return True
@@ -292,7 +299,7 @@ class v_symbol(argg_hdl_base):
         return self._Inout == Inout
 
     def isVarSigType(self, varSigType):
-        if varSigType == None:
+        if varSigType is None:
             return True
 
         return self._varSigConst == varSigType
@@ -300,10 +307,10 @@ class v_symbol(argg_hdl_base):
 
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite==False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and not Overwrite:
             raise Exception("double Conversion to vhdl")
-        else:
-            self.__hdl_name__ = name
+        
+        self.__hdl_name__ = name
 
 
 
@@ -322,13 +329,15 @@ class v_symbol(argg_hdl_base):
         if self._Inout == InOut_t.Internal_t and  Inout == InOut_t.Master_t:
             self._Inout = InOut_t.output_t
             return 
-        elif Inout == InOut_t.Master_t:
+        
+        if Inout == InOut_t.Master_t:
             return 
 
-        elif self._Inout == InOut_t.Internal_t and  Inout == InOut_t.Slave_t:
+        if self._Inout == InOut_t.Internal_t and  Inout == InOut_t.Slave_t:
             self._Inout = InOut_t.input_t
             return 
-        elif Inout == InOut_t.Slave_t:
+        
+        if Inout == InOut_t.Slave_t:
             self._Inout = InoutFlip(self._Inout)
             return 
         self._Inout = Inout
@@ -486,9 +495,10 @@ class v_symbol(argg_hdl_base):
             self.__value_list__[self.__value_Index__]  = self.nextValue
 
     def _Conect_Not_running(self,rhs):
-        if self.__Driver__ != None and not isConverting2VHDL():#todo: there is a bug with double assigment in the conversion to vhdl
+        if self.__Driver__ is not None and not isConverting2VHDL():#todo: there is a bug with double assigment in the conversion to vhdl
             raise Exception("symbol has already a driver", str(self))
-        elif not issubclass(type(rhs),argg_hdl_base0):
+        
+        if not issubclass(type(rhs),argg_hdl_base0):
             self.nextValue = rhs
             self.__value_list__[self.__value_Index__] = rhs
             return
@@ -588,7 +598,7 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         Default =  'x"'+ hex(Default)[2:].zfill(int( int(BitWidth)/4))+'"'  
     
     v_type = ""
-    if BitWidth == None:
+    if BitWidth is None:
         v_type="std_logic_vector"    
     elif type(BitWidth).__name__ == "int":
         v_type="std_logic_vector(" + str(BitWidth -1 ) + " downto 0)"
@@ -620,12 +630,12 @@ def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
     val = None
     if obj._type == "std_logic":
         val = "'0'"
-    elif "std_logic_vector" in obj._type:
+    if "std_logic_vector" in obj._type:
         val = "(others => '0')"
-    elif obj._type == "integer":
+    if obj._type == "integer":
         val = '0'
     
-    if val == None:
+    if val is None:
         raise Exception("unable to reset symbol")
     ret =  str(args[0])  + asOp + val
     return ret
