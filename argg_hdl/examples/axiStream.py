@@ -59,7 +59,7 @@ class axisStream_slave_converter(axisStream_converter):
     def _to_hdl___bool__(self, obj, astParser):
         hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "isReceivingData",[obj],astParser)
 
-        if hdl == None:
+        if hdl is None:
             astParser.Missing_template=True
             return "-- $$ template missing $$"
         return hdl
@@ -69,7 +69,7 @@ class axisStream_slave_converter(axisStream_converter):
         vhdl_name = str(obj) + "_buff"
         buff =  astParser.try_get_variable(vhdl_name)
 
-        if buff == None:
+        if buff is None:
             buff = v_copy(obj.rx.data)
             buff.__hdl_name__ = str(obj) + "_buff"
             buff.__hdl_name__ = buff.__hdl_name__.replace("(","").replace(")","")
@@ -78,7 +78,7 @@ class axisStream_slave_converter(axisStream_converter):
 
 
         hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "read_data",[obj, buff],astParser)
-        if hdl == None:
+        if hdl is None:
             astParser.AddStatementBefore("-- $$ template missing $$")
             astParser.Missing_template=True
             return buff
@@ -182,14 +182,14 @@ class axisStream_master_converter(axisStream_converter):
 
     def _to_hdl___bool__(self, obj, astParser):
         ret =  obj.__hdl_converter__._vhdl__call_member_func(obj, "ready_to_send",[obj],astParser)
-        if ret == None:
+        if ret is None:
             astParser.Missing_template=True
             return "$$missing_template$$"
         return ret
     
     def _vhdl__reasign(self,obj, rhs,astParser,context_str=None):
         ret =  obj.__hdl_converter__._vhdl__call_member_func(obj, "send_data",[obj, rhs],astParser)
-        if ret == None:
+        if ret is None:
             astParser.Missing_template=True
             return "$$missing_template$$"
         return ret
@@ -276,6 +276,3 @@ def make_package(PackageName,AxiType):
     fileContent = ax.to_string()
     set_isConverting2VHDL(s)
     return fileContent
-
-
-

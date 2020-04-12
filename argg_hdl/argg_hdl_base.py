@@ -45,7 +45,7 @@ def isInList_type(check_list, obj):
 def remove_duplications_types(In_list):
     ret=[]
     for x in  In_list:
-        if x == None:
+        if x is None:
             continue
         if not isInList_type(ret, x):
             ret.append(x)
@@ -67,7 +67,8 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
     content = flatten_list(content)
     if len(content) == 0 and IgnoreIfEmpty:
         return ret
-    elif len(content) == 0:
+    
+    if len(content) == 0:
         ret += start
         ret += end
         return ret
@@ -97,7 +98,7 @@ def raise_if(condition,errorMessage):
 
 
 def get_value_or_default(value,default):
-    if value == None:
+    if value is None:
         return default
 
     return value
@@ -113,7 +114,7 @@ def get_fileName_of_object_def(obj):
             if f_locals[y] is obj:
                 objectFound = True
 
-        if objectFound == False:
+        if not objectFound:
             return FileName
         FileName =   x.filename
     return ""
@@ -213,32 +214,32 @@ def make_unique_includes(incs,exclude=None):
 def get_type(symbol):
     if issubclass(type(symbol), argg_hdl_base0):
         return symbol.get_type()
-    if symbol == None:
+    if symbol is None:
         return "None"
-    if symbol["symbol"] == None:
+    if symbol["symbol"] is None:
         return "None"
     return symbol["symbol"].get_type()
 
 def get_symbol(symbol):
     if issubclass(type(symbol), argg_hdl_base0):
         return symbol.get_symbol()
-    if symbol ==None:
+    if symbol is None:
         return None 
-    if symbol["symbol"] == None:
+    if symbol["symbol"] is None:
         return None
     return symbol["symbol"].get_symbol()
     
 def isSameArgs(args1,args2, hasDefaults = False):
     if not hasDefaults and  len(args1) != len(args2):
         return False
-    for i in range(len(args1)):
-        if get_symbol(args1[i]) == None:
+    for arg1,arg2 in zip(args1,args2):
+        if get_symbol(arg1) is None:
             return False
-        if get_symbol(args2[i]) == None:
+        if get_symbol(arg2) is None:
             return False
-        if get_type(args1[i]) != get_type( args2[i]):
+        if get_type(arg1) != get_type( arg2):
             return False
-        if get_symbol(args1[i])._varSigConst != get_symbol(args2[i])._varSigConst:
+        if get_symbol(arg1)._varSigConst != get_symbol(arg2)._varSigConst:
             return False
     return True  
 
@@ -306,7 +307,7 @@ class hdl_converter_base:
             for x in ret:
                 if x is obj:
                     continue
-                if x == None:
+                if x is None:
                     continue
                 if isInList_type(ret1, x):
                     continue
@@ -335,7 +336,7 @@ class hdl_converter_base:
 
     def isTemplateMissing(self,obj):
         primary = obj.__hdl_converter__.get_primary_object(obj)
-        return primary.__hdl_converter__.MissingTemplate  == True  
+        return primary.__hdl_converter__.MissingTemplate  
 
     def IsSucessfullConverted(self,obj):
         if obj.__hdl_converter__.isTemplateMissing(obj):
@@ -488,11 +489,11 @@ class hdl_converter_base:
     def function_name_modifier(self,obj,name, varSigSuffix):
         if name == "__bool__":
             return "to_bool"
-        elif name == "__len__":
+        if name == "__len__":
             return "length"
-        elif name == "__lshift__":
+        if name == "__lshift__":
             return "set_value" + varSigSuffix+"_lshift"
-        elif name == "__rshift__":
+        if name == "__rshift__":
             return "get_value" + varSigSuffix+"_rshift"
         return name + varSigSuffix
 
@@ -518,7 +519,7 @@ class hdl_converter_base:
                 continue
             if not isSameArgs(args, x["args"] ,x['setDefault']):
                 continue
-            if x["call_func"] == None:
+            if x["call_func"] is None:
                 needAdding = False
                 continue
             return x
@@ -545,12 +546,13 @@ class hdl_converter_base:
         
         args_str = [str(x.get_type()) for x in args]
         args_str=join_str(args_str, Delimeter=", ")
-        if call_obj == None:
+        if call_obj is None:
             primary.__hdl_converter__.MissingTemplate=True
             astParser.Missing_template = True
 
             print(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
             return None
+
         print(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
         call_func = call_obj["call_func"]
         if call_func:
@@ -626,18 +628,23 @@ class hdl_converter_base:
         inOut = obj._Inout
         if inOut == InOut_t.input_t:
             return " in "
-        elif inOut == InOut_t.output_t:
+        
+        if inOut == InOut_t.output_t:
             return " out "
-        elif inOut == InOut_t.InOut_tt:
+        
+        if inOut == InOut_t.InOut_tt:
             return " inout "
         
         inOut = obj.__writeRead__
         if inOut == InOut_t.input_t:
             return " in "
-        elif inOut == InOut_t.output_t:
+        
+        if inOut == InOut_t.output_t:
             return " out "
-        elif inOut == InOut_t.InOut_tt:
+        
+        if inOut == InOut_t.InOut_tt:
             return " inout "
+        
         raise Exception("unkown Inout type",inOut)
 
     def get_default_value(self,obj):
@@ -878,9 +885,11 @@ def setDefaultVarSig(new_defVarSig):
 def get_varSig(varSigConst):
     if varSigConst == varSig.signal_t:
         return "signal"
-    elif varSigConst == varSig.variable_t:
+    
+    if varSigConst == varSig.variable_t:
         return  "variable"
-    elif varSigConst == varSig.const_t:
+    
+    if varSigConst == varSig.const_t:
         return  "constant"
 
     raise Exception("unknown type")
@@ -892,16 +901,17 @@ def get_varSig(varSigConst):
 def InoutFlip(inOut):
     if inOut == InOut_t.input_t:
         return InOut_t.output_t
-    elif inOut ==   InOut_t.output_t:
+    
+    if inOut ==   InOut_t.output_t:
         return InOut_t.input_t
-    elif inOut == InOut_t.Master_t:
+    
+    if inOut == InOut_t.Master_t:
         return InOut_t.Slave_t
     
-    elif inOut == InOut_t.Slave_t:
+    if inOut == InOut_t.Slave_t:
         return InOut_t.Master_t
 
-    else:
-        return inOut
+    return inOut
 
 class v_classType_t(Enum):
     transition_t = 1
@@ -1011,7 +1021,7 @@ def port_Stream_Master(symbol):
         
     f_locals = funcrec.frame.f_locals
 
-    raise_if(f_locals["self"]._StreamOut != None, "the _StreamOut is already set")
+    raise_if(f_locals["self"]._StreamOut is not None, "the _StreamOut is already set")
  
     f_locals["self"]._StreamOut = ret
     ret._remove_drivers()                
@@ -1052,7 +1062,7 @@ def port_Stream_Slave(symbol):
     funcrec = inspect.stack()[1]
         
     f_locals = funcrec.frame.f_locals
-    raise_if(f_locals["self"]._StreamIn != None, "the _StreamIn is already set")
+    raise_if(f_locals["self"]._StreamIn is not None, "the _StreamIn is already set")
     
     f_locals["self"]._StreamIn = ret
     ret._remove_drivers()  
@@ -1064,7 +1074,7 @@ def v_copy(symbol,varSig=None):
     ret.__isInst__ = False
     ret.__hdl_name__ = None
     ret._remove_drivers()
-    if varSig == None:
+    if varSig is None:
         ret.set_varSigConst(getDefaultVarSig())
     return ret
 
