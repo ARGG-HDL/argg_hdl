@@ -32,10 +32,6 @@ def append_hdl_name(name, suffix):
 class v_class_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
-        self.__BeforePull__ = ""
-        self.__AfterPull__  = ""
-        self.__BeforePush__ = ""
-        self.__AfterPush__  = ""
         self.__ast_functions__ =list()
         self.archetecture_list = []
 
@@ -128,10 +124,22 @@ class v_class_converter(hdl_converter_base):
         start = "\n  constant " + name + " : " + TypeName + ":= (\n"
 
         Content = [
-            x["symbol"].__hdl_converter__.recordMemberDefault(x["symbol"], x["name"],obj,InOut_Filter) 
+            x["symbol"].__hdl_converter__.recordMemberDefault(
+                x["symbol"], 
+                x["name"],
+                obj,
+                InOut_Filter
+            ) 
             for x in member
         ]
-        ret=join_str(Content,start= start ,end=  "\n  );\n",Delimeter=",\n",LineBeginning= "    ", IgnoreIfEmpty=True)
+        ret=join_str(
+            Content,
+            start= start ,
+            end=  "\n  );\n",
+            Delimeter=",\n",
+            LineBeginning= "    ", 
+            IgnoreIfEmpty=True
+        )
 
         return ret
 
