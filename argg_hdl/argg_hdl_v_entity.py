@@ -1,7 +1,8 @@
 import  functools 
 
-import os,sys,inspect
-
+import os
+import sys
+import inspect
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
@@ -57,7 +58,7 @@ class wait_for():
 
             
 def addPullsPushes_from_closure(Pull_list, Push_list, closure):
-    if closure == None:
+    if closure is None:
         return
     for x in closure:
         y = x.cell_contents
@@ -183,7 +184,7 @@ class v_entity_converter(hdl_converter_base):
         
         ret += obj.__hdl_converter__.get_entity_definition(obj)
         
-        if astparser.Missing_template == True:
+        if astparser.Missing_template:
                 obj.__hdl_converter__.FlagFor_TemplateMissing(obj)
                 obj.__hdl_converter__.MissingTemplate = True
                 print(str(gTemplateIndent)+'<Failed_to_convert name="' + type(obj).__name__ +'"/>')
@@ -318,7 +319,7 @@ class v_entity_converter(hdl_converter_base):
 
     def get_definition(self, obj):
     
-        if obj.__isInst__==True:
+        if obj.__isInst__:
             obj._un_instantiate_()
         ret = ""
 
@@ -414,7 +415,7 @@ class v_entity(argg_hdl_base0):
 
 
     def _instantiate_(self):
-        if self.__isInst__ == True:
+        if self.__isInst__:
             return self
             
         mem = v_entity_getMember(self)
@@ -425,7 +426,7 @@ class v_entity(argg_hdl_base0):
         return self
 
     def _un_instantiate_(self, Name = ""):
-        if self.__isInst__ == False:
+        if not self.__isInst__:
             return self
         
 
@@ -444,20 +445,20 @@ class v_entity(argg_hdl_base0):
         pass
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and not Overwrite:
             raise Exception("double Conversion to vhdl")
-        else:
-            self.__hdl_name__ = name
+
+        self.__hdl_name__ = name
 
 
 
     def _get_Stream_input(self):
-        if self._StreamIn == None:
+        if self._StreamIn is None:
             raise Exception("Input stream not defined")
         return  self._StreamIn
 
     def _get_Stream_output(self):
-        if self._StreamOut == None:
+        if self._StreamOut is None:
             raise Exception("output stream not defined")
         return self._StreamOut
 
@@ -471,7 +472,7 @@ class v_clk_entity(v_entity):
     def __init__(self,clk=None):
         super().__init__()
         self.clk    =  port_in(v_sl())
-        if clk != None:
+        if clk is not  None:
             self.clk <<  clk
 
     def _issubclass_(self,test):
