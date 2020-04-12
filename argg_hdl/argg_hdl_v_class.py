@@ -879,33 +879,44 @@ class v_class_converter(hdl_converter_base):
     def get_type_simple(self,obj):
         return obj._type
 
+    def extract_conversion_types_transition_type_impl(self, obj, exclude_class_type=None,filter_inout=None,Inout=None):
+        ret =[]
+        if Inout == InOut_t.input_t:
+            name = obj.__hdl_converter__.get_NameSlave2Master(obj)
+            suffix="_s2m"
+        else:
+            name = obj.__hdl_converter__.get_NameMaster2Slave(obj)
+            suffix = "_m2s"
+
+        x = v_class(name, obj._varSigConst)
+        x.__v_classType__ = v_classType_t.Record_t
+        x.__vetoHDLConversion__  = True
+        x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,suffix)
+        x._Inout=Inout
+        if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
+            x._Inout=InoutFlip(x._Inout)
+           
+        ys= obj.getMember(Inout)
+        for y in ys: 
+            setattr(x, y["name"], y["symbol"])
+        ret.append({ "suffix":suffix, "symbol": x})
+        return ret
+
     def extract_conversion_types_transition_type(self, obj, exclude_class_type=None,filter_inout=None):
         ret =[]
-        x = v_class(obj.__hdl_converter__.get_NameSlave2Master(obj), obj._varSigConst)
-        x.__v_classType__ = v_classType_t.Record_t
-        x.__vetoHDLConversion__  = True
-        x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_s2m")
-        x._Inout=InOut_t.input_t
-        if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
-            x._Inout=InOut_t.output_t
-        ys= obj.getMember(InOut_t.input_t)
-        for y in ys: 
-            setattr(x, y["name"], y["symbol"])
-        ret.append({ "suffix":"_s2m", "symbol": x})
-        x = v_class(obj.__hdl_converter__.get_NameMaster2Slave(obj), obj._varSigConst)
-        x.__v_classType__ = v_classType_t.Record_t
-        x.__vetoHDLConversion__  = True
-        x._Inout=InOut_t.output_t
+        ret += obj.__hdl_converter__.extract_conversion_types_transition_type_impl(
+            obj, 
+            exclude_class_type,
+            filter_inout,
+            InOut_t.input_t
+        )
+        ret += obj.__hdl_converter__.extract_conversion_types_transition_type_impl(
+            obj, 
+            exclude_class_type,
+            filter_inout,
+            InOut_t.output_t
+        )
         
-        if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
-            x._Inout=InOut_t.input_t
-            
-        
-        x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_m2s")
-        ys= obj.getMember(InOut_t.output_t)
-        for y in ys: 
-            setattr(x, y["name"], y["symbol"])
-        ret.append({ "suffix":"_m2s", "symbol": x})
         ret.append({ "suffix":"", "symbol": obj})
         return ret
 
