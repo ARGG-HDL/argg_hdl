@@ -104,7 +104,7 @@ class v_symbol_converter(hdl_converter_base):
         if obj._type == "std_logic":
             return str(obj) + " = '1'"
         if "std_logic_vector" in obj._type:
-            return str(obj) + " > 1"
+            return str(obj) + " > 0"
         if obj._type == "boolean":
             return str(obj)
         if obj._type == "integer":
@@ -121,7 +121,7 @@ class v_symbol_converter(hdl_converter_base):
             return ""
         name = obj.__hdl_name__
 
-            
+
         return  VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
     def get_architecture_header(self, obj):
 
