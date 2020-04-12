@@ -879,83 +879,85 @@ class v_class_converter(hdl_converter_base):
     def get_type_simple(self,obj):
         return obj._type
 
+    def extract_conversion_types_transition_type(self, obj, exclude_class_type=None,filter_inout=None):
+        ret =[]
+        x = v_class(obj.__hdl_converter__.get_NameSlave2Master(obj), obj._varSigConst)
+        x.__v_classType__ = v_classType_t.Record_t
+        x.__vetoHDLConversion__  = True
+        x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_s2m")
+        x._Inout=InOut_t.input_t
+        if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
+            x._Inout=InOut_t.output_t
+        ys= obj.getMember(InOut_t.input_t)
+        for y in ys: 
+            setattr(x, y["name"], y["symbol"])
+        ret.append({ "suffix":"_s2m", "symbol": x})
+        x = v_class(obj.__hdl_converter__.get_NameMaster2Slave(obj), obj._varSigConst)
+        x.__v_classType__ = v_classType_t.Record_t
+        x.__vetoHDLConversion__  = True
+        x._Inout=InOut_t.output_t
+        
+        if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
+            x._Inout=InOut_t.input_t
+            
+        
+        x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_m2s")
+        ys= obj.getMember(InOut_t.output_t)
+        for y in ys: 
+            setattr(x, y["name"], y["symbol"])
+        ret.append({ "suffix":"_m2s", "symbol": x})
+        ret.append({ "suffix":"", "symbol": obj})
+        return ret
+
+    def extract_conversion_types_Master_Slave(self, obj, exclude_class_type=None,filter_inout=None):
+        ret = []
+        x = v_class(obj.__hdl_converter__.get_NameSignal(obj), varSig.signal_t)
+        x.__v_classType__ = v_classType_t.Record_t
+        x.__vetoHDLConversion__  = True
+        x._Inout= obj._Inout
+        x.__writeRead__ = obj.__writeRead__
+        x.__hdl_name__ = str(obj.__hdl_name__)+"_sig"
+        ys= obj.getMember(VaribleSignalFilter=varSig.signal_t)
+        if len(ys)>0:
+            for y in ys: 
+                setattr(x, y["name"], y["symbol"])
+            
+            ret.append({ "suffix":"_sig", "symbol": x})
+        x = v_class(obj._type, varSig.variable_t)
+        x.__v_classType__ = v_classType_t.Record_t
+        x.__vetoHDLConversion__  = True
+        x._Inout= obj._Inout
+        x.__writeRead__ = obj.__writeRead__
+        x.__hdl_name__ = obj.__hdl_name__
+        ys= obj.getMember(VaribleSignalFilter=varSig.variable_t)
+        if len(ys)>0:
+            for y in ys: 
+                setattr(x, y["name"], y["symbol"])
+            ret.append({ "suffix":"", "symbol": x})
+        #ret.append({ "suffix":"", "symbol": obj})
+        return ret
+
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
         ret =[]
         
         if obj.__v_classType__ ==  v_classType_t.transition_t:
+            ret = obj.__hdl_converter__.extract_conversion_types_transition_type(obj, exclude_class_type,filter_inout)
             
             
-            x = v_class(obj.__hdl_converter__.get_NameSlave2Master(obj), obj._varSigConst)
-            x.__v_classType__ = v_classType_t.Record_t
-            x.__vetoHDLConversion__  = True
-            x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_s2m")
-
-
-
-            x._Inout=InOut_t.input_t
-            if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
-                x._Inout=InOut_t.output_t
-
-            ys= obj.getMember(InOut_t.input_t)
-            for y in ys: 
-                setattr(x, y["name"], y["symbol"])
-            ret.append({ "suffix":"_s2m", "symbol": x})
-
-            x = v_class(obj.__hdl_converter__.get_NameMaster2Slave(obj), obj._varSigConst)
-            x.__v_classType__ = v_classType_t.Record_t
-            x.__vetoHDLConversion__  = True
-            x._Inout=InOut_t.output_t
-            
-            if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
-                x._Inout=InOut_t.input_t
-                
-            
-            x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,"_m2s")
-            ys= obj.getMember(InOut_t.output_t)
-            for y in ys: 
-                setattr(x, y["name"], y["symbol"])
-            ret.append({ "suffix":"_m2s", "symbol": x})
-
-            ret.append({ "suffix":"", "symbol": obj})
         
         elif obj.__v_classType__ ==  v_classType_t.Master_t or obj.__v_classType__ ==  v_classType_t.Slave_t: 
-            x = v_class(obj.__hdl_converter__.get_NameSignal(obj), varSig.signal_t)
-            x.__v_classType__ = v_classType_t.Record_t
-            x.__vetoHDLConversion__  = True
-            x._Inout= obj._Inout
-            x.__writeRead__ = obj.__writeRead__
-            x.__hdl_name__ = str(obj.__hdl_name__)+"_sig"
-            ys= obj.getMember(VaribleSignalFilter=varSig.signal_t)
-            if len(ys)>0:
-                for y in ys: 
-                    setattr(x, y["name"], y["symbol"])
-                
-                ret.append({ "suffix":"_sig", "symbol": x})
+            ret = obj.__hdl_converter__.extract_conversion_types_Master_Slave(obj, exclude_class_type,filter_inout)
 
-            x = v_class(obj._type, varSig.variable_t)
-            x.__v_classType__ = v_classType_t.Record_t
-            x.__vetoHDLConversion__  = True
-            x._Inout= obj._Inout
-            x.__writeRead__ = obj.__writeRead__
-            x.__hdl_name__ = obj.__hdl_name__
-            ys= obj.getMember(VaribleSignalFilter=varSig.variable_t)
-            if len(ys)>0:
-                for y in ys: 
-                    setattr(x, y["name"], y["symbol"])
-                ret.append({ "suffix":"", "symbol": x})
-
-            #ret.append({ "suffix":"", "symbol": obj})
         else:
             ret.append({ "suffix":"", "symbol": obj})
 
-        ret1 = []
+        ret1 = [
+            x for x in ret
+            if not( x["symbol"]._issubclass_("v_class")  and exclude_class_type and x["symbol"].__v_classType__ == exclude_class_type)
+            if not(filter_inout and x["symbol"]._Inout != filter_inout)
+        ]
          
-        for x in ret:
-            if x["symbol"]._issubclass_("v_class")  and exclude_class_type and x["symbol"].__v_classType__ == exclude_class_type:
-                continue
-            if filter_inout and x["symbol"]._Inout != filter_inout:
-                continue           
-            ret1.append(x)
+
         return ret1
 
     def to_arglist(self,obj, name,parent,withDefault = False):
