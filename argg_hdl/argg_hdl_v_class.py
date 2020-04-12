@@ -77,34 +77,49 @@ class v_class_converter(hdl_converter_base):
 
 
     def recordMember(self,obj, name,parent,Inout=None):
-        if issubclass(type(parent),v_class):
-            if obj._Inout == InOut_t.Slave_t:
-                Inout = InoutFlip(Inout)
-            if obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt:
-                ret = []
-                xs = obj.__hdl_converter__.extract_conversion_types(obj,exclude_class_type=v_classType_t.transition_t)
-                for x in xs:
-                    ret.append(name + x["suffix"] + " : " + x["symbol"].getType())
-                return ret
-            
+        if not issubclass(type(parent),v_class):
+            return []
+
+        if obj._Inout == InOut_t.Slave_t:
+            Inout = InoutFlip(Inout)
+
+        if not(obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt):
             return name + " : " +obj.getType(Inout)
-        return []
+        
+        ret = []
+        xs = obj.__hdl_converter__.extract_conversion_types(
+            obj,
+            exclude_class_type=v_classType_t.transition_t
+        )
+        for x in xs:
+            ret.append(name + x["suffix"] + " : " + x["symbol"].getType())
+        return ret
+            
+        
+        
 
     def recordMemberDefault(self, obj, name,parent,Inout=None):
         
-        if issubclass(type(parent),v_class):
-            if obj._Inout == InOut_t.Slave_t:
-                Inout = InoutFlip(Inout)
-            if obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt:
-                ret = []
-                xs = obj.__hdl_converter__.extract_conversion_types(obj,exclude_class_type=v_classType_t.transition_t)
-                for x in xs:
-                    ret.append(name + x["suffix"] + " => " + x["symbol"].getType() + "_null" )
-                return ret
-            
+        if not issubclass(type(parent),v_class):
+            return []
+        
+        if obj._Inout == InOut_t.Slave_t:
+            Inout = InoutFlip(Inout)
+        
+        if not( obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt):
             return name + " => " + obj.getType(Inout) + "_null"
+        
+        ret = []
+        xs = obj.__hdl_converter__.extract_conversion_types(
+            obj,
+            exclude_class_type=v_classType_t.transition_t
+        )
+        for x in xs:
+            ret.append(name + x["suffix"] + " => " + x["symbol"].getType() + "_null" )
+        return ret
+            
 
-        return []
+        
 
     def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
         TypeName = obj.getType()
@@ -931,7 +946,7 @@ class v_class_converter(hdl_converter_base):
         x.__vetoHDLConversion__  = True
         x._Inout= obj._Inout
         x.__writeRead__ = obj.__writeRead__
-        x.__hdl_name__ = str(obj.__hdl_name__)+Suffix
+        x.__hdl_name__ = append_hdl_name(str(obj.__hdl_name__),Suffix)
         ys= obj.getMember(VaribleSignalFilter=VarSig)
         if len(ys)>0:
             for y in ys: 
@@ -963,12 +978,18 @@ class v_class_converter(hdl_converter_base):
         ret =[]
         
         if obj.__v_classType__ ==  v_classType_t.transition_t:
-            ret = obj.__hdl_converter__.extract_conversion_types_transition_type(obj, exclude_class_type,filter_inout)
-            
-            
+            ret = obj.__hdl_converter__.extract_conversion_types_transition_type(
+                obj, 
+                exclude_class_type,
+                filter_inout
+            )
         
         elif obj.__v_classType__ ==  v_classType_t.Master_t or obj.__v_classType__ ==  v_classType_t.Slave_t: 
-            ret = obj.__hdl_converter__.extract_conversion_types_Master_Slave(obj, exclude_class_type,filter_inout)
+            ret = obj.__hdl_converter__.extract_conversion_types_Master_Slave(
+                obj, 
+                exclude_class_type,
+                filter_inout
+            )
 
         else:
             ret.append({ "suffix":"", "symbol": obj})
