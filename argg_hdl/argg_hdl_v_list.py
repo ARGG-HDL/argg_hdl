@@ -1,4 +1,6 @@
-import os,sys,inspect
+import os
+import sys
+import inspect
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
 
@@ -170,10 +172,10 @@ end {objType}_pack;
 
     def _vhdl__Pull(self,obj):
         ret = ""
-        if obj.driver == None:
+        if obj.driver is None:
             return ret
 
-        if obj.Internal_Type.__vectorPull__ == True:
+        if obj.Internal_Type.__vectorPull__:
             driver_name  = str(obj.driver)
             if obj.Internal_Type.__v_classType__ == v_classType_t.Master_t:
                 driver_name =  str(obj.driver) +"_s2m"
@@ -188,10 +190,10 @@ end {objType}_pack;
 
     def _vhdl__push(self,obj):
         ret = ""
-        if obj.driver == None:
+        if obj.driver is None:
             return ret
 
-        if obj.Internal_Type.__vectorPush__ == True:
+        if obj.Internal_Type.__vectorPush__:
             driver_name  = str(obj.driver)
             if obj.Internal_Type.__v_classType__ == v_classType_t.Master_t:
                 driver_name = str(obj.driver) +"_m2s"
@@ -232,10 +234,10 @@ class v_list(argg_hdl_base):
         self.size = len(self.content)
 
     def set_vhdl_name(self,name, Overwrite = False):
-        if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:
+        if self.__hdl_name__ and self.__hdl_name__ != name and not Overwrite:
             raise Exception("double Conversion to vhdl")
-        else:
-            self.__hdl_name__ = name
+        
+        self.__hdl_name__ = name
 
     def get_size(self):
         return self.size
@@ -313,15 +315,15 @@ class v_list(argg_hdl_base):
 
         
     def get_vhdl_name(self,Inout=None):
-        if Inout== None:
+        if Inout is None:
             return self.__hdl_name__
-
 
         if Inout== InOut_t.input_t:
             return self.__hdl_name__+"_s2m"
         
-        elif Inout== InOut_t.output_t:
+        if Inout== InOut_t.output_t:
             return self.__hdl_name__+"_m2s"
+        
         return self.__hdl_name__
 
     def _sim_append_update_list(self,up):
@@ -334,7 +336,7 @@ class v_list(argg_hdl_base):
         return "v_list" == test
 
     def isInOutType(self,Inout):
-        if Inout == None:
+        if Inout is None:
             return True
         if self._Inout == InOut_t.InOut_tt:
             return True
@@ -342,7 +344,7 @@ class v_list(argg_hdl_base):
         return self._Inout == Inout
 
     def isVarSigType(self, varSigType):
-        if varSigType == None:
+        if varSigType is None:
             return True
 
         return self._varSigConst == varSigType
