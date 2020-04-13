@@ -986,8 +986,12 @@ def variable_port_in(symbol):
     ret._remove_drivers()
     return ret
 
-def port_Master(symbol):
-    ret= copy.deepcopy(symbol)
+from typing import Sequence, TypeVar
+T = TypeVar('T', bound='Copyable')
+
+
+def port_Master(symbol: T) -> T:
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     ret.setInout(InOut_t.Master_t)
@@ -995,8 +999,9 @@ def port_Master(symbol):
     ret._remove_drivers()
     return ret
 
+
 def variable_port_Master(symbol):
-    ret= copy.deepcopy(symbol)
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     ret.setInout(InOut_t.Master_t)
@@ -1004,31 +1009,34 @@ def variable_port_Master(symbol):
     ret._remove_drivers()
     return ret
 
+
 def signal_port_Master(symbol):
-    ret= copy.deepcopy(symbol)
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     ret.setInout(InOut_t.Master_t)
     ret.set_varSigConst(varSig.signal_t)
     ret._remove_drivers()
     return ret
+
 
 def port_Stream_Master(symbol):
     ret = port_Master(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     funcrec = inspect.stack()[1]
-        
+
     f_locals = funcrec.frame.f_locals
 
     raise_if(f_locals["self"]._StreamOut is not None, "the _StreamOut is already set")
- 
+
     f_locals["self"]._StreamOut = ret
-    ret._remove_drivers()                
-    return ret 
+    ret._remove_drivers()
+    return ret
+
 
 def signal_port_Slave(symbol):
-    ret= copy.deepcopy(symbol)
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     ret.setInout(InOut_t.Slave_t)
@@ -1037,8 +1045,8 @@ def signal_port_Slave(symbol):
     return ret
 
 
-def port_Slave(symbol):
-    ret= copy.deepcopy(symbol)
+def port_Slave(symbol: T) ->T:
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     ret.setInout(InOut_t.Slave_t)
@@ -1046,8 +1054,9 @@ def port_Slave(symbol):
     ret._remove_drivers()
     return ret
 
+
 def variable_port_Slave(symbol):
-    ret= copy.deepcopy(symbol)
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     ret.setInout(InOut_t.Slave_t)
@@ -1055,20 +1064,23 @@ def variable_port_Slave(symbol):
     ret._remove_drivers()
     return ret
 
+
 def port_Stream_Slave(symbol):
     ret = port_Slave(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
     funcrec = inspect.stack()[1]
-        
+
     f_locals = funcrec.frame.f_locals
     raise_if(f_locals["self"]._StreamIn is not None, "the _StreamIn is already set")
-    
+
     f_locals["self"]._StreamIn = ret
-    ret._remove_drivers()  
-    return ret 
-def v_copy(symbol,varSig=None):
-    ret= copy.deepcopy(symbol)
+    ret._remove_drivers()
+    return ret
+
+
+def v_copy(symbol, varSig=None):
+    ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.resetInout()
     ret.__isInst__ = False
@@ -1078,14 +1090,15 @@ def v_copy(symbol,varSig=None):
         ret.set_varSigConst(getDefaultVarSig())
     return ret
 
+
 def v_deepcopy(symbol):
     hdl = symbol.__hdl_converter__
-    driver = symbol.__Driver__ 
+    driver = symbol.__Driver__
     receiver = symbol.__receiver__
     symbol.__receiver__ = None
-    symbol.__Driver__=None
-    symbol.__hdl_converter__ =None
-    ret  = copy.deepcopy(symbol)
+    symbol.__Driver__ = None
+    symbol.__hdl_converter__ = None
+    ret = copy.deepcopy(symbol)
     symbol.__hdl_converter__ = hdl
     ret.__hdl_converter__ = hdl
     symbol.__Driver__ = driver

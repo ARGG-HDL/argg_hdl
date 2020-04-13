@@ -1,6 +1,8 @@
 import os
 import sys
 import inspect
+from typing import TypeVar, Generic
+
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
 
@@ -247,9 +249,9 @@ end {objType}_pack;
         ret.__hdl_name__=str(obj)+"'length"
         return ret  
 
-        
-class v_list(argg_hdl_base):
-    def __init__(self,Internal_Type,size,varSigConst=None):
+T = TypeVar('T')      
+class v_list(argg_hdl_base, Generic[T]):
+    def __init__(self,Internal_Type : T,size: int,varSigConst=None ):
         super().__init__()
         self.__hdl_converter__ = v_list_converter()
         self.Internal_Type = Internal_Type
@@ -281,7 +283,7 @@ class v_list(argg_hdl_base):
     def get_type(self):
         return self._type
 
-    def __getitem__(self,sl):
+    def __getitem__(self,sl) -> T:
         return self.content[value(sl)]
 
     def set_simulation_param(self,module, name,writer):
@@ -299,7 +301,7 @@ class v_list(argg_hdl_base):
         for x in self.content:
             x.set_varSigConst(varSigConst)
 
-    def __lshift__(self, rhs):
+    def __lshift__(self, rhs) -> None:
         if len(self.content) != len(rhs.content):
             raise Exception("Differnt list size")
 

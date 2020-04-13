@@ -49,6 +49,15 @@ class v_class_trans_converter(v_class_converter):
           
         return obj.get_vhdl_name() + "." +str(attName)
 
+
+    def make_connection(self, obj, name, parent):
+        obj.pull          =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "pull", procedureName="pull" )
+        obj.push          =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "push", procedureName="push")
+        obj.pull_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "pull", procedureName="pull")
+        obj.push_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "push", procedureName="push")
+            
+        
+
 class v_class_trans(v_class):
     def __init__(self,Name=None,varSigConst=None):
         super().__init__(Name,varSigConst)

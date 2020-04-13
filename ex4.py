@@ -1,13 +1,14 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
 
+
 class axiStreamMux(v_entity):
     def __init__(self, clk):
         super().__init__()
         self.clk = port_in(v_sl())
         self.clk << clk
-        self.data_in = port_Slave(v_list(axisStream(v_slv(32)),4))
-        self.data_out = port_Master(axisStream( v_slv(32)))
+        self.data_in = port_Slave(v_list(axisStream(v_slv(32)), 4))
+        self.data_out = port_Master(axisStream(v_slv(32)))
         self.architecture()
 
 
