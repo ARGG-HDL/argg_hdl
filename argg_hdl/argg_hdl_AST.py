@@ -622,11 +622,11 @@ class xgenAST:
             return
 
         print(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
-        len_Arglist = len(Arglist)
+        
 
         ClassInstance.__hdl_converter__.MemfunctionCalls.append({
             "name" : f.name,
-            "args":  [x["symbol"] for x in   Arglist[0:len_Arglist]],
+            "args":  [x["symbol"] for x in   Arglist],
             "self" :v_deepcopy(ClassInstance),
             "call_func" : None,
             "func_args" : None,
