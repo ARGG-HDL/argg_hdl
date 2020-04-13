@@ -56,7 +56,60 @@ class v_class_trans_converter(v_class_converter):
         obj.pull_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "pull", procedureName="pull")
         obj.push_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "push", procedureName="push")
             
+    def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None):
+        isFreeFunction = False
         
+        
+        beforeConnecting, AfterConnecting, inout = obj.__hdl_converter__.get_before_after_conection(
+            obj,
+            InOut_Filter, 
+            PushPull
+        )
+
+
+        classType = obj.getType(InOut_Filter)
+        ClassName="IO_data"
+        argumentList = "signal " + ClassName +" : " + inout+ classType
+
+
+        Connecting = obj.__hdl_converter__.getMemeber_Connect(
+            obj, 
+            InOut_Filter,
+            PushPull, 
+            ClassName
+        )
+        internal_connections = obj.__hdl_converter__.getMember_InternalConnections(
+            obj, 
+            InOut_Filter,
+            PushPull
+        )
+        Connecting = join_str(
+            [Connecting, internal_connections],
+            LineEnding="\n",
+            LineBeginning="    " ,
+            IgnoreIfEmpty = True 
+        )
+
+        IsEmpty=len(Connecting.strip()) == 0 and len(beforeConnecting.strip()) == 0 and  len(AfterConnecting.strip()) == 0
+        ret        = v_procedure(
+            name=procedureName, 
+            argumentList=argumentList , 
+            body='''
+    {beforeConnecting}
+-- Start Connecting
+{Connecting}
+-- End Connecting
+    {AfterConnecting}
+            '''.format(
+               beforeConnecting=beforeConnecting,
+               Connecting = Connecting,
+               AfterConnecting=AfterConnecting
+            ),
+            IsEmpty=IsEmpty,
+            isFreeFunction=isFreeFunction
+            )
+        
+        return ret     
 
 class v_class_trans(v_class):
     def __init__(self,Name=None,varSigConst=None):

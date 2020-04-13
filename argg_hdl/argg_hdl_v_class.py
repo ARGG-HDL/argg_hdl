@@ -338,6 +338,18 @@ class v_class_converter(hdl_converter_base):
                 return x.body
         return ""
 
+    def get_before_after_conection(self, obj, InOut_Filter, PushPull):
+        beforeConnecting = ""
+        AfterConnecting = ""
+        
+        if PushPull== "push":
+            beforeConnecting = obj.__hdl_converter__.getBody_onPush(obj)
+            inout = " out "
+        else:
+            AfterConnecting = obj.__hdl_converter__.getBody_onPull(obj)
+            inout = " in "
+            
+        return beforeConnecting, AfterConnecting, inout
 
     def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None):
         ClassName=None
