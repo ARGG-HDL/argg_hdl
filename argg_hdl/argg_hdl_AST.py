@@ -645,8 +645,6 @@ class xgenAST:
 
             
     def extractFunctionsForClass(self,ClassInstance,parent ):
-        t = time.time()
-
         fun_ret = []
         primary = ClassInstance.__hdl_converter__.get_primary_object(ClassInstance)
         ClassInstance.__hdl_converter__ = primary.__hdl_converter__
@@ -686,7 +684,6 @@ class xgenAST:
             )
             raise Exception(err_msg,ClassInstance,inst)
         
-        elapsed = time.time() - t
  
         return fun_ret
 
@@ -713,9 +710,6 @@ class xgenAST:
         if issubclass(type(SymbolName),argg_hdl_base):
             return SymbolName
 
-        for x in self.FuncArgs:
-            if x["name"] == SymbolName:
-                return x["symbol"]
 
         for x in self.LocalVar:
             if x.__hdl_name__ == SymbolName:
@@ -729,6 +723,16 @@ class xgenAST:
                     self.LocalVar.append(y)
                     return y
 
+        for x in self.FuncArgs:
+            if x["name"] == SymbolName:
+                return x["symbol"]
+
+
+        for x in self.Archetecture_vars:
+            if x["name"] == SymbolName:
+                self.LocalVar.append(x["symbol"])
+                return x["symbol"]
+                
         if self.parent:
             ret = self.parent.getInstantByName(SymbolName)
             if ret:
@@ -739,10 +743,7 @@ class xgenAST:
             return self.local_function[SymbolName]
 
         
-        for x in self.Archetecture_vars:
-            if x["name"] == SymbolName:
-                self.LocalVar.append(x["symbol"])
-                return x["symbol"]
+
 
         raise Exception("Unable to find symbol", SymbolName, "\nAvalible Symbols\n",self.FuncArgs)
 
@@ -776,6 +777,7 @@ class xgenAST:
                     "symbol": inArg
                 })
         return ret
+
 def get_function_varSig_suffix(func_args):
     varSigSuffix = "_"
     for x in func_args:
