@@ -544,6 +544,30 @@ class xgenAST:
        
         return ret
 
+    def get_arglistlocal_extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent,temp):
+        ArglistLocal = []
+        ArglistLocal.append({
+            "name":"self",
+            "symbol": v_deepcopy(ClassInstance),
+            "ScopeType": InOut_t.InOut_tt
+        })
+
+        f =  get_function_definition(cl_body,temp["name"])
+        if len(f) == 0:
+            raise Exception(
+                "unable to find function template: ",
+                temp["name"],
+                ClassInstance
+            )
+                
+        ArglistLocal += list(self.get_func_args_list(f[0]))
+        newArglist = GetNewArgList(
+            f[0].name, 
+            ArglistLocal, 
+            temp
+        )
+        return f,newArglist
+
     def extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent):
         fun_ret = []
         for temp in ClassInstance.__hdl_converter__.MemfunctionCalls:
@@ -551,43 +575,32 @@ class xgenAST:
                 continue
                 
               
-            ArglistLocal = []
-            ArglistLocal.append({
-                "name":"self",
-                "symbol": v_deepcopy(ClassInstance),
-                "ScopeType": InOut_t.InOut_tt
-            })
+            f,newArglist  = self.get_arglistlocal_extractFunctionsForClass2(ClassInstance, cl_body ,ClassInstance_local,parent,temp)
+            
 
-            f =  get_function_definition(cl_body,temp["name"])
-            if len(f) == 0:
-                raise Exception(
-                    "unable to find function template: ",
-                    temp["name"],
-                    ClassInstance
-                )
-                
-            ArglistLocal += list(self.get_func_args_list(f[0]))
-            newArglist = GetNewArgList(f[0].name, ArglistLocal, temp)
-
-            if newArglist is not None:
-                #print("is new template", f[0].name)
-
-                self.Missing_template = False
-                ret = self.extractFunctionsForClass_impl(
-                    ClassInstance_local, 
-                    parent, 
-                    f[0], 
-                    newArglist , 
-                    temp["setDefault"]  
-                )
-                if self.Missing_template:
-                    ClassInstance.__hdl_converter__.MissingTemplate = True
-                else:
-                    temp["call_func"] = call_func
-                    temp["func_args"] = newArglist[0: len(ArglistLocal)] #deepcopy
-                #print("end create function for template ",f[0].name)
-                    if ret:
-                        fun_ret.append( ret )
+            if newArglist is None:
+                continue 
+            
+            ArglistLocal_length = len(newArglist)
+            self.Missing_template = False
+            ret = self.extractFunctionsForClass_impl(
+                ClassInstance_local, 
+                parent, 
+                f[0], 
+                newArglist , 
+                temp["setDefault"]  
+            )
+            
+            if self.Missing_template:
+                ClassInstance.__hdl_converter__.MissingTemplate = True
+                continue
+            
+            temp["call_func"] = call_func
+            temp["func_args"] = newArglist[0: ArglistLocal_length] #deepcopy
+            
+            if ret:
+                fun_ret.append( ret )
+        
         return fun_ret
     #@profile
     def extractFunctionsForClass1a(self,ClassInstance,parent,f ):
