@@ -367,12 +367,9 @@ class v_class_converter(hdl_converter_base):
             
             
 
-        if  obj.__v_classType__ == v_classType_t.transition_t:
-            ClassName="IO_data"
-            argumentList = "signal " + ClassName +" : " + inout+ classType
-        else:
-            argumentList = obj.__hdl_converter__.getMemberArgs(obj, InOut_Filter,inout,IncludeSelf = True,PushPull=PushPull)
-            isFreeFunction = True
+
+        argumentList = obj.__hdl_converter__.getMemberArgs(obj, InOut_Filter,inout,IncludeSelf = True,PushPull=PushPull)
+        isFreeFunction = True
 
         Connecting = obj.__hdl_converter__.getMemeber_Connect(obj, InOut_Filter,PushPull, ClassName)
         internal_connections = obj.__hdl_converter__.getMember_InternalConnections(obj, InOut_Filter,PushPull)

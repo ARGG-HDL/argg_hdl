@@ -57,8 +57,6 @@ class v_class_trans_converter(v_class_converter):
         obj.push_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "push", procedureName="push")
             
     def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None):
-        isFreeFunction = False
-        
         
         beforeConnecting, AfterConnecting, inout = obj.__hdl_converter__.get_before_after_conection(
             obj,
@@ -106,7 +104,7 @@ class v_class_trans_converter(v_class_converter):
                AfterConnecting=AfterConnecting
             ),
             IsEmpty=IsEmpty,
-            isFreeFunction=isFreeFunction
+            isFreeFunction=False
             )
         
         return ret     
