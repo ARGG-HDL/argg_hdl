@@ -55,11 +55,11 @@ def dataType(astParser=None, args=None):
         if Name is None:
             return dataType_[-1]["symbol"]
         
-        else:
-            for x in dataType_:
-                if x["name"] == Name:
-                    return x["symbol"]
-            raise Exception("unknown data type")
+        
+        for x in dataType_:
+            if x["name"] == Name:
+                return x["symbol"]
+        raise Exception("unknown data type")
 
     return v_slv()
 
