@@ -207,7 +207,7 @@ class xgenAST:
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())
 
-        self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave"]))
+        self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave", "v_class_trans"]))
         self.ast_v_Entities = list(get_subclasses(self.tree.body,['v_entity']))
         self.ast_v_Entities.extend( list(get_subclasses(self.tree.body,['v_clk_entity'])))
     
@@ -732,7 +732,7 @@ class xgenAST:
             if x["name"] == SymbolName:
                 self.LocalVar.append(x["symbol"])
                 return x["symbol"]
-                
+
         if self.parent:
             ret = self.parent.getInstantByName(SymbolName)
             if ret:

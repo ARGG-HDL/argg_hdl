@@ -5,9 +5,10 @@ import copy
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.argg_hdl_v_class import *
+from argg_hdl.argg_hdl_v_class_trans import *
 
 
-class axisStream_converter(v_class_converter):
+class axisStream_converter(v_class_trans_converter):
     def __init__(self):
         super().__init__()
 
@@ -36,7 +37,7 @@ class axisStream_converter(v_class_converter):
         fileContent = make_package(pack,  obj.data)
         return fileContent
 
-class axisStream(v_class):
+class axisStream(v_class_trans):
     def __init__(self,Axitype):
         super().__init__("axiStream_"+Axitype.__hdl_converter__.get_type_simple(Axitype))
         self.__hdl_converter__ =axisStream_converter()
@@ -52,9 +53,33 @@ class axisStream(v_class):
     def get_slave(self):
         return axisStream_slave(self)
 
-class axisStream_slave_converter(axisStream_converter):
+class axisStream_slave_converter(v_class_converter):
     def __init__(self):
         super().__init__()
+
+    def includes(self,obj, name,parent):
+        ret =""
+        typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
+        
+        depobj  = obj.__hdl_converter__.get_dependency_objects(obj,[])
+        
+        ret += "use work.axisStream_"+str(typeName)+".all;\n"
+        members = obj.getMember() 
+        for x in members:
+            ret += x["symbol"].__hdl_converter__.includes(x["symbol"],name,parent)
+
+        return ret
+    
+    def get_packet_file_name(self, obj):
+        typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
+        return "axisStream_"+str(typeName)+".vhd"
+
+    def get_packet_file_content(self, obj):
+        typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
+        pack =  "axisStream_"+str(typeName)
+
+        fileContent = make_package(pack,  obj.data)
+        return fileContent
 
     def _to_hdl___bool__(self, obj, astParser):
         hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "isReceivingData",[obj],astParser)
@@ -176,7 +201,7 @@ class axisStream_slave(v_class_slave):
         
 
 
-class axisStream_master_converter(axisStream_converter):
+class axisStream_master_converter(v_class_converter):
     def __init__(self):
         super().__init__()
 
@@ -195,10 +220,7 @@ class axisStream_master_converter(axisStream_converter):
         return ret
 
 
-    def includes(self,obj, name,parent):
-        
 
-        return "" 
 
     def get_packet_file_name(self, obj):
         ret = obj.tx.__hdl_converter__.get_packet_file_name(obj.tx)
@@ -207,6 +229,12 @@ class axisStream_master_converter(axisStream_converter):
     def get_packet_file_content(self, obj):
         ret = obj.tx.__hdl_converter__.get_packet_file_content(obj.tx)
         return ret
+
+
+    def includes(self,obj, name,parent):
+        ret = obj.tx.__hdl_converter__.includes(obj.tx, name, parent)
+        return ret
+
 
 class axisStream_master(v_class_master):
     def __init__(self, Axi_Out):
