@@ -607,7 +607,7 @@ class xgenAST:
         if f.decorator_list and f.decorator_list[0].id == 'architecture' :
             return
 
-        ArglistLocal = []
+
         ClassInstance.set_vhdl_name ( "self",True)
         Arglist = []
         Arglist.append({
@@ -623,16 +623,7 @@ class xgenAST:
 
         print(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
         len_Arglist = len(Arglist)
-        if len(ArglistLocal) == 0:
-            ArglistLocal.append(
-            {
-                "name":"self",
-                "symbol": v_deepcopy(ClassInstance),
-                "ScopeType": InOut_t.InOut_tt
-            }
-            )
-            ArglistLocal += list(self.get_func_args_list(f))
-        
+
         ClassInstance.__hdl_converter__.MemfunctionCalls.append({
             "name" : f.name,
             "args":  [x["symbol"] for x in   Arglist[0:len_Arglist]],
