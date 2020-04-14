@@ -108,6 +108,20 @@ class v_class_trans_converter(v_class_converter):
             )
         
         return ret     
+    def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
+        print("_vhdl__DefineSymbol is deprecated")
+        if not VarSymb:
+            VarSymb = get_varSig(obj._varSigConst)
+
+        if obj.__Driver__ and str( obj.__Driver__) != 'process':
+            return ""
+        
+        ret = ""
+        ret += VarSymb + " " +str(obj) + "_m2s : " + t["m2s"] +" := " + t["m2s"]+"_null;\n"
+        ret += VarSymb + " " +str(obj) + "_s2m : " + t["s2m"] +" := " + t["s2m"]+"_null;\n"
+        return ret
+
+        
 
 class v_class_trans(v_class):
     def __init__(self,Name=None,varSigConst=None):

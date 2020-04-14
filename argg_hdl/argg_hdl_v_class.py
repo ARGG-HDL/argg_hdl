@@ -392,12 +392,7 @@ class v_class_converter(hdl_converter_base):
 
         if obj.__Driver__ and str( obj.__Driver__) != 'process':
             return ""
-        t = obj.getTypes()
-        if len(t) ==3 and obj.__v_classType__ ==  v_classType_t.transition_t:
-            ret = ""
-            ret += VarSymb + " " +str(obj) + "_m2s : " + t["m2s"] +" := " + t["m2s"]+"_null;\n"
-            ret += VarSymb + " " +str(obj) + "_s2m : " + t["s2m"] +" := " + t["s2m"]+"_null;\n"
-            return ret
+
 
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
     
@@ -530,61 +525,13 @@ class v_class_converter(hdl_converter_base):
         
         return members_args
 
-    def getMemberArgsSelf(self,obj, InOut_Filter,InOut,suffix="", IncludeSelf =False,PushPull=""):
-        members_args = []
-        
-        if not IncludeSelf:
-            return members_args
-        
-        xs = obj.__hdl_converter__.extract_conversion_types(obj )
-        for x in xs:
-            varsig = " "
-            self_InOut = " inout "
-            if x["symbol"]._varSigConst == varSig.signal_t :
-                varsig = " signal "
-                self_InOut = " in "  
-            members_args.append(varsig + "self" + x["suffix"]  + " : " + self_InOut + " "  + x["symbol"].getType()+suffix)
-        
-        
-        members_args += obj.__hdl_converter__.getMemberArgsSelfPush(obj,InOut_Filter,InOut,suffix, PushPull)
-        
-             
-        return members_args
+
 
 
     def getMemberArgs(self,obj, InOut_Filter,InOut,suffix="", IncludeSelf =False,PushPull=""):
+        args = vc_helper.getMemberArgs(obj, InOut_Filter,InOut,suffix, IncludeSelf, PushPull)
+        return str(args)
         
-        members_args = obj.__hdl_converter__.getMemberArgsSelf(
-            obj, 
-            InOut_Filter,
-            InOut,suffix, 
-            IncludeSelf,
-            PushPull
-        )
-        
-        members = obj.getMember(InOut_Filter,VaribleSignalFilter=varSig.variable_t) 
-       
-        for i in members:
-            n_connector = vc_helper._get_connector( i["symbol"])
-            xs = i["symbol"].__hdl_converter__.extract_conversion_types( i["symbol"], 
-                    exclude_class_type= v_classType_t.transition_t, filter_inout=InOut_Filter
-                )
-
-            for x in xs:
-               
-                varsig = " "
-                if n_connector._varSigConst == varSig.signal_t :
-                    varsig = " signal "
-                    
-                members_args.append(varsig + i["name"] + " : " + InOut + " "  + x["symbol"].getType()+suffix)
-            
-
-        ret=join_str(
-            members_args, 
-            Delimeter="; "
-            )
-        return ret    
-
     def get_internal_connections(self,obj):
         ret = []
         members = obj.getMember() 

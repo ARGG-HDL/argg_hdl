@@ -97,10 +97,18 @@ class getHeader():
         self.parent = parent
 
 
-    def __str__(self):
+    def header(self):
         ret = "-------------------------------------------------------------------------\n"
         ret += "------- Start Psuedo Class " +self.obj.getName() +" -------------------------\n"
-        
+        return ret
+
+    def footer(self):
+        ret = "------- End Psuedo Class " +self.obj.getName() +" -------------------------\n"
+        ret += "-------------------------------------------------------------------------\n\n\n"
+        return ret
+
+    def From_Conversion_types(self):
+        ret = ""
         ts = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
         for t in ts:
             ret +=  self.obj.__hdl_converter__.getHeader_make_record(
@@ -111,14 +119,20 @@ class getHeader():
                 t["symbol"]._varSigConst
             )
             ret += "\n\n"
-        
-        self.obj.__hdl_converter__.make_connection(self.obj,self.name,self.parent)
-        
+
+        return ret
+
+    def From_members(self):
+        ret = ""
         for x in self.obj.__dict__.items():
             t = getattr(self.obj, x[0])
             if issubclass(type(t),argg_hdl_base) and not t._issubclass_("v_class"):
                 ret += t.__hdl_converter__.getHeader(t,x[0],self.obj)
+        
+        return ret
 
+    def From_Functions(self):
+        ret = ""
         funlist =[]
         for x in reversed(self.obj.__hdl_converter__.__ast_functions__):
             if "_onpull" in x.name.lower()  or "_onpush" in x.name.lower() :
@@ -130,7 +144,103 @@ class getHeader():
             funlist.append(funDeclaration)
             ret +=  funDeclaration
 
-
-        ret += "------- End Psuedo Class " +self.obj.getName() +" -------------------------\n"
-        ret += "-------------------------------------------------------------------------\n\n\n"
         return ret
+    def __str__(self):
+        
+        ret =self.header()
+        ret += self.From_Conversion_types()
+
+        self.obj.__hdl_converter__.make_connection(self.obj,self.name,self.parent)
+        
+
+        ret += self.From_members()
+
+        ret += self.From_Functions()
+
+
+        ret +=self.footer()
+        return ret
+
+
+class getMemberArgs():
+    def __init__(self,obj, InOut_Filter,InOut,suffix="", IncludeSelf =False,PushPull=""):
+        self.obj = obj
+        self.InOut_Filter = InOut_Filter
+        self.InOut = InOut
+        self.suffix  = suffix
+        self.IncludeSelf = IncludeSelf
+        self.PushPull = PushPull
+
+    def getMemberArgsSelfPush(self):
+        members_args = []
+
+        if not self.PushPull == "push":
+            return members_args
+
+        varsig = " signal "
+
+        i_members = self.obj.__hdl_converter__.get_internal_connections(self.obj)
+        for m in i_members:
+            internal_inout_filter = self.InOut_Filter
+            if m["type"] == 'sig2var':
+                internal_inout_filter=InoutFlip(self.InOut_Filter)
+                
+            
+            
+            sig = m["source"]["symbol"].__hdl_converter__.extract_conversion_types(
+                m["source"]["symbol"],
+                exclude_class_type= v_classType_t.transition_t,
+                filter_inout=internal_inout_filter
+            )
+                
+            members_args.append(varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + " : out "  + sig[0]["symbol"].getType()+self.suffix)
+        
+        return members_args
+
+    def getMemberArgsSelf(self):
+        members_args = []
+        
+        if not self.IncludeSelf:
+            return members_args
+        
+        xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
+        for x in xs:
+            varsig = " "
+            self_InOut = " inout "
+            if x["symbol"]._varSigConst == varSig.signal_t :
+                varsig = " signal "
+                self_InOut = " in "  
+            members_args.append(varsig + "self" + x["suffix"]  + " : " + self_InOut + " "  + x["symbol"].getType()+self.suffix)
+        
+        
+        members_args += self.getMemberArgsSelfPush()
+        
+             
+        return members_args
+
+    def __str__(self):
+        members_args = self.getMemberArgsSelf()
+        
+        members = self.obj.getMember(self.InOut_Filter,VaribleSignalFilter=varSig.variable_t) 
+       
+        for i in members:
+            n_connector = _get_connector( i["symbol"])
+            xs = i["symbol"].__hdl_converter__.extract_conversion_types( i["symbol"], 
+                    exclude_class_type= v_classType_t.transition_t, filter_inout=self.InOut_Filter
+                )
+
+            for x in xs:
+               
+                varsig = " "
+                if n_connector._varSigConst == varSig.signal_t :
+                    varsig = " signal "
+                    
+                members_args.append(varsig + i["name"] + " : " + self.InOut + " "  + x["symbol"].getType()+self.suffix)
+            
+
+        ret=join_str(
+            members_args, 
+            Delimeter="; "
+            )
+        return ret    
+
