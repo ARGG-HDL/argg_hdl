@@ -1,11 +1,13 @@
-from argg_hdl.argg_hdl_base import v_classType_t,varSig,InOut_t,join_str,argg_hdl_base
+from argg_hdl.argg_hdl_base import v_classType_t,varSig,InOut_t,join_str,argg_hdl_base,InoutFlip
+
+import argg_hdl.argg_hdl_v_function as ah_func
 
 def _get_connector(symb):
     if symb._Inout == InOut_t.Master_t:
         n_connector = symb.__receiver__[-1]
     else :
         n_connector = symb.__Driver__
-    
+
     return n_connector
 
 
@@ -13,7 +15,7 @@ class vhdl__Pull_Push():
     def __init__(self,obj, inout):
         self.obj = obj
         self.Inout = inout
-        
+
     def get_selfHandles(self):
         selfHandles = []
         xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
@@ -26,17 +28,17 @@ class vhdl__Pull_Push():
         content = []
         for x in self.obj.getMember( self.Inout,varSig.variable_t):
             n_connector = _get_connector( x["symbol"])
-            
+
 
             ys =n_connector.__hdl_converter__.extract_conversion_types(
-                    n_connector, 
-                    exclude_class_type= v_classType_t.transition_t, 
+                    n_connector,
+                    exclude_class_type= v_classType_t.transition_t,
                     filter_inout=self.Inout
                 )
             for y in ys:
                 content.append(x["name"]+" => "+y["symbol"].get_vhdl_name())
 
-        return content 
+        return content
 
     def getConnections_outputs(self):
         content = []
@@ -50,7 +52,7 @@ class vhdl__Pull_Push():
                 inout_local =  InoutFlip(self.Inout)
 
 
-                
+
             sig = x["source"]["symbol"].__hdl_converter__.extract_conversion_types(
                     x["source"]["symbol"],
                     exclude_class_type= v_classType_t.transition_t,
@@ -58,7 +60,7 @@ class vhdl__Pull_Push():
                 )
             connector = "_"
             content.append(self.obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => " +self.obj.__hdl_name__+"_sig."  + x["source"]["name"]+ sig[0]["suffix"])
-        
+
         return content
 
 
@@ -68,17 +70,17 @@ class vhdl__Pull_Push():
         content = self.get_selfHandles()
 
 
-        
+
         content += self.getConnections()
 
         content += self.getConnections_outputs()
-        
+
         pushpull= "push"
         if self.Inout == InOut_t.input_t:
             pushpull = "pull"
 
         ret=join_str(
-            content, 
+            content,
             start="    " + pushpull + "( ",
             end=");\n",
             Delimeter=", "
@@ -86,14 +88,14 @@ class vhdl__Pull_Push():
 
         if  not self.obj.__hdl_converter__.Has_pushpull_function(self.obj, pushpull):
             return ""
-        return ret        
+        return ret
 
 
 
 class getHeader():
     def __init__(self, obj, name,parent):
         self.obj = obj
-        self.name = name 
+        self.name = name
         self.parent = parent
 
 
@@ -112,7 +114,7 @@ class getHeader():
         ts = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
         for t in ts:
             ret +=  self.obj.__hdl_converter__.getHeader_make_record(
-                t["symbol"], 
+                t["symbol"],
                 self.name,
                 self.parent,
                 t["symbol"]._Inout ,
@@ -128,7 +130,7 @@ class getHeader():
             t = getattr(self.obj, x[0])
             if issubclass(type(t),argg_hdl_base) and not t._issubclass_("v_class"):
                 ret += t.__hdl_converter__.getHeader(t,x[0],self.obj)
-        
+
         return ret
 
     def From_Functions(self):
@@ -146,12 +148,12 @@ class getHeader():
 
         return ret
     def __str__(self):
-        
+
         ret =self.header()
         ret += self.From_Conversion_types()
 
         self.obj.__hdl_converter__.make_connection(self.obj,self.name,self.parent)
-        
+
 
         ret += self.From_members()
 
@@ -184,63 +186,171 @@ class getMemberArgs():
             internal_inout_filter = self.InOut_Filter
             if m["type"] == 'sig2var':
                 internal_inout_filter=InoutFlip(self.InOut_Filter)
-                
-            
-            
+
+
+
             sig = m["source"]["symbol"].__hdl_converter__.extract_conversion_types(
                 m["source"]["symbol"],
                 exclude_class_type= v_classType_t.transition_t,
                 filter_inout=internal_inout_filter
             )
-                
+
             members_args.append(varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + " : out "  + sig[0]["symbol"].getType()+self.suffix)
-        
+
         return members_args
 
     def get_Self(self):
         members_args = []
-        
+
         if not self.IncludeSelf:
             return members_args
-        
+
         xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
         for x in xs:
             varsig = " "
             self_InOut = " inout "
             if x["symbol"]._varSigConst == varSig.signal_t :
                 varsig = " signal "
-                self_InOut = " in "  
+                self_InOut = " in "
             members_args.append(varsig + "self" + x["suffix"]  + " : " + self_InOut + " "  + x["symbol"].getType()+self.suffix)
-        
-        
+
+
         members_args += self.get_SelfPush()
-        
-             
+
+
         return members_args
 
     def __str__(self):
         members_args = self.get_Self()
-        
-        members = self.obj.getMember(self.InOut_Filter,VaribleSignalFilter=varSig.variable_t) 
-       
+
+        members = self.obj.getMember(self.InOut_Filter,VaribleSignalFilter=varSig.variable_t)
+
         for i in members:
             n_connector = _get_connector( i["symbol"])
-            xs = i["symbol"].__hdl_converter__.extract_conversion_types( i["symbol"], 
+            xs = i["symbol"].__hdl_converter__.extract_conversion_types( i["symbol"],
                     exclude_class_type= v_classType_t.transition_t, filter_inout=self.InOut_Filter
                 )
 
             for x in xs:
-               
+
                 varsig = " "
                 if n_connector._varSigConst == varSig.signal_t :
                     varsig = " signal "
-                    
+
                 members_args.append(varsig + i["name"] + " : " + self.InOut + " "  + x["symbol"].getType()+self.suffix)
-            
+
 
         ret=join_str(
-            members_args, 
+            members_args,
             Delimeter="; "
             )
-        return ret    
+        return ret
+
+
+class getConnecting_procedure_vector():
+    def __init__(self,obj, InOut_Filter,PushPull,procedureName=None):
+        super().__init__()
+        self.obj = obj
+        self.InOut_Filter = InOut_Filter
+        self.PushPull = PushPull
+        self.procedureName = procedureName
+
+    def get_isempty_From_non_vector_method(self):
+        isEmpty = False
+        if self.PushPull== "push":
+            isEmpty = self.obj.push.isEmpty
+
+        else:
+            isEmpty = self.obj.pull.isEmpty
+        return isEmpty
+
+    def get_argumentList(self):
+        inout = " in "
+        if self.PushPull== "push":
+            inout = " out "
+
+
+        argumentList =  self.obj.__hdl_converter__.getMemberArgs(
+            self.obj,
+            self.InOut_Filter,
+            inout,
+            suffix="_a",
+            IncludeSelf = True,
+            PushPull=self.PushPull
+        ).strip()
+
+        return argumentList
+
+    def get_self_args(self) :
+        content = []
+
+        xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
+        for x in xs:
+            line = "self" + x["suffix"] +" =>  self" + x["suffix"]+"(i)"
+            content.append(line)
+
+        return content
+
+    def get_internal_connections(self) :
+        content = []
+        if not self.PushPull == "push":
+            return  content
+
+        members = self.obj.__hdl_converter__.get_internal_connections(self.obj)
+        for x in members:
+            inout_local = self.InOut_Filter
+            if x["type"] == 'sig2var':
+                inout_local = InoutFlip(self.InOut_Filter)
+
+            sig = x["destination"]["symbol"].__hdl_converter__.extract_conversion_types(
+                x["destination"]["symbol"],
+                exclude_class_type=v_classType_t.transition_t,
+                filter_inout=inout_local
+            )
+            connector = "_"
+            content.append(
+                self.obj.__hdl_name__ + "_sig" + connector + x["source"]["name"] + sig[0]["suffix"] +
+                " => " +
+                self.obj.__hdl_name__ + "_sig" + connector + x["source"]["name"] + sig[0]["suffix"] + "(i)"
+            )
+
+        return content
+
+    def get_procedure(self):
+
+        isEmpty = self.get_isempty_From_non_vector_method()
+
+        argumentList = self.get_argumentList()
+
+        content = self.get_self_args()
+
+        content += self.get_internal_connections()
+
+        members = self.obj.getMember(self.InOut_Filter)
+
+        args = join_str(content + [
+                str(x["name"]) + " => " + str(x["name"]+"(i)")
+                for x in members
+            ],
+            Delimeter= ", ",
+            IgnoreIfEmpty=True
+            )
+
+
+        ret = ah_func.v_procedure(
+            name=self.procedureName,
+            argumentList=argumentList,
+            body='''
+        for i in 0 to self'length - 1 loop
+        {PushPull}( {args});
+        end loop;
+            '''.format(
+                PushPull=self.PushPull,
+                args=args
+            ),
+            isFreeFunction=True,
+            IsEmpty=isEmpty
+        )
+
+        return ret
 

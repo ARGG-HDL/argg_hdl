@@ -74,7 +74,7 @@ class v_class_trans_converter(v_class_converter):
             obj, 
             InOut_Filter,
             PushPull, 
-            ClassName
+            ClassName+"."
         )
         internal_connections = obj.__hdl_converter__.getMember_InternalConnections(
             obj, 
