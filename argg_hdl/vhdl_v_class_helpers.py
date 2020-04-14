@@ -11,6 +11,18 @@ def _get_connector(symb):
     return n_connector
 
 
+def InoutFlip_if(Inout,predicate):
+
+    if predicate:
+        Inout = InoutFlip(Inout)
+
+    return  Inout
+
+def if_true_get_first(predicate, Option_list):
+    if predicate:
+        return Option_list[0]
+    return  Option_list[1]
+
 class vhdl__Pull_Push():
     def __init__(self,obj, inout):
         self.obj = obj
@@ -183,10 +195,7 @@ class getMemberArgs():
 
         i_members = self.obj.__hdl_converter__.get_internal_connections(self.obj)
         for m in i_members:
-            internal_inout_filter = self.InOut_Filter
-            if m["type"] == 'sig2var':
-                internal_inout_filter=InoutFlip(self.InOut_Filter)
-
+            internal_inout_filter = InoutFlip_if(self.InOut_Filter, m["type"] == 'sig2var')
 
 
             sig = m["source"]["symbol"].__hdl_converter__.extract_conversion_types(
@@ -195,7 +204,11 @@ class getMemberArgs():
                 filter_inout=internal_inout_filter
             )
 
-            members_args.append(varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + " : out "  + sig[0]["symbol"].getType()+self.suffix)
+            members_args.append(
+                varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + 
+                            " : out "  + 
+                sig[0]["symbol"].getType()+self.suffix
+            )
 
         return members_args
 
@@ -207,12 +220,15 @@ class getMemberArgs():
 
         xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
         for x in xs:
-            varsig = " "
-            self_InOut = " inout "
-            if x["symbol"]._varSigConst == varSig.signal_t :
-                varsig = " signal "
-                self_InOut = " in "
-            members_args.append(varsig + "self" + x["suffix"]  + " : " + self_InOut + " "  + x["symbol"].getType()+self.suffix)
+            isSignal = x["symbol"]._varSigConst == varSig.signal_t
+            varsig = if_true_get_first(isSignal, [" signal ", " "])
+            self_InOut = if_true_get_first(isSignal, [" in ", " inout "])
+
+            members_args.append(
+                varsig + "self" + x["suffix"]  +
+                           " : " +
+                self_InOut + " "  + x["symbol"].getType()+self.suffix
+            )
 
 
         members_args += self.get_SelfPush()
@@ -223,12 +239,14 @@ class getMemberArgs():
     def __str__(self):
         members_args = self.get_Self()
 
-        members = self.obj.getMember(self.InOut_Filter,VaribleSignalFilter=varSig.variable_t)
+        members = self.obj.getMember(self.InOut_Filter, VaribleSignalFilter=varSig.variable_t)
 
         for i in members:
-            n_connector = _get_connector( i["symbol"])
-            xs = i["symbol"].__hdl_converter__.extract_conversion_types( i["symbol"],
-                    exclude_class_type= v_classType_t.transition_t, filter_inout=self.InOut_Filter
+            n_connector = _get_connector(i["symbol"])
+            xs = i["symbol"].__hdl_converter__.extract_conversion_types(
+                    i["symbol"],
+                    exclude_class_type= v_classType_t.transition_t,
+                    filter_inout=self.InOut_Filter
                 )
 
             for x in xs:
@@ -286,7 +304,7 @@ class getConnecting_procedure_vector():
 
         xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
         for x in xs:
-            line = "self" + x["suffix"] +" =>  self" + x["suffix"]+"(i)"
+            line = "self" + x["suffix"] + " =>  self" + x["suffix"]+"(i)"
             content.append(line)
 
         return content
@@ -298,9 +316,7 @@ class getConnecting_procedure_vector():
 
         members = self.obj.__hdl_converter__.get_internal_connections(self.obj)
         for x in members:
-            inout_local = self.InOut_Filter
-            if x["type"] == 'sig2var':
-                inout_local = InoutFlip(self.InOut_Filter)
+            inout_local = InoutFlip_if(self.InOut_Filter, x["type"] == 'sig2var')
 
             sig = x["destination"]["symbol"].__hdl_converter__.extract_conversion_types(
                 x["destination"]["symbol"],
