@@ -501,29 +501,7 @@ class v_class_converter(hdl_converter_base):
 
         return False
 
-    def getMemberArgsSelfPush(self,obj, InOut_Filter,InOut,suffix="", PushPull=""):
-        members_args = []
-
-        if not PushPull == "push":
-            return members_args
-
-        i_members = obj.__hdl_converter__.get_internal_connections(obj)
-        for m in i_members:
-            internal_inout_filter = InOut_Filter
-            if m["type"] == 'sig2var':
-                internal_inout_filter=InoutFlip(InOut_Filter)
-                
-            
-            
-            sig = m["source"]["symbol"].__hdl_converter__.extract_conversion_types(
-                m["source"]["symbol"],
-                exclude_class_type= v_classType_t.transition_t,
-                filter_inout=internal_inout_filter
-            )
-                
-            members_args.append(varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + " : out "  + sig[0]["symbol"].getType()+suffix)
-        
-        return members_args
+ 
 
 
 
@@ -629,19 +607,6 @@ class v_class_converter(hdl_converter_base):
         if rhs._Inout == InOut_t.output_t:
             raise Exception("cannot read from Output")
 
-        #if rhs._type != obj._type:
-        #    raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
-
-        
-        t = obj.getTypes()
-        if len(t) ==3 and obj.__v_classType__ ==  v_classType_t.transition_t:
-            if rhs._type != obj._type:
-                raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
-            ret ="---------------------------------------------------------------------\n--  " + obj.get_vhdl_name() +" << " + rhs.get_vhdl_name()+"\n" 
-            
-            ret += obj.get_vhdl_name(InOut_t.output_t) + asOp + rhs.get_vhdl_name(InOut_t.output_t) +";\n" 
-            ret += rhs.get_vhdl_name(InOut_t.input_t) + asOp + obj.get_vhdl_name(InOut_t.input_t)
-            return ret 
 
         obj._add_output()
         
@@ -786,23 +751,7 @@ class v_class_converter(hdl_converter_base):
         ret.append({ "suffix":suffix, "symbol": x})
         return ret
 
-    def extract_conversion_types_transition_type(self, obj, exclude_class_type=None,filter_inout=None):
-        ret =[]
-        ret += obj.__hdl_converter__.extract_conversion_types_transition_type_impl(
-            obj, 
-            exclude_class_type,
-            filter_inout,
-            InOut_t.input_t
-        )
-        ret += obj.__hdl_converter__.extract_conversion_types_transition_type_impl(
-            obj, 
-            exclude_class_type,
-            filter_inout,
-            InOut_t.output_t
-        )
-        
-        ret.append({ "suffix":"", "symbol": obj})
-        return ret
+
 
     def extract_conversion_types_Master_Slave_impl(self, obj, exclude_class_type=None,filter_inout=None,VarSig=None,Suffix=""):
         ret = []
@@ -845,15 +794,8 @@ class v_class_converter(hdl_converter_base):
 
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
         ret =[]
-        
-        if obj.__v_classType__ ==  v_classType_t.transition_t:
-            ret = obj.__hdl_converter__.extract_conversion_types_transition_type(
-                obj, 
-                exclude_class_type,
-                filter_inout
-            )
-        
-        elif obj.__v_classType__ ==  v_classType_t.Master_t or obj.__v_classType__ ==  v_classType_t.Slave_t: 
+
+        if obj.__v_classType__ ==  v_classType_t.Master_t or obj.__v_classType__ ==  v_classType_t.Slave_t: 
             ret = obj.__hdl_converter__.extract_conversion_types_Master_Slave(
                 obj, 
                 exclude_class_type,

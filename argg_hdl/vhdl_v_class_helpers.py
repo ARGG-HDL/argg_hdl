@@ -171,7 +171,7 @@ class getMemberArgs():
         self.IncludeSelf = IncludeSelf
         self.PushPull = PushPull
 
-    def getMemberArgsSelfPush(self):
+    def get_SelfPush(self):
         members_args = []
 
         if not self.PushPull == "push":
@@ -197,7 +197,7 @@ class getMemberArgs():
         
         return members_args
 
-    def getMemberArgsSelf(self):
+    def get_Self(self):
         members_args = []
         
         if not self.IncludeSelf:
@@ -213,13 +213,13 @@ class getMemberArgs():
             members_args.append(varsig + "self" + x["suffix"]  + " : " + self_InOut + " "  + x["symbol"].getType()+self.suffix)
         
         
-        members_args += self.getMemberArgsSelfPush()
+        members_args += self.get_SelfPush()
         
              
         return members_args
 
     def __str__(self):
-        members_args = self.getMemberArgsSelf()
+        members_args = self.get_Self()
         
         members = self.obj.getMember(self.InOut_Filter,VaribleSignalFilter=varSig.variable_t) 
        
