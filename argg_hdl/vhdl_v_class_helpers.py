@@ -323,11 +323,11 @@ class getConnecting_procedure_vector():
                 exclude_class_type=v_classType_t.transition_t,
                 filter_inout=inout_local
             )
-            connector = "_"
+            
             content.append(
-                self.obj.__hdl_name__ + "_sig" + connector + x["source"]["name"] + sig[0]["suffix"] +
+                self.obj.__hdl_name__ + "_sig_"  + x["source"]["name"] + sig[0]["suffix"] +
                 " => " +
-                self.obj.__hdl_name__ + "_sig" + connector + x["source"]["name"] + sig[0]["suffix"] + "(i)"
+                self.obj.__hdl_name__ + "_sig_"  + x["source"]["name"] + sig[0]["suffix"] + "(i)"
             )
 
         return content

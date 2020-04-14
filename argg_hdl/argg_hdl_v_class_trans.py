@@ -25,7 +25,8 @@ class v_class_trans_converter(v_class_converter):
         if rhs._type != obj._type:
             raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
         
-        ret ="---------------------------------------------------------------------\n--  " + obj.get_vhdl_name() +" << " + rhs.get_vhdl_name()+"\n" 
+        ret ="---------------------------------------------------------------------\n--  " + 
+                obj.get_vhdl_name() +" << " + rhs.get_vhdl_name()+"\n" 
         ret += obj.get_vhdl_name(InOut_t.output_t) + asOp + rhs.get_vhdl_name(InOut_t.output_t) +";\n" 
         ret += rhs.get_vhdl_name(InOut_t.input_t) + asOp + obj.get_vhdl_name(InOut_t.input_t)
         return ret 
@@ -115,7 +116,7 @@ class v_class_trans_converter(v_class_converter):
 
         if obj.__Driver__ and str( obj.__Driver__) != 'process':
             return ""
-        
+        t = obj.getTypes()
         ret = ""
         ret += VarSymb + " " +str(obj) + "_m2s : " + t["m2s"] +" := " + t["m2s"]+"_null;\n"
         ret += VarSymb + " " +str(obj) + "_s2m : " + t["s2m"] +" := " + t["s2m"]+"_null;\n"
