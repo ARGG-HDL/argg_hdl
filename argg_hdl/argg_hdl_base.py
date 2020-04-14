@@ -419,7 +419,7 @@ class hdl_converter_base:
             i +=1 
             packetName =  x.__hdl_converter__.get_packet_file_name(x)
             entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
-            if obj_packetName ==  packetName and obj_entiyFileName == entiyFileName and type(obj) == type(x):
+            if obj_packetName ==  packetName and obj_entiyFileName == entiyFileName and isinstance(obj, type(x)): 
                 #print(i)
                 return x
 
