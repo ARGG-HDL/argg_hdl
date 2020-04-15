@@ -9,15 +9,15 @@ use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
 
 
-package hlpydlcore is 
+package argg_hdl_core is 
     procedure push(self : inout std_logic ; signal data : out std_logic) ;
     procedure pull(self : inout std_logic ; signal data : in std_logic) ;
     procedure push(self : inout std_logic_vector ; signal data : out std_logic_vector) ;
     procedure pull(self : inout std_logic_vector ; signal data  : in std_logic_vector) ;
-end hlpydlcore;
+end argg_hdl_core;
 
 
-package body hlpydlcore is
+package body argg_hdl_core is
     procedure push(self : inout std_logic ; signal data : out std_logic) is 
     begin 
         data <= self ;
@@ -37,4 +37,4 @@ package body hlpydlcore is
     begin 
         self := data;
     end procedure;
-end hlpydlcore;
+end argg_hdl_core;

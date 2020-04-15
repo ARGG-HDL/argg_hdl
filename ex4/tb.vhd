@@ -36,9 +36,9 @@ architecture rtl of tb is
   signal d_s_data_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
   signal d_s_data_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
 -------------------------- end d_s-----------------
-  signal m_sig : memo_sig := memo_sig_null;
   signal d : std_logic_vector(31 downto 0) := (others => '0'); 
   signal d2 : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal m_sig : memo_sig := memo_sig_null;
 -------------------------- end tb-----------------
 
 begin
@@ -78,7 +78,7 @@ proc : process(clkgen_clk) is
 axmux_data_in_m2s(0) <= d_s_data_out_m2s;
 d_s_data_out_s2m <= axmux_data_in_s2m(0);
   d_s_clk <= clkgen_clk;
-  m_sig.l(0) <= d;
   d2 <= m_sig.l(0);
+  m_sig.l(0) <= d;
   
 end architecture;

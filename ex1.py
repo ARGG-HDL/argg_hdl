@@ -53,12 +53,6 @@ class InputDelay(v_entity):
 
     @architecture
     def architecture(self):
-        
-#        pipe = self.ConfigIn \
-#            | stream_delay_one(self.globals.clk, self.ConfigIn.data,0) \
-#            | stream_delay_one(self.globals.clk, self.ConfigIn.data,1) \
-#            | \
-#        self.ConfigOut   
         pipe2 = delay(times=self.Delay,obj=self)
         end_architecture()
 

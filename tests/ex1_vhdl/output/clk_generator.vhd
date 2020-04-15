@@ -36,4 +36,5 @@ proc : process
     
   end process;
   -- end architecture
+
 end architecture;
