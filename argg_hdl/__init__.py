@@ -13,6 +13,7 @@ import argg_hdl.argg_hdl_simulation  as ah_simulation
 
 import argg_hdl.argg_hdl_v_Package  as ah_v_package
 
+import argg_hdl.argg_hdl_v_class_trans as v_class_trans_m
 ## argg_hdl_base
 base0                 = ahb.argg_hdl_base0
 base                  = ahb.argg_hdl_base
@@ -91,6 +92,11 @@ v_enum = ah_v_enum.v_enum
 ## argg_hdl.argg_hdl_v_Package
 v_package = ah_v_package.v_package
 
+
+
+#v_class_trans
+
+v_class_trans = v_class_trans_m.v_class_trans
 
 def g_global_reset():
     ahb.g_global_reset()

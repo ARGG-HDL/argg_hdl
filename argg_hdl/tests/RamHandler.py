@@ -1,7 +1,7 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
 
-
+from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 #tb3 = InputDelay_tb()
 #convert_to_hdl(tb3, "pyhdl_waveform")
 
@@ -70,7 +70,7 @@ class small_buffer(v_class_master):
     def __len__(self):
         return len(self.mem)
 
-class ram_handler(v_class):
+class ram_handler(v_class_trans):
     def __init__(self, DataType = v_slv(32) , AddressType = v_slv(32)):
         super().__init__()
         self.write_enable  = port_out(v_sl())
@@ -149,7 +149,7 @@ class tb(v_entity):
 #convert_to_hdl(tb1,"tests")
 
 @vhdl_conversion
-def ex2_2vhdl(OutputPath):
+def RamHandler_2vhdl(OutputPath):
     
     tb1 = v_create(tb())
     return tb1

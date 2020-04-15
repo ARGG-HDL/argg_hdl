@@ -6,6 +6,8 @@ from argg_hdl import *
 
 import argg_hdl.examples as  ahe
 
+from argg_hdl.tests.helpers  import remove_old_files
+
 import argg_hdl.tests.core_tests as core_t
 import argg_hdl.tests.ex1 as ex1
 
@@ -29,18 +31,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertTrue(result,message)
 
 
-def remove_old_files():
-    root, dirs, files = next(os.walk('tests/'))
 
-
-    for d in dirs:
-        path_output = os.path.join(root, d, "output")
-        shutil.rmtree(path_output,ignore_errors=True)
-        os.mkdir(path_output)
-
-        path_temp = os.path.join(root, d, "temp")
-        shutil.rmtree(path_temp,ignore_errors=True)
-        os.mkdir(path_temp)
 
 if __name__ == '__main__':
     remove_old_files()
