@@ -39,7 +39,11 @@ port_Stream_Slave     = ahb.port_Stream_Slave
 v_copy                = ahb.v_copy
 convert_to_hdl        = ahb.convert_to_hdl
 value                 = ahb.value
+print_cnvt_set_file   = ahb.print_cnvt_set_file
+
 v_symbol = ah_symbol.v_symbol
+
+
 
 
 
@@ -86,3 +90,8 @@ v_enum = ah_v_enum.v_enum
 
 ## argg_hdl.argg_hdl_v_Package
 v_package = ah_v_package.v_package
+
+
+def g_global_reset():
+    ahb.g_global_reset()
+    ah_symbol.v_symbol_reset()

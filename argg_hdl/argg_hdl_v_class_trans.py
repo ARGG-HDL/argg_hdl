@@ -25,7 +25,7 @@ class v_class_trans_converter(v_class_converter):
         if rhs._type != obj._type:
             raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
         
-        ret ="---------------------------------------------------------------------\n--  " + 
+        ret ="---------------------------------------------------------------------\n--  " + \
                 obj.get_vhdl_name() +" << " + rhs.get_vhdl_name()+"\n" 
         ret += obj.get_vhdl_name(InOut_t.output_t) + asOp + rhs.get_vhdl_name(InOut_t.output_t) +";\n" 
         ret += rhs.get_vhdl_name(InOut_t.input_t) + asOp + obj.get_vhdl_name(InOut_t.input_t)
@@ -110,7 +110,7 @@ class v_class_trans_converter(v_class_converter):
         
         return ret     
     def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
-        print("_vhdl__DefineSymbol is deprecated")
+        print_cnvt("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 

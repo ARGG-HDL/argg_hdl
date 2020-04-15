@@ -1102,7 +1102,7 @@ class v_UnaryOP(v_ast_base):
 def body_UnaryOP(astParser,Node):
     arg = astParser.Unfold_body(Node.operand)
     arg = v_type_to_bool(astParser,arg)
-    #print(arg)
+    #print_cnvt(arg)
 
     return v_UnaryOP(arg, Node.op)
 

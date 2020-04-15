@@ -447,7 +447,7 @@ class xgenAST:
                 )
                 raise Exception(err_msg,ClassInstance,inst)
 
-            #print("----------" , funcDef.name)
+            #print_cnvt("----------" , funcDef.name)
             argList = [x["symbol"].__hdl_converter__.to_arglist(x["symbol"], x['name'],ClassName, withDefault = setDefault and  (x["name"] != "self")) for x in FuncArgsLocal]
             ArglistProcedure = join_str(argList,Delimeter="; ")
             
@@ -621,7 +621,7 @@ class xgenAST:
         if  exist:
             return
 
-        print(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
+        print_cnvt(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
         
 
         ClassInstance.__hdl_converter__.MemfunctionCalls.append({
@@ -655,11 +655,11 @@ class xgenAST:
         
         cl = self.getClassByName(ClassName)
         try:
-            print(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.__hdl_converter__.MemfunctionCalls)) +'">')
+            print_cnvt(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.__hdl_converter__.MemfunctionCalls)) +'">')
             gTemplateIndent.inc()
             self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
             gTemplateIndent.deinc()
-            print(str(gTemplateIndent)+'</processing>')   
+            print_cnvt(str(gTemplateIndent)+'</processing>')   
         except Exception as inst:
             err_msg = argg_hdl_error(
                 self.sourceFileName,
@@ -805,11 +805,11 @@ def call_func(obj, name, args, astParser=None,func_args=None):
                     if m["symbol"].__writeRead__ == InOut_t.output_t:
                         line = func_arg["name"] + y["suffix"]+"_"+ m["name"] +" => " + arg.__hdl_name__ + y["suffix"]  +"."+m["name"]
                         ret.append(line)
-                        #print(line)
+                        #print_cnvt(line)
             
 
 
     actual_function_name = func_args[0]["symbol"].__hdl_converter__.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)
     ret = join_str(ret, Delimeter=", ", start= actual_function_name +"(" ,end=")")
-    #print(ret)
+    #print_cnvt(ret)
     return ret

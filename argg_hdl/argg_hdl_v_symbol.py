@@ -113,7 +113,7 @@ class v_symbol_converter(hdl_converter_base):
         return "to_bool(" + str(obj) + ") "
 
     def _vhdl__DefineSymbol(self,obj, VarSymb=None):
-        print("_vhdl__DefineSymbol is deprecated")
+        print_cnvt("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 
@@ -244,6 +244,10 @@ class v_symbol_converter(hdl_converter_base):
             default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
 
         return varSigstr + name + " : " + inoutstr +" " + obj.getType() + default_str
+
+def v_symbol_reset():
+    #v_symbol.__value_list__.clear()
+    pass
 
 class v_symbol(argg_hdl_base):
     __value_list__ = []

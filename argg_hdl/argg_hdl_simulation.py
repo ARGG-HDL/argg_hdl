@@ -25,7 +25,7 @@ class v_simulation():
         self.updateList_process=list()
         
         self.writer= None
-        self.CurrentTime = 0
+        self.CurrentTime = -1
 
     def reset(self):
         self.timmed_process=list()
@@ -33,10 +33,10 @@ class v_simulation():
         self.updateList_process=list()
         
         self.writer= None
-        self.CurrentTime = 0
+        self.CurrentTime = -1
 
     def isRunning(self):
-        return self.CurrentTime >0
+        return self.CurrentTime >=0
 
         
     def append_updateList(self,obj):
@@ -119,3 +119,4 @@ gsimulation = v_simulation()
 
 def run_simulation(testBench, time, outputFile):
     gsimulation.run_timed(testBench, time,outputFile)
+    gsimulation.reset()

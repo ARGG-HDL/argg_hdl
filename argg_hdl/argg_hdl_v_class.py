@@ -314,7 +314,7 @@ class v_class_converter(hdl_converter_base):
         return ret
     
     def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
-        print("_vhdl__DefineSymbol is deprecated")
+        print_cnvt("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 

@@ -253,11 +253,11 @@ class v_Arch_converter(hdl_converter_base):
 
 
     def getHeader(self, obj, name, parent):
-        print("getHeader is dep")
+        print_cnvt("getHeader is dep")
         return ""
 
     def getBody(self,obj, name,parent):
-        print("getHeader is dep")
+        print_cnvt("getHeader is dep")
         return ""
 
 class v_Arch(argg_hdl_base):

@@ -155,13 +155,18 @@ class indent:
         ret  = ''.ljust(self.ind)
         return ret
 
+    def reset(self):
+        self.ind = 2
+
+
 gTemplateIndent = indent()
 gStatus = {
     "isConverting2VHDL" : False,
     "isProcess" : False,
     "isPrimaryConnection" : True,
     "MakeGraph"           : True,
-    "saveUnfinishFiles"   : False
+    "saveUnfinishFiles"   : False,
+    "OutputFile"          : None
 }
 
 def isConverting2VHDL():
@@ -193,6 +198,15 @@ def saveUnfinishedFiles():
 
 gHDL_objectList = []
 
+def g_global_reset():
+    gHDL_objectList.clear()
+    gStatus["isConverting2VHDL"] = False
+    gStatus["isProcess"]  =  False
+    gStatus["isPrimaryConnection"]= True
+    gStatus["MakeGraph"] = True
+    gStatus["saveUnfinishFiles"] = False
+
+    gTemplateIndent.reset()
 
 
 
@@ -266,8 +280,28 @@ def convert_to_hdl(Obj, FolderPath):
     except Exception as inst:
         er_list  =  unfold_errors(inst)
         ret = join_str(er_list, Delimeter="\n")
-        print(ret)
+        print_cnvt(ret)
 
+
+def print_cnvt_set_file(FileName=None):
+    
+    if gStatus["OutputFile"] is not None:
+        gStatus["OutputFile"].close()
+        gStatus["OutputFile"] = None
+
+    if FileName is not None:
+        gStatus["OutputFile"] = open(FileName,"w")
+    else:
+        gStatus["OutputFile"] = None
+
+
+
+
+def print_cnvt(Str_in):
+    if gStatus["OutputFile"] is not None:
+        gStatus["OutputFile"].write(Str_in +"\n")
+    else:
+        print(Str_in +"<><><><><><")
 
 class hdl_converter_base:
     __VHDL__OPS_to2str= {
@@ -346,7 +380,7 @@ class hdl_converter_base:
     def convert_all_packages(self, obj, ouputFolder,x,FilesDone):
         packetName =  x.__hdl_converter__.get_packet_file_name(x)
         if packetName not in FilesDone:
-            print(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
+            print_cnvt(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
             gTemplateIndent.inc()
             x.__hdl_converter__.reset_TemplateMissing(x)
             packet = x.__hdl_converter__.get_packet_file_content(x)
@@ -354,16 +388,16 @@ class hdl_converter_base:
                 file_set_content(ouputFolder+"/" +packetName,packet)
             FilesDone.append(packetName)
             if x.__hdl_converter__.MissingTemplate:
-                print(str(gTemplateIndent)+'<status ="failed">')
+                print_cnvt(str(gTemplateIndent)+'<status ="failed">')
             else:
-                print(str(gTemplateIndent)+'<status ="sucess">')
+                print_cnvt(str(gTemplateIndent)+'<status ="sucess">')
             gTemplateIndent.deinc()
-            print(str(gTemplateIndent)+ '</package_conversion>')
+            print_cnvt(str(gTemplateIndent)+ '</package_conversion>')
         
     def convert_all_entities(self, obj, ouputFolder,x,FilesDone):
         entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
         if entiyFileName not in FilesDone:
-            print(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
+            print_cnvt(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
             gTemplateIndent.inc()
             x.__hdl_converter__.reset_TemplateMissing(x)
             try:
@@ -374,12 +408,12 @@ class hdl_converter_base:
                 file_set_content(ouputFolder+"/" +entiyFileName,entity_content)
             FilesDone.append(entiyFileName)
             if x.__hdl_converter__.MissingTemplate:
-                print(str(gTemplateIndent)+'<status ="failed">')
+                print_cnvt(str(gTemplateIndent)+'<status ="failed">')
             else:
-                print(str(gTemplateIndent)+'<status ="sucess">')
+                print_cnvt(str(gTemplateIndent)+'<status ="sucess">')
             gTemplateIndent.deinc()
-            print(str(gTemplateIndent)+"</entity_conversion>")
-            #print("processing")
+            print_cnvt(str(gTemplateIndent)+"</entity_conversion>")
+            #print_cnvt("processing")
 
     def convert_all_impl(self, obj, ouputFolder, FilesDone):
         FilesDone.clear()
@@ -404,12 +438,12 @@ class hdl_converter_base:
             if counter > 10:
                 raise Exception("unable to convert ")
            
-            print("<!--=======================-->")
-            print(str(gTemplateIndent)+ '<Converting Index="'+str(counter) +'">')
+            print_cnvt("<!--=======================-->")
+            print_cnvt(str(gTemplateIndent)+ '<Converting Index="'+str(counter) +'">')
             gTemplateIndent.inc()
             self.convert_all_impl(obj, ouputFolder, FilesDone)
             gTemplateIndent.deinc()
-            print(str(gTemplateIndent)+ '</Converting>')
+            print_cnvt(str(gTemplateIndent)+ '</Converting>')
 
     def get_primary_object(self,obj):
         obj_packetName =  obj.__hdl_converter__.get_packet_file_name(obj)
@@ -420,7 +454,7 @@ class hdl_converter_base:
             packetName =  x.__hdl_converter__.get_packet_file_name(x)
             entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
             if obj_packetName ==  packetName and obj_entiyFileName == entiyFileName and isinstance(obj, type(x)): 
-                #print(i)
+                #print_cnvt(i)
                 return x
 
         raise Exception("did not find primary object")
@@ -550,10 +584,10 @@ class hdl_converter_base:
             primary.__hdl_converter__.MissingTemplate=True
             astParser.Missing_template = True
 
-            print(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
+            print_cnvt(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
             return None
 
-        print(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
+        print_cnvt(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
         call_func = call_obj["call_func"]
         if call_func:
             return call_func(obj, name, args, astParser, call_obj["func_args"])
@@ -567,7 +601,7 @@ class hdl_converter_base:
     
 
     def _vhdl__DefineSymbol(self,obj, VarSymb="variable"):
-        print("_vhdl__DefineSymbol is deprecated")
+        print_cnvt("_vhdl__DefineSymbol is deprecated")
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
         #return " -- No Generic symbol definition for object " + self.getName()
 
