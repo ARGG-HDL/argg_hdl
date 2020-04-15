@@ -301,7 +301,7 @@ def print_cnvt(Str_in):
     if gStatus["OutputFile"] is not None:
         gStatus["OutputFile"].write(Str_in +"\n")
     else:
-        print(Str_in +"<><><><><><")
+        print(Str_in)
 
 class hdl_converter_base:
     __VHDL__OPS_to2str= {
