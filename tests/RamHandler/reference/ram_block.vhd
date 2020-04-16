@@ -36,11 +36,11 @@ proc : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (DataIO_s2m.write_enable = '1') then 
-        mem(to_integer(signed( DataIO_s2m.Write_address))) <= DataIO_s2m.Write_Data;
+      if (DataIO_m2s.write_enable = '1') then 
+        mem(to_integer(signed( DataIO_m2s.Write_address))) <= DataIO_m2s.Write_Data;
         
       end if;
-    DataIO_m2s.read_data <= mem(to_integer(signed( DataIO_s2m.read_address)));
+    DataIO_s2m.read_data <= mem(to_integer(signed( DataIO_m2s.read_address)));
     end if;
   
   end process;

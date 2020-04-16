@@ -7,9 +7,8 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
+use work.addr_data_pack.all;
 use work.argg_hdl_core.all;
-use work.optional_t_pack.all;
-use work.slv32_a_pack.all;
 
 
 package small_buffer_pack is 
@@ -19,17 +18,21 @@ package small_buffer_pack is
 
 type small_buffer is record 
     count : integer;
+    count_old : integer;
     head : integer;
-    mem : slv32_a(10 - 1 downto 0);
+    mem : addr_data_a(10 - 1 downto 0);
     tail : integer;
+    tail_old : integer;
 end record;
     
     
   constant small_buffer_null : small_buffer:= (
     count => 0,
+    count_old => 0,
     head => 0,
-    mem => (others => (others => '0')),
-    tail => 0
+    mem => (others => addr_data_null),
+    tail => 0,
+    tail_old => 0
   );
 
 
@@ -41,14 +44,14 @@ end record;
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
-  procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  optional_t);
-  procedure set_value_01_lshift (self :  inout  small_buffer; signal rhs :  in  std_logic_vector(31 downto 0));
-  procedure read_data_00 (self :  inout  small_buffer; data :  inout  optional_t);
-  procedure send_data_01 (self :  inout  small_buffer; signal data :  in  std_logic_vector(31 downto 0));
+  procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  inout  addr_data);
+  procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  addr_data);
   function length (self :   small_buffer) return integer;
   function ready_to_send_0 (self :   small_buffer) return boolean;
   function length_0 (self :   small_buffer) return integer;
   function isReceivingData_0 (self :   small_buffer) return boolean;
+  procedure re_read_0 (self :  inout  small_buffer);
+  procedure reset_0 (self :  inout  small_buffer);
 ------- End Psuedo Class small_buffer -------------------------
 -------------------------------------------------------------------------
 
@@ -64,6 +67,23 @@ package body small_buffer_pack is
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
+procedure reset_0 (self :  inout  small_buffer) is
+   
+  begin 
+ self.head := 0;
+  self.tail := 0;
+  self.count := 0;
+   
+end procedure;
+
+procedure re_read_0 (self :  inout  small_buffer) is
+   
+  begin 
+ self.tail := self.tail_old;
+  self.count := self.count_old;
+   
+end procedure;
+
 function isReceivingData_0 (self :   small_buffer) return boolean is
    
   begin 
@@ -92,31 +112,13 @@ function length (self :   small_buffer) return integer is
    
 end function;
 
-procedure send_data_01 (self :  inout  small_buffer; signal data :  in  std_logic_vector(31 downto 0)) is
+procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  addr_data) is
    
   begin 
- 
-    if (ready_to_send_0(self => self)) then 
-      self.mem(self.head) := data;
-      self.head := self.head + 1;
-      self.count := self.count + 1;
-      
-      if (self.head > self.mem'length - 1) then 
-        self.head := 0;
-        
-      end if;
-      
-    end if;
-   
-end procedure;
-
-procedure read_data_00 (self :  inout  small_buffer; data :  inout  optional_t) is
-   
-  begin 
- reset_0(self => data);
+ reset_0(self => rhs);
   
     if (self.count > 0) then 
-      set_value_00_lshift(self => data, rhs => self.mem(self.tail));
+      rhs := self.mem(self.tail);
       self.tail := self.tail + 1;
       self.count := self.count - 1;
       
@@ -129,7 +131,7 @@ procedure read_data_00 (self :  inout  small_buffer; data :  inout  optional_t) 
    
 end procedure;
 
-procedure set_value_01_lshift (self :  inout  small_buffer; signal rhs :  in  std_logic_vector(31 downto 0)) is
+procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  inout  addr_data) is
    
   begin 
  
@@ -144,25 +146,8 @@ procedure set_value_01_lshift (self :  inout  small_buffer; signal rhs :  in  st
       end if;
       
     end if;
-   
-end procedure;
-
-procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  optional_t) is
-   
-  begin 
- reset_0(self => rhs);
-  
-    if (self.count > 0) then 
-      set_value_00_lshift(self => rhs, rhs => self.mem(self.tail));
-      self.tail := self.tail + 1;
-      self.count := self.count - 1;
-      
-    end if;
-  
-    if (self.tail > self.mem'length - 1) then 
-      self.tail := 0;
-      
-    end if;
+  self.tail_old := self.tail;
+  self.count_old := self.count;
    
 end procedure;
 

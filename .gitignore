@@ -113,3 +113,9 @@ dmypy.json
 /.idea/
 *temp*
 /.vs/
+/tests/ex1_vhdl/output/
+/tests/example1/output/*
+/tests/ex1/output/*
+/tests/example2/output/*
+/tests/RamHandler/output/*
+/tests/RamHandler/output/*
