@@ -428,7 +428,7 @@ end function;
 procedure get_value_01_rshift (self :  inout  axiStream_slv32_slave; signal rhs :  out  std_logic_vector(31 downto 0)) is
    
   begin 
- rhs <= '0';
+ rhs <= (others => '0');
   
     if (self.data_internal_isvalid2 = '1') then 
       rhs <= self.data_internal2;
