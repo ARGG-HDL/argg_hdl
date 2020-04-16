@@ -14,6 +14,8 @@ import argg_hdl.argg_hdl_simulation  as ah_simulation
 import argg_hdl.argg_hdl_v_Package  as ah_v_package
 
 import argg_hdl.argg_hdl_v_class_trans as v_class_trans_m
+
+import argg_hdl.argg_hdl_v_record as ah_rec
 ## argg_hdl_base
 base0                 = ahb.argg_hdl_base0
 base                  = ahb.argg_hdl_base
@@ -97,6 +99,9 @@ v_package = ah_v_package.v_package
 #v_class_trans
 
 v_class_trans = v_class_trans_m.v_class_trans
+
+
+v_record = ah_rec.v_record
 
 def g_global_reset():
     ahb.g_global_reset()

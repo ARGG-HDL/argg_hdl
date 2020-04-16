@@ -68,10 +68,10 @@ def vhdl_conversion(func):
 
 def do_simulation(func):
     def wrap(OutputPath):
-        os.mkdir(OutputPath)
-        os.mkdir(OutputPath+"/output")
-        os.mkdir(OutputPath+"/reference")
-        os.mkdir(OutputPath+"/temp")
+        mkdir_if_not_exist(OutputPath)
+        mkdir_if_not_exist(OutputPath+"/output")
+        mkdir_if_not_exist(OutputPath+"/reference")
+        mkdir_if_not_exist(OutputPath+"/temp")
 
         g_global_reset()
         with open(OutputPath+"/output"+"/data.txt","w") as f:
@@ -89,8 +89,8 @@ def remove_old_files():
     for d in dirs:
         path_output = os.path.join(root, d, "output")
         shutil.rmtree(path_output,ignore_errors=True)
-        os.mkdir(path_output)
+        mkdir_if_not_exist(path_output)
 
         path_temp = os.path.join(root, d, "temp")
         shutil.rmtree(path_temp,ignore_errors=True)
-        os.mkdir(path_temp)
+        mkdir_if_not_exist(path_temp)

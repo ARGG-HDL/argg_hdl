@@ -19,6 +19,27 @@ class v_symbol_converter(hdl_converter_base):
         ret = slv_includes
         ret += self.inc_str
         return ret
+    def _vhdl__call_member_func(self, obj, name, args, astParser=None):
+        
+        call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
+        
+        args_str = [str(x.get_type()) for x in args]
+        args_str=join_str(args_str, Delimeter=", ")
+        if call_obj is None:
+            primary.__hdl_converter__.MissingTemplate=True
+            astParser.Missing_template = True
+
+            print_cnvt(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
+            return None
+
+        print_cnvt(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
+        call_func = call_obj["call_func"]
+        if call_func:
+            return call_func(obj, name, args, astParser, call_obj["func_args"])
+
+        primary.__hdl_converter__.MissingTemplate=True
+        astParser.Missing_template = True
+        return None
 
     def get_get_call_member_function(self, obj, name, args):
         ret = None
@@ -437,7 +458,7 @@ class v_symbol(argg_hdl_base):
     
     def _sim_get_primary_driver(self):
         ret = self
-        if self.__Driver__:
+        if self.__Driver__ and not isinstance(self.__Driver__,str):
             ret = self.__Driver__._sim_get_primary_driver()
         return ret
 
@@ -638,4 +659,5 @@ def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
     if val is None:
         raise Exception("unable to reset symbol")
     ret =  str(args[0])  + asOp + val
+    args[0]._add_output()
     return ret

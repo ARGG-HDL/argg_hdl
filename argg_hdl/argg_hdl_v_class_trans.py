@@ -36,18 +36,20 @@ class v_class_trans_converter(v_class_converter):
 
     def _vhdl_get_attribute(self,obj, attName):
         attName = str(attName)
-        if obj._varSigConst != varSig.variable_t:
-            for x in obj.getMember():
-                if x["name"] == attName:
 
-                    if x["symbol"]._Inout  == InOut_t.output_t:
-                        suffix = "_m2s"
-                    else:
-                        suffix = "_s2m"
-
-                    return obj.get_vhdl_name() + suffix + "." +   attName
+        if obj._varSigConst == varSig.variable_t:
+            return obj.get_vhdl_name() + "." +str(attName)
         
-          
+
+        xs = obj.__hdl_converter__.extract_conversion_types(obj)
+           
+        for x in xs:
+            for y in x["symbol"].getMember():
+                if y["name"] == attName:
+                    return obj.get_vhdl_name() + x["suffix"] + "." +   attName
+
+
+           
         return obj.get_vhdl_name() + "." +str(attName)
 
 
@@ -138,6 +140,7 @@ class v_class_trans_converter(v_class_converter):
         x._Inout=Inout
         if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
             x._Inout=InoutFlip(x._Inout)
+            Inout =InoutFlip(Inout)
            
         ys= obj.getMember(Inout)
         for y in ys: 

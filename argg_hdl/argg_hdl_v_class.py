@@ -954,7 +954,7 @@ class v_class(argg_hdl_base):
             x["symbol"].set_simulation_param(module+"."+name, x["name"], writer)
   
     def __str__(self):
-        if self.__Driver__ and str( self.__Driver__) != 'process':
+        if self.__Driver__ and str( self.__Driver__) != 'process' and not isinstance(self.__Driver__,str):
             return str(self.__Driver__)
 
         if self.__hdl_name__:

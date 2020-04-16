@@ -12,15 +12,23 @@ from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 class small_buffer(v_class_master):
     def __init__(self,DataType= v_slv(32)):
         super().__init__()
-        self.mem   = v_variable(v_list(v_copy(DataType),10))
-        self.head  = v_variable(v_int())
-        self.tail  = v_variable(v_int())
-        self.count = v_variable(v_int())
+        self._varSigConst = varSig.variable_t
+        self.mem       = v_variable(v_list(v_copy(DataType),10))
+        self.head      = v_variable(v_int())
+        self.tail      = v_variable(v_int())
+        self.tail_old  = v_variable(v_int())
+        self.count     = v_variable(v_int())
+        self.count_old = v_variable(v_int())
 
 
     def isReceivingData(self):
         return self.count > 0
     
+
+    def re_read(self):
+        self.tail  << self.tail_old
+        self.count << self.count_old
+
     def read_data(self, data):
         data.reset()
 
@@ -52,14 +60,21 @@ class small_buffer(v_class_master):
             self.count << self.count + 1
             if self.head > len(self.mem) - 1:
                 self.head << 0 
+        
+        self.tail_old << self.tail
+        self.count_old << self.count
                 
     def __lshift__(self,rhs):
+        
         if self.ready_to_send():
             self.mem[self.head] << rhs 
             self.head << self.head + 1
             self.count << self.count + 1
             if self.head > len(self.mem) - 1:
                 self.head << 0 
+        
+        self.tail_old << self.tail
+        self.count_old << self.count
 
     def length(self):
         return len(self.mem)
@@ -70,6 +85,11 @@ class small_buffer(v_class_master):
     def __len__(self):
         return len(self.mem)
 
+    def reset(self):
+        self.head  << 0
+        self.tail  << 0
+        self.count << 0
+
 class ram_handler(v_class_trans):
     def __init__(self, DataType = v_slv(32) , AddressType = v_slv(32)):
         super().__init__()
@@ -79,6 +99,75 @@ class ram_handler(v_class_trans):
         
         self.read_address  = port_out(AddressType)
         self.read_data     = port_in(DataType)
+
+
+class addr_data(v_record):
+    def __init__(self, DataType = v_slv(32) , AddressType = v_slv(32)):
+        super().__init__()
+        self.address  = v_copy(AddressType)
+        self.data     = v_copy(DataType)
+    
+    def reset(self):
+        self.address.reset()
+        self.data.reset()
+
+
+class ram_handle_master(v_class_master):
+    def __init__(self, RamHandler):
+        super().__init__()
+        self.tx = variable_port_Master(RamHandler)
+        RamHandler << self.tx
+        self.addr  = v_variable(v_list(self.tx.read_address, 3))
+        self.buff = small_buffer(addr_data())
+        self.c_data = v_variable(addr_data())
+        self.data_requested = v_variable(v_sl())
+
+    def _onPull(self):
+        self.tx.write_enable << 0
+        for xasdsadads in range(len(self.addr) - 1):
+            self.addr[xasdsadads] << self.addr[xasdsadads+1]
+
+        self.addr[2] << 0
+        self.c_data.address << self.addr[0]
+        self.c_data.data << self.tx.read_data
+        self.buff << self.c_data
+        self.data_requested << 0
+
+    def _onPush(self):
+        if self.data_requested == 0:
+            self.addr[2] << self.addr[1] + 1
+        
+        if self.addr[2] > 9:
+            self.addr[2] << 0
+        self.tx.read_address << self.addr[2]
+
+    def ready_to_send(self):
+        return self.tx.write_enable == 0
+
+    def send_data(self, adr, data):
+        self.tx.write_enable   << 1
+        self.tx.Write_address  << adr
+        self.tx.Write_Data     << data
+        self.buff.reset()
+
+    def request_data(self, adr, data):
+        data.reset()
+        self.buff.re_read()
+        for asdadads in range(10):
+            if self.buff.isReceivingData():
+                self.buff >> self.c_data
+                if self.c_data.address == adr:
+                    data << self.c_data.data
+                    return
+
+        for addr_in_q in self.addr:
+            if addr_in_q == adr:
+                return
+
+
+        self.addr[2]  << adr
+        self.data_requested << 1
+        
 
 
 class ram_block(v_entity):
@@ -97,13 +186,13 @@ class ram_block(v_entity):
              
 
             if self.DataIO.write_enable:
-                mem[self.DataIO.Write_address] <= self.DataIO.Write_Data
+                mem[self.DataIO.Write_address] << self.DataIO.Write_Data
         
             self.DataIO.read_data << mem[self.DataIO.read_address]
 
         end_architecture()
 
-class tb(v_entity):
+class ramHandler_tb(v_entity):
     def __init__(self):
         super().__init__()
         self.architecture()
@@ -113,43 +202,40 @@ class tb(v_entity):
         clkgen = v_create(clk_generator())
         ram    = v_create(ram_block())
         ram.clk << clkgen.clk
+        ram_master = ram_handle_master(ram.DataIO)
+        data = v_slv(32)
+        adr  = v_slv(32)
+        
+        data_out =  v_slv(32)
+        addr_out  = v_slv(32)
+        data_out_opt = optional_t(v_slv(32))
 
-        data = v_slv(32,1000)
-        adsdata = v_slv(32,1000)
-        m_counter  = v_slv(32,5)
-        s_counter =  v_variable( v_slv(32,5))
-        s_mem = small_buffer()
-        opt_data = optional_t()
         @rising_edge(clkgen.clk)
         def proc():
-            m_counter << m_counter + 1 
-            m_counter >> s_counter
-            if m_counter > 15 and s_mem:
-                data << data + 1
-                s_mem.send_data(data)
-                s_mem << data
-            
-            opt_data << m_counter
-            if m_counter > 20:
-                m_counter << 0
-                for index in range( len(s_mem) ):
-                    s_mem.read_data(opt_data)
-                    s_mem >> opt_data
-                    if opt_data:
-                    
-                        opt_data.get_data(adsdata)
-                        s_counter << s_counter + 1
-           
+            data << data + 10 
+            adr << adr + 1
+            if ram_master.ready_to_send() and adr < 10:
+                ram_master.send_data(adr,data)
 
+            if adr > 10:
+                ram_master.request_data(addr_out, data_out)
+                ram_master.request_data(addr_out, data_out_opt)
+                if data_out_opt:
+                    print(value(addr_out), value(data_out_opt.data),value(data_out))
+                    addr_out << addr_out + 1
+
+
+            if addr_out > 8:
+                addr_out << 0
+            
         end_architecture()
 
 
 
-#run_simulation(tb1, 30000,"ram_tb.vcd")
-#convert_to_hdl(tb1,"tests")
 
+#@do_simulation
 @vhdl_conversion
-def RamHandler_2vhdl(OutputPath):
+def RamHandler_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(tb())
+    tb1 = v_create(ramHandler_tb())
     return tb1

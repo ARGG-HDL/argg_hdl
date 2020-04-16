@@ -18,9 +18,11 @@ class v_package_converter(hdl_converter_base):
 
 
     def includes(self, obj, name,parent):
+        #print(obj.PackageName)
         bufffer  = ""
         for t  in obj.PackageContent:
             t = to_v_object(t)
+            bufffer += t.__hdl_converter__.includes(t,"",obj)
             dep_list = t.__hdl_converter__.get_dependency_objects(t,[])
             for y in dep_list:
                 bufffer += y.__hdl_converter__.includes(y,"",obj)

@@ -8,6 +8,20 @@ class v_record_converter(v_class_converter):
     def __init__(self):
         super().__init__()
 
+
+
+    def append_reset(self, obj):
+        self.MemfunctionCalls.append({
+            "name" : "reset",
+            "args": [obj],
+            "self" :obj,
+            "call_func" : call_func_record_reset,
+            "func_args" : None,
+            "setDefault" : False
+
+        })
+
+
     def make_connection(self, obj, name, parent):
         obj.pull = obj.__hdl_converter__.getConnecting_procedure_record(obj, "pull")
         obj.push = obj.__hdl_converter__.getConnecting_procedure_record(obj, "push")
@@ -54,14 +68,17 @@ class v_record_converter(v_class_converter):
     
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
         return rhs.__hdl_converter__._vhdl__reasign(rhs,obj,astParser,context_str)
+    
 
-
+        
 
 class v_record(v_class):
     def __init__(self, Name=None, varSigConst=None):
         super().__init__(Name, varSigConst)
         self.__hdl_converter__ = v_record_converter()
         self.__v_classType__ = v_classType_t.Record_t
+        self.__hdl_converter__.append_reset(self)
+ 
 
 
     def getType(self, Inout=None, varSigType=None):
@@ -91,3 +108,12 @@ class v_record(v_class):
         members = self.getMember()
         for x in members:
             x["symbol"].setInout(Inout)
+
+
+def call_func_record_reset(obj, name, args, astParser=None,func_args=None):
+    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
+    val = args[0].get_type()+"_null"
+    
+    ret =  str(args[0])  + asOp + val
+    args[0]._add_output()
+    return ret

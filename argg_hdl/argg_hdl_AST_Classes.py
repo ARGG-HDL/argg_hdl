@@ -414,15 +414,21 @@ class v_return (v_ast_base):
         self.value = Value
 
     def __str__(self):
+        if self.value is None:
+            return "return"
         return "return "  + str(self.value) 
     
     def get_type(self):
+        if self.value is None:
+            return "None"
         ty =  self.value.get_type()
         if "std_logic_vector" in ty:
             return "std_logic_vector"
         return ty
 
 def body_unfold_return(astParser,Node):
+    if Node.value is None: #procedure 
+        return v_return(None)
     return v_return(astParser.Unfold_body(Node.value) )
 
 class v_compare(v_ast_base):

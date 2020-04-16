@@ -207,7 +207,7 @@ class xgenAST:
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())
 
-        self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave", "v_class_trans"]))
+        self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave", "v_class_trans","v_record"]))
         self.ast_v_Entities = list(get_subclasses(self.tree.body,['v_entity']))
         self.ast_v_Entities.extend( list(get_subclasses(self.tree.body,['v_clk_entity'])))
     
@@ -455,8 +455,8 @@ class xgenAST:
          
             actual_function_name = ClassInstance.__hdl_converter__.function_name_modifier(ClassInstance, funcDef.name, varSigSuffix)
 
-
-            if "return" in bodystr:
+            #print(actual_function_name, body.get_type(), type(body.get_type()).__name__)
+            if body.get_type() is not None:
                 ArglistProcedure = ArglistProcedure.replace(" in "," ").replace(" out "," ").replace(" inout "," ")
                 ret = v_function(
                     name=actual_function_name, 
@@ -657,6 +657,7 @@ class xgenAST:
         try:
             print_cnvt(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.__hdl_converter__.MemfunctionCalls)) +'">')
             gTemplateIndent.inc()
+            #print(type(ClassInstance).__name__)
             self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
             gTemplateIndent.deinc()
             print_cnvt(str(gTemplateIndent)+'</processing>')   
@@ -673,6 +674,7 @@ class xgenAST:
             gTemplateIndent.deinc
 
         try:
+            #print(type(ClassInstance).__name__)
             fun_ret += self.extractFunctionsForClass2( ClassInstance,cl.body,ClassInstance_local,parent)
         except Exception as inst:
             err_msg = argg_hdl_error(

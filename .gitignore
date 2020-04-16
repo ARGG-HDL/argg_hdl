@@ -112,3 +112,4 @@ dmypy.json
 /.vscode/
 /.idea/
 *temp*
+/.vs/
