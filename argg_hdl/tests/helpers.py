@@ -35,9 +35,10 @@ def isSame(dcmp,message="\n\n====================\n"):
         ret = False
         message += "Missing files "+ str(dcmp.right_only) +"\n"
     
-    if dcmp.left_only:
+    left_only_filter = [x for x in dcmp.left_only if x != ".gitignore"]
+    if left_only_filter:
         ret = False
-        message += "Additional files "+ str(dcmp.left_only) +"\n"
+        message += "Additional files "+ str(left_only_filter) +"\n"
 
 
     if dcmp.diff_files:
@@ -58,6 +59,10 @@ def mkdir_if_not_exist(path):
     except:
         pass
 
+def create_git_ignoreFile_for_folder(FolderName):
+    with open(FolderName+".gitignore","w") as f:
+        f.write("*")
+    
 def vhdl_conversion(func):
     def wrap(OutputPath):
         g_global_reset()
@@ -65,7 +70,8 @@ def vhdl_conversion(func):
         mkdir_if_not_exist(OutputPath+"/output")
         mkdir_if_not_exist(OutputPath+"/reference")
         mkdir_if_not_exist(OutputPath+"/temp")
-
+        
+        create_git_ignoreFile_for_folder(OutputPath+ "/output/")
         print_cnvt_set_file(OutputPath+ "/output/"+"/printout.txt")
         tb = func(OutputPath)
         convert_to_hdl(tb, OutputPath+ "/output")
@@ -82,7 +88,8 @@ def do_simulation(func):
         mkdir_if_not_exist(OutputPath+"/output")
         mkdir_if_not_exist(OutputPath+"/reference")
         mkdir_if_not_exist(OutputPath+"/temp")
-
+        
+        create_git_ignoreFile_for_folder(OutputPath+ "/output/")
         g_global_reset()
         with open(OutputPath+"/output"+"/data.txt","w") as f:
             g_globals["file"] = f

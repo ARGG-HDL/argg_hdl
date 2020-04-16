@@ -71,8 +71,8 @@ procedure pull (self :  inout  ram_handle_master;  signal tx :  in  ram_handler_
 
 -- End Connecting
     self.tx.write_enable := '0';
-  for i8 in 0 to self.addr'length - 1 -1 loop 
-      self.addr(i8) := self.addr(i8 + 1);
+  for i14 in 0 to self.addr'length - 1 -1 loop 
+      self.addr(i14) := self.addr(i14 + 1);
     end loop;
   self.addr(2) :=  (others => '0');
   self.c_data.address := self.addr(0);
@@ -149,7 +149,7 @@ procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  
   begin 
  data <= (others => '0');
   re_read_0(self => self.buff);
-  for i6 in 0 to 10 -1 loop 
+  for i10 in 0 to 10 -1 loop 
       
       if (isReceivingData_0(self => self.buff)) then 
         get_value_00_rshift(self => self.buff, rhs => self.c_data);
@@ -159,6 +159,13 @@ procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  
           return;
           
         end if;
+        
+      end if;
+    end loop;
+  for i11 in 0 to 3 -1 loop 
+      
+      if (self.addr(i11) = adr) then 
+        return;
         
       end if;
     end loop;
@@ -172,7 +179,7 @@ procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  
   begin 
  reset_0(self => data);
   re_read_0(self => self.buff);
-  for i7 in 0 to 10 -1 loop 
+  for i12 in 0 to 10 -1 loop 
       
       if (isReceivingData_0(self => self.buff)) then 
         get_value_00_rshift(self => self.buff, rhs => self.c_data);
@@ -182,6 +189,13 @@ procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  
           return;
           
         end if;
+        
+      end if;
+    end loop;
+  for i13 in 0 to 3 -1 loop 
+      
+      if (self.addr(i13) = adr) then 
+        return;
         
       end if;
     end loop;
