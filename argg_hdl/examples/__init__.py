@@ -9,6 +9,7 @@ from argg_hdl.examples import rollingCounter as r_counter
 from argg_hdl.examples import system_globals  as sys_globals
 from argg_hdl.examples import axi_stream_delay  as ax_s_delay
 from argg_hdl.examples import optional_t as opt_t
+from argg_hdl.examples import small_buffer as sb
 
 ## argg_hdl.examples.axiStream
 axisStream = ax.axisStream
@@ -47,3 +48,6 @@ stream_delay_one = ax_s_delay.stream_delay_one
 
 #optional_t
 optional_t = opt_t.optional_t
+
+
+small_buffer = sb.small_buffer
