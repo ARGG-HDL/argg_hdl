@@ -1,7 +1,7 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
 
-from .helpers import Folders_isSame, vhdl_conversion, do_simulation
+from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
 #tb3 = InputDelay_tb()
 #convert_to_hdl(tb3, "pyhdl_waveform")
 
@@ -221,7 +221,7 @@ class ramHandler_tb(v_entity):
                 ram_master.request_data(addr_out, data_out)
                 ram_master.request_data(addr_out, data_out_opt)
                 if data_out_opt:
-                    print(value(addr_out), value(data_out_opt.data),value(data_out))
+                    printf( str(value(addr_out)) +", " +str(value(data_out_opt.data)) + ", " + str(value(data_out)) +"\n" )
                     addr_out << addr_out + 1
 
 
@@ -233,7 +233,12 @@ class ramHandler_tb(v_entity):
 
 
 
-#@do_simulation
+@do_simulation
+def RamHandler_sim(OutputPath, f= None):
+    
+    tb1 = v_create(ramHandler_tb())
+    return tb1
+
 @vhdl_conversion
 def RamHandler_2vhdl(OutputPath, f= None):
     

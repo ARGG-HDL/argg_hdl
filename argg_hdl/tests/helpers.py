@@ -4,6 +4,16 @@ import shutil
 
 from argg_hdl import *
 
+
+
+g_globals = {
+    "file" : None
+}
+def printf(out_str):
+    if g_globals["file"]:
+        g_globals["file"].write(out_str)
+
+
 def compare_folders(FolderA,FolderB):
     dcmp = dircmp(FolderA, FolderB) 
     return dcmp
@@ -75,8 +85,11 @@ def do_simulation(func):
 
         g_global_reset()
         with open(OutputPath+"/output"+"/data.txt","w") as f:
+            g_globals["file"] = f
             tb = func(OutputPath,f)
             run_simulation(tb, 3000,OutputPath+"/temp/"+"data.vcd")
+        
+        g_globals["file"] = None
         
         return Folders_isSame(OutputPath+"/output", OutputPath+'/reference') 
 

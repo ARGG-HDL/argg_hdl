@@ -106,3 +106,4 @@ v_record = ah_rec.v_record
 def g_global_reset():
     ahb.g_global_reset()
     ah_symbol.v_symbol_reset()
+    ah_simulation.Simulation_reset()

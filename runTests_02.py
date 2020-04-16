@@ -15,24 +15,6 @@ import argg_hdl.tests.RamHandler as RamHandler
 
 
 class TestStringMethods(unittest.TestCase):
-
-    def test_clk_generator(self):
-        result, message = core_t.clk_generator_test("tests/example1/")
-        self.assertTrue(result,message)
-        
-
-    def test_clk_generator_sim(self):
-        result, message = core_t.clk_generator_test_sim("tests/example2/")
-        self.assertTrue(result,message)
-
-    def test_InputDelay_sim(self):
-        result, message = ex1.InputDelay_sim("tests/ex1/")
-        self.assertTrue(result,message)
-
-    def test_InputDelay2vhdl(self):
-        result, message = ex1.InputDelay2vhdl("tests/ex1_vhdl/")
-        self.assertTrue(result,message)
-
     def test_RamHandler_sim(self):
         result, message = RamHandler.RamHandler_sim("tests/RamHandler_sim/")
         self.assertTrue(result,message)
@@ -41,7 +23,9 @@ class TestStringMethods(unittest.TestCase):
     def test_RamHandler2VHDL(self):
         result, message = RamHandler.RamHandler_2vhdl("tests/RamHandler/")
         self.assertTrue(result,message)
+    
 
+    
 
 if __name__ == '__main__':
     remove_old_files()

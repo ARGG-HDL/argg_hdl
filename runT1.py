@@ -3,4 +3,4 @@ from argg_hdl.tests.helpers  import remove_old_files
 
 
 remove_old_files()
-RamHandler.RamHandler_2vhdl("tests/RamHandler")
+RamHandler.RamHandler_sim("tests/RamHandler")

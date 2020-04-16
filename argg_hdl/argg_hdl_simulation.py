@@ -117,6 +117,10 @@ class v_simulation():
 
 gsimulation = v_simulation()
 
+
+def Simulation_reset():
+    gsimulation.reset()
+
 def run_simulation(testBench, time, outputFile):
     gsimulation.run_timed(testBench, time,outputFile)
     gsimulation.reset()
