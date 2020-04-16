@@ -160,8 +160,8 @@ class ram_handle_master(v_class_master):
                     data << self.c_data.data
                     return
 
-        for addr_in_q in self.addr:
-            if addr_in_q == adr:
+        for asdas in range(3):
+            if self.addr[asdas] == adr:
                 return
 
 
