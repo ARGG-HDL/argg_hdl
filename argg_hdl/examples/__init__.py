@@ -11,6 +11,10 @@ from argg_hdl.examples import axi_stream_delay  as ax_s_delay
 from argg_hdl.examples import optional_t as opt_t
 from argg_hdl.examples import small_buffer as sb
 
+from argg_hdl.examples import axi_fifo as ax_fifo
+
+from argg_hdl.examples import axiPrint as axiPrint
+
 ## argg_hdl.examples.axiStream
 axisStream = ax.axisStream
 axisStream_slave = ax.axisStream_slave
@@ -51,3 +55,7 @@ optional_t = opt_t.optional_t
 
 
 small_buffer = sb.small_buffer
+
+axiFifo = ax_fifo.axiFifo
+
+axiPrint = axiPrint.axiPrint

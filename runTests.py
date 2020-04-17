@@ -11,10 +11,11 @@ from argg_hdl.tests.helpers  import remove_old_files
 import argg_hdl.tests.core_tests as core_t
 import argg_hdl.tests.ex1 as ex1
 import argg_hdl.tests.RamHandler as RamHandler
+import argg_hdl.tests.test_axi_fifo as test_axi_fifo
 
 
 
-class TestStringMethods(unittest.TestCase):
+class TestCoreExamples(unittest.TestCase):
 
     def test_clk_generator(self):
         result, message = core_t.clk_generator_test("tests/example1/")
@@ -42,6 +43,15 @@ class TestStringMethods(unittest.TestCase):
         result, message = RamHandler.RamHandler_2vhdl("tests/RamHandler/")
         self.assertTrue(result,message)
 
+
+
+    def test_axi_fifo_sim(self):
+        result, message = test_axi_fifo.test_bench_axi_fifo_sim("tests/axi_fifo_sim/")
+        self.assertTrue(result,message)
+    
+    def test_axi_fifo_2vhdl(self):
+        result, message = test_axi_fifo.test_bench_axi_fifo_2vhdl("tests/axi_fifo/")
+        self.assertTrue(result,message)       
 
 if __name__ == '__main__':
     remove_old_files()

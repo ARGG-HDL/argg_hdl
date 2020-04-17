@@ -10,8 +10,8 @@ from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.examples.axiStream import *
 from argg_hdl.argg_hdl_v_entity import *
 from argg_hdl.argg_hdl_v_list import *
-from argg_hdl.argg_hdl_simulation import *
 
+from argg_hdl.tests.helpers import *
 
 class axiPrint(v_clk_entity):
     def __init__(self,clk=None):
@@ -30,4 +30,4 @@ class axiPrint(v_clk_entity):
             
             if axiSalve :
                 i_buff << axiSalve
-                print("axiPrint valid",value(i_buff) )
+                printf("axiPrint valid: "+str(value(i_buff)) )
