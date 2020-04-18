@@ -47,10 +47,11 @@ class ram_handle_master(v_class_master):
             self.addr[xasdsadads] << self.addr[xasdsadads+1]
 
         self.addr[2] << 0
+        self.data_requested << 0
+        
         self.c_data.address << self.addr[0]
         self.c_data.data << self.tx.read_data
         self.buff << self.c_data
-        self.data_requested << 0
 
     def _onPush(self):
         if self.data_requested == 0:

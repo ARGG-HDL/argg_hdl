@@ -75,10 +75,10 @@ procedure pull (self :  inout  ram_handle_master;  signal tx :  in  ram_handler_
       self.addr(i14) := self.addr(i14 + 1);
     end loop;
   self.addr(2) :=  (others => '0');
+  self.data_requested := '0';
   self.c_data.address := self.addr(0);
   self.c_data.data := self.tx.read_data;
   set_value_00_lshift(self => self.buff, rhs => self.c_data);
-  self.data_requested := '0';
   
              
 end procedure;
