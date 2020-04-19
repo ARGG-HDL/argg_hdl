@@ -6,7 +6,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.argg_hdl_v_class import *
 from argg_hdl.argg_hdl_v_class_trans import *
-
+from argg_hdl.argg_hdl_master_slave import *
 
 class axisStream_converter(v_class_trans_converter):
     def __init__(self):
@@ -53,7 +53,7 @@ class axisStream(v_class_trans):
     def get_slave(self):
         return axisStream_slave(self)
 
-class axisStream_slave_converter(v_class_converter):
+class axisStream_slave_converter(v_class_slave_converter):
     def __init__(self):
         super().__init__()
 
@@ -201,7 +201,7 @@ class axisStream_slave(v_class_slave):
         
 
 
-class axisStream_master_converter(v_class_converter):
+class axisStream_master_converter(v_class_master_converter):
     def __init__(self):
         super().__init__()
 

@@ -16,6 +16,9 @@ import argg_hdl.argg_hdl_v_Package  as ah_v_package
 import argg_hdl.argg_hdl_v_class_trans as v_class_trans_m
 
 import argg_hdl.argg_hdl_v_record as ah_rec
+
+import argg_hdl.argg_hdl_master_slave as ah_ms
+
 ## argg_hdl_base
 base0                 = ahb.argg_hdl_base0
 base                  = ahb.argg_hdl_base
@@ -78,11 +81,11 @@ v_entity_list = ah_entity_list.v_entity_list
 
 ## argg_hdl_v_class
 v_class = ah_v_class.v_class
-get_master = ah_v_class.get_master
-get_salve = ah_v_class.get_salve
-get_handle =  ah_v_class.get_handle
-v_class_master  = ah_v_class.v_class_master
-v_class_slave  = ah_v_class.v_class_slave
+get_master = ah_ms.get_master
+get_salve = ah_ms.get_salve
+get_handle =  ah_ms.get_handle
+v_class_master  = ah_ms.v_class_master
+v_class_slave  = ah_ms.v_class_slave
 
 ## argg_hdl.argg_hdl_simulation 
 #gsimulation = ah_simulation.gsimulation

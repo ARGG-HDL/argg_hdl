@@ -175,20 +175,8 @@ class v_class_converter(hdl_converter_base):
         return ret
 
     def make_connection(self, obj, name, parent):
-          
+        pass
         
-
-            
-        if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
-   
-            obj.pull       =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "pull")
-            obj.push       =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "push")
-
-            if obj.__vectorPull__:
-                obj.vpull       =  obj.__hdl_converter__.getConnecting_procedure_vector(obj, InOut_t.input_t , "pull",procedureName="pull")
-            if obj.__vectorPush__:
-                obj.vpush       =  obj.__hdl_converter__.getConnecting_procedure_vector(obj, InOut_t.output_t, "push",procedureName="push")
-
 
 
 
@@ -295,6 +283,7 @@ class v_class_converter(hdl_converter_base):
         end  = "------- End Psuedo Class " +obj.getName() +" -------------------------\n  "
         end += "-------------------------------------------------------------------------\n\n\n"
   
+        
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
             if issubclass(type(t),argg_hdl_base):
@@ -1120,37 +1109,3 @@ class v_class(argg_hdl_base):
         for x in mem:
             x["symbol"]._remove_drivers()
 
-class v_class_master(v_class):
-
-    def __init__(self,Name=None,varSigConst=None):
-        super().__init__(Name,varSigConst)
-        self.__vectorPush__   = True
-        self.__vectorPull__   = True
-        self.__v_classType__  = v_classType_t.Master_t
-        self._varSigConst       = varSig.combined_t
-
-
-class v_class_slave(v_class):
-
-    def __init__(self,Name=None,varSigConst=None):
-        super().__init__(Name,varSigConst)
-        self.__vectorPush__   = True
-        self.__vectorPull__   = True
-        self.__v_classType__  = v_classType_t.Slave_t
-        self._varSigConst       = varSig.combined_t
-
-
-def get_master(transObj):
-    return transObj.get_master()
-
-def get_salve(transObj):
-    return transObj.get_slave()
-
-def get_handle(transObj):
-    if transObj._Inout == InOut_t.Slave_t:
-        return get_salve(transObj)
-    
-    if transObj._Inout  == InOut_t.Master_t:
-        return get_master(transObj)
-    
-    raise Exception("Unable to determint requiered handle")
