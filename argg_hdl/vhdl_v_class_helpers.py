@@ -23,6 +23,16 @@ def if_true_get_first(predicate, Option_list):
         return Option_list[0]
     return  Option_list[1]
 
+def append_hdl_name(name, suffix):
+    ret = ""    
+    name_sp = str(name).split("(")
+    if len(name_sp) == 2:
+        ret = name_sp[0]+suffix+"("+ name_sp[1]
+    else:
+        ret = name_sp[0]+suffix
+    
+    return ret
+    
 class vhdl__Pull_Push():
     def __init__(self,obj, inout):
         self.obj = obj

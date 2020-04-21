@@ -166,8 +166,15 @@ gStatus = {
     "isPrimaryConnection" : True,
     "MakeGraph"           : True,
     "saveUnfinishFiles"   : False,
-    "OutputFile"          : None
+    "OutputFile"          : None,
+    "isFunction"          : False
 }
+
+def isFunction():
+    return gStatus["isFunction"]
+    
+def set_isFunction(newState):
+    gStatus["isFunction"]  =   newState
 
 def isConverting2VHDL():
     return gStatus["isConverting2VHDL"]
@@ -508,7 +515,7 @@ class hdl_converter_base:
         raise Exception("Not implemented")
 
     
-    def _vhdl__compare(self,obj, ops, rhs):
+    def _vhdl__compare(self,obj, ops, rhs, astParser =None):
         return str(obj) + " " + obj.__hdl_converter__.ops2str(ops)+" " + str(rhs)
 
     def _vhdl__add(self,obj,args):
@@ -532,6 +539,8 @@ class hdl_converter_base:
         return name + varSigSuffix
 
     def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
+
+        astParser.add_read(obj)
         obj._add_input()
         return obj
 
@@ -696,7 +705,7 @@ class hdl_converter_base:
     def length(self,obj):
         return "length(" +str(obj)+")"
 
-    def to_arglist(self,obj, name,parent,withDefault = False):
+    def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
         raise Exception("not implemented for class: ", type(obj).__name__)
 
     def get_inout_type_recursive(self, obj):
@@ -929,7 +938,39 @@ def get_varSig(varSigConst):
     raise Exception("unknown type")
 
 
+def Inout_add_input(Inout=InOut_t.Internal_t):
+    ret = Inout
+    if ret is None:
+        ret = InOut_t.input_t
+    elif ret == InOut_t.Internal_t:
+        ret = InOut_t.input_t
+    elif ret == InOut_t.output_t:
+        ret = InOut_t.InOut_tt
+    elif ret == InOut_t.Used_t:
+        ret = InOut_t.input_t
+    return ret
 
+def Inout_add_output(Inout=InOut_t.Internal_t):
+    ret = Inout
+    if ret is None:
+        ret = InOut_t.output_t
+    elif ret == InOut_t.Internal_t:
+        ret = InOut_t.output_t
+    elif ret == InOut_t.input_t:
+        ret = InOut_t.InOut_tt
+    elif ret == InOut_t.Used_t:
+        ret = InOut_t.output_t
+    return ret
+
+def Inout_add_used(self=InOut_t.Internal_t):
+    ret = Inout
+    if ret is None:
+        ret = InOut_t.Used_t
+    elif ret == InOut_t.Internal_t:
+        ret = InOut_t.Used_t
+    elif ret == InOut_t.Unset_t:
+        ret = InOut_t.Used_t
+    return ret
 
 
 def InoutFlip(inOut):

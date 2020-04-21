@@ -81,6 +81,7 @@ class v_symbol_converter(hdl_converter_base):
         return name + " : " + obj._type   
 
     def _vhdl_slice(self,obj,sl,astParser=None):
+        astParser.add_read(obj)
         obj._add_input()
         if "std_logic_vector" in obj._type:
             ret = v_sl(obj._Inout)
@@ -104,9 +105,11 @@ class v_symbol_converter(hdl_converter_base):
     def _vhdl__compare_std_logic_vector(self,obj, ops, rhs):
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
 
-    def _vhdl__compare(self,obj, ops, rhs):
+    def _vhdl__compare(self,obj, ops, rhs, astParser):
+        astParser.add_read(obj)
         obj._add_input()
         if issubclass(type(rhs),argg_hdl_base):
+            astParser.add_read(rhs)
             rhs._add_input()
     
         if obj._type == "integer":
@@ -122,6 +125,7 @@ class v_symbol_converter(hdl_converter_base):
 
     def _to_hdl___bool__(self,obj, astParser):
         obj._add_input()
+        astParser.add_read(obj)
         if obj._type == "std_logic":
             return str(obj) + " = '1'"
         if "std_logic_vector" in obj._type:
@@ -194,6 +198,15 @@ class v_symbol_converter(hdl_converter_base):
                 src = str(rhs.value),
                 asOp=asOp
             )
+
+        rhs_str = str(rhs)
+        if rhs_str.isnumeric():
+            return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
+                dest=target,
+                src = rhs_str,
+                asOp=asOp
+            )
+
         return target + asOp+  str(rhs) 
 
     def _vhdl__reasign_int(self, obj, rhs, target, astParser=None,context_str=None):
@@ -205,6 +218,8 @@ class v_symbol_converter(hdl_converter_base):
         return target +asOp +  str(rhs)
 
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
+        if astParser:
+            astParser.add_write(obj)
         obj._add_output()
         target = str(obj)
         if obj._varSigConst == varSig.signal_t and not (context_str and (context_str == "archetecture" or context_str== "process")):
@@ -238,6 +253,8 @@ class v_symbol_converter(hdl_converter_base):
         return ret
 
     def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
+        if astParser:
+            astParser.add_read(obj)
         obj._add_input()
         if ReturnToObj == "integer" and  "std_logic_vector" in obj._type:
             return  "to_integer(signed( " + str(obj)  + "))"
@@ -252,7 +269,7 @@ class v_symbol_converter(hdl_converter_base):
         ret.__hdl_name__=str(obj)+"'length"
         return ret
 
-    def to_arglist(self,obj, name,parent,withDefault = False):
+    def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
         inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
         varSigstr = ""
         if obj._varSigConst == varSig.signal_t:
@@ -542,6 +559,8 @@ class v_symbol(argg_hdl_base):
     def __lshift__(self, rhs):
         if gsimulation.isRunning():
             self._Connect_running(rhs)
+        elif isFunction():
+            pass
         else:
             self._Conect_Not_running(rhs)
             
@@ -660,4 +679,5 @@ def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
         raise Exception("unable to reset symbol")
     ret =  str(args[0])  + asOp + val
     args[0]._add_output()
+    astParser.add_write(args[0])
     return ret

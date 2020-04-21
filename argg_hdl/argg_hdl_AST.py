@@ -130,6 +130,7 @@ class xgenAST:
         self.FuncArgs = list()
         self.LocalVar = list()
         self.varScope = list()
+        self.Function_obj_used_list=list()
         self.Missing_template = False
         self.Archetecture_vars = list()
         self.ContextName = list()
@@ -275,6 +276,50 @@ class xgenAST:
         self.FuncArgs = list()
         self.LocalVar = list()
         self.Archetecture_vars =[]
+        self.Function_obj_used_list = []
+
+    def find_in_Function_obj_used_list(self,obj):
+        for x in self.Function_obj_used_list:
+            if x["symbol"] is obj:
+                return x
+
+        return None
+    def add_child(self,parent, obj):
+        
+        x = self.find_in_Function_obj_used_list(obj)
+        if x is not None:
+            x["parent"] = parent
+            return
+
+        self.Function_obj_used_list.append({
+            "symbol"    : obj,
+            "parent"    : parent,
+            "readWrite" : None
+        })
+
+    def add_read(self, obj):
+        x = self.find_in_Function_obj_used_list(obj)
+        if x is not None:
+            x["readWrite"] = Inout_add_input(x["readWrite"])
+            return
+
+        self.Function_obj_used_list.append({
+            "symbol"    : obj,
+            "parent"    : None,
+            "readWrite" : Inout_add_input()
+        })
+
+    def add_write(self, obj):
+        x = self.find_in_Function_obj_used_list(obj)
+        if x is not None:
+            x["readWrite"] = Inout_add_output(x["readWrite"])
+            return
+
+        self.Function_obj_used_list.append({
+            "symbol"    : obj,
+            "parent"    : None,
+            "readWrite" : Inout_add_output()
+        })
 
     def extractArchetectureForEntity(self, ClassInstance, parent):
         setDefaultVarSig(varSig.signal_t)
@@ -449,7 +494,14 @@ class xgenAST:
                 raise Exception(err_msg,ClassInstance,inst)
 
             #print_cnvt("----------" , funcDef.name)
-            argList = [x["symbol"].__hdl_converter__.to_arglist(x["symbol"], x['name'],ClassName, withDefault = setDefault and  (x["name"] != "self")) for x in FuncArgsLocal]
+            argList = [x["symbol"].__hdl_converter__.to_arglist(
+                    x["symbol"], 
+                    x['name'],
+                    ClassName, 
+                    withDefault = setDefault and  (x["name"] != "self"),
+                    astParser=self
+                ) 
+                for x in FuncArgsLocal]
             ArglistProcedure = join_str(argList,Delimeter="; ")
             
 

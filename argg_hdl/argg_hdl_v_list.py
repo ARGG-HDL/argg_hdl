@@ -200,7 +200,7 @@ end {objType}_pack;
             )
         return ret
         
-    def to_arglist(self,obj, name,parent,withDefault = False):
+    def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
         return name +" : " + obj.__hdl_converter__.InOut_t2str(obj)+"  " +obj.get_type()
 
 

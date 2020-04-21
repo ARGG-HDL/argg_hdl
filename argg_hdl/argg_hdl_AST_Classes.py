@@ -432,14 +432,15 @@ def body_unfold_return(astParser,Node):
     return v_return(astParser.Unfold_body(Node.value) )
 
 class v_compare(v_ast_base):
-    def __init__(self,lhs,ops,rhs):
+    def __init__(self,lhs,ops,rhs,astParser):
         self.lhs = lhs
         self.rhs = rhs
         self.ops = ops
+        self.astParser =astParser
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops, self.rhs)
+            return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops, self.rhs, self.astParser)
         
         return  str(self.lhs)  + " = " +   str(self.rhs) 
 
@@ -457,20 +458,40 @@ class v_compare(v_ast_base):
             return obj.__hdl_converter__._vhdl__compare(obj, rhs)
 
         if self.lhs._issubclass_("v_class"):
-            return self.lhs.__hdl_converter__._vhdl__compare(self.lhs,self.ops, self.rhs)
+            return self.lhs.__hdl_converter__._vhdl__compare(
+                    self.lhs,
+                    self.ops, 
+                    self.rhs,
+                    astParser
+                )
         
         if issubclass(type(self.lhs),v_symbol):
-            return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops ,self.rhs)
+            return self.lhs.__hdl_converter__._vhdl__compare(
+                    self.lhs, 
+                    self.ops ,
+                    self.rhs,
+                    astParser
+                )
 
         if issubclass(type(self.lhs),v_enum):
-            return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops ,self.rhs)
+            return self.lhs.__hdl_converter__._vhdl__compare(
+                    self.lhs, 
+                    self.ops ,
+                    self.rhs,
+                    astParser
+                )
         
         raise Exception("unknown type",type(self.lhs).__name__ )
 
 def body_unfold_Compare(astParser,Node):
     if len (Node.ops)>1:
         raise Exception("unexpected number of operators")
-    return v_compare( astParser.Unfold_body(Node.left),type(Node.ops[0]).__name__,  astParser.Unfold_body(Node.comparators[0] ) )
+    return v_compare( 
+            astParser.Unfold_body(Node.left),
+            type(Node.ops[0]).__name__,  
+            astParser.Unfold_body(Node.comparators[0]),
+            astParser
+        )
 
 class v_Attribute(v_ast_base):
     def __init__(self,Attribute,Obj):
@@ -502,14 +523,18 @@ def body_unfold_Attribute(astParser,Node):
 
     att.set_vhdl_name(n,True)
     att._add_used()
+    
+    astParser.add_child(obj, att)
+    
+
+
 #    att._Inout =  obj._Inout
-    astParser.FuncArgs.append(
-                    {
+    astParser.FuncArgs.append({
                     "name":att.__hdl_name__,
                     "symbol": att,
                     "ScopeType": obj._Inout
 
-                })
+        })
     return att
     
 class v_Num(v_ast_base):
@@ -720,13 +745,15 @@ def body_unfold_call(astParser,Node):
         for x in Node.args:
             args.append(astParser.Unfold_body(x))
         
+        gf_type = isFunction()
+        set_isFunction(True)
         if len(args) == 0:
             r = f()  # find out how to forward args 
         elif len(Node.args) == 1:
             r = f(args[0])  # find out how to forward args
         elif len(Node.args) == 2:
             r = f(args[0],args[1])  # find out how to forward args
-        
+        set_isFunction(gf_type)
 
         r = v_copy(to_v_object(r))
         vhdl = obj.__hdl_converter__._vhdl__call_member_func(obj, memFunc,[obj]+ args,astParser)

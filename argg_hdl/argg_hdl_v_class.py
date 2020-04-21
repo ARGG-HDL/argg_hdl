@@ -12,15 +12,7 @@ import  argg_hdl.vhdl_v_class_helpers as  vc_helper
 
 
 
-def append_hdl_name(name, suffix):
-    ret = ""    
-    name_sp = str(name).split("(")
-    if len(name_sp) == 2:
-        ret = name_sp[0]+suffix+"("+ name_sp[1]
-    else:
-        ret = name_sp[0]+suffix
-    
-    return ret
+
 
 class v_class_converter(hdl_converter_base):
     def __init__(self):
@@ -181,10 +173,6 @@ class v_class_converter(hdl_converter_base):
 
 
 
-    def getConnecting_procedure_vector(self,obj, InOut_Filter,PushPull,procedureName=None):
-        procedure_maker =  vc_helper.getConnecting_procedure_vector(obj, InOut_Filter,PushPull,procedureName)
-
-        return procedure_maker.get_procedure()
         
 
     def getBody_onPush(self, obj):
@@ -212,68 +200,6 @@ class v_class_converter(hdl_converter_base):
             
         return beforeConnecting, AfterConnecting, inout
 
-    def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None):
-        ClassName=None
-
-        beforeConnecting, AfterConnecting, inout = obj.__hdl_converter__.get_before_after_conection(
-            obj,
-            InOut_Filter, 
-            PushPull
-        )
-        
-        argumentList = obj.__hdl_converter__.getMemberArgs(
-            obj, 
-            InOut_Filter,
-            inout,
-            IncludeSelf = True,
-            PushPull=PushPull
-        )
-        
-        Connecting = obj.__hdl_converter__.getMemeber_Connect(
-            obj, 
-            InOut_Filter,
-            PushPull
-        )
-
-        internal_connections = obj.__hdl_converter__.getMember_InternalConnections(
-            obj, 
-            InOut_Filter,
-            PushPull
-        )
-
-        Connecting = join_str(
-            [Connecting, internal_connections],
-            LineEnding="\n",
-            LineBeginning="    " ,
-            IgnoreIfEmpty = True 
-        )
-
-        IsEmpty=  \
-            len(Connecting.strip()) == 0 \
-                and \
-            len(beforeConnecting.strip()) == 0 \
-                and  \
-            len(AfterConnecting.strip()) == 0
-
-        ret  = v_procedure(
-            name=procedureName, 
-            argumentList=argumentList , 
-            body='''
-    {beforeConnecting}
--- Start Connecting
-{Connecting}
--- End Connecting
-    {AfterConnecting}
-            '''.format(
-               beforeConnecting=beforeConnecting,
-               Connecting = Connecting,
-               AfterConnecting=AfterConnecting
-            ),
-            IsEmpty=IsEmpty,
-            isFreeFunction=True
-            )
-        
-        return ret
 
     def getBody(self,obj, name,parent):
         if issubclass(type(parent),v_class):
@@ -449,22 +375,7 @@ class v_class_converter(hdl_converter_base):
         
         return ret 
 
-    def getMember_InternalConnections(self,obj, InOut_Filter,PushPull):
-        ret = []
 
-        members = obj.__hdl_converter__.get_internal_connections(obj)
-        for x in members:
-            inout_local = vc_helper.InoutFlip_if(InOut_Filter, x["type"] == 'sig2var')
-            connector   = vc_helper.if_true_get_first(PushPull == "pull", [".","_"])
-            
-            sig =x["destination"]["symbol"].__hdl_converter__.extract_conversion_types(
-                x["destination"]["symbol"],
-                exclude_class_type= v_classType_t.transition_t,
-                filter_inout=inout_local
-            )
-            
-            ret.append(PushPull + "(" +obj.__hdl_name__+"."+x["destination"]["name"] +", "  +obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +")" )
-        return ret
 
 
     def getMemeber_Connect(self,obj, InOut_Filter,PushPull,PushPullPrefix=""):
@@ -584,11 +495,7 @@ class v_class_converter(hdl_converter_base):
 
         return ret
 
-    def get_NameMaster(self,obj):
-        return obj._type + "_master"
 
-    def get_NameSlave(self,obj):
-        return obj._type + "_slave"
 
 
     def get_NameMaster2Slave(self,obj):
@@ -607,57 +514,13 @@ class v_class_converter(hdl_converter_base):
 
 
 
-    def extract_conversion_types_Master_Slave_impl(self, obj, exclude_class_type=None,filter_inout=None,VarSig=None,Suffix=""):
-        ret = []
-        if VarSig == varSig.signal_t:
-            name = obj.__hdl_converter__.get_NameSignal(obj)
-        else:
-            name = obj._type
-        x = v_class(name, VarSig)
-        x.__v_classType__ = v_classType_t.Record_t
-        x.__vetoHDLConversion__  = True
-        x._Inout= obj._Inout
-        x.__writeRead__ = obj.__writeRead__
-        x.__hdl_name__ = append_hdl_name(str(obj.__hdl_name__),Suffix)
-        ys= obj.getMember(VaribleSignalFilter=VarSig)
-        if len(ys)>0:
-            for y in ys: 
-                setattr(x, y["name"], y["symbol"])
-            
-            ret.append({ "suffix":Suffix, "symbol": x})
-        return ret
 
-    def extract_conversion_types_Master_Slave(self, obj, exclude_class_type=None,filter_inout=None):
-        ret = []
-        ret += obj.__hdl_converter__.extract_conversion_types_Master_Slave_impl(
-            obj,
-            exclude_class_type,
-            filter_inout,
-            varSig.signal_t,
-            "_sig"
-        )
-        ret += obj.__hdl_converter__.extract_conversion_types_Master_Slave_impl(
-            obj, 
-            exclude_class_type,
-            filter_inout,
-            varSig.variable_t,
-            ""
-        )
-
-        return ret
 
     def extract_conversion_types(self, obj, exclude_class_type=None,filter_inout=None):
         ret =[]
 
-        if obj.__v_classType__ ==  v_classType_t.Master_t or obj.__v_classType__ ==  v_classType_t.Slave_t: 
-            ret = obj.__hdl_converter__.extract_conversion_types_Master_Slave(
-                obj, 
-                exclude_class_type,
-                filter_inout
-            )
-
-        else:
-            ret.append({ "suffix":"", "symbol": obj})
+        
+        ret.append({ "suffix":"", "symbol": obj})
 
         ret1 = [
             x for x in ret
@@ -668,32 +531,71 @@ class v_class_converter(hdl_converter_base):
 
         return ret1
 
-    def to_arglist(self,obj, name,parent,withDefault = False):
+
+    
+
+    def to_arglist_self(self,obj, name,parent,element, withDefault = False, astParser=None):
+        ret = []
+        inoutstr =  " in " # fixme 
+        varSignal = " Signal "
+
+        if element["symbol"]._varSigConst == varSig.variable_t:
+            inoutstr =  " inout " # fixme 
+            varSignal = ""
+
+        Default_str = ""
+        if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
+            Default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
+
+        ret.append(varSignal + name + element["suffix"] + " : " + inoutstr +" " +  element["symbol"].getType() +Default_str)
+        return ret
+
+    def to_arglist_signal(self,obj, name,parent,element, withDefault = False, astParser=None):
+        ret = []
+        if element["symbol"]._varSigConst != varSig.signal_t:
+            return ret
+
+
+
+        members = element["symbol"].getMember()
+        for m in members:
+            if m["symbol"].__writeRead__ == InOut_t.Internal_t:
+                continue
+            if m["symbol"].__writeRead__ == InOut_t.Used_t:
+                continue
+            ret.append(m["symbol"].__hdl_converter__.to_arglist(
+                    m["symbol"], 
+                    name + element["suffix"]+"_"+m["name"],
+                    None ,
+                    withDefault=withDefault,
+                    astParser=astParser
+                ))
+        
+        return ret
+
+    def to_arglist(self,obj, name,parent, withDefault = False, astParser=None):
         ret = []
         
         xs = obj.__hdl_converter__.extract_conversion_types(obj)
 
         for x in xs:
-            inoutstr = ""
-            varSignal = "signal "
-            if x["symbol"]._varSigConst == varSig.variable_t:
-                #x["symbol"].__hdl_converter__.get_inout_type_recursive( x["symbol"])
+            ret += self.to_arglist_self(
+                    obj, 
+                    name,
+                    parent,
+                    element=x, 
+                    withDefault = withDefault, 
+                    astParser=astParser
+                )
+            ret += self.to_arglist_signal(
+                    obj, 
+                    name,
+                    parent,
+                    element=x, 
+                    withDefault = withDefault, 
+                    astParser=astParser
+                )
 
-                #inoutstr =  x["symbol"].__hdl_converter__.InOut_t2str( x["symbol"])
-                inoutstr =  " inout " # fixme 
-                varSignal = ""
-            Default_str = ""
-            if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
-                Default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
-
-            ret.append(varSignal + name + x["suffix"] + " : " + inoutstr +" " +  x["symbol"].getType() +Default_str)
-
-            if x["symbol"]._varSigConst == varSig.signal_t:
-                members = x["symbol"].getMember()
-                for m in members:
-                    if m["symbol"].__writeRead__ == InOut_t.Internal_t:
-                        continue
-                    ret.append(m["symbol"].__hdl_converter__.to_arglist(m["symbol"], name + x["suffix"]+"_"+m["name"],None ,withDefault=withDefault))
 
         r =join_str(ret,Delimeter="; ",IgnoreIfEmpty=True)
         return r
@@ -787,10 +689,10 @@ class v_class(argg_hdl_base):
             Inout = InoutFlip(Inout)
 
         if Inout== InOut_t.input_t:
-            return append_hdl_name(str(self.__hdl_name__), "_s2m")
+            return vc_helper.append_hdl_name(str(self.__hdl_name__), "_s2m")
         
         if Inout== InOut_t.output_t:
-            return append_hdl_name(str(self.__hdl_name__), "_m2s")
+            return vc_helper.append_hdl_name(str(self.__hdl_name__), "_m2s")
         
         return None
 

@@ -2,7 +2,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 
-from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class, append_hdl_name
+from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class
 
 class v_record_converter(v_class_converter):
     def __init__(self):

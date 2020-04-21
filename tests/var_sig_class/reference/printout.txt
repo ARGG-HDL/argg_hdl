@@ -1,0 +1,38 @@
+<!--=======================-->
+  <Converting Index="1">
+    <package_conversion name="var_sig_tb">
+      <status ="sucess">
+    </package_conversion>
+    <entity_conversion name="var_sig_tb">
+      <status ="sucess">
+    </entity_conversion>
+    <entity_conversion name="clk_generator">
+      <status ="sucess">
+    </entity_conversion>
+    <entity_conversion name="var_sig_impl">
+      <Missing_Template function="f1" args="Var_sig_class" />
+      <Missing_Template function="f2" args="Var_sig_class, std_logic_vector(31 downto 0)" />
+      <Failed_to_convert name="var_sig_impl"/>
+      <status ="failed">
+    </entity_conversion>
+    <package_conversion name="Var_sig_class">
+      <processing name="Var_sig_class" MemfunctionCalls="2">
+        <request_new_template name="f2"/>
+      </processing>
+      <status ="sucess">
+    </package_conversion>
+  </Converting>
+<!--=======================-->
+  <Converting Index="2">
+    <package_conversion name="var_sig_impl">
+      <status ="sucess">
+    </package_conversion>
+    <entity_conversion name="var_sig_impl">
+      <use_template function ="f1" args="Var_sig_class" />
+      <use_template function ="f2" args="Var_sig_class, std_logic_vector(31 downto 0)" />
+      <status ="sucess">
+    </entity_conversion>
+  </Converting>
+<!--=======================-->
+  <Converting Index="3">
+  </Converting>

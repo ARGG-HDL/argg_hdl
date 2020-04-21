@@ -12,7 +12,7 @@ import argg_hdl.tests.core_tests as core_t
 import argg_hdl.tests.ex1 as ex1
 import argg_hdl.tests.RamHandler as RamHandler
 import argg_hdl.tests.test_axi_fifo as test_axi_fifo
-
+import argg_hdl.tests.Signal_Variable_class as Signal_Variable_class
 
 
 class TestCoreExamples(unittest.TestCase):
@@ -51,7 +51,16 @@ class TestCoreExamples(unittest.TestCase):
     
     def test_axi_fifo_2vhdl(self):
         result, message = test_axi_fifo.test_bench_axi_fifo_2vhdl("tests/axi_fifo/")
+        self.assertTrue(result,message)      
+
+    def var_sig_tb_2vhdl(self):
+        result, message = Signal_Variable_class.var_sig_tb_2vhdl("tests/var_sig_class")
         self.assertTrue(result,message)       
+
+
+    def var_sig_tb_sim(self):
+        result, message = Signal_Variable_class.var_sig_tb_sim("tests/var_sig_class_sim")
+        self.assertTrue(result,message)     
 
 if __name__ == '__main__':
     remove_old_files()

@@ -3,8 +3,8 @@ from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_simulation import *
 import argg_hdl.argg_hdl_v_Package as argg_pack
-
-from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class, append_hdl_name
+import  argg_hdl.vhdl_v_class_helpers as  vc_helper
+from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class
 
 class v_class_trans_converter(v_class_converter):
     def __init__(self):
@@ -79,13 +79,9 @@ class v_class_trans_converter(v_class_converter):
             PushPull, 
             ClassName+"."
         )
-        internal_connections = obj.__hdl_converter__.getMember_InternalConnections(
-            obj, 
-            InOut_Filter,
-            PushPull
-        )
+
         Connecting = join_str(
-            [Connecting, internal_connections],
+            [Connecting],
             LineEnding="\n",
             LineBeginning="    " ,
             IgnoreIfEmpty = True 
@@ -111,6 +107,8 @@ class v_class_trans_converter(v_class_converter):
             )
         
         return ret     
+
+        
     def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
         print_cnvt("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
@@ -136,7 +134,7 @@ class v_class_trans_converter(v_class_converter):
         x = v_class(name, obj._varSigConst)
         x.__v_classType__ = v_classType_t.Record_t
         x.__vetoHDLConversion__  = True
-        x.__hdl_name__ = append_hdl_name(obj.__hdl_name__,suffix)
+        x.__hdl_name__ =vc_helper.append_hdl_name(obj.__hdl_name__,suffix)
         x._Inout=Inout
         if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:
             x._Inout=InoutFlip(x._Inout)
@@ -195,9 +193,9 @@ class v_class_trans(v_class):
         
 
         if Inout== InOut_t.input_t:
-            return append_hdl_name(str(self.__hdl_name__), "_s2m")
+            return vc_helper.append_hdl_name(str(self.__hdl_name__), "_s2m")
         
         if Inout== InOut_t.output_t:
-            return append_hdl_name(str(self.__hdl_name__), "_m2s")
+            return vc_helper.append_hdl_name(str(self.__hdl_name__), "_m2s")
         
         return None    
