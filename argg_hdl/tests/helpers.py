@@ -4,6 +4,7 @@ import shutil
 
 from argg_hdl import *
 
+from pathlib import Path
 
 
 g_globals = {
@@ -53,11 +54,9 @@ def isSame(dcmp,message="\n\n====================\n"):
     return ret, message
 
 
-def mkdir_if_not_exist(path):
-    try:
-        os.mkdir(path)
-    except:
-        pass
+def mkdir_if_not_exist(FolderName):
+    Path(FolderName).mkdir(parents=True, exist_ok=True)
+
 
 def create_git_ignoreFile_for_folder(FolderName):
     with open(FolderName+".gitignore","w") as f:

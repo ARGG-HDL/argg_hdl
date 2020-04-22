@@ -536,7 +536,7 @@ class xgenAST:
         if not (Arc.name not in [x["name"] for x in ClassInstance.__hdl_converter__.archetecture_list ]):
             return 
         
-        arc = self.extractArchetectureForClass(ClassInstance,f)
+        arc = self.extractArchetectureForClass(ClassInstance,Arc)
         
         if not arc:
             return

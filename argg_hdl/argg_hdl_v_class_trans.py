@@ -127,9 +127,12 @@ class v_class_trans_converter(v_class_converter):
         if Inout == InOut_t.input_t:
             name = obj.__hdl_converter__.get_NameSlave2Master(obj)
             suffix="_s2m"
+
         else:
             name = obj.__hdl_converter__.get_NameMaster2Slave(obj)
             suffix = "_m2s"
+
+
 
         x = v_class(name, obj._varSigConst)
         x.__v_classType__ = v_classType_t.Record_t
@@ -144,6 +147,7 @@ class v_class_trans_converter(v_class_converter):
         for y in ys: 
             setattr(x, y["name"], y["symbol"])
         ret.append({ "suffix":suffix, "symbol": x})
+
         return ret
 
     def extract_conversion_types_transition_type(self, obj, exclude_class_type=None,filter_inout=None):
@@ -198,4 +202,49 @@ class v_class_trans(v_class):
         if Inout== InOut_t.output_t:
             return vc_helper.append_hdl_name(str(self.__hdl_name__), "_m2s")
         
-        return None    
+        return None
+
+    def setInout(self,Inout):
+        if self._Inout == Inout:
+            return 
+        
+        if self._Inout == InOut_t.Internal_t:
+            self.__inout_register__ = {}
+            members = self.getMember()
+            for x in members:
+                self.__inout_register__[x["name"]] = x["symbol"]._Inout
+                
+                
+
+       
+        
+
+        
+        if Inout == InOut_t.Master_t:
+            self._Inout = Inout
+            members = self.getMember()
+            for x in members:
+                x["symbol"].setInout(self.__inout_register__[x["name"]])
+            
+            return
+            
+        if Inout == InOut_t.Slave_t:
+            self._Inout = Inout
+            members = self.getMember()
+            for x in members:
+                x["symbol"].setInout( InoutFlip(self.__inout_register__[x["name"]]))
+
+            return
+
+        if Inout == InOut_t.Internal_t:
+            self._Inout = Inout
+            members = self.getMember()
+            for x in members:
+                x["symbol"].setInout(self.__inout_register__[x["name"]])
+            
+            return
+
+        self._Inout = Inout
+        members = self.getMember()
+        for x in members:
+            x["symbol"].setInout(Inout)

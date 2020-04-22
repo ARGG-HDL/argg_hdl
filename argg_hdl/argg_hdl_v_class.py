@@ -402,9 +402,9 @@ class v_class_converter(hdl_converter_base):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
 
         
-        if rhs._Inout == InOut_t.Master_t:
+        if rhs._Inout == InOut_t.Master_t and rhs._varSigConst == varSig.signal_t:
             raise Exception("cannot read from Master")
-        if rhs._Inout == InOut_t.output_t:
+        if rhs._Inout == InOut_t.output_t and rhs._varSigConst == varSig.signal_t:
             raise Exception("cannot read from Output")
 
 
@@ -639,6 +639,8 @@ class v_class(argg_hdl_base):
         if not varSigConst:
             varSigConst = getDefaultVarSig()
         self._varSigConst = varSigConst
+
+        self.__inout_register__ = {}
 
     def set_vhdl_name(self,name, Overwrite = False):
         if self.__hdl_name__ and self.__hdl_name__ != name and not Overwrite:

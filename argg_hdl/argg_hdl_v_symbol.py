@@ -190,7 +190,7 @@ class v_symbol_converter(hdl_converter_base):
             return target + asOp+ " (others => '0')"
         
         if  issubclass(type(rhs),argg_hdl_base):
-            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type)) 
+            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type,astParser=astParser)) 
         
         if  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
