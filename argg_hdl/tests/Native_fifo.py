@@ -96,10 +96,14 @@ class readout_native_fifo(v_entity):
     def architecture(self):
         fifo_s = NativeFifoOutSlave(self.Data_in)
         data = v_slv(32)
+        counter = dword()
         @rising_edge(self.clk)
         def proc():
+            counter << counter +1
             if fifo_s.isReceivingData():
                 fifo_s.read_data(data)
+
+            printf("counter: " + str(value(counter)) + " data: " + str(value(data)) + "\n")
 
 
         end_architecture()

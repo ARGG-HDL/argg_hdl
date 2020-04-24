@@ -13,7 +13,7 @@ import argg_hdl.tests.ex1 as ex1
 import argg_hdl.tests.RamHandler as RamHandler
 import argg_hdl.tests.test_axi_fifo as test_axi_fifo
 import argg_hdl.tests.Signal_Variable_class as Signal_Variable_class
-
+import argg_hdl.tests.Native_fifo as Native_fifo
 
 class TestCoreExamples(unittest.TestCase):
 
@@ -60,6 +60,16 @@ class TestCoreExamples(unittest.TestCase):
 
     def var_sig_tb_sim(self):
         result, message = Signal_Variable_class.var_sig_tb_sim("tests/var_sig_class_sim")
+        self.assertTrue(result,message)     
+
+
+    def test_native_fifo_sim(self):
+        result, message =  Native_fifo.fifo_cc_tb_sim("tests/native_fifo_sim")
+        self.assertTrue(result,message)       
+
+
+    def test_native_fifo_2vhdl(self):
+        result, message = Native_fifo.fifo_cc_tb_2vhdl("tests/native_fifo")
         self.assertTrue(result,message)     
 
 if __name__ == '__main__':

@@ -1,0 +1,109 @@
+<!--=======================-->
+  <Converting Index="1">
+    <package_conversion name="fifo_cc_tb">
+      <status ="sucess">
+    </package_conversion>
+    <entity_conversion name="fifo_cc_tb">
+      <status ="sucess">
+    </entity_conversion>
+    <entity_conversion name="clk_generator">
+      <status ="sucess">
+    </entity_conversion>
+    <entity_conversion name="readout_native_fifo">
+      <Missing_Template function="isReceivingData" args="NativeFifoOutSlave" />
+      <Missing_Template function="read_data" args="NativeFifoOutSlave, std_logic_vector(31 downto 0)" />
+      <Failed_to_convert name="readout_native_fifo"/>
+      <status ="failed">
+    </entity_conversion>
+    <package_conversion name="NativeFifoOut">
+      <processing name="NativeFifoOut" MemfunctionCalls="0">
+      </processing>
+      <status ="sucess">
+    </package_conversion>
+    <package_conversion name="NativeFifoOutSlave">
+      <processing name="NativeFifoOutSlave" MemfunctionCalls="2">
+        <request_new_template name="_onPull"/>
+        <request_new_template name="_onPush"/>
+        <request_new_template name="read_data"/>
+      </processing>
+      <Missing_Template function="isReceivingData" args="small_buffer" />
+      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+      <Missing_Template function="__rshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+      <Missing_Template function="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+      <Missing_Template function="isReceivingData" args="small_buffer" />
+      <status ="failed">
+    </package_conversion>
+    <package_conversion name="small_buffer">
+      <processing name="small_buffer" MemfunctionCalls="3">
+        <request_new_template name="re_read"/>
+        <request_new_template name="read_data"/>
+        <request_new_template name="__rshift__"/>
+        <request_new_template name="send_data"/>
+        <request_new_template name="__lshift__"/>
+        <request_new_template name="length"/>
+        <request_new_template name="ready_to_send"/>
+        <request_new_template name="__len__"/>
+        <request_new_template name="reset"/>
+      </processing>
+      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+      <Missing_Template function="ready_to_send" args="small_buffer" />
+      <status ="failed">
+    </package_conversion>
+    <package_conversion name="v_list">
+      <status ="sucess">
+    </package_conversion>
+  </Converting>
+<!--=======================-->
+  <Converting Index="2">
+    <package_conversion name="readout_native_fifo">
+      <status ="sucess">
+    </package_conversion>
+    <entity_conversion name="readout_native_fifo">
+      <Missing_Template function="isReceivingData" args="NativeFifoOutSlave" />
+      <Missing_Template function="read_data" args="NativeFifoOutSlave, std_logic_vector(31 downto 0)" />
+      <Failed_to_convert name="readout_native_fifo"/>
+      <status ="failed">
+    </entity_conversion>
+    <package_conversion name="NativeFifoOutSlave">
+      <processing name="NativeFifoOutSlave" MemfunctionCalls="5">
+        <request_new_template name="read_data"/>
+      </processing>
+      <use_template function ="isReceivingData" args="small_buffer" />
+      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+      <use_template function ="__rshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+      <Missing_Template function="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+      <use_template function ="isReceivingData" args="small_buffer" />
+      <status ="failed">
+    </package_conversion>
+    <package_conversion name="small_buffer">
+      <processing name="small_buffer" MemfunctionCalls="12">
+        <request_new_template name="read_data"/>
+        <request_new_template name="__rshift__"/>
+        <request_new_template name="send_data"/>
+        <request_new_template name="__lshift__"/>
+      </processing>
+      <use_template function ="ready_to_send" args="small_buffer" />
+      <status ="sucess">
+    </package_conversion>
+  </Converting>
+<!--=======================-->
+  <Converting Index="3">
+    <package_conversion name="readout_native_fifo">
+      <status ="sucess">
+    </package_conversion>
+    <entity_conversion name="readout_native_fifo">
+      <use_template function ="isReceivingData" args="NativeFifoOutSlave" />
+      <use_template function ="read_data" args="NativeFifoOutSlave, std_logic_vector(31 downto 0)" />
+      <status ="sucess">
+    </entity_conversion>
+    <package_conversion name="NativeFifoOutSlave">
+      <processing name="NativeFifoOutSlave" MemfunctionCalls="6">
+        <request_new_template name="read_data"/>
+      </processing>
+      <use_template function ="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+      <status ="sucess">
+    </package_conversion>
+  </Converting>
+<!--=======================-->
+  <Converting Index="4">
+  </Converting>
