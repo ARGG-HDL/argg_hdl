@@ -14,6 +14,7 @@ import argg_hdl.tests.RamHandler as RamHandler
 import argg_hdl.tests.test_axi_fifo as test_axi_fifo
 import argg_hdl.tests.Signal_Variable_class as Signal_Variable_class
 import argg_hdl.tests.Native_fifo as Native_fifo
+import argg_hdl.tests.EnumTest as EnumTest
 
 class TestCoreExamples(unittest.TestCase):
 
@@ -72,6 +73,17 @@ class TestCoreExamples(unittest.TestCase):
         result, message = Native_fifo.fifo_cc_tb_2vhdl("tests/native_fifo")
         self.assertTrue(result,message)     
 
+
+    def test_enums_sim(self):
+        result, message =  EnumTest.enum_TB_sim("tests/enumTest_sim")
+        self.assertTrue(result,message)       
+
+
+    def test_enums_2vhdl(self):
+        result, message = EnumTest.enum_TB_2vhdl("tests/enumTest")
+        self.assertTrue(result,message)     
+
+        
 if __name__ == '__main__':
     remove_old_files()
     unittest.main()
