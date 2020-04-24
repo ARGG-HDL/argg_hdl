@@ -888,6 +888,13 @@ def value(Input):
 
     if hasattr(Input,"get_value"):
         return Input.get_value()
+
+    if type(Input).__name__ == "EnumMeta":
+        return Input.value
+
+    if type(type(Input)).__name__ == "EnumMeta":
+            return Input.value
+            
     return Input
 
 class  InOut_t(Enum):
