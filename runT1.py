@@ -10,6 +10,6 @@ remove_old_files()
 #test_axi_fifo.test_bench_axi_fifo_sim("tests/axi_fifo_sim")
 #Signal_Variable_class.var_sig_tb_2vhdl("tests/var_sig_class")
 #Signal_Variable_class.var_sig_tb_sim("tests/var_sig_class_sim")
-Native_fifo.readout_native_fifo_2vhdl("tests/native_fifo")
+Native_fifo.fifo_cc_tb_sim("tests/native_fifo_sim")
 
 #RamHandler.RamHandler_2vhdl("tests/RamHandler")

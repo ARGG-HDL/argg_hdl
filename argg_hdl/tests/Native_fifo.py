@@ -4,6 +4,8 @@ from  argg_hdl.examples import *
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
 
 
+def dword():
+    return v_slv(32)
 
 class NativeFifoIn(v_class_trans):
     def __init__(self,DataType):
@@ -50,17 +52,18 @@ class NativeFifoOutSlave(v_class_slave):
         self.buff = small_buffer(Data.data)
         self.enable1 = v_variable(v_sl())
         self.empty1  = v_variable(v_sl())
+        self.architecture()
 
 
     @architecture
     def architecture(self):
-        @combinational
+        @combinational()
         def p2():
             self.rx1.enable << v_switch(0,[v_case(self.rx1.empty == 0, self.rx2.enable)])
             self.rx2.empty << self.rx1.empty
             self.rx2.data << self.rx1.data
 
-
+        end_architecture()
 
     def _onPull(self):
         if self.enable1 and not self.empty1:
@@ -101,8 +104,44 @@ class readout_native_fifo(v_entity):
 
         end_architecture()
 
-@vhdl_conversion
-def readout_native_fifo_2vhdl(OutputPath, f= None):
+
+class fifo_cc_tb(v_entity):
+    def __init__(self):
+        super().__init__()
+        self.architecture()
+
+
+    @architecture
+    def architecture(self):
+        clkgen = v_create(clk_generator())
+        ff_readout = v_create(readout_native_fifo())
+        ff_readout.clk << clkgen.clk
+
+        data = dword()
+        @rising_edge(clkgen.clk)
+        def proc():
+            ff_readout.Data_in.empty << 1
+            data << data +1
+            if data > 10 and data < 20: 
+                ff_readout.Data_in.empty << 0
+
+            if ff_readout.Data_in.enable:
+                ff_readout.Data_in.data << data
+
+        end_architecture()
+
+            
+
+
+@do_simulation
+def fifo_cc_tb_sim(OutputPath, f= None):
     
-    tb1 = v_create(readout_native_fifo())
+    tb1 = v_create(fifo_cc_tb())
+    return tb1
+
+
+@vhdl_conversion
+def fifo_cc_tb_2vhdl(OutputPath, f= None):
+    
+    tb1 = v_create(fifo_cc_tb())
     return tb1
