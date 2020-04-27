@@ -6,6 +6,8 @@ import inspect
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_simulation import *
 
+from argg_hdl.argg_hdl_slice_base import v_slice_base
+
 
 class v_symbol_converter(hdl_converter_base):
     def __init__(self,inc_str):
@@ -456,6 +458,10 @@ class v_symbol(argg_hdl_base):
 
     def __eq__(self,rhs):
         return value(self) == value(rhs) 
+    
+    def __getitem__(self, b):
+        return v_slice_base(self,b)
+        
 ##################### End Operators #############################################
 
     def _sim_get_new_storage(self):

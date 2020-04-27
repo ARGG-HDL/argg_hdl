@@ -12,5 +12,5 @@ remove_old_files()
 #Signal_Variable_class.var_sig_tb_sim("tests/var_sig_class_sim")
 #Native_fifo.fifo_cc_tb_sim("tests/native_fifo_sim")
 
-#EnumTest.enum_TB_sim("tests/enumTest_sim")
-EnumTest.enum_TB_2vhdl("tests/enumTest")
+EnumTest.enum_TB_sim("tests/enumTest_sim")
+#EnumTest.enum_TB_2vhdl("tests/enumTest")
