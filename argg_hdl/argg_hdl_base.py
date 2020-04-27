@@ -527,6 +527,10 @@ class hdl_converter_base:
     def _to_hdl___bool__(self,obj, astParser):
         return "to_bool(" + str(obj) + ") "
 
+    def _vhdl__BitAnd(self,obj,rhs,astParser):
+        raise Exception("not Implemented")
+        
+
     def function_name_modifier(self,obj,name, varSigSuffix):
         if name == "__bool__":
             return "to_bool"

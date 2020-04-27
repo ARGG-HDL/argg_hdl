@@ -6,7 +6,7 @@ import inspect
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_simulation import *
 
-from argg_hdl.argg_hdl_slice_base import v_slice_base
+from argg_hdl.argg_hdl_slice_base import v_slice_base, slice_helper
 
 
 class v_symbol_converter(hdl_converter_base):
@@ -86,7 +86,11 @@ class v_symbol_converter(hdl_converter_base):
         astParser.add_read(obj)
         obj._add_input()
         if "std_logic_vector" in obj._type:
-            ret = v_sl(obj._Inout)
+            if type(sl).__name__ == "v_slice":
+                ret = v_slv( Inout = obj._Inout)
+            else:
+                ret = v_sl(obj._Inout)
+            
             ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
             return ret
 
@@ -138,6 +142,11 @@ class v_symbol_converter(hdl_converter_base):
             return str(obj) + " > 0"
 
         return "to_bool(" + str(obj) + ") "
+
+    def _vhdl__BitAnd(self,obj,rhs,astParser):
+        ret = v_slv()
+        ret.set_vhdl_name(str(obj)+ " & " +str(rhs) ,True)
+        return ret
 
     def _vhdl__DefineSymbol(self,obj, VarSymb=None):
         print_cnvt("_vhdl__DefineSymbol is deprecated")
@@ -291,11 +300,12 @@ def v_symbol_reset():
 
 class v_symbol(argg_hdl_base):
     __value_list__ = []
-    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t):
+    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32):
         super().__init__()
         if not varSigConst:
             varSigConst = getDefaultVarSig()
 
+        self.Bitwidth = Bitwidth
         self.__hdl_converter__= v_symbol_converter(includes)
         self._type = v_type
         self.DefaultValue = str(DefaultValue)
@@ -460,7 +470,14 @@ class v_symbol(argg_hdl_base):
         return value(self) == value(rhs) 
     
     def __getitem__(self, b):
-        return v_slice_base(self,b)
+        start = b.start
+        stop = b.stop
+        if stop is None:
+            stop = len(self) - 1
+
+        stop = min(value(stop),  len(self) - 1)
+        sl = slice_helper(start=start,stop=stop)
+        return v_slice_base(self,sl)
         
 ##################### End Operators #############################################
 
@@ -570,9 +587,20 @@ class v_symbol(argg_hdl_base):
         else:
             self._Conect_Not_running(rhs)
             
+    def __len__(self):
+        return self.Bitwidth
+    def __and__(self, rhs):
+        bitShift = len(rhs)
+        v  = value(self) << bitShift
+        v += value(rhs)
+        sl= slice_helper(start=0,stop=len(rhs)+len(self)-1)
+        ret = v_slice_base(v,sl)
+        return ret
+        
 
 
-
+    def __int__(self):
+        return value(self)
 
 
     def _issubclass_(self,test):
@@ -615,7 +643,8 @@ def v_bool(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
         Inout = Inout,
         includes=slv_includes,
         value = value,
-        varSigConst=varSigConst
+        varSigConst=varSigConst,
+        Bitwidth=1
     )
  
 def v_sl(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
@@ -630,12 +659,14 @@ def v_sl(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
         Inout = Inout,
         includes=slv_includes,
         value = value,
-        varSigConst=varSigConst
+        varSigConst=varSigConst,
+        Bitwidth=1
     )
 
 def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
 
 
+    
     value = Default
     if str(Default) == '0':
         Default = "(others => '0')"
@@ -645,11 +676,13 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
     
     v_type = ""
     if BitWidth is None:
-        v_type="std_logic_vector"    
+        v_type="std_logic_vector"  
+        BitWidth=32  
     elif type(BitWidth).__name__ == "int":
         v_type="std_logic_vector(" + str(BitWidth -1 ) + " downto 0)"
     else: 
         v_type = "std_logic_vector(" + str(BitWidth ) + " -1 downto 0)"
+        BitWidth=32
 
     return v_symbol(
         v_type=v_type, 
@@ -657,10 +690,11 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         value=value,
         Inout=Inout,
         includes=slv_includes,
-        varSigConst=varSigConst
+        varSigConst=varSigConst,
+        Bitwidth=int(BitWidth)
     )
 
-def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
+def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
     
     return v_symbol(
         v_type= "integer",
@@ -668,7 +702,8 @@ def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
         DefaultValue=str(Default), 
         Inout = Inout,
         includes=slv_includes,
-        varSigConst=varSigConst
+        varSigConst=varSigConst,
+        Bitwidth=Bitwidth
     )
 
 def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):

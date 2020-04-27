@@ -204,7 +204,10 @@ class xgenAST:
             'Yield'         : body_unfold_yield,
             "For"           : body_unfold_for,
             "Break"         : body_unfold_Break,
-            "Continue"      : body_unfold_Continue
+            "Continue"      : body_unfold_Continue,
+            'Slice'         : body_unfold_slice,
+            'BitAnd'         : body_unfold_BitAnd
+
         }
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())

@@ -1,6 +1,13 @@
 
 from argg_hdl.argg_hdl_base import *
 
+class slice_helper:
+    def __init__(self,start=None, stop=None,step=None):
+        super().__init__()
+        self.start = start
+        self.stop  = stop
+        self.step  = step
+
 
 class v_slice_base:
     def __init__(self,symbol, sliceObj):
@@ -9,12 +16,12 @@ class v_slice_base:
         self.slice = sliceObj
 
     def get_value(self):
-        bitSize = value(self.slice.stop) - value(self.slice.start )
+        bitSize = len(self)
         return 2**bitSize-1 &  ( value(self.symbol) >>value(self.slice.start ))
 
 
     def __lshift__(self, rhs):
-        bitSize = value(self.slice.stop) - value(self.slice.start )
+        bitSize = len(self)
         bitMask = 2**bitSize-1 << value(self.slice.start )
         sign = -1 if self.symbol.nextValue  < 0 else 1
 
@@ -27,6 +34,18 @@ class v_slice_base:
         next_temp += v
         self.symbol << sign*next_temp
 
+    def __and__(self, rhs):
+        bitShift = len(rhs)
+        v  = value(self) << bitShift
+        v += value(rhs)
+        sl= slice_helper(start=0,stop=len(rhs)+len(self))
+        ret = v_slice_base(v,sl)
+        return ret
+        print(self)
+
+    def __len__(self):
+        bitSize = value(self.slice.stop) - value(self.slice.start ) + 1
+        return bitSize
 
 
 

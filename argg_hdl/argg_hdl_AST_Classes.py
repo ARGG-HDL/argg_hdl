@@ -1295,3 +1295,24 @@ def body_unfold_Continue(astParser,args,keywords=None):
 
 def body_Constant(astParser,Node,keywords=None):
     return v_named_C(Node.value)
+
+
+class v_slice(v_ast_base):
+    def __init__(self,lower,upper,step):
+        super().__init__()
+        self.lower = lower
+        self.upper = upper
+        self.step  = step
+
+    def __str__(self):
+        return  str(self.upper.value) +" downto "+ str(self.lower.value) 
+
+def body_unfold_slice(astParser,Node,keywords=None):
+    ret = v_slice(Node.lower, Node.upper,Node.step)
+    return ret
+
+def body_unfold_BitAnd(astParser,Node,keywords=None):
+    rhs =  astParser.Unfold_body(Node.right)
+    lhs =  astParser.Unfold_body(Node.left)
+    ret = lhs.__hdl_converter__._vhdl__BitAnd(lhs, rhs,  astParser)
+    return ret

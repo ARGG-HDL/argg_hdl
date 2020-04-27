@@ -15,6 +15,8 @@ import argg_hdl.tests.test_axi_fifo as test_axi_fifo
 import argg_hdl.tests.Signal_Variable_class as Signal_Variable_class
 import argg_hdl.tests.Native_fifo as Native_fifo
 import argg_hdl.tests.EnumTest as EnumTest
+import argg_hdl.tests.slice_testing as slice_testing
+
 
 class TestCoreExamples(unittest.TestCase):
 
@@ -81,6 +83,15 @@ class TestCoreExamples(unittest.TestCase):
 
     def test_enums_2vhdl(self):
         result, message = EnumTest.enum_TB_2vhdl("tests/enumTest")
+        self.assertTrue(result,message)     
+
+    def test_slice_TB_sim(self):
+        result, message = slice_testing.slice_TB_sim("tests/slice_TB_sim")
+        self.assertTrue(result,message)       
+
+
+    def test_slice_TB_2vhdl(self):
+        result, message = slice_testing.slice_TB_2vhdl("tests/slice_TB")
         self.assertTrue(result,message)     
 
         
