@@ -89,7 +89,7 @@ def file_get_contents(filename):
         return f.read().strip()
 
 def file_set_content(filename,content):
-    with open(filename,'w') as f:
+    with open(filename,'w', newline="") as f:
         f.write(content)
 
 def raise_if(condition,errorMessage):
@@ -297,7 +297,7 @@ def print_cnvt_set_file(FileName=None):
         gStatus["OutputFile"] = None
 
     if FileName is not None:
-        gStatus["OutputFile"] = open(FileName,"w")
+        gStatus["OutputFile"] = open(FileName,"w",newline="")
     else:
         gStatus["OutputFile"] = None
 

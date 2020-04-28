@@ -41,7 +41,7 @@ end argg_hdl_core;
 """
 
 def generate_files_in_folder(FolderName):
-    with open(FolderName+"/argg_hdl_core.vhd","w") as f:
+    with open(FolderName+"/argg_hdl_core.vhd","w",newline="") as f:
         f.write(argg_hdl_core)
 
     ## add more files here if needed

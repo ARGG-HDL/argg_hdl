@@ -59,7 +59,7 @@ def mkdir_if_not_exist(FolderName):
 
 
 def create_git_ignoreFile_for_folder(FolderName):
-    with open(FolderName+".gitignore","w") as f:
+    with open(FolderName+".gitignore","w",newline="") as f:
         f.write("*")
     
 def vhdl_conversion(func):
@@ -90,7 +90,7 @@ def do_simulation(func):
         
         create_git_ignoreFile_for_folder(OutputPath+ "/output/")
         g_global_reset()
-        with open(OutputPath+"/output"+"/data.txt","w") as f:
+        with open(OutputPath+"/output"+"/data.txt","w",newline="") as f:
             g_globals["file"] = f
             tb = func(OutputPath,f)
             run_simulation(tb, 3000,OutputPath+"/temp/"+"data.vcd")
