@@ -94,7 +94,7 @@ ax = tb_entity()
 gsimulation.run_timed(ax, 1000,"example1.vcd")
 ```
 
-First one needs to create an instance of the entity and then it has to be given as an argument to the simulator alongside the runtime and the output file name. The output file can then be viewed with programs like ```GTKWave```.
+First, one needs to create an instance of the entity and then it has to be given as an argument to the simulator alongside the runtime and the output file name. The output file can then be viewed with programs like ```GTKWave```.
 
 ![GTKWave](pictures/example1.png)
 
@@ -552,7 +552,7 @@ end architecture;
 
 ### Axi Stream Interface
 
-This section shows how an interface can be implemented as a pseudo class. For this, the Axi Stream Interface is used. This example is used because it is very simple and widely used. The axi stream interface has four signals that are exchanged between master and slave. 
+This section shows how an interface can be implemented as a pseudo-class. For this, the Axi Stream Interface is used. This example is used because it is very simple and widely used. The axi stream interface has four signals that are exchanged between master and slave. 
 
 | Name | Direction |
 |:--:|:----:|
@@ -564,7 +564,7 @@ This section shows how an interface can be implemented as a pseudo class. For th
 ![Axi Stream](pictures/axi.jpg)
 ![Axi Stream Truth](pictures/axiStream_truth_table.png)
 
-Since it has four signals and each one can either be set or not set this results in 16 combinations. Only four of these 16 combinations are actual a correct state. All the other ones are undefined behavior. Programming languages usually solve this problem by not allowing users direct access to the underlying data but by providing higher-level APIs that provide a safe way of setting states. This APIs safeguard the user in two ways from entering undefined behavior (UB). First, if functions are used in the intended fashion the program can never reach an UB state. That should be illustrated with the following example (for details see example 3):  
+Since it has four signals and each one can either be set or not set this results in 16 combinations. Only four of these 16 combinations are actual a correct state. All the other ones are undefined behavior. Programming languages usually solve this problem by not allowing users direct access to the underlying data but by providing higher-level APIs that provide a safe way of setting states. These APIs safeguard the user in two ways from entering undefined behavior (UB). First, if functions are used in the intended fashion the program can never reach an UB state. That should be illustrated with the following example (for details see example 3):  
 
 ```Python
 if v_Axi_out:
@@ -701,7 +701,7 @@ The last building block is the Responsibility Handler (RH). Which is used for ex
 
 ### The strict IN/OUT model
 
-Typical HDLs are build up of submodules. In the case of VHDL this submodules are called ```entities```. These ```entites``` are connected to each other by ports. A port can be a single bit (```std_logic```), an array of bits (```std_logic_vector```), a data structure (```record```) or an array of data structure. But no matter how complicated the individual port is, it has always to be labeled as either ```IN``` or ```OUT```. This strict separation between ```IN``` and ```OUT``` prohibit the creation of more complex objects. How do other languages solve the problem? Lets write the axi stream interface in C++. This example contains two objects, which exchange data by sharing a pointer to a common data storage. 
+Typical HDLs are build-up of submodules. In the case of VHDL these submodules are called ```entities```. These ```entites``` are connected to each other by ports. A port can be a single bit (```std_logic```), an array of bits (```std_logic_vector```), a data structure (```record```) or an array of data structure. But no matter how complicated the individual port is, it has always to be labeled as either ```IN``` or ```OUT```. This strict separation between ```IN``` and ```OUT``` prohibit the creation of more complex objects. How do other languages solve the problem? Lets write the axi stream interface in C++. This example contains two objects, which exchange data by sharing a pointer to a common data storage. 
 
 ```C++
 class axistream;
