@@ -16,8 +16,16 @@ Argg_HDL is a library that allows one to write Python code and convert it to VHD
 ### Video Documentation
 
 
+![argg-hdl-01-first-test-bench](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-01-first-test-bench.gif)
+
+
+[argg-hdl-01-first-test-bench](https://www.youtube.com/watch?v=Ekk4v64VJQY)
+
+
 
 ![argg_hdl_02_slicing](https://user-images.githubusercontent.com/5286265/80661242-d0d2f580-8a29-11ea-86ad-43d370879076.gif)
+
+
 [argg_hdl_02_slicing](https://www.youtube.com/watch?v=WvogH3ap3OE)
 
 
