@@ -13,6 +13,15 @@ Argg_HDL is a library that allows one to write Python code and convert it to VHD
 
 ## Getting Started
 
+### Video Documentation
+
+
+
+![argg_hdl_02_slicing](https://user-images.githubusercontent.com/5286265/80661242-d0d2f580-8a29-11ea-86ad-43d370879076.gif)
+[argg_hdl_02_slicing](https://www.youtube.com/watch?v=WvogH3ap3OE)
+
+
+
 ### Example1
 
 This Example shows a single entity with two process blocks.
