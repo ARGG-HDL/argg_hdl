@@ -1,12 +1,15 @@
-# PyHDL
+# Argg_HDL
 
 ## Introduction
 
 ```bash
-git clone https://github.com/RPeschke/pyHDL.git CodeGen
+git clone https://github.com/ARGG-HDL/argg_hdl.git
+cd argg_hdl
+pip3 install dist/argg_hdl-0.0.1.tar.gz
 ```
 
-PyHDL is a library that allows one to write Python code and convert it to VHDL. The Main Goal of this library is to allow the user to write fully object-oriented code.
+
+Argg_HDL is a library that allows one to write Python code and convert it to VHDL. The Main Goal of this library is to allow the user to write fully object-oriented code.
 
 ## Getting Started
 
@@ -129,18 +132,14 @@ class axiPrint(v_clk_entity):
 
         
     def architecture(self):
-        @process()
+        axiSlave = axisStream_slave(self.Axi_in)
+        i_buff = v_variable(v_slv(32))
+        @rising_edge(self.clk)
         def _process1():
-            axiSlave = axisStream_slave(self.Axi_in)
-
-            i_buff = v_slv(32)
-
-            @rising_edge(self.clk)
-            def proc():
-                print("axiPrint",i_buff.value )
-                if axiSlave :
-                    i_buff << axiSlave
-                    print("axiPrint valid",i_buff.value )
+            print("axiPrint",i_buff.value )
+            if axiSlave :
+                i_buff << axiSlave
+                print("axiPrint valid",i_buff.value )
 
 
 
@@ -152,16 +151,14 @@ class clk_generator(v_entity):
 
     def architecture(self):
         
-        @process()
+        
+        @timed()
         def p1():
-
-            @timed()
-            def proc():
-                self.clk << 1
-                print("======================")
-                yield wait_for(10)
-                self.clk << 0
-                yield wait_for(10)
+            self.clk << 1
+            print("======================")
+            yield wait_for(10)
+            self.clk << 0
+            yield wait_for(10)
 
 
 class tb_entity(v_entity):
@@ -178,18 +175,17 @@ class tb_entity(v_entity):
         counter = v_slv(32)
         axFil = v_create(axiPrint(clkgen.clk))
         axFil.Axi_in << Axi_out
+        v_Axi_out = axisStream_master(Axi_out)
 
 
-        @process()
+        
+        @rising_edge(clkgen.clk)
         def p2():
-            v_Axi_out = axisStream_master(Axi_out)
-            @rising_edge(clkgen.clk)
-            def proc():
-                if v_Axi_out and counter < 40:
-                    print("counter", counter.value)
-                    v_Axi_out << counter
+            if v_Axi_out and counter < 40:
+                print("counter", counter.value)
+                v_Axi_out << counter
                 
-                    counter << counter + 1
+                counter << counter + 1
 ```
 
 This example can be simulated with the following command:
@@ -263,7 +259,7 @@ end architecture;
 
 ### Example 3
 
-This example shows how to incorporate the pipe operator. As it is common in many languages object can have default input output channels. This allows to concatenate entities with a single operation instead of having to connect each signal individually.   
+This example shows how to incorporate the pipe operator. As it is common in many languages objects can have default input/output channels. This allows to concatenate entities with a single operation instead of having to connect each signal individually.   
 
 ```Python 
 
@@ -278,21 +274,19 @@ class axiFilter(v_clk_entity):
 
         
     def architecture(self):
-        @process()
+        
+        
+        axMaster = axisStream_master(self.Axi_out) 
+        axiSlave = axisStream_slave(self.Axi_in)
+        i_buff =  v_variable(v_slv(32))
+        @rising_edge(self.clk)
         def _process1():
-            axiSlave = axisStream_slave(self.Axi_in)
-            axMaster = axisStream_master(self.Axi_out) 
-
-
-            i_buff = v_slv(32)
-            @rising_edge(self.clk)
-            def proc():
-                print("axiPrint",i_buff.value )
-                if axiSlave and axMaster:
-                    i_buff << axiSlave
-                    if i_buff < 10:
-                        axMaster << axiSlave
-                        print("axiPrint valid",i_buff.value )
+            print("axiPrint",i_buff.value )
+            if axiSlave and axMaster:
+                i_buff << axiSlave
+                if i_buff < 10:
+                    axMaster << axiSlave
+                    print("axiPrint valid",i_buff.value )
 
 class axiPrint(v_clk_entity):
     def __init__(self,clk=None):
@@ -303,18 +297,15 @@ class axiPrint(v_clk_entity):
 
         
     def architecture(self):
-        @process()
-        def _process1():
-            axiSlave = axisStream_slave(self.Axi_in)
-
-            i_buff = v_slv(32)
-
-            @rising_edge(self.clk)
-            def proc():
-                print("axiPrint",i_buff.value )
-                if axiSlave :
-                    i_buff << axiSlave
-                    print("axiPrint valid",i_buff.value )
+        
+        axiSlave = axisStream_slave(self.Axi_in)
+        i_buff = v_slv(32)
+        @rising_edge(self.clk)
+        def process1():
+            print("axiPrint",i_buff.value )
+            if axiSlave :
+                i_buff << axiSlave
+                print("axiPrint valid",i_buff.value )
 
 
 
@@ -326,16 +317,14 @@ class clk_generator(v_entity):
 
     def architecture(self):
         
-        @process()
+        
+        @timed()
         def p1():
-
-            @timed()
-            def proc():
-                self.clk << 1
-                print("======================")
-                yield wait_for(10)
-                self.clk << 0
-                yield wait_for(10)
+            self.clk << 1
+            print("======================")
+            yield wait_for(10)
+            self.clk << 0
+            yield wait_for(10)
 
 
 class rollingCounter(v_clk_entity):
@@ -350,19 +339,18 @@ class rollingCounter(v_clk_entity):
     def architecture(self):
         
         counter = v_slv(32)
-        @process()
-        def p2():
-            v_Axi_out = axisStream_master(self.Axi_out)
-            @rising_edge(self.clk)
-            def proc():
-                if v_Axi_out:
-                    print("counter", counter.value)
-                    v_Axi_out << counter
-                
-                    counter << counter + 1
+        v_Axi_out = axisStream_master(self.Axi_out)
 
-                if counter > self.MaxCount:
-                    counter << 0
+        @rising_edge(self.clk)
+        def p2():
+
+            if v_Axi_out:
+                print("counter", counter.value)
+                v_Axi_out << counter
+                counter << counter + 1
+
+            if counter > self.MaxCount:
+                counter << 0
 
 
 class tb_entity(v_entity):
@@ -556,7 +544,7 @@ In this example, ```v_Axi_out``` is a class that handles the Axi Stream Interfac
 
 The second way how APIs protect the user from entering UB is by providing a possibility to check for UB and then report an error to the user. This does not change that the interface is not working correctly but now the system is in an error state (not UB). This information can be used to protect the system from doing any more harm.
 
-In Addition using a class that encapsulates the interface into one single object prevents the user from ever getting signals mixed up and vastly improves the readability of the source code. For Example ```pyHDL``` allows the user to write the information if a given signal is an input or an output directly into the pseudo class:
+In Addition using a class that encapsulates the interface into one single object prevents the user from ever getting signals mixed up and vastly improves the readability of the source code. For Example ```Argg_HDL``` allows the user to write the information if a given signal is an input or an output directly into the pseudo class:
 
 ```Python
 class axisStream(v_class):
@@ -624,7 +612,7 @@ end entity;
 
 
 
-Virtually all modern programming languages allow the user to write customized objects to build powerful abstraction. The support for this is very limited in typical HDLs. This document is meant to show the limitations of current HDLs and especially how adding an additional layer of abstraction in form of PyHDL can overcome this limitation.
+Virtually all modern programming languages allow the user to write customized objects to build powerful abstraction. The support for this is very limited in typical HDLs. This document is meant to show the limitations of current HDLs and especially how adding an additional layer of abstraction in form of Argg_HDL can overcome this limitation.
 
 ![base](pictures/Programming_base.png)
 
@@ -871,4 +859,4 @@ In this example **source** owns the _data object_, which makes it much easier to
 ## VHDL Pseudo Classes
 
 
-## PyHDL Classes
+## Argg_HDL Classes

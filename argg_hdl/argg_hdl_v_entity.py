@@ -9,6 +9,8 @@ from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_AST import *
 
+from typing import Sequence, TypeVar
+T = TypeVar('T', bound='Copyable')
 
 
 
@@ -40,7 +42,7 @@ def timed():
         return wrapper_timed
     return decorator_timed
 
-def v_create(entity):
+def v_create(entity : T) -> T:
     return entity._instantiate_()
 
 class wait_for():
