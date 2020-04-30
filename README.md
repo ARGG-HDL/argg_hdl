@@ -23,11 +23,28 @@ Argg_HDL is a library that allows one to write Python code and convert it to VHD
 
 
 
-![argg_hdl_02_slicing](https://user-images.githubusercontent.com/5286265/80661242-d0d2f580-8a29-11ea-86ad-43d370879076.gif)
+![argg_hdl_02_slicing](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-02-slicing.gif)
 
 
 [argg_hdl_02_slicing](https://www.youtube.com/watch?v=WvogH3ap3OE)
 
+
+![argg-hdl-03-variables-and-signal](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-03-variables-and-signal.gif)
+
+
+[argg-hdl-03-variables-and-signal](https://www.youtube.com/watch?v=cagF5hIlxS4)
+
+
+![argg-hdl-04-Records](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-04-Records.gif)
+
+
+[argg-hdl-04-Records](https://www.youtube.com/watch?v=cBkStCMcUVM)
+
+
+![argg-hdl-05-Classes](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-05-Classes.gif)
+
+
+[argg-hdl-05-Classes](https://www.youtube.com/watch?v=32gUk7DFUFE)
 
 
 ### Example1
@@ -48,29 +65,26 @@ class tb_entity(v_entity):
         clk = v_sl()
 
 
-        @process()
-        def p1():
 
-            @timed()
-            def proc():
-                clk << 1
-                print("set clk to 1")
-                yield wait_for(10)
-                clk << 1
-                yield wait_for(10)
-                clk << 0
-                yield wait_for(10)
+        @timed()
+        def p1():
+            clk << 1
+            print("set clk to 1")
+            yield wait_for(10)
+            clk << 1
+            yield wait_for(10)
+            clk << 0
+            yield wait_for(10)
 
         counter = v_slv(32)
-        @process()
+        v_counter = v_variable(v_slv(32))
+        
+        @rising_edge(clk)
         def p2():
-            v_counter = v_slv(32)
-            @rising_edge(clk)
-            def proc():
-                v_counter << v_counter +1
-                counter << counter + 1
-                print("counter", counter.value)
-                print("v_counter", v_counter.value)
+            v_counter << v_counter +1
+            counter << counter + 1
+            print("counter", counter.value)
+            print("v_counter", v_counter.value)
 ```
 
 The entity can be simulated running the following commands:
