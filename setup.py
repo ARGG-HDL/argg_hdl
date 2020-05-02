@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="argg_hdl", # Replace with your own username
-    version="0.0.1",
+    version="0.0.2",
     author="Richard Peschke",
     author_email="rp40@hawaii.edu",
     description="A small example package",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/RPeschke/argg_hdl",
+    url="https://github.com/ARGG-HDL/argg_hdl",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -21,5 +21,5 @@ setuptools.setup(
     install_requires=[
           'pyvcd',
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
 )

@@ -5,7 +5,7 @@
 ```bash
 git clone https://github.com/ARGG-HDL/argg_hdl.git
 cd argg_hdl
-pip3 install dist/argg_hdl-0.0.1.tar.gz
+pip3 install dist/argg_hdl-0.0.2.tar.gz
 ```
 
 
