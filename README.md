@@ -16,32 +16,27 @@ Argg_HDL is a library that allows one to write Python code and convert it to VHD
 ### Video Documentation
 
 
-![argg-hdl-01-first-test-bench](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-01-first-test-bench.gif)
+
 
 
 [argg-hdl-01-first-test-bench](https://www.youtube.com/watch?v=Ekk4v64VJQY)
 
 
 
-![argg_hdl_02_slicing](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-02-slicing.gif)
+
 
 
 [argg_hdl_02_slicing](https://www.youtube.com/watch?v=WvogH3ap3OE)
 
 
-![argg-hdl-03-variables-and-signal](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-03-variables-and-signal.gif)
 
 
 [argg-hdl-03-variables-and-signal](https://www.youtube.com/watch?v=cagF5hIlxS4)
 
 
-![argg-hdl-04-Records](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-04-Records.gif)
-
 
 [argg-hdl-04-Records](https://www.youtube.com/watch?v=cBkStCMcUVM)
 
-
-![argg-hdl-05-Classes](https://media.githubusercontent.com/media/ARGG-HDL/argg_hdl_gifs/master/gifs/argg-hdl-05-Classes.gif)
 
 
 [argg-hdl-05-Classes](https://www.youtube.com/watch?v=32gUk7DFUFE)
