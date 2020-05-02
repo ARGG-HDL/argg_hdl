@@ -466,7 +466,7 @@ class xgenAST:
             
             FuncArgsLocal = copy.copy(FuncArgs)
             varSigSuffix = get_function_varSig_suffix(FuncArgsLocal)
-
+            self.local_function = ClassInstance.__init__.__globals__
 
 
 

@@ -43,7 +43,8 @@ def timed():
     return decorator_timed
 
 def v_create(entity : T) -> T:
-    return entity._instantiate_()
+    entity._instantiate_()
+    return entity
 
 class wait_for():
     def __init__(self,time,unit="ns"):

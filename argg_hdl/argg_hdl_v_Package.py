@@ -122,8 +122,8 @@ class v_package(argg_hdl_base):
     def getInstantByName(self,SymbolName):
         for t  in self.PackageContent:
             t = to_v_object(t)
-            if t.name == SymbolName:
+            if t._type == SymbolName:
                 return t
 
 
-        raise Exception("unable to find type" , SymbolName)
+        return None

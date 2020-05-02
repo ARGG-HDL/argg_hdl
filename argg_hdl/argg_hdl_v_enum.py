@@ -67,7 +67,7 @@ end  {PackageName};
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
-            return "  " + name + " : " +obj.name +"; \n"
+            return name + " : " +obj.name +"; \n"
        
         return ""
 
@@ -76,7 +76,7 @@ end  {PackageName};
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
 
-            return name + " => " + obj.Value.name 
+            return name + " => " + str(v_enum((obj._type(value(obj)))))
 
         return ""
     
@@ -139,8 +139,15 @@ class v_enum(argg_hdl_base):
         ret = str(self._type(value(self.symbol)).name) +": "+ str(value(self.symbol))
         return ret
     
+    def setInout(self,Inout):
+        self.symbol.setInout(Inout)
 
 
+    def set_varSigConst(self, varSigConst):
+        self.symbol.set_varSigConst(varSigConst)
+
+    def isVarSigType(self, varSigType):
+        return self.symbol.isVarSigType( varSigType)
 
     def _sim_get_value(self):
         return value(self.symbol)
