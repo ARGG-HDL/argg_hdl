@@ -961,10 +961,15 @@ def body_BinOP(astParser,Node):
 class v_named_C(v_ast_base):
     def __init__(self,Value):
         self.Value = Value
+        self.__hdl_name__ =str(Value)
         
         
 
         
+    def get_symbol(self):
+        ret = v_int(self.Value)
+        ret.set_vhdl_name(str(self.Value), True)
+        return ret
 
     def __str__(self):
         return str(self.Value)

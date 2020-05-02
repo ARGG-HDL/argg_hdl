@@ -67,7 +67,7 @@ end  {PackageName};
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
-            return name + " : " +obj.name +"; \n"
+            return name + " : " +obj.name
        
         return ""
 
