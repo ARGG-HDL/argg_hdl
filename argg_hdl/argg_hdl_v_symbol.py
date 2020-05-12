@@ -419,7 +419,7 @@ class v_symbol(argg_hdl_base):
         
     def set_simulation_param(self,module, name,writer):
         self._Simulation_name =module+"." +name
-        self.__vcd_varobj__ = writer.register_var(module, name, 'integer', size=32)
+        self.__vcd_varobj__ = writer.register_var(module, name, 'integer', size=self.Bitwidth)
         self.__vcd_writer__ = writer 
         self.__hdl_name__ = name
         self.__vcd_writer__.change(self.__vcd_varobj__, self._sim_get_value())
@@ -432,11 +432,13 @@ class v_symbol(argg_hdl_base):
             x._sim_write_value()
 
     def update_init(self):# Only needs to run once on init
-        if not self.__got_update_list__:
-            self.__update__list_process_running__ = list(set(self._sim__update_list_process()))
-            self.__update__list_running__ =     list(set(self._sim_get_update_list()))
-            self.__receiver_list_running__  = self._sim_get_receiver()
-            self.__got_update_list__ = True
+        if self.__got_update_list__:
+            return 
+        
+        self.__update__list_process_running__ = list(set(self._sim__update_list_process()))
+        self.__update__list_running__ =     list(set(self._sim_get_update_list()))
+        self.__receiver_list_running__  = self._sim_get_receiver()
+        self.__got_update_list__ = True
 
 
     def update(self):
@@ -493,7 +495,7 @@ class v_symbol(argg_hdl_base):
     def _sim_get_receiver(self):
         ret = self.__receiver__
         for x in self.__receiver__:
-            ret += x.__receiver__
+            ret += x._sim_get_receiver()
         return ret
     
     def _sim_get_primary_driver(self):
@@ -506,7 +508,7 @@ class v_symbol(argg_hdl_base):
         self.__value_Index__ = Index
         receivers = self._sim_get_receiver()
         for x in receivers:
-            x.__value_Index__ = self.__value_Index__
+            x._sim_set_new_value_index(self.__value_Index__)
     
     def _sim__update_list_process(self):
         ret = self.__update__list_process__
@@ -514,9 +516,7 @@ class v_symbol(argg_hdl_base):
             ret += x._sim__update_list_process()
         return ret
 
-    def _sim_start_simulation(self):
-        self.__update__list_process_running__ = self._sim__update_list_process()
-        self.__update__list_running__ =self._sim_get_update_list()
+
 
 
     def _sim_append_update_list(self,up):
@@ -526,7 +526,7 @@ class v_symbol(argg_hdl_base):
 
     def _instantiate_(self):
         self.__isInst__ = True
-        self._Inout = InoutFlip(self._Inout)
+        self.flipInout()
         return self
         
     def _un_instantiate_(self, Name = ""):
