@@ -409,10 +409,15 @@ class v_entity(argg_hdl_base0):
             if symb is x["symbol"]:
                 return
 
+        type_name = name
+        if issubclass(type(symb), v_entity):
+            type_name = "zzzzzzz_"+ name
+            
         self.__local_symbols__.append(
             {
                 "name" : name,
-                "symbol" : symb
+                "symbol" : symb,
+                "type_name" : type_name
             }
         )
 
