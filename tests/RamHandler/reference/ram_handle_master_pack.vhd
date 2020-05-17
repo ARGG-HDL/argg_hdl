@@ -46,9 +46,9 @@ end record;
   procedure push (self :  inout  ram_handle_master;  signal tx :  out  ram_handler_m2s);
   procedure pull (self :  inout  ram_handle_master_a;  signal tx :  in  ram_handler_s2m_a);
   procedure push (self :  inout  ram_handle_master_a;  signal tx :  out  ram_handler_m2s_a);
-  procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector(31 downto 0); data :  inout  optional_t);
-  procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector(31 downto 0); signal data :  out  std_logic_vector(31 downto 0));
-  procedure send_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector(31 downto 0); signal data :  in  std_logic_vector(31 downto 0));
+  procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; data :  inout  optional_t);
+  procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; signal data :  out  std_logic_vector);
+  procedure send_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; signal data :  in  std_logic_vector);
   function ready_to_send_0 (self :   ram_handle_master) return boolean;
 ------- End Psuedo Class ram_handle_master -------------------------
 -------------------------------------------------------------------------
@@ -71,8 +71,8 @@ procedure pull (self :  inout  ram_handle_master;  signal tx :  in  ram_handler_
 
 -- End Connecting
     self.tx.write_enable := '0';
-  for i14 in 0 to self.addr'length - 1 -1 loop 
-      self.addr(i14) := self.addr(i14 + 1);
+  for i10 in 0 to self.addr'length - 1 -1 loop 
+      self.addr(i10) := self.addr(i10 + 1);
     end loop;
   self.addr(2) :=  (others => '0');
   self.data_requested := '0';
@@ -134,7 +134,7 @@ function ready_to_send_0 (self :   ram_handle_master) return boolean is
    
 end function;
 
-procedure send_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector(31 downto 0); signal data :  in  std_logic_vector(31 downto 0)) is
+procedure send_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; signal data :  in  std_logic_vector) is
    
   begin 
  self.tx.write_enable := '1';
@@ -144,12 +144,12 @@ procedure send_data_011 (self :  inout  ram_handle_master; signal adr :  in  std
    
 end procedure;
 
-procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector(31 downto 0); signal data :  out  std_logic_vector(31 downto 0)) is
+procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; signal data :  out  std_logic_vector) is
    
   begin 
  data <= (others => '0');
   re_read_0(self => self.buff);
-  for i10 in 0 to 10 -1 loop 
+  for i5 in 0 to 10 -1 loop 
       
       if (isReceivingData_0(self => self.buff)) then 
         get_value_00_rshift(self => self.buff, rhs => self.c_data);
@@ -162,9 +162,9 @@ procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  
         
       end if;
     end loop;
-  for i11 in 0 to 3 -1 loop 
+  for i6 in 0 to 3 -1 loop 
       
-      if (self.addr(i11) = adr) then 
+      if (self.addr(i6) = adr) then 
         return;
         
       end if;
@@ -174,12 +174,12 @@ procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  
    
 end procedure;
 
-procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector(31 downto 0); data :  inout  optional_t) is
+procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; data :  inout  optional_t) is
    
   begin 
  reset_0(self => data);
   re_read_0(self => self.buff);
-  for i12 in 0 to 10 -1 loop 
+  for i7 in 0 to 10 -1 loop 
       
       if (isReceivingData_0(self => self.buff)) then 
         get_value_00_rshift(self => self.buff, rhs => self.c_data);
@@ -192,9 +192,9 @@ procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  
         
       end if;
     end loop;
-  for i13 in 0 to 3 -1 loop 
+  for i8 in 0 to 3 -1 loop 
       
-      if (self.addr(i13) = adr) then 
+      if (self.addr(i8) = adr) then 
         return;
         
       end if;

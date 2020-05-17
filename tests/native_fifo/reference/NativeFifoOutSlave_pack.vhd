@@ -57,7 +57,7 @@ end record;
   procedure push (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  NativeFifoOutSlave;  signal self_sig_rx2_s2m : out NativeFifoOut_s2m);
   procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig_a;  self :  inout  NativeFifoOutSlave_a);
   procedure push (signal self_sig :  in  NativeFifoOutSlave_sig_a;  self :  inout  NativeFifoOutSlave_a;  signal self_sig_rx2_s2m : out NativeFifoOut_s2m_a);
-  procedure read_data_01 (Signal self_sig :  in  NativeFifoOutSlave_sig; self :  inout  NativeFifoOutSlave; signal data :  out  std_logic_vector(31 downto 0));
+  procedure read_data_01 (Signal self_sig :  in  NativeFifoOutSlave_sig; self :  inout  NativeFifoOutSlave; signal data :  out  std_logic_vector);
   function isReceivingData_0 (Signal self_sig :   NativeFifoOutSlave_sig; self :   NativeFifoOutSlave) return boolean;
 ------- End Psuedo Class NativeFifoOutSlave -------------------------
 -------------------------------------------------------------------------
@@ -138,7 +138,7 @@ function isReceivingData_0 (Signal self_sig :   NativeFifoOutSlave_sig; self :  
    
 end function;
 
-procedure read_data_01 (Signal self_sig :  in  NativeFifoOutSlave_sig; self :  inout  NativeFifoOutSlave; signal data :  out  std_logic_vector(31 downto 0)) is
+procedure read_data_01 (Signal self_sig :  in  NativeFifoOutSlave_sig; self :  inout  NativeFifoOutSlave; signal data :  out  std_logic_vector) is
    
   begin 
  data <= (others => '0');

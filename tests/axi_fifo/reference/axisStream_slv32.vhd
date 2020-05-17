@@ -94,7 +94,7 @@ end record;
   procedure push (self :  inout  axiStream_slv32_master;  signal tx :  out  axiStream_slv32_m2s);
   procedure pull (self :  inout  axiStream_slv32_master_a;  signal tx :  in  axiStream_slv32_s2m_a);
   procedure push (self :  inout  axiStream_slv32_master_a;  signal tx :  out  axiStream_slv32_m2s_a);
-  procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector(32 -1 downto 0));
+  procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector);
   function to_bool (self :   axiStream_slv32_master) return boolean;
   procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStream :  in  boolean := True);
   procedure reset_0 (self :  inout  axiStream_slv32_master);
@@ -133,11 +133,11 @@ end record;
   procedure push (self :  inout  axiStream_slv32_slave;  signal rx :  out  axiStream_slv32_s2m);
   procedure pull (self :  inout  axiStream_slv32_slave_a;  signal rx :  in  axiStream_slv32_m2s_a);
   procedure push (self :  inout  axiStream_slv32_slave_a;  signal rx :  out  axiStream_slv32_s2m_a);
-  procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0));
+  procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector);
   function to_bool (self :   axiStream_slv32_slave) return boolean;
   function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean;
   function isReceivingData_0 (self :   axiStream_slv32_slave) return boolean;
-  procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0));
+  procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector);
 ------- End Psuedo Class axiStream_slv32_slave -------------------------
 -------------------------------------------------------------------------
 
@@ -298,7 +298,7 @@ function to_bool (self :   axiStream_slv32_master) return boolean is
    
 end function;
 
-procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector(32 -1 downto 0)) is
+procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector) is
    
   begin 
  self.tx.valid := '1';
@@ -383,7 +383,7 @@ procedure push (self :  inout  axiStream_slv32_slave_a;  signal rx :  out  axiSt
              
 end procedure;
 
-procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0)) is
+procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector) is
    
   begin 
  
@@ -415,7 +415,7 @@ function to_bool (self :   axiStream_slv32_slave) return boolean is
    
 end function;
 
-procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector(31 downto 0)) is
+procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector) is
    
   begin 
  

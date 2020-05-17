@@ -32,7 +32,6 @@ end record;
 
   procedure pull (self : inout addr_data; signal data_IO :  in  addr_data);
   procedure push (self : inout addr_data; signal data_IO :  out  addr_data);
-  procedure reset_0 (self :  inout  addr_data);
 ------- End Psuedo Class addr_data -------------------------
 -------------------------------------------------------------------------
 
@@ -54,14 +53,6 @@ procedure push (self : inout addr_data; signal data_IO :  out  addr_data) is
    
   begin 
  data_IO  <=  self; 
-end procedure;
-
-procedure reset_0 (self :  inout  addr_data) is
-   
-  begin 
- self.address := (others => '0');
-  self.data := (others => '0');
-   
 end procedure;
 
 ------- End Psuedo Class addr_data -------------------------

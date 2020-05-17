@@ -44,13 +44,13 @@ end record;
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
-  procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic_vector(31 downto 0));
+  procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic_vector);
   procedure reset_0 (self :  inout  small_buffer);
   function length (self :   small_buffer) return integer;
   function ready_to_send_0 (self :   small_buffer) return boolean;
   function length_0 (self :   small_buffer) return integer;
   procedure re_read_0 (self :  inout  small_buffer);
-  procedure get_value_01_rshift (self :  inout  small_buffer; signal rhs :  out  std_logic_vector(31 downto 0));
+  procedure get_value_01_rshift (self :  inout  small_buffer; signal rhs :  out  std_logic_vector);
   function isReceivingData_0 (self :   small_buffer) return boolean;
 ------- End Psuedo Class small_buffer -------------------------
 -------------------------------------------------------------------------
@@ -74,7 +74,7 @@ function isReceivingData_0 (self :   small_buffer) return boolean is
    
 end function;
 
-procedure get_value_01_rshift (self :  inout  small_buffer; signal rhs :  out  std_logic_vector(31 downto 0)) is
+procedure get_value_01_rshift (self :  inout  small_buffer; signal rhs :  out  std_logic_vector) is
    
   begin 
  rhs <= (others => '0');
@@ -131,7 +131,7 @@ procedure reset_0 (self :  inout  small_buffer) is
    
 end procedure;
 
-procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic_vector(31 downto 0)) is
+procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic_vector) is
    
   begin 
  

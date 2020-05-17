@@ -55,9 +55,9 @@ proc : process(clk) is
 
       -- begin architecture
     -- begin p2
-  fifo_s_sig.rx1_s2m.enable <= '
+  fifo_s_sig.rx1_s2m.enable <= 
     fifo_s_sig.rx2_s2m.enable when fifo_s_sig.rx1_m2s.empty = '0' else
-    0';
+    '0';
   fifo_s_sig.rx2_m2s.empty <= fifo_s_sig.rx1_m2s.empty;
   fifo_s_sig.rx2_m2s.data <= fifo_s_sig.rx1_m2s.data;
   -- end p2;

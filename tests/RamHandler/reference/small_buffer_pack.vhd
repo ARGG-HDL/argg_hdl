@@ -45,10 +45,10 @@ end record;
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
   procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  inout  addr_data);
-  procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  addr_data);
   function length (self :   small_buffer) return integer;
   function ready_to_send_0 (self :   small_buffer) return boolean;
   function length_0 (self :   small_buffer) return integer;
+  procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  addr_data);
   function isReceivingData_0 (self :   small_buffer) return boolean;
   procedure re_read_0 (self :  inout  small_buffer);
   procedure reset_0 (self :  inout  small_buffer);
@@ -91,6 +91,25 @@ function isReceivingData_0 (self :   small_buffer) return boolean is
    
 end function;
 
+procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  addr_data) is
+   
+  begin 
+ rhs := addr_data_null;
+  
+    if (self.count > 0) then 
+      rhs := self.mem(self.tail);
+      self.tail := self.tail + 1;
+      self.count := self.count - 1;
+      
+    end if;
+  
+    if (self.tail > self.mem'length - 1) then 
+      self.tail := 0;
+      
+    end if;
+   
+end procedure;
+
 function length_0 (self :   small_buffer) return integer is
    
   begin 
@@ -111,25 +130,6 @@ function length (self :   small_buffer) return integer is
  return self.mem'length;
    
 end function;
-
-procedure get_value_00_rshift (self :  inout  small_buffer; rhs :  inout  addr_data) is
-   
-  begin 
- reset_0(self => rhs);
-  
-    if (self.count > 0) then 
-      rhs := self.mem(self.tail);
-      self.tail := self.tail + 1;
-      self.count := self.count - 1;
-      
-    end if;
-  
-    if (self.tail > self.mem'length - 1) then 
-      self.tail := 0;
-      
-    end if;
-   
-end procedure;
 
 procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  inout  addr_data) is
    

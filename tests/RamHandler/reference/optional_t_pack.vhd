@@ -37,7 +37,7 @@ end record;
   function to_bool (self :   optional_t) return boolean;
   procedure set_inValid_0 (self :  inout  optional_t);
   function is_valid_0 (self :   optional_t) return boolean;
-  procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector(31 downto 0));
+  procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector);
   procedure reset_0 (self :  inout  optional_t);
 ------- End Psuedo Class optional_t -------------------------
 -------------------------------------------------------------------------
@@ -61,7 +61,7 @@ procedure reset_0 (self :  inout  optional_t) is
    
 end procedure;
 
-procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector(31 downto 0)) is
+procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector) is
    
   begin 
  self.valid := '1';
