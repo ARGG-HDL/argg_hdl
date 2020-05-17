@@ -39,8 +39,8 @@ proc : process(clkgen_clk) is
   begin
     if rising_edge(clkgen_clk) then 
   counter <= counter + 1;
-    counter2(32 downto 15) := counter(23 downto 1);
-    counter3(32 downto 1) := counter3;
+    counter2(32 downto 15) <= counter(23 downto 1);
+    counter3(32 downto 1) <= counter3;
     d4 <= d0 & d1 & d2 & d3;
     
       if (counter = 10) then 

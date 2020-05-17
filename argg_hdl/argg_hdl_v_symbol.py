@@ -1,7 +1,7 @@
+from __future__ import annotations
 import os
 import sys
 import inspect
-
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_simulation import *
@@ -88,11 +88,14 @@ class v_symbol_converter(hdl_converter_base):
         obj._add_input()
         if "std_logic_vector" in obj._type:
             if type(sl).__name__ == "v_slice":
-                ret = v_slv( Inout = obj._Inout)
+                ret = v_slv( Inout = obj._Inout,varSigConst=obj._varSigConst)
+                ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
             else:
-                ret = v_sl(obj._Inout)
+                ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
+                index = sl.__hdl_converter__._vhdl__getValue(sl,__slice_type__)
+                ret.__hdl_name__ = obj.__hdl_name__+"("+str(index)+")"
             
-            ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
+            
             return ret
 
         raise Exception("unexpected type")
@@ -130,7 +133,7 @@ class v_symbol_converter(hdl_converter_base):
         
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
 
-    def _to_hdl___bool__(self,obj, astParser):
+    def _to_hdl___bool__(self,obj:v_symbol, astParser):
         obj._add_input()
         astParser.add_read(obj)
         if obj._type == "std_logic":
@@ -144,12 +147,12 @@ class v_symbol_converter(hdl_converter_base):
 
         return "to_bool(" + str(obj) + ") "
 
-    def _vhdl__BitAnd(self,obj,rhs,astParser):
+    def _vhdl__BitAnd(self,obj:"v_symbol",rhs,astParser) -> "v_symbol":
         ret = v_slv()
         ret.set_vhdl_name(str(obj)+ " & " +str(rhs) ,True)
         return ret
 
-    def _vhdl__DefineSymbol(self,obj, VarSymb=None):
+    def _vhdl__DefineSymbol(self,obj:"v_symbol", VarSymb=None):
         print_cnvt("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
@@ -178,7 +181,7 @@ class v_symbol_converter(hdl_converter_base):
         ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"   
         return  ret
 
-    def get_port_list(self,obj):
+    def get_port_list(self,obj:"v_symbol"):
         ret = []
         if obj._Inout == InOut_t.Internal_t:
             return ret
@@ -190,13 +193,13 @@ class v_symbol_converter(hdl_converter_base):
         return ret
 
 
-    def _vhdl__reasign_std_logic(self, obj, rhs, target, astParser=None,context_str=None):
+    def _vhdl__reasign_std_logic(self, obj:"v_symbol", rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
             return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj)) 
         return target + asOp+  str(rhs) 
 
-    def _vhdl__reasign_std_logic_vector(self, obj, rhs, target, astParser=None,context_str=None):
+    def _vhdl__reasign_std_logic_vector(self, obj:"v_symbol", rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " (others => '0')"
@@ -228,7 +231,7 @@ class v_symbol_converter(hdl_converter_base):
 
         return target + asOp+  str(rhs) 
 
-    def _vhdl__reasign_int(self, obj, rhs, target, astParser=None,context_str=None):
+    def _vhdl__reasign_int(self, obj:"v_symbol", rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
 
         if issubclass(type(rhs),argg_hdl_base) and "std_logic_vector" in rhs._type:
@@ -236,7 +239,7 @@ class v_symbol_converter(hdl_converter_base):
         
         return target +asOp +  str(rhs)
 
-    def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
+    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         if astParser:
             astParser.add_write(obj)
         obj._add_output()
@@ -262,7 +265,7 @@ class v_symbol_converter(hdl_converter_base):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)            
         return target +asOp +  str(rhs)
     
-    def get_type_simple(self,obj):
+    def get_type_simple(self,obj:"v_symbol"):
         ret = obj._type
         if "std_logic_vector" in ret:
             sp1 = int(ret.split("downto")[0].split("(")[1])
@@ -271,7 +274,7 @@ class v_symbol_converter(hdl_converter_base):
             ret  = "slv"+str(sp3)
         return ret
 
-    def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
+    def _vhdl__getValue(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
         if astParser:
             astParser.add_read(obj)
         obj._add_input()
@@ -284,23 +287,24 @@ class v_symbol_converter(hdl_converter_base):
                 return  obj
         if ReturnToObj.get_type() == "integer" and  "std_logic_vector" in obj._type:
             return  "to_integer(signed( " + str(obj)  + "))"
-        
+        if ReturnToObj.get_type() == "uinteger" and  "std_logic_vector" in obj._type:
+            return  "to_integer(unsigned( " + str(obj)  + "))"
         return obj
 
-    def get_default_value(self,obj):
+    def get_default_value(self,obj:"v_symbol"):
         return obj.DefaultValue
 
-    def length(self,obj):
+    def length(self,obj:"v_symbol"):
         ret = v_int()
         ret.__hdl_name__=str(obj)+"'length"
         return ret
 
-    def get_type_func_arg(self,obj):
+    def get_type_func_arg(self,obj:"v_symbol"):
         ret = obj.get_type()
         if "std_logic_vector" in ret:
             return "std_logic_vector"
         return ret
-    def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
+    def to_arglist(self,obj:"v_symbol", name,parent,withDefault = False,astParser=None):
         inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
         varSigstr = ""
         if obj._varSigConst == varSig.signal_t:
@@ -320,6 +324,7 @@ def v_symbol_reset():
 
 class v_symbol(argg_hdl_base):
     __value_list__ = []
+    
     def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32):
         super().__init__()
         if not varSigConst:
@@ -731,6 +736,18 @@ def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
         Bitwidth=Bitwidth
     )
 
+def v_uint(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
+    
+    return v_symbol(
+        v_type= "uinteger",
+        value= value(Default), 
+        DefaultValue=str(Default), 
+        Inout = Inout,
+        includes=slv_includes,
+        varSigConst=varSigConst,
+        Bitwidth=Bitwidth
+    )
+
 def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
     asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
     val = None
@@ -747,3 +764,5 @@ def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
     args[0]._add_output()
     astParser.add_write(args[0])
     return ret
+
+__slice_type__ = v_uint()
