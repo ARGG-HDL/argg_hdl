@@ -7,6 +7,7 @@ from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class
 class v_record_converter(v_class_converter):
     def __init__(self):
         super().__init__()
+        self.functionNameVetoList.append("reset")
 
 
 
@@ -17,7 +18,8 @@ class v_record_converter(v_class_converter):
             "self" :obj,
             "call_func" : call_func_record_reset,
             "func_args" : None,
-            "setDefault" : False
+            "setDefault" : False,
+            "varSigIndependent" : True
 
         })
 
@@ -80,6 +82,10 @@ class v_record(v_class):
         self.__hdl_converter__.append_reset(self)
  
 
+    def reset(self):
+        mem = self.getMember()
+        for x in mem:
+            x["symbol"].reset()
 
     def getType(self, Inout=None, varSigType=None):
         return self._type

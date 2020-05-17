@@ -19,6 +19,7 @@ class v_class_converter(hdl_converter_base):
         super().__init__()
         self.__ast_functions__ =list()
         self.archetecture_list = []
+        self.functionNameVetoList= []
 
     def includes(self,obj, name,parent):
         ret = ""

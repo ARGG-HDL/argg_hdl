@@ -53,7 +53,8 @@ class v_symbol_converter(hdl_converter_base):
             "self" :obj,
             "call_func" : call_func_symb_reset,
             "func_args" : None,
-            "setDefault" : False
+            "setDefault" : False,
+            "varSigIndependent" : True
 
         }
         return ret
@@ -192,8 +193,8 @@ class v_symbol_converter(hdl_converter_base):
     def _vhdl__reasign_std_logic(self, obj, rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
-            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type)) 
-        return target + asOp+  "'" +str(rhs) +"'"
+            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj)) 
+        return target + asOp+  str(rhs) 
 
     def _vhdl__reasign_std_logic_vector(self, obj, rhs, target, astParser=None,context_str=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
@@ -201,7 +202,14 @@ class v_symbol_converter(hdl_converter_base):
             return target + asOp+ " (others => '0')"
         
         if  issubclass(type(rhs),argg_hdl_base):
-            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj._type,astParser=astParser)) 
+            if rhs.get_type() == 'integer':
+                return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
+                    dest=target,
+                    src = str(rhs),
+                    asOp=asOp
+                )
+
+            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj,astParser=astParser)) 
         
         if  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
@@ -267,7 +275,14 @@ class v_symbol_converter(hdl_converter_base):
         if astParser:
             astParser.add_read(obj)
         obj._add_input()
-        if ReturnToObj == "integer" and  "std_logic_vector" in obj._type:
+        if ReturnToObj.get_type() ==  obj._type:
+            return obj
+        if obj._varSigConst ==varSig.unnamed_const:
+            if ReturnToObj.get_type() == "std_logic":
+                obj.__hdl_name__="'" + str(obj)  + "'"
+                obj._type= "std_logic"
+                return  obj
+        if ReturnToObj.get_type() == "integer" and  "std_logic_vector" in obj._type:
             return  "to_integer(signed( " + str(obj)  + "))"
         
         return obj
@@ -280,6 +295,11 @@ class v_symbol_converter(hdl_converter_base):
         ret.__hdl_name__=str(obj)+"'length"
         return ret
 
+    def get_type_func_arg(self,obj):
+        ret = obj.get_type()
+        if "std_logic_vector" in ret:
+            return "std_logic_vector"
+        return ret
     def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
         inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
         varSigstr = ""
@@ -292,7 +312,7 @@ class v_symbol_converter(hdl_converter_base):
         if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
             default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
 
-        return varSigstr + name + " : " + inoutstr +" " + obj.getType() + default_str
+        return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
 
 def v_symbol_reset():
     #v_symbol.__value_list__.clear()
@@ -472,14 +492,19 @@ class v_symbol(argg_hdl_base):
         return value(self) == value(rhs) 
     
     def __getitem__(self, b):
-        start = b.start
-        stop = b.stop
+        if type(b).__name__ == 'slice':
+            start = b.start
+            stop = b.stop
+        else:
+            start = value(b)
+            stop = start+1
         if stop is None:
             stop = len(self) - 1
 
         stop = min(value(stop),  len(self) - 1)
         sl = slice_helper(start=start,stop=stop)
         return v_slice_base(self,sl)
+        
         
 ##################### End Operators #############################################
 

@@ -1,5 +1,6 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
+from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 
 class Counter(v_clk_entity):
     def __init__(self, clk , InputType=v_slv(32)):
@@ -47,7 +48,11 @@ class tb(v_entity):
 
         end_architecture()
 
-tb1 = v_create(tb())
+@vhdl_conversion
+def ex32vhdl(OutputPath):
+    tb1 = v_create(tb())
+        
+    return tb1
+
 
 #run_simulation(tb1, 30000,"optional_t.vcd")
-convert_to_hdl(tb1,"ex3")

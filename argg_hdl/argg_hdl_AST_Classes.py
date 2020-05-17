@@ -671,7 +671,7 @@ class handle_v_switch_cl(v_ast_base):
         for x in self.cases:
             x = x._vhdl__getValue(self.ReturnToObj)
             ret += str(x)
-        default = self.Default._vhdl__getValue(self.ReturnToObj)
+        default = self.Default.__hdl_converter__._vhdl__getValue(self.Default, self.ReturnToObj)
         
         ret += str(default)
         return ret
@@ -1299,7 +1299,16 @@ def body_unfold_Continue(astParser,args,keywords=None):
     return "next"
 
 def body_Constant(astParser,Node,keywords=None):
-    return v_named_C(Node.value)
+    if type(Node.value).__name__== 'bool':
+        ret = v_bool(Default=Node.value)
+        ret.set_vhdl_name(str(Node.value), True)
+        ret._varSigConst = varSig.unnamed_const
+        return ret
+        
+    ret = v_int(Node.value)
+    ret.set_vhdl_name(str(Node.value), True)
+    ret._varSigConst = varSig.unnamed_const
+    return ret
 
 
 class v_slice(v_ast_base):

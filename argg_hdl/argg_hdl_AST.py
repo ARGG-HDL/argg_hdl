@@ -687,7 +687,8 @@ class xgenAST:
             "self" :v_deepcopy(ClassInstance),
             "call_func" : None,
             "func_args" : None,
-            "setDefault" : True
+            "setDefault" : True,
+            "varSigIndependent" : False
         })
 
     def extractFunctionsForClass1(self,ClassInstance,parent,cl_body ):
@@ -695,7 +696,8 @@ class xgenAST:
 
             if  f.name in self.functionNameVetoList:
                 continue
-
+            if f.name in ClassInstance.__hdl_converter__.functionNameVetoList:
+                continue
 
             self.extractArchetectureForClass0(ClassInstance,f)
             self.extractFunctionsForClass1a(ClassInstance,parent,f)

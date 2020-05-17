@@ -250,7 +250,7 @@ def get_symbol(symbol):
         return None
     return symbol["symbol"].get_symbol()
     
-def isSameArgs(args1,args2, hasDefaults = False):
+def isSameArgs(args1,args2, hasDefaults = False, varSigIndependent =False):
     if not hasDefaults and  len(args1) != len(args2):
         return False
     for arg1,arg2 in zip(args1,args2):
@@ -260,7 +260,14 @@ def isSameArgs(args1,args2, hasDefaults = False):
             return False
         if get_type(arg1) != get_type( arg2):
             return False
-        if get_symbol(arg1)._varSigConst != get_symbol(arg2)._varSigConst:
+
+        if varSigIndependent == False \
+            and \
+        get_symbol(arg1)._varSigConst != varSig.unnamed_const \
+            and \
+        get_symbol(arg2)._varSigConst != varSig.unnamed_const \
+            and \
+        get_symbol(arg1)._varSigConst != get_symbol(arg2)._varSigConst:
             return False
     return True  
 
@@ -564,7 +571,7 @@ class hdl_converter_base:
         for x  in obj.__hdl_converter__.MemfunctionCalls:
             if x["name"] != name:
                 continue
-            if not isSameArgs(args, x["args"] ,x['setDefault']):
+            if not isSameArgs(args, x["args"] ,x['setDefault'], x["varSigIndependent"]):
                 continue
             if x["call_func"] is None:
                 needAdding = False
@@ -577,7 +584,8 @@ class hdl_converter_base:
             "self" :obj,
             "call_func" : None,
             "func_args" : None,
-            "setDefault" : False
+            "setDefault" : False,
+            "varSigIndependent" : False
 
         })
         obj.IsConverted = False
@@ -921,6 +929,7 @@ class varSig(Enum):
     const_t =3
     reference_t = 4
     combined_t = 5
+    unnamed_const = 6
 
     def __repr__(self):
         return str(self).split(".")[-1]
