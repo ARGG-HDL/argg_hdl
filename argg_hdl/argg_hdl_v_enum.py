@@ -91,6 +91,17 @@ end  {PackageName};
 
         return VarSymb +" " +str(obj) + " : " + obj.name +" := " + obj._type(value(obj.symbol)).name +";\n"
 
+    def get_architecture_header(self, obj):
+        if obj._Inout != InOut_t.Internal_t:
+            return ""
+        
+        if obj._varSigConst != varSig.signal_t or obj._varSigConst != varSig.signal_t:
+            return ""
+
+        VarSymb = get_varSig(obj._varSigConst)
+
+        return VarSymb +" " +str(obj) + " : " + obj.name +" := " +obj._type(value(obj.symbol)).name+";\n"
+
 class v_enum(argg_hdl_base):
     def __init__(self,EnumIn,EnumVal=None,name=None, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t):
         super().__init__()
@@ -144,6 +155,7 @@ class v_enum(argg_hdl_base):
 
 
     def set_varSigConst(self, varSigConst):
+        self._varSigConst=varSigConst
         self.symbol.set_varSigConst(varSigConst)
 
     def isVarSigType(self, varSigType):
