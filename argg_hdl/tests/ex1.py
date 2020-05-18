@@ -13,11 +13,9 @@ import argg_hdl.argg_hdl_debug_vis as debug_vis
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 
 
-class SerialDataConfig(v_class):
+class SerialDataConfig(v_record):
     def __init__(self):
-        super().__init__("SerialDataConfig")
-        self.__v_classType__       = v_classType_t.Record_t
-
+        super().__init__()
         self.row_Select            =  v_slv(3)
         self.column_select         =  v_slv(6)
         self.ASIC_NUM              =  v_slv(5)
@@ -26,19 +24,17 @@ class SerialDataConfig(v_class):
         self.sample_stop           =  v_slv(5)
 
 
-class register_t(v_class):
+class register_t(v_record):
     def __init__(self):
-        super().__init__("register_t")
-        self.__v_classType__       = v_classType_t.Record_t
+        super().__init__()
         self.address   = v_slv(16) 
         self.value     = v_slv(16) 
         
 
 
-class klm_globals(v_class):
+class klm_globals(v_record):
     def __init__(self):
-        super().__init__("klm_globals")
-        self.__v_classType__       = v_classType_t.Record_t
+        super().__init__()
         self.clk   =  v_sl() 
         self.rst   =  v_sl() 
         self.reg   =  register_t() 

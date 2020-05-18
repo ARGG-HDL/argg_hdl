@@ -33,6 +33,8 @@ end record;
     type klm_globals_a is array (natural range <>) of klm_globals;
         
 
+  procedure pull (self : inout klm_globals; signal data_IO :  in  klm_globals);
+  procedure push (self : inout klm_globals; signal data_IO :  out  klm_globals);
 ------- End Psuedo Class klm_globals -------------------------
 -------------------------------------------------------------------------
 
@@ -44,6 +46,18 @@ package body klm_globals_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class klm_globals -------------------------
+procedure pull (self : inout klm_globals; signal data_IO :  in  klm_globals) is
+   
+  begin 
+ self  := data_IO; 
+end procedure;
+
+procedure push (self : inout klm_globals; signal data_IO :  out  klm_globals) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
 ------- End Psuedo Class klm_globals -------------------------
   -------------------------------------------------------------------------
 

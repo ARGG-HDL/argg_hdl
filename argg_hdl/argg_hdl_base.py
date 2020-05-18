@@ -1,9 +1,11 @@
 from enum import Enum 
 import copy
 import  inspect 
-
 import argg_hdl.argg_hdl_core_pack_generator as core_gen
 import argg_hdl.argg_hdl_debug_vis as debug_vis
+
+from typing import Sequence, TypeVar
+T = TypeVar('T', bound='Copyable')
 
 def architecture(func):
     def wrap(self): 
@@ -1017,7 +1019,7 @@ class v_classType_t(Enum):
     def __repr__(self):
         return str(self).split(".")[-1]
 
-def v_variable(symbol):
+def v_variable(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1027,7 +1029,7 @@ def v_variable(symbol):
     return ret
     
     
-def v_signal(symbol):
+def v_signal(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1036,7 +1038,7 @@ def v_signal(symbol):
     ret._remove_drivers()
     return ret
 
-def v_const(symbol):
+def v_const(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1045,7 +1047,7 @@ def v_const(symbol):
     ret._remove_drivers()
     return ret
 
-def port_out(symbol):
+def port_out(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1054,7 +1056,7 @@ def port_out(symbol):
     ret._remove_drivers()
     return ret
 
-def variable_port_out(symbol):
+def variable_port_out(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1063,7 +1065,7 @@ def variable_port_out(symbol):
     ret._remove_drivers()
     return ret
 
-def port_in(symbol):
+def port_in(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1072,7 +1074,7 @@ def port_in(symbol):
     ret._remove_drivers()
     return ret
 
-def variable_port_in(symbol):
+def variable_port_in(symbol: T) ->T:
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1081,8 +1083,7 @@ def variable_port_in(symbol):
     ret._remove_drivers()
     return ret
 
-from typing import Sequence, TypeVar
-T = TypeVar('T', bound='Copyable')
+
 
 
 def port_Master(symbol: T) -> T:
@@ -1095,7 +1096,7 @@ def port_Master(symbol: T) -> T:
     return ret
 
 
-def variable_port_Master(symbol):
+def variable_port_Master(symbol: T) ->T:
     ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1105,7 +1106,7 @@ def variable_port_Master(symbol):
     return ret
 
 
-def signal_port_Master(symbol):
+def signal_port_Master(symbol: T) ->T:
     ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1115,7 +1116,7 @@ def signal_port_Master(symbol):
     return ret
 
 
-def port_Stream_Master(symbol):
+def port_Stream_Master(symbol: T) ->T:
     ret = port_Master(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1130,7 +1131,7 @@ def port_Stream_Master(symbol):
     return ret
 
 
-def signal_port_Slave(symbol):
+def signal_port_Slave(symbol: T) ->T:
     ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1150,7 +1151,7 @@ def port_Slave(symbol: T) ->T:
     return ret
 
 
-def variable_port_Slave(symbol):
+def variable_port_Slave(symbol: T) ->T:
     ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1160,7 +1161,7 @@ def variable_port_Slave(symbol):
     return ret
 
 
-def port_Stream_Slave(symbol):
+def port_Stream_Slave(symbol: T) ->T:
     ret = port_Slave(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -1174,7 +1175,7 @@ def port_Stream_Slave(symbol):
     return ret
 
 
-def v_copy(symbol, varSig=None):
+def v_copy(symbol:T, varSig=None)->T:
     ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.resetInout()
@@ -1186,7 +1187,7 @@ def v_copy(symbol, varSig=None):
     return ret
 
 
-def v_deepcopy(symbol):
+def v_deepcopy(symbol: T) ->T:
     hdl = symbol.__hdl_converter__
     driver = symbol.__Driver__
     receiver = symbol.__receiver__

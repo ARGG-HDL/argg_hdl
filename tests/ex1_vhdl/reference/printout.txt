@@ -10,12 +10,12 @@
       <status ="sucess">
     </entity_conversion>
     <package_conversion name="klm_globals">
-      <processing name="klm_globals" MemfunctionCalls="0">
+      <processing name="klm_globals" MemfunctionCalls="1">
       </processing>
       <status ="sucess">
     </package_conversion>
     <package_conversion name="register_t">
-      <processing name="register_t" MemfunctionCalls="0">
+      <processing name="register_t" MemfunctionCalls="1">
       </processing>
       <status ="sucess">
     </package_conversion>

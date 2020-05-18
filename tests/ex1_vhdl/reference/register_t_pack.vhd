@@ -30,6 +30,8 @@ end record;
     type register_t_a is array (natural range <>) of register_t;
         
 
+  procedure pull (self : inout register_t; signal data_IO :  in  register_t);
+  procedure push (self : inout register_t; signal data_IO :  out  register_t);
 ------- End Psuedo Class register_t -------------------------
 -------------------------------------------------------------------------
 
@@ -41,6 +43,18 @@ package body register_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class register_t -------------------------
+procedure pull (self : inout register_t; signal data_IO :  in  register_t) is
+   
+  begin 
+ self  := data_IO; 
+end procedure;
+
+procedure push (self : inout register_t; signal data_IO :  out  register_t) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
 ------- End Psuedo Class register_t -------------------------
   -------------------------------------------------------------------------
 
