@@ -1,4 +1,6 @@
-import os,sys,inspect
+import os
+import sys
+import inspect
  
 from argg_hdl.argg_hdl_base import *
 
@@ -8,7 +10,7 @@ class v_procedure_converter(hdl_converter_base):
         super().__init__()
     def getHeader(self, obj,name, parent):
         classDef =""
-        if parent != None and not obj.isFreeFunction:
+        if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent)
 
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
@@ -27,7 +29,7 @@ class v_procedure_converter(hdl_converter_base):
     
     def getBody(self, obj, name,parent):
         classDef =""
-        if parent != None and not obj.isFreeFunction:
+        if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent)
 
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
@@ -66,7 +68,7 @@ class v_function_converter(hdl_converter_base):
         super().__init__()
     def getHeader(self, obj, name, parent):
         classDef =""
-        if parent != None and not obj.isFreeFunction:
+        if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent,True)
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
         if obj.name:
@@ -85,7 +87,7 @@ class v_function_converter(hdl_converter_base):
     
     def getBody(self, obj, name,parent):
         classDef =""
-        if parent != None and not obj.isFreeFunction:
+        if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name(parent,True)
         argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
         
@@ -195,13 +197,13 @@ class v_Arch_converter(hdl_converter_base):
             #print("=====")
             #print(str(x["name"]))
             
-            if x['symbol'].__Driver__ == None:
+            if x['symbol'].__Driver__ is None:
                 #print("Has no Driver")
                 continue
             if x['symbol'].DriverIsProcess():
                 #print("Driver is process")
                 continue 
-            if  x['symbol'].__Driver__.__hdl_name__ == None:
+            if  x['symbol'].__Driver__.__hdl_name__ is None:
                 #print("Driver has no HDL Name")
                 continue 
             if  x['symbol']._varSigConst != varSig.signal_t:
