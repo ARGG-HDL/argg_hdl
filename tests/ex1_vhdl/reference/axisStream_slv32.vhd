@@ -226,6 +226,7 @@ procedure pull (self :  inout  axiStream_slv32_master;  signal tx :  in  axiStre
     if (self.tx.ready = '1') then 
       self.tx.valid := '0';
       self.tx.last := '0';
+      self.tx.data := (others => '0');
       
     end if;
   

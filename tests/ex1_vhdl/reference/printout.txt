@@ -34,6 +34,9 @@
         <request_new_template name="__lshift__"/>
         <request_new_template name="__bool__"/>
       </processing>
+      <use_template function ="reset" args="std_logic" />
+      <use_template function ="reset" args="std_logic" />
+      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
       <use_template function ="ready_to_send" args="axiStream_slv32_master" />
       <processing name="axisStream_slave" MemfunctionCalls="0">
         <request_new_template name="observe_data"/>

@@ -8,6 +8,7 @@ use IEEE.std_logic_1164.all;
 use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.myStates_pack.all;
 
 
 entity enum_TB is 
