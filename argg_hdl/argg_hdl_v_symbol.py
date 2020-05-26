@@ -493,6 +493,12 @@ class v_symbol(argg_hdl_base):
     def __gt__(self,rhs):
         return value(self) > value(rhs) 
 
+    def __ge__(self,rhs):
+        return value(self) >= value(rhs) 
+    
+    def __le__(self,rhs):
+        return value(self) <= value(rhs) 
+
     def __eq__(self,rhs):
         return value(self) == value(rhs) 
     

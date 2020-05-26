@@ -957,8 +957,9 @@ class v_class(argg_hdl_base):
             x["symbol"]._un_instantiate_(x["name"])
         
         
+        self.setInout(InoutFlip(self._Inout))
         self.set_vhdl_name(Name,True)
-        self._Inout = InoutFlip(self._Inout)
+        #self._Inout = InoutFlip(self._Inout)
         self.__isInst__ = False
         return self
 

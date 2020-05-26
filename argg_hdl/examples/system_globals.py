@@ -7,21 +7,20 @@ from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.argg_hdl_simulation import *
 from argg_hdl.argg_hdl_v_entity import *
 from argg_hdl.argg_hdl_v_class import *
+from argg_hdl.argg_hdl_v_record import *
 
 
-class register_t(v_class):
+class register_t(v_record):
     def __init__(self):
-        super().__init__("register_t")
-        self.__v_classType__       = v_classType_t.Record_t
+        super().__init__()
         self.address   = v_slv(16) 
         self.value     = v_slv(16) 
         
 
 
-class system_globals(v_class):
+class system_globals(v_record):
     def __init__(self):
-        super().__init__("system_globals")
-        self.__v_classType__       = v_classType_t.Record_t
+        super().__init__()
         self.clk   =  v_sl() 
         self.rst   =  v_sl() 
         self.reg   =  register_t() 

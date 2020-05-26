@@ -10,7 +10,9 @@ class v_enum_converter(hdl_converter_base):
 
     def get_type_simple(self,obj):
         return obj.name
-
+    def includes(self,obj, name,parent):
+        PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
+        return "  use work." + PackageName+".all;\n"
     def getHeader(self,obj, name,parent):
         if  parent and parent._issubclass_("v_class"):
              return ""
@@ -91,6 +93,7 @@ end  {PackageName};
 
         return VarSymb +" " +str(obj) + " : " + obj.name +" := " + obj._type(value(obj.symbol)).name +";\n"
 
+    
     def get_architecture_header(self, obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
@@ -164,6 +167,8 @@ class v_enum(argg_hdl_base):
     def _sim_get_value(self):
         return value(self.symbol)
     
+    def __eq__(self,rhs):
+        return value(self) == value(rhs) 
     
     def set_vhdl_name(self,name, Overwrite = False):
         if self.__hdl_name__ and self.__hdl_name__ != name and Overwrite == False:

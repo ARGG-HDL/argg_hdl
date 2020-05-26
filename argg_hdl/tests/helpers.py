@@ -14,7 +14,15 @@ def printf(out_str):
     if g_globals["file"]:
         g_globals["file"].write(out_str)
 
+def printff(*argv):
+    ret = ""
+    start = ""
+    for arg in argv:  
+        ret += start + str(value(arg))
+        start = "; "
 
+    printf(ret+'\n')
+    
 def compare_folders(FolderA,FolderB):
     dcmp = dircmp(FolderA, FolderB) 
     return dcmp
@@ -82,7 +90,7 @@ def vhdl_conversion(func):
 
 
 def do_simulation(func):
-    def wrap(OutputPath):
+    def wrap(OutputPath, SimulationTime=3000):
         mkdir_if_not_exist(OutputPath)
         mkdir_if_not_exist(OutputPath+"/output")
         mkdir_if_not_exist(OutputPath+"/reference")
@@ -93,7 +101,7 @@ def do_simulation(func):
         with open(OutputPath+"/output"+"/data.txt","w",newline="") as f:
             g_globals["file"] = f
             tb = func(OutputPath,f)
-            run_simulation(tb, 3000,OutputPath+"/temp/"+"data.vcd")
+            run_simulation(tb, SimulationTime, OutputPath+"/temp/"+"data.vcd")
         
         g_globals["file"] = None
         

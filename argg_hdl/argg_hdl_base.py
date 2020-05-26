@@ -561,7 +561,8 @@ class hdl_converter_base:
         return obj
 
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
-        return str(obj) + " := " +  str(rhs)
+        asOp = obj.__hdl_converter__.get_assiment_op(obj)    
+        return str(obj) +asOp +  str(rhs)
 
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
         return rhs.__hdl_converter__._vhdl__reasign(rhs, obj,astParser,context_str)
