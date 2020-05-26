@@ -266,9 +266,9 @@ class axisStream_master(v_class_master):
     def _onPull(self):
 
         if self.tx.ready: 
-            self.tx.valid << 0 
-            self.tx.last  << 0  
-#            self.tx.data  << 0
+            self.tx.valid.reset()
+            self.tx.last.reset()
+            self.tx.data.reset()
 
     
     def __lshift__(self, rhs):
