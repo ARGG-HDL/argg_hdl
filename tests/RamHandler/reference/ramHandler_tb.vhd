@@ -24,6 +24,10 @@ end entity;
 architecture rtl of ramHandler_tb is
 
 --------------------------ramHandler_tb-----------------
+  signal addr_out : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal adr : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal data_out : std_logic_vector(31 downto 0) := (others => '0'); 
 --------------------------clkgen-----------------
   signal clkgen_clk : std_logic := '0'; 
 -------------------------- end clkgen-----------------
@@ -32,10 +36,6 @@ architecture rtl of ramHandler_tb is
   signal ram_DataIO_m2s : ram_handler_m2s := ram_handler_m2s_null;
   signal ram_clk : std_logic := '0'; 
 -------------------------- end ram-----------------
-  signal addr_out : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal adr : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal data_out : std_logic_vector(31 downto 0) := (others => '0'); 
 -------------------------- end ramHandler_tb-----------------
 
 begin

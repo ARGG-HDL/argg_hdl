@@ -169,7 +169,8 @@ gStatus = {
     "MakeGraph"           : True,
     "saveUnfinishFiles"   : False,
     "OutputFile"          : None,
-    "isFunction"          : False
+    "isFunction"          : False,
+    "sort_archetecture"   : False
 }
 
 def isFunction():
@@ -204,6 +205,12 @@ def set_MakeGraph(newState):
 
 def saveUnfinishedFiles():
     return gStatus["saveUnfinishFiles"]
+
+def sort_archetecture():
+    return gStatus["sort_archetecture"]
+
+def set_sort_archetecture(newState):
+    gStatus["sort_archetecture"]  = newState
 
 gHDL_objectList = []
 

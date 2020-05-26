@@ -19,10 +19,10 @@ end entity;
 architecture rtl of enum_TB is
 
 --------------------------enum_TB-----------------
+  signal counter : integer := 0; 
 --------------------------clkgen-----------------
   signal clkgen_clk : std_logic := '0'; 
 -------------------------- end clkgen-----------------
-  signal counter : integer := 0; 
 -------------------------- end enum_TB-----------------
 
 begin

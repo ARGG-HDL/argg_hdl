@@ -19,10 +19,10 @@ end entity;
 architecture rtl of fifo_cc_tb is
 
 --------------------------fifo_cc_tb-----------------
+  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
 --------------------------clkgen-----------------
   signal clkgen_clk : std_logic := '0'; 
 -------------------------- end clkgen-----------------
-  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
 --------------------------ff_readout-----------------
   signal ff_readout_Data_in_s2m : NativeFifoOut_s2m := NativeFifoOut_s2m_null;
   signal ff_readout_Data_in_m2s : NativeFifoOut_m2s := NativeFifoOut_m2s_null;

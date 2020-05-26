@@ -347,8 +347,11 @@ class xgenAST:
             
             
             self.local_function = ClassInstance.__init__.__globals__
-            self.Archetecture_vars = ClassInstance.__local_symbols__
-            #self.Archetecture_vars = sorted(ClassInstance.__local_symbols__, key=lambda element_: element_["type_name"])
+
+            if sort_archetecture():
+                self.Archetecture_vars = sorted(ClassInstance.__local_symbols__, key=lambda element_: element_["type_name"])
+            else:
+                self.Archetecture_vars = ClassInstance.__local_symbols__
             try:
                 body = self.Unfold_body(f)  ## get local vars 
             except Exception as inst:
@@ -709,7 +712,7 @@ class xgenAST:
         ClassInstance.__hdl_converter__ = primary.__hdl_converter__
         ClassInstance.__hdl_converter__.MissingTemplate = False
         ClassName  = type(ClassInstance).__name__
-        ClassInstance_local = v_deepcopy(ClassInstance)
+        ClassInstance_local = ClassInstance
         #ClassInstance_local._remove_connections()
         
         cl = self.getClassByName(ClassName)

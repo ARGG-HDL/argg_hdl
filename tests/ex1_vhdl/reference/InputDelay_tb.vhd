@@ -21,11 +21,21 @@ end entity;
 architecture rtl of InputDelay_tb is
 
 --------------------------InputDelay_tb-----------------
+  signal data : std_logic_vector(31 downto 0) := x"00000005"; 
+  signal k_globals : klm_globals := klm_globals_null;
+--------------------------axprint-----------------
+  signal axprint_ConfigIn_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
+  signal axprint_ConfigIn_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
+  signal axprint_globals : klm_globals := klm_globals_null;
+-------------------------- end axprint-----------------
 --------------------------clkgen-----------------
   signal clkgen_clk : std_logic := '0'; 
 -------------------------- end clkgen-----------------
-  signal k_globals : klm_globals := klm_globals_null;
-  signal data : std_logic_vector(31 downto 0) := x"00000005"; 
+--------------------------d_source-----------------
+  signal d_source_DataOut_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
+  signal d_source_DataOut_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
+  signal d_source_clk : std_logic := '0'; 
+-------------------------- end d_source-----------------
 --------------------------dut-----------------
   signal dut_ConfigIn_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
   signal dut_ConfigIn_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
@@ -33,24 +43,26 @@ architecture rtl of InputDelay_tb is
   signal dut_ConfigOut_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
   signal dut_globals : klm_globals := klm_globals_null;
 -------------------------- end dut-----------------
---------------------------axprint-----------------
-  signal axprint_ConfigIn_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-  signal axprint_ConfigIn_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal axprint_globals : klm_globals := klm_globals_null;
--------------------------- end axprint-----------------
---------------------------d_source-----------------
-  signal d_source_DataOut_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-  signal d_source_DataOut_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal d_source_clk : std_logic := '0'; 
--------------------------- end d_source-----------------
 -------------------------- end InputDelay_tb-----------------
 
 begin
   -- begin architecture
   -- end architecture
 
+  axprint : entity work.InputDelay_print port map (
+    ConfigIn_s2m => axprint_ConfigIn_s2m,
+    ConfigIn_m2s => axprint_ConfigIn_m2s,
+    globals => axprint_globals
+  );
+  
   clkgen : entity work.clk_generator port map (
     clk => clkgen_clk
+  );
+  
+  d_source : entity work.dataSource port map (
+    DataOut_s2m => d_source_DataOut_s2m,
+    DataOut_m2s => d_source_DataOut_m2s,
+    clk => d_source_clk
   );
   
   dut : entity work.InputDelay port map (
@@ -60,29 +72,17 @@ begin
     ConfigOut_m2s => dut_ConfigOut_m2s,
     globals => dut_globals
   );
-  
-  axprint : entity work.InputDelay_print port map (
-    ConfigIn_s2m => axprint_ConfigIn_s2m,
-    ConfigIn_m2s => axprint_ConfigIn_m2s,
-    globals => axprint_globals
-  );
-  
-  d_source : entity work.dataSource port map (
-    DataOut_s2m => d_source_DataOut_s2m,
-    DataOut_m2s => d_source_DataOut_m2s,
-    clk => d_source_clk
-  );
   k_globals.clk <= clkgen_clk;
-  ---------------------------------------------------------------------
---  dut_ConfigIn << d_source_DataOut
-dut_ConfigIn_m2s <= d_source_DataOut_m2s;
-d_source_DataOut_s2m <= dut_ConfigIn_s2m;
-  dut_globals <= k_globals;
   ---------------------------------------------------------------------
 --  axprint_ConfigIn << dut_ConfigOut
 axprint_ConfigIn_m2s <= dut_ConfigOut_m2s;
 dut_ConfigOut_s2m <= axprint_ConfigIn_s2m;
   axprint_globals <= k_globals;
   d_source_clk <= k_globals.clk;
+  ---------------------------------------------------------------------
+--  dut_ConfigIn << d_source_DataOut
+dut_ConfigIn_m2s <= d_source_DataOut_m2s;
+d_source_DataOut_s2m <= dut_ConfigIn_s2m;
+  dut_globals <= k_globals;
   
 end architecture;

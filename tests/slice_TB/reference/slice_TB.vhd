@@ -18,9 +18,6 @@ end entity;
 architecture rtl of slice_TB is
 
 --------------------------slice_TB-----------------
---------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
--------------------------- end clkgen-----------------
   signal counter : std_logic_vector := (others => '0'); 
   signal counter2 : std_logic_vector := (others => '0'); 
   signal counter3 : std_logic_vector(31 downto 0) := x"00000001"; 
@@ -29,6 +26,9 @@ architecture rtl of slice_TB is
   signal d2 : std_logic_vector(3 downto 0) := (others => '0'); 
   signal d3 : std_logic_vector(3 downto 0) := (others => '0'); 
   signal d4 : std_logic_vector(15 downto 0) := (others => '0'); 
+--------------------------clkgen-----------------
+  signal clkgen_clk : std_logic := '0'; 
+-------------------------- end clkgen-----------------
 -------------------------- end slice_TB-----------------
 
 begin

@@ -4,6 +4,7 @@ import shutil
 
 from argg_hdl import *
 
+from argg_hdl.argg_hdl_base import sort_archetecture, set_sort_archetecture
 from pathlib import Path
 
 
@@ -73,6 +74,8 @@ def create_git_ignoreFile_for_folder(FolderName):
 def vhdl_conversion(func):
     def wrap(OutputPath):
         g_global_reset()
+        sort_archetecture_old = sort_archetecture()
+        set_sort_archetecture(True)
         mkdir_if_not_exist(OutputPath)
         mkdir_if_not_exist(OutputPath+"/output")
         mkdir_if_not_exist(OutputPath+"/reference")
@@ -83,7 +86,7 @@ def vhdl_conversion(func):
         tb = func(OutputPath)
         convert_to_hdl(tb, OutputPath+ "/output")
         print_cnvt_set_file()
-
+        set_sort_archetecture(sort_archetecture_old)
         return Folders_isSame(OutputPath+"/output", OutputPath+'/reference') 
     
     return wrap

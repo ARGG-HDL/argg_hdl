@@ -19,9 +19,6 @@ end entity;
 architecture rtl of test_bench_axi_fifo is
 
 --------------------------test_bench_axi_fifo-----------------
---------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
--------------------------- end clkgen-----------------
   signal maxCount : std_logic_vector(31 downto 0) := x"00000014"; 
 --------------------------pipe1-----------------
 --------------------------pipe1_1_rollingCounter-----------------
@@ -43,14 +40,13 @@ architecture rtl of test_bench_axi_fifo is
   signal pipe1_3_axiPrint_clk : std_logic := '0'; 
 -------------------------- end pipe1_3_axiPrint-----------------
 -------------------------- end pipe1-----------------
+--------------------------clkgen-----------------
+  signal clkgen_clk : std_logic := '0'; 
+-------------------------- end clkgen-----------------
 -------------------------- end test_bench_axi_fifo-----------------
 
 begin
 
-  clkgen : entity work.clk_generator port map (
-    clk => clkgen_clk
-  );
-  
   pipe1_1_rollingCounter : entity work.rollingCounter port map (
     Axi_out_s2m => pipe1_1_rollingCounter_Axi_out_s2m,
     Axi_out_m2s => pipe1_1_rollingCounter_Axi_out_m2s,
@@ -68,6 +64,10 @@ begin
     Axi_in_s2m => pipe1_3_axiPrint_Axi_in_s2m,
     Axi_in_m2s => pipe1_3_axiPrint_Axi_in_m2s,
     clk => pipe1_3_axiPrint_clk
+  );
+  
+  clkgen : entity work.clk_generator port map (
+    clk => clkgen_clk
   );
   pipe1_1_rollingCounter_MaxCount <= maxCount;
   pipe1_1_rollingCounter_clk <= clkgen_clk;
