@@ -28,7 +28,7 @@ class v_class_converter(hdl_converter_base):
             t = getattr(obj, x[0])
             if issubclass(type(t),argg_hdl_base):
                         
-                ret += t.__hdl_converter__.includes(t,x[0],obj)
+                ret += hdl.includes(t,x[0],obj)
         
         for x in obj.__hdl_converter__.__ast_functions__:
             ret += hdl.includes(x,None,obj)
@@ -166,7 +166,7 @@ class v_class_converter(hdl_converter_base):
         """.format(
           Default = obj.__hdl_converter__.make_constant(
                 obj,
-                obj.__hdl_converter__.get_init_values(obj) , 
+                obj.getType() + "_null" , 
                 parent, 
                 InOut_Filter,
                 VaribleSignalFilter
@@ -289,7 +289,7 @@ class v_class_converter(hdl_converter_base):
         obj.__hdl_converter__ = primary.__hdl_converter__
         ret = []
         for x in obj.__hdl_converter__.archetecture_list:
-            ret.append(x["symbol"].__hdl_converter__.get_architecture_body(x["symbol"]))
+            ret.append(hdl .get_architecture_body(x["symbol"]))
         
         ret=join_str(
             ret, 
@@ -429,11 +429,11 @@ class v_class_converter(hdl_converter_base):
         obj._add_output()
         
         if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
-            hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "__lshift__",[obj, rhs],astParser)
-            if hdl is None:
+            hdl_call = hdl._vhdl__call_member_func(obj, "__lshift__",[obj, rhs],astParser)
+            if hdl_call is None:
                 astParser.Missing_template=True
                 return "-- $$ template missing $$"
-            return hdl
+            return hdl_call
 
 
             
@@ -443,15 +443,15 @@ class v_class_converter(hdl_converter_base):
     
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
         if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
-            hdl = obj.__hdl_converter__._vhdl__call_member_func(obj, "__rshift__",[obj, rhs],astParser)
-            if hdl is None:
+            hdl_call = hdl._vhdl__call_member_func(obj, "__rshift__",[obj, rhs],astParser)
+            if hdl_call is None:
                 astParser.Missing_template=True
                 return "-- $$ template missing $$"
-            return hdl
+            return hdl_call
         raise Exception("Unsupported r shift", str(obj), rhs._type, obj._type )
 
     def get_self_func_name(self, obj, IsFunction = False, suffix = ""):
-        xs = obj.__hdl_converter__.extract_conversion_types(obj ,filter_inout=InOut_t.Internal_t)
+        xs = hdl.extract_conversion_types(obj ,filter_inout=InOut_t.Internal_t)
         content = []
              
 
@@ -563,7 +563,7 @@ class v_class_converter(hdl_converter_base):
 
         Default_str = ""
         if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
-            Default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
+            Default_str =  " := " + hdl.get_default_value(obj)
 
         ret.append(varSignal + name + element["suffix"] + " : " + inoutstr +" " +  element["symbol"].getType() +Default_str)
         return ret
@@ -579,11 +579,7 @@ class v_class_converter(hdl_converter_base):
         for m in members:
             inout = astParser.get_function_arg_inout_type(m["symbol"])
         
-            if inout == InOut_t.Internal_t:
-                continue
-            if inout == InOut_t.Used_t:
-                continue
-            if inout == InOut_t.Unset_t:
+            if inout != InOut_t.output_t:
                 continue
             ret.append(hdl.to_arglist(
                     m["symbol"], 

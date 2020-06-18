@@ -16,7 +16,7 @@ import argg_hdl.tests.Signal_Variable_class as Signal_Variable_class
 import argg_hdl.tests.Native_fifo as Native_fifo
 import argg_hdl.tests.EnumTest as EnumTest
 import argg_hdl.tests.slice_testing as slice_testing
-
+import argg_hdl.tests.data_record as dr 
 
 class TestCoreExamples(unittest.TestCase):
 
@@ -94,7 +94,15 @@ class TestCoreExamples(unittest.TestCase):
         result, message = slice_testing.slice_TB_2vhdl("tests/slice_TB")
         self.assertTrue(result,message)     
 
-        
+    def test_data_records(self):
+        result, message = dr.data_record_tb_2vhdl("tests/data_record_tb/") 
+        self.assertTrue(result,message)
+    
+    def test_data_records_sim(self):
+        result, message = dr.data_record_tb_sim("tests/data_record_tb_sim/") 
+        self.assertTrue(result,message)        
+
+     
 if __name__ == '__main__':
     remove_old_files()
     unittest.main() 

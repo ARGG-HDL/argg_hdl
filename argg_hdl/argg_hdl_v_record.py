@@ -127,7 +127,7 @@ def call_func_record_reset(obj, name, args, astParser=None,func_args=None):
     args[0]._add_output()
     return ret
 
-class v_data_record(v_class):
+class v_data_record(v_record):
     def __init__(self, Name=None, varSigConst=None):
         super().__init__(Name, varSigConst)
         self.__hdl_useDefault_value__ = False

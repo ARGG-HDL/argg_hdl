@@ -10,6 +10,9 @@ import argg_hdl.tests.TargetX_readout as TX
 
 from argg_hdl.argg_hdl_base import  hdl_constructor
 
+import argg_hdl.tests.TargetX_readout   as TX
+import argg_hdl.tests.data_record as dr 
+
 remove_old_files()
 
 
@@ -18,25 +21,13 @@ remove_old_files()
 #result, message = ex3.ex32vhdl("tests/ex3/")
 
 
-class t1:
-    def __init__(self):
-        super().__init__()
-        self.list = {}
-        self.cnst(1,2) 
-    
+#dr.data_record_tb_sim("tests/data_record_tb_sim/")
+dr.data_record_tb_2vhdl("tests/data_record_tb/")
 
-    def add_args(self, *args, **kwargs):
-        self.list["args"] = args
-        self.list["kwargs"] = kwargs
-        
-    @hdl_constructor
-    def cnst(self, arg1,arg2):
-        print(arg1)
+#TX.TXReadout2vhdl("../vhdl_lecture/targetx")
 
 
-t = t1()
 
-TX.TXReadout2vhdl("../vhdl_lecture/targetx")
 #TX.TXReadout_sim("tests/targetx_sim",20000)
 #test_axi_fifo.test_bench_axi_fifo_sim("tests/axi_fifo_sim")
 #Signal_Variable_class.var_sig_tb_2vhdl("tests/var_sig_class")
