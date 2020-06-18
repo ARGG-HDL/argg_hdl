@@ -10,6 +10,7 @@ from argg_hdl.argg_hdl_simulation import *
 import argg_hdl.argg_hdl_v_Package as argg_pack
 import  argg_hdl.vhdl_v_class_helpers as  vc_helper
 
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
 
 
@@ -30,18 +31,18 @@ class v_class_converter(hdl_converter_base):
                 ret += t.__hdl_converter__.includes(t,x[0],obj)
         
         for x in obj.__hdl_converter__.__ast_functions__:
-            ret += x.__hdl_converter__.includes(x,None,obj)
+            ret += hdl.includes(x,None,obj)
 
-        ret += "use work."+obj.__hdl_converter__.get_type_simple(obj)+"_pack.all;"
+        ret += "use work."+ hdl.get_type_simple(obj)+"_pack.all;"
         return ret
 
     def get_packet_file_name(self, obj):
         if obj.__vetoHDLConversion__:
             return ""
-        return obj.__hdl_converter__.get_type_simple(obj)+"_pack.vhd"
+        return hdl.get_type_simple(obj)+"_pack.vhd"
 
     def get_packet_file_content(self, obj):
-        PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
+        PackageName = hdl.get_type_simple(obj)+"_pack"
         s = isConverting2VHDL()
         set_isConverting2VHDL(True)
 
@@ -89,28 +90,27 @@ class v_class_converter(hdl_converter_base):
             Inout = InoutFlip(Inout)
         
         if not( obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt):
-            return name + " => " + obj.getType(Inout) + "_null"
+            return name + " => " + obj.__hdl_converter__.get_init_values(obj,InOut_Filter=Inout)
         
         ret = []
-        xs = obj.__hdl_converter__.extract_conversion_types(
+        xs = hdl.extract_conversion_types(
             obj,
             exclude_class_type=v_classType_t.transition_t
         )
         for x in xs:
-            ret.append(name + x["suffix"] + " => " + x["symbol"].getType() + "_null" )
+            ret.append(name + x["suffix"] + " => " + x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  )
         return ret
             
 
         
+    def get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
+        if obj.__hdl_useDefault_value__ and ForceExpand == False:
+            ret = obj.getType(InOut_Filter) + "_null"
+            return ret
 
-    def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
-        TypeName = obj.getType()
         member = obj.getMember()
-       
-        start = "\n  constant " + name + " : " + TypeName + ":= (\n"
-
         Content = [
-            x["symbol"].__hdl_converter__.recordMemberDefault(
+            hdl.recordMemberDefault(
                 x["symbol"], 
                 x["name"],
                 obj,
@@ -118,14 +118,31 @@ class v_class_converter(hdl_converter_base):
             ) 
             for x in member
         ]
+        
+        start = "(\n"
         ret=join_str(
             Content,
             start= start ,
-            end=  "\n  );\n",
+            end=  "\n  )",
             Delimeter=",\n",
             LineBeginning= "    ", 
             IgnoreIfEmpty=True
         )
+        return ret
+        
+
+    def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
+        TypeName = obj.getType()
+        member = obj.getMember()
+
+        defaults  = obj.__hdl_converter__.get_init_values(
+            obj=obj,
+            parent=parent, 
+            InOut_Filter=InOut_Filter, 
+            VaribleSignalFilter=VaribleSignalFilter,
+            ForceExpand=True
+        )   
+        ret = "\n  constant " + name + " : " + TypeName + ":= " + defaults +';\n'
 
         return ret
 
@@ -149,7 +166,7 @@ class v_class_converter(hdl_converter_base):
         """.format(
           Default = obj.__hdl_converter__.make_constant(
                 obj,
-                TypeName+ "_null", 
+                obj.__hdl_converter__.get_init_values(obj) , 
                 parent, 
                 InOut_Filter,
                 VaribleSignalFilter
@@ -159,7 +176,7 @@ class v_class_converter(hdl_converter_base):
 
         
         Content = [
-            x["symbol"].__hdl_converter__.recordMember(x["symbol"],x["name"],obj,InOut_Filter)
+            hdl.recordMember(x["symbol"],x["name"],obj,InOut_Filter)
             for x in member
         ]
         ret=join_str(Content,start= start ,end= end, IgnoreIfEmpty=True,LineEnding=";\n", LineBeginning="    ")
@@ -214,10 +231,10 @@ class v_class_converter(hdl_converter_base):
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
             if issubclass(type(t),argg_hdl_base):
-                start += t.__hdl_converter__.getBody(t,x[0],obj)
+                start += hdl.getBody(t,x[0],obj)
 
         content2 =  [
-            x.__hdl_converter__.getBody(x,None,None) 
+            hdl.getBody(x,None,None) 
             for x in obj.__hdl_converter__.__ast_functions__ 
             if not ("_onpull" in x.name.lower()   or  "_onpush" in x.name.lower() )
         ]
@@ -237,13 +254,13 @@ class v_class_converter(hdl_converter_base):
         if obj.__Driver__ and str( obj.__Driver__) != 'process':
             return ""
 
-
-        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
+        
+        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.__hdl_converter__.get_init_values(obj) +";\n"
     
 
     def get_architecture_header(self, obj):
         ret = []
-        xs = obj.__hdl_converter__.extract_conversion_types(obj)
+        xs = hdl.extract_conversion_types(obj)
         for x in xs:
             if  x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
                 continue
@@ -254,10 +271,10 @@ class v_class_converter(hdl_converter_base):
 
             VarSymb = get_varSig(x["symbol"]._varSigConst)
 
-            ret.append(VarSymb + " " +x["symbol"].get_vhdl_name() + " : " + x["symbol"]._type+" := " + x["symbol"]._type+"_null;\n")
+            ret.append(VarSymb + " " +x["symbol"].get_vhdl_name() + " : " + x["symbol"]._type+" := " + x["symbol"].__hdl_converter__.get_init_values(x["symbol"]) +";\n")
         
         for x in obj.__hdl_converter__.archetecture_list:
-            ret.append(x["symbol"].__hdl_converter__.get_architecture_header(x["symbol"]))
+            ret.append( hdl.get_architecture_header(x["symbol"]))
 
         ret=join_str(
             ret, 
@@ -268,7 +285,7 @@ class v_class_converter(hdl_converter_base):
         return ret
         
     def get_architecture_body(self, obj):
-        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary = hdl.get_primary_object(obj)
         obj.__hdl_converter__ = primary.__hdl_converter__
         ret = []
         for x in obj.__hdl_converter__.archetecture_list:
@@ -284,12 +301,12 @@ class v_class_converter(hdl_converter_base):
 
     def get_port_list(self,obj):
         ret = []
-        xs = obj.__hdl_converter__.extract_conversion_types(obj,
+        xs = hdl.extract_conversion_types(obj,
             exclude_class_type= v_classType_t.transition_t
         )
         for x in xs:
-            inoutstr = " : "+ x["symbol"].__hdl_converter__.InOut_t2str(x["symbol"]) +" "
-            ret.append( x["symbol"].get_vhdl_name()+ inoutstr +x["symbol"]._type + " := " + x["symbol"]._type + "_null")
+            inoutstr = " : "+ hdl.InOut_t2str(x["symbol"]) +" "
+            ret.append( x["symbol"].get_vhdl_name()+ inoutstr +x["symbol"]._type + " := " +  x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  )
     
         return ret
 
@@ -297,7 +314,7 @@ class v_class_converter(hdl_converter_base):
     def _vhdl_make_port(self, obj, name):
         ret = []
 
-        xs =obj.__hdl_converter__.extract_conversion_types(obj, 
+        xs = hdl.extract_conversion_types(obj, 
                 exclude_class_type= v_classType_t.transition_t
             )
         for x in xs:
@@ -389,7 +406,7 @@ class v_class_converter(hdl_converter_base):
         for x in members:
             if x["symbol"]._Inout == InOut_t.Internal_t:
                 continue
-            ys =x["symbol"].__hdl_converter__.extract_conversion_types(
+            ys =hdl.extract_conversion_types(
                 x["symbol"],
                 exclude_class_type= v_classType_t.transition_t,
                 filter_inout=InOut_Filter)
@@ -468,7 +485,7 @@ class v_class_converter(hdl_converter_base):
 
         
 
-        xs = obj.__hdl_converter__.extract_conversion_types(obj)
+        xs = hdl.extract_conversion_types(obj)
            
         for x in xs:
             for y in x["symbol"].getMember():
@@ -486,13 +503,13 @@ class v_class_converter(hdl_converter_base):
         if obj._Inout != InOut_t.Internal_t:
             return ""
         
-        xs = obj.__hdl_converter__.extract_conversion_types(obj)
+        xs = hdl.extract_conversion_types(obj)
         for x in xs:
             if x["symbol"]._varSigConst != varSig.variable_t:
                 continue
 
             VarSymb = get_varSig(x["symbol"]._varSigConst)
-            ret += VarSymb +" " +str(x["symbol"]) + " : " +x["symbol"]._type +" := " + x["symbol"]._type +"_null;\n"
+            ret += VarSymb +" " +str(x["symbol"]) + " : " +x["symbol"]._type +" := " +  x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  +";\n"
 
         return ret
 
@@ -568,7 +585,7 @@ class v_class_converter(hdl_converter_base):
                 continue
             if inout == InOut_t.Unset_t:
                 continue
-            ret.append(m["symbol"].__hdl_converter__.to_arglist(
+            ret.append(hdl.to_arglist(
                     m["symbol"], 
                     name + element["suffix"]+"_"+m["name"],
                     None ,
@@ -581,7 +598,7 @@ class v_class_converter(hdl_converter_base):
     def to_arglist(self,obj, name,parent, withDefault = False, astParser=None):
         ret = []
         
-        xs = obj.__hdl_converter__.extract_conversion_types(obj)
+        xs = hdl.extract_conversion_types(obj)
 
         for x in xs:
             ret += self.to_arglist_self(
@@ -613,9 +630,9 @@ class v_class_converter(hdl_converter_base):
         mem = obj.getMember()
         obj.__writeRead__ = obj._Inout
         for m in mem:
-            if m["symbol"].__hdl_converter__.get_inout_type_recursive(m["symbol"]) == InOut_t.input_t:
+            if hdl.get_inout_type_recursive(m["symbol"]) == InOut_t.input_t:
                 obj._add_input()
-            elif m["symbol"].__hdl_converter__.get_inout_type_recursive(m["symbol"]) == InOut_t.output_t:
+            elif hdl.get_inout_type_recursive(m["symbol"]) == InOut_t.output_t:
                 obj._add_output()
 
         return obj.__writeRead__
@@ -635,7 +652,7 @@ class v_class(argg_hdl_base):
         self.__vectorPush__ = False
         self.__vectorPull__ = False
         self.__vetoHDLConversion__ = False
-        
+        self.__hdl_useDefault_value__ = True
         self.__hdl_name__ =None
         self.__Driver__ = None
 

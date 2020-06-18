@@ -747,6 +747,7 @@ class argg_hdl_base0:
         self.__Driver_Is_SubConnection__ = False
         self.__receiver__ = []
         self.__srcFilePath__ = get_fileName_of_object_def(self)
+        self.__hdl_useDefault_value__ = False
         
 
     def _set_to_sub_connection(self):
@@ -912,6 +913,17 @@ def value(Input):
             
     return Input
 
+
+
+def v_dataObject(symbol: T) ->T:
+    ret= copy.deepcopy(symbol)
+    ret._sim_get_new_storage()
+    ret.__isInst__ = False
+    ret.setInout(InOut_t.Internal_t)
+    ret._remove_drivers()
+    ret.__hdl_useDefault_value__ = False
+    return ret
+    
 
 def v_variable(symbol: T) ->T:
     ret= copy.deepcopy(symbol)

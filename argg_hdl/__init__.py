@@ -27,6 +27,7 @@ end_architecture      = ahb.end_architecture
 InOut_t               = ahb.InOut_t
 varSig                = ahb.varSig
 v_classType_t         = ahb.v_classType_t
+v_dataObject          = ahb.v_dataObject
 v_variable            = ahb.v_variable
 v_signal              = ahb.v_signal
 v_const               = ahb.v_const                      
@@ -105,6 +106,7 @@ v_class_trans = v_class_trans_m.v_class_trans
 
 
 v_record = ah_rec.v_record
+v_data_record = ah_rec.v_data_record
 
 def g_global_reset():
     ahb.g_global_reset()

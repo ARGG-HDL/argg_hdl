@@ -34,7 +34,7 @@ class SerialDataConfig(v_record):
         self.sample_start          =  v_slv(5)   
         self.sample_stop           =  v_slv(5) 
 
-class span_t(v_record):
+class span_t(v_data_record):
     def __init__(self, start  , stop ):
         super().__init__()
         self.start  = sr_clk_t(start)
@@ -144,7 +144,7 @@ class TX_shift_register_readout_slave(v_class_slave):
 class readOutConfig(v_record):
     def __init__(self, Name=None, varSigConst=None):
         super().__init__(Name=Name, varSigConst=varSigConst)
-        self.sr_select              = span_t(5,10)
+        self.sr_select             = span_t(5,10)
         self.sr_clk_sampl_select   = span_t(7,8)
         self.sr_header             = span_t(0,20)
         self.sr_clk_high           = span_t(0,1)

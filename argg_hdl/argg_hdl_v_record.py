@@ -82,6 +82,7 @@ class v_record(v_class):
         self.__hdl_converter__ = v_record_converter()
         self.__v_classType__ = v_classType_t.Record_t
         self.__hdl_converter__.append_reset(self)
+        #self.__hdl_useDefault_value__ = False
  
 
     def reset(self):
@@ -125,3 +126,8 @@ def call_func_record_reset(obj, name, args, astParser=None,func_args=None):
     ret =  str(args[0])  + asOp + val
     args[0]._add_output()
     return ret
+
+class v_data_record(v_class):
+    def __init__(self, Name=None, varSigConst=None):
+        super().__init__(Name, varSigConst)
+        self.__hdl_useDefault_value__ = False

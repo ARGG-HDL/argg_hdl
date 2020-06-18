@@ -213,7 +213,7 @@ class xgenAST:
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())
 
-        self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave", "v_class_trans","v_record"]))
+        self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave", "v_class_trans","v_record","v_data_record"]))
         self.ast_v_Entities = list(get_subclasses(self.tree.body,['v_entity']))
         self.ast_v_Entities.extend( list(get_subclasses(self.tree.body,['v_clk_entity'])))
     
