@@ -305,7 +305,8 @@ class v_symbol_converter(hdl_converter_base):
             return "std_logic_vector"
         return ret
     def to_arglist(self,obj:"v_symbol", name,parent,withDefault = False,astParser=None):
-        inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
+        inout = astParser.get_function_arg_inout_type(obj)
+        inoutstr = obj.__hdl_converter__.InOut_t2str2(inout)
         varSigstr = ""
         if obj._varSigConst == varSig.signal_t:
             varSigstr = "signal "

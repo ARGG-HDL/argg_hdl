@@ -97,4 +97,4 @@ class TestCoreExamples(unittest.TestCase):
         
 if __name__ == '__main__':
     remove_old_files()
-    unittest.main()
+    unittest.main() 

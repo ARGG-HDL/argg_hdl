@@ -10,6 +10,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_AST_Classes import * 
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_symbol  import *
+from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 
 def get_function_definition(b_list, name):
     ret = []
@@ -21,10 +22,10 @@ def get_function_definition(b_list, name):
 
 def checkIfFunctionexists(cl_instant, name, funcArg ):
     for x in cl_instant.__hdl_converter__.MemfunctionCalls:
-        if x["name"] != name:
+        if x.name != name:
             continue
         
-        if not isSameArgs(x["args"] ,funcArg):
+        if not x.isSameArgs(funcArg):
             continue
         return True
     
@@ -80,10 +81,10 @@ def hasMissingSymbol(FuncArgs):
 def GetNewArgList(FunctionName , FunctionArgs,TemplateDescription):
 
     
-    if FunctionName != TemplateDescription["name"]:
+    if FunctionName != TemplateDescription.name:
         return None
     localArgs = copy.copy(FunctionArgs) #deepcopy
-    for x,y in zip(localArgs,TemplateDescription["args"]):
+    for x,y in zip(localArgs,TemplateDescription.args):
         if y is None:
             return None  
         if x["symbol"] is None or x["symbol"]._type != y._type or x['symbol']._varSigConst != y._varSigConst:
@@ -257,6 +258,14 @@ class xgenAST:
 
         raise Exception(Node_line_col_2_str(self, Node)+"Unable to find variable: " + name)
 
+    def get_function_arg_inout_type(self,obj):
+        for x in self.Function_obj_used_list:
+            if str(x["symbol"]) == str(obj):
+                return x["readWrite"]
+
+        
+        return InOut_t.Unset_t
+
     def getClassByName(self,ClassName):
         for x in self.ast_v_classes:
             if x.name == ClassName:
@@ -352,6 +361,7 @@ class xgenAST:
                 self.Archetecture_vars = sorted(ClassInstance.__local_symbols__, key=lambda element_: element_["type_name"])
             else:
                 self.Archetecture_vars = ClassInstance.__local_symbols__
+
             try:
                 body = self.Unfold_body(f)  ## get local vars 
             except Exception as inst:
@@ -455,7 +465,7 @@ class xgenAST:
             ClassInstance.__processList__.append(proc)
             
     
-    def extractFunctionsForClass_impl(self, ClassInstance,parent, funcDef, FuncArgs , setDefault = False ):
+    def extractFunctionsForClass_impl(self, ClassInstance,parent, funcDef, FuncArgs , setDefault = False , MemFunction_template= None ):
             self.push_scope("function")
             if hasMissingSymbol(FuncArgs):
                 return None
@@ -469,7 +479,7 @@ class xgenAST:
             
             
             FuncArgsLocal = copy.copy(FuncArgs)
-            varSigSuffix = get_function_varSig_suffix(FuncArgsLocal)
+            varSigSuffix = get_function_varSig_suffix(self.FuncArgs)
             self.local_function = ClassInstance.__init__.__globals__
 
 
@@ -526,6 +536,7 @@ class xgenAST:
                     argumentList=ArglistProcedure,
                     isFreeFunction=True
                 )
+                MemFunction_template.varSigIndependent = True
             else:
                 ret = v_procedure(
                     name=actual_function_name,
@@ -612,7 +623,7 @@ class xgenAST:
             "ScopeType": InOut_t.InOut_tt
         })
 
-        f =  get_function_definition(cl_body,temp["name"])
+        f =  get_function_definition(cl_body,temp.name)
         if len(f) == 0:
             raise Exception(
                 "unable to find function template: ",
@@ -631,7 +642,7 @@ class xgenAST:
     def extractFunctionsForClass2(self,ClassInstance, cl_body ,ClassInstance_local,parent):
         fun_ret = []
         for temp in ClassInstance.__hdl_converter__.MemfunctionCalls:
-            if temp["call_func"] is not None:
+            if temp.call_func is not None:
                 continue
                 
               
@@ -648,15 +659,16 @@ class xgenAST:
                 parent, 
                 f[0], 
                 newArglist , 
-                temp["setDefault"]  
+                temp.setDefault ,
+                temp 
             )
             
             if self.Missing_template:
                 ClassInstance.__hdl_converter__.MissingTemplate = True
                 continue
             
-            temp["call_func"] = call_func
-            temp["func_args"] = newArglist[0: ArglistLocal_length] #deepcopy
+            temp.call_func = call_func
+            temp.func_args = newArglist[0: ArglistLocal_length] #deepcopy
             
             if ret:
                 fun_ret.append( ret )
@@ -684,15 +696,16 @@ class xgenAST:
         print_cnvt(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
         
 
-        ClassInstance.__hdl_converter__.MemfunctionCalls.append({
-            "name" : f.name,
-            "args":  [x["symbol"] for x in   Arglist],
-            "self" :v_deepcopy(ClassInstance),
-            "call_func" : None,
-            "func_args" : None,
-            "setDefault" : True,
-            "varSigIndependent" : False
-        })
+        ClassInstance.__hdl_converter__.MemfunctionCalls.append(
+            memFunctionCall(
+            name= f.name,
+            args= [x["symbol"] for x in   Arglist],
+            obj= ClassInstance,
+            call_func = None,
+            func_args = None,
+            setDefault = True,
+            varSigIndependent = False
+        ))
 
     def extractFunctionsForClass1(self,ClassInstance,parent,cl_body ):
         for f in cl_body:

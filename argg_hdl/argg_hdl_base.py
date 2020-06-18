@@ -3,6 +3,9 @@ import copy
 import  inspect 
 import argg_hdl.argg_hdl_core_pack_generator as core_gen
 import argg_hdl.argg_hdl_debug_vis as debug_vis
+from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
+from  argg_hdl.argg_hdl_base_helpers import *
+from  argg_hdl.argg_hdl_lib_enums import *
 
 from typing import Sequence, TypeVar
 T = TypeVar('T', bound='Copyable')
@@ -15,6 +18,12 @@ def architecture(func):
 def end_architecture():
     add_symbols_to_entiy()
 
+
+def hdl_constructor(func):
+    def wrap(self,*args, **kwargs):
+        self.add_args(*args, **kwargs)
+        func(self, *args, **kwargs)
+    return wrap
 
 def isInList(check_list, obj):
     for x in  check_list:
@@ -212,6 +221,7 @@ def sort_archetecture():
 def set_sort_archetecture(newState):
     gStatus["sort_archetecture"]  = newState
 
+
 gHDL_objectList = []
 
 def g_global_reset():
@@ -240,45 +250,6 @@ def make_unique_includes(incs,exclude=None):
     return ret
 
 
-
-def get_type(symbol):
-    if issubclass(type(symbol), argg_hdl_base0):
-        return symbol.get_type()
-    if symbol is None:
-        return "None"
-    if symbol["symbol"] is None:
-        return "None"
-    return symbol["symbol"].get_type()
-
-def get_symbol(symbol):
-    if issubclass(type(symbol), argg_hdl_base0):
-        return symbol.get_symbol()
-    if symbol is None:
-        return None 
-    if symbol["symbol"] is None:
-        return None
-    return symbol["symbol"].get_symbol()
-    
-def isSameArgs(args1,args2, hasDefaults = False, varSigIndependent =False):
-    if not hasDefaults and  len(args1) != len(args2):
-        return False
-    for arg1,arg2 in zip(args1,args2):
-        if get_symbol(arg1) is None:
-            return False
-        if get_symbol(arg2) is None:
-            return False
-        if get_type(arg1) != get_type( arg2):
-            return False
-
-        if varSigIndependent == False \
-            and \
-        get_symbol(arg1)._varSigConst != varSig.unnamed_const \
-            and \
-        get_symbol(arg2)._varSigConst != varSig.unnamed_const \
-            and \
-        get_symbol(arg1)._varSigConst != get_symbol(arg2)._varSigConst:
-            return False
-    return True  
 
 
 def unfold_errors(error):
@@ -351,7 +322,7 @@ class hdl_converter_base:
 
         primary = obj.__hdl_converter__.get_primary_object(obj)
         for x in primary.__hdl_converter__.MemfunctionCalls:
-            dep_list += x["args"]
+            dep_list += x.args
 
         dep_list = flatten_list(dep_list)
         ret     = remove_duplications(dep_list)
@@ -579,25 +550,24 @@ class hdl_converter_base:
 
         needAdding =True
         for x  in obj.__hdl_converter__.MemfunctionCalls:
-            if x["name"] != name:
+            if x.name != name:
                 continue
-            if not isSameArgs(args, x["args"] ,x['setDefault'], x["varSigIndependent"]):
+            if not x.isSameArgs(args):
                 continue
-            if x["call_func"] is None:
+            if x.call_func is None:
                 needAdding = False
                 continue
             return x
         if needAdding:
-            obj.__hdl_converter__.MemfunctionCalls.append({
-            "name" : name,
-            "args": args,
-            "self" :obj,
-            "call_func" : None,
-            "func_args" : None,
-            "setDefault" : False,
-            "varSigIndependent" : False
-
-        })
+            obj.__hdl_converter__.MemfunctionCalls.append( memFunctionCall(
+            name= name,
+            args= args,
+            obj= obj,
+            call_func = None,
+            func_args = None,
+            setDefault = False,
+            varSigIndependent = False
+        ))
         obj.IsConverted = False
         return None
     def _vhdl__call_member_func(self, obj, name, args, astParser=None):
@@ -619,9 +589,9 @@ class hdl_converter_base:
             return None
 
         print_cnvt(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
-        call_func = call_obj["call_func"]
+        call_func = call_obj.call_func
         if call_func:
-            return call_func(obj, name, args, astParser, call_obj["func_args"])
+            return call_func(obj, name, args, astParser, call_obj.func_args)
 
         primary.__hdl_converter__.MissingTemplate=True
         astParser.Missing_template = True
@@ -688,6 +658,29 @@ class hdl_converter_base:
             asOp = " := "
 
         return asOp
+
+    def InOut_t2str2(self, inOut):
+
+        if inOut == InOut_t.input_t:
+            return " in "
+        
+        if inOut == InOut_t.output_t:
+            return " out "
+        
+        if inOut == InOut_t.InOut_tt:
+            return " inout "
+        
+        inOut = obj.__writeRead__
+        if inOut == InOut_t.input_t:
+            return " in "
+        
+        if inOut == InOut_t.output_t:
+            return " out "
+        
+        if inOut == InOut_t.InOut_tt:
+            return " inout "
+        
+        raise Exception("unkown Inout type",inOut)
 
     def InOut_t2str(self, obj):
         inOut = obj._Inout
@@ -919,113 +912,6 @@ def value(Input):
             
     return Input
 
-class  InOut_t(Enum):
-    input_t    = 1
-    output_t   = 2    
-    Internal_t = 3
-    Master_t   = 4
-    Slave_t    = 5
-    InOut_tt   = 6
-    Default_t  = 7
-    Unset_t    = 8 
-    Used_t     = 9 
-
-    def __repr__(self):
-        return str(self).split(".")[-1]
-
-class varSig(Enum):
-    variable_t = 1
-    signal_t =2 
-    const_t =3
-    reference_t = 4
-    combined_t = 5
-    unnamed_const = 6
-
-    def __repr__(self):
-        return str(self).split(".")[-1]
-
-v_defaults ={
-"defVarSig" : varSig.variable_t
-}
-
-
-def getDefaultVarSig():
-    return v_defaults["defVarSig"]
-
-def setDefaultVarSig(new_defVarSig):
-    v_defaults["defVarSig"] = new_defVarSig
-
-def get_varSig(varSigConst):
-    if varSigConst == varSig.signal_t:
-        return "signal"
-    
-    if varSigConst == varSig.variable_t:
-        return  "variable"
-    
-    if varSigConst == varSig.const_t:
-        return  "constant"
-
-    raise Exception("unknown type")
-
-
-def Inout_add_input(Inout=InOut_t.Internal_t):
-    ret = Inout
-    if ret is None:
-        ret = InOut_t.input_t
-    elif ret == InOut_t.Internal_t:
-        ret = InOut_t.input_t
-    elif ret == InOut_t.output_t:
-        ret = InOut_t.InOut_tt
-    elif ret == InOut_t.Used_t:
-        ret = InOut_t.input_t
-    return ret
-
-def Inout_add_output(Inout=InOut_t.Internal_t):
-    ret = Inout
-    if ret is None:
-        ret = InOut_t.output_t
-    elif ret == InOut_t.Internal_t:
-        ret = InOut_t.output_t
-    elif ret == InOut_t.input_t:
-        ret = InOut_t.InOut_tt
-    elif ret == InOut_t.Used_t:
-        ret = InOut_t.output_t
-    return ret
-
-def Inout_add_used(self=InOut_t.Internal_t):
-    ret = Inout
-    if ret is None:
-        ret = InOut_t.Used_t
-    elif ret == InOut_t.Internal_t:
-        ret = InOut_t.Used_t
-    elif ret == InOut_t.Unset_t:
-        ret = InOut_t.Used_t
-    return ret
-
-
-def InoutFlip(inOut):
-    if inOut == InOut_t.input_t:
-        return InOut_t.output_t
-    
-    if inOut ==   InOut_t.output_t:
-        return InOut_t.input_t
-    
-    if inOut == InOut_t.Master_t:
-        return InOut_t.Slave_t
-    
-    if inOut == InOut_t.Slave_t:
-        return InOut_t.Master_t
-
-    return inOut
-
-class v_classType_t(Enum):
-    transition_t = 1
-    Master_t = 2
-    Slave_t = 3
-    Record_t =4
-    
-    def __repr__(self):
-        return str(self).split(".")[-1]
 
 def v_variable(symbol: T) ->T:
     ret= copy.deepcopy(symbol)

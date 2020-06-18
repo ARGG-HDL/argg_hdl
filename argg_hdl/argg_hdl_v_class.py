@@ -560,9 +560,13 @@ class v_class_converter(hdl_converter_base):
 
         members = element["symbol"].getMember()
         for m in members:
-            if m["symbol"].__writeRead__ == InOut_t.Internal_t:
+            inout = astParser.get_function_arg_inout_type(m["symbol"])
+        
+            if inout == InOut_t.Internal_t:
                 continue
-            if m["symbol"].__writeRead__ == InOut_t.Used_t:
+            if inout == InOut_t.Used_t:
+                continue
+            if inout == InOut_t.Unset_t:
                 continue
             ret.append(m["symbol"].__hdl_converter__.to_arglist(
                     m["symbol"], 

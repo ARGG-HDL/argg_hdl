@@ -3,6 +3,7 @@ from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 
 from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class
+from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 
 class v_record_converter(v_class_converter):
     def __init__(self):
@@ -12,16 +13,17 @@ class v_record_converter(v_class_converter):
 
 
     def append_reset(self, obj):
-        self.MemfunctionCalls.append({
-            "name" : "reset",
-            "args": [obj],
-            "self" :obj,
-            "call_func" : call_func_record_reset,
-            "func_args" : None,
-            "setDefault" : False,
-            "varSigIndependent" : True
-
-        })
+        self.MemfunctionCalls.append(
+        memFunctionCall(
+            name= "reset",
+            args=  [obj],
+            obj= obj,
+            call_func = call_func_record_reset,
+            func_args = None,
+            setDefault = False,
+            varSigIndependent = True
+        )
+     )
 
 
     def make_connection(self, obj, name, parent):
