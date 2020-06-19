@@ -324,8 +324,8 @@ class hdl_converter_base:
 
         dep_list += [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base) and getattr(obj, x[0])._issubclass_("v_class")]
 
-        primary = hdl.get_primary_object(obj)
-        for x in primary.__hdl_converter__.MemfunctionCalls:
+        
+        for x in hdl.get_MemfunctionCalls(obj):
             dep_list += x.args
 
         dep_list = flatten_list(dep_list)
@@ -357,6 +357,11 @@ class hdl_converter_base:
         
     def ops2str(self, ops):
         return  self.__VHDL__OPS_to2str[ops]
+
+    def get_MemfunctionCalls(self,obj):
+        primary = hdl.get_primary_object(obj)
+        return primary.__hdl_converter__.MemfunctionCalls
+    
 
     def FlagFor_TemplateMissing(self, obj):
         primary = hdl.get_primary_object(obj)

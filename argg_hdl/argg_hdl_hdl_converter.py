@@ -7,7 +7,12 @@ def get_dependency_objects(obj, dep_list):
 def ops2str(obj, ops):
     return obj.__hdl_converter__.ops2str(ops)
 
+def get_MemfunctionCalls(obj):
+    return obj.__hdl_converter__.get_MemfunctionCalls(obj)
 
+
+    
+    
 def FlagFor_TemplateMissing(obj):
     obj.__hdl_converter__.FlagFor_TemplateMissing(obj)
 
