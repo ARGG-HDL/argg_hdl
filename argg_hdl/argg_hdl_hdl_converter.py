@@ -47,7 +47,7 @@ def get_enity_file_content(obj):
     return obj.__hdl_converter__.get_enity_file_content(obj)
 
 def get_entity_file_name(obj):
-    return obj.__hdl_converter__.get_enity_file_content(obj)
+    return obj.__hdl_converter__.get_entity_file_name(obj)
 
 
 def get_type_simple(obj):

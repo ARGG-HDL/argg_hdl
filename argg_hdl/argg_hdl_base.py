@@ -7,6 +7,8 @@ from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 from  argg_hdl.argg_hdl_base_helpers import *
 from  argg_hdl.argg_hdl_lib_enums import *
 
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
+
 from typing import Sequence, TypeVar
 T = TypeVar('T', bound='Copyable')
 
@@ -223,9 +225,11 @@ def set_sort_archetecture(newState):
 
 
 gHDL_objectList = []
+gHDL_objectList_primary = []
 
 def g_global_reset():
     gHDL_objectList.clear()
+    gHDL_objectList_primary.clear()
     gStatus["isConverting2VHDL"] = False
     gStatus["isProcess"]  =  False
     gStatus["isPrimaryConnection"]= True
@@ -270,7 +274,7 @@ def unfold_errors(error):
 def convert_to_hdl(Obj, FolderPath):
     try:
         core_gen.generate_files_in_folder(FolderPath)
-        return Obj.__hdl_converter__.convert_all(Obj,  FolderPath)
+        return hdl.convert_all(Obj,  FolderPath)
     except Exception as inst:
         er_list  =  unfold_errors(inst)
         ret = join_str(er_list, Delimeter="\n")
@@ -320,7 +324,7 @@ class hdl_converter_base:
 
         dep_list += [getattr(obj, x[0]) for x in obj.__dict__.items() if issubclass(type(getattr(obj, x[0])),argg_hdl_base) and getattr(obj, x[0])._issubclass_("v_class")]
 
-        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary = hdl.get_primary_object(obj)
         for x in primary.__hdl_converter__.MemfunctionCalls:
             dep_list += x.args
 
@@ -339,7 +343,7 @@ class hdl_converter_base:
                     continue
                 if isInList_type(ret1, x):
                     continue
-                ret1.append(x.__hdl_converter__.get_dependency_objects(x,ret))
+                ret1.append(hdl.get_dependency_objects(x,ret))
             
             ret1.append(obj)
             ret1 = flatten_list(ret1)
@@ -355,29 +359,29 @@ class hdl_converter_base:
         return  self.__VHDL__OPS_to2str[ops]
 
     def FlagFor_TemplateMissing(self, obj):
-        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary = hdl.get_primary_object(obj)
         primary.__hdl_converter__.MissingTemplate  = True
 
     def reset_TemplateMissing(self, obj):
-        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary = hdl.get_primary_object(obj)
         primary.__hdl_converter__.MissingTemplate  = False  
 
     def isTemplateMissing(self,obj):
-        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary = hdl.get_primary_object(obj)
         return primary.__hdl_converter__.MissingTemplate  
 
     def IsSucessfullConverted(self,obj):
-        if obj.__hdl_converter__.isTemplateMissing(obj):
+        if hdl.isTemplateMissing(obj):
             return False
         return self.IsConverted
 
     def convert_all_packages(self, obj, ouputFolder,x,FilesDone):
-        packetName =  x.__hdl_converter__.get_packet_file_name(x)
+        packetName =  hdl.get_packet_file_name(x)
         if packetName not in FilesDone:
             print_cnvt(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
             gTemplateIndent.inc()
-            x.__hdl_converter__.reset_TemplateMissing(x)
-            packet = x.__hdl_converter__.get_packet_file_content(x)
+            hdl.reset_TemplateMissing(x)
+            packet = hdl.get_packet_file_content(x)
             if packet and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
                 file_set_content(ouputFolder+"/" +packetName,packet)
             FilesDone.append(packetName)
@@ -389,13 +393,13 @@ class hdl_converter_base:
             print_cnvt(str(gTemplateIndent)+ '</package_conversion>')
         
     def convert_all_entities(self, obj, ouputFolder,x,FilesDone):
-        entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
+        entiyFileName =  hdl.get_entity_file_name(x)
         if entiyFileName not in FilesDone:
             print_cnvt(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
             gTemplateIndent.inc()
-            x.__hdl_converter__.reset_TemplateMissing(x)
+            hdl.reset_TemplateMissing(x)
             try:
-                entity_content = x.__hdl_converter__.get_enity_file_content(x)
+                entity_content = hdl.get_enity_file_content(x)
             except Exception as inst:
                 raise Exception(["Error in entity Converion:\nEntityFileName: "+ entiyFileName], x,inst)
             if entity_content and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
@@ -413,7 +417,7 @@ class hdl_converter_base:
         FilesDone.clear()
         for x in gHDL_objectList:
             
-            if x.__hdl_converter__.IsSucessfullConverted(x):
+            if hdl.IsSucessfullConverted(x):
                 continue
             
             self.convert_all_packages(obj, ouputFolder,x,FilesDone)
@@ -440,15 +444,25 @@ class hdl_converter_base:
             print_cnvt(str(gTemplateIndent)+ '</Converting>')
 
     def get_primary_object(self,obj):
-        obj_packetName =  obj.__hdl_converter__.get_packet_file_name(obj)
-        obj_entiyFileName =  obj.__hdl_converter__.get_entity_file_name(obj)
+        obj_packetName =  hdl.get_packet_file_name(obj)
+        obj_entiyFileName =  hdl.get_entity_file_name(obj)
         i = 0 
+
+        for x in gHDL_objectList_primary:
+            if obj_packetName ==  x["packetName"] and obj_entiyFileName == x["entiyFileName"] and isinstance(obj, type(x["symbol"])): 
+                return x["symbol"]
+
         for x in gHDL_objectList:
             i +=1 
-            packetName =  x.__hdl_converter__.get_packet_file_name(x)
-            entiyFileName =  x.__hdl_converter__.get_entity_file_name(x)
+            packetName =  hdl.get_packet_file_name(x)
+            entiyFileName =  hdl.get_entity_file_name(x)
             if obj_packetName ==  packetName and obj_entiyFileName == entiyFileName and isinstance(obj, type(x)): 
                 #print_cnvt(i)
+                gHDL_objectList_primary.append({
+                    "packetName"    : obj_packetName,
+                    "entiyFileName" : obj_entiyFileName,
+                    "symbol"            : x
+                })
                 return x
 
         raise Exception("did not find primary object")
@@ -503,7 +517,7 @@ class hdl_converter_base:
 
     
     def _vhdl__compare(self,obj, ops, rhs, astParser =None):
-        return str(obj) + " " + obj.__hdl_converter__.ops2str(ops)+" " + str(rhs)
+        return str(obj) + " " + hdl.ops2str(ops)+" " + str(rhs)
 
     def _vhdl__add(self,obj,args):
         return str(obj) + " + " + str(args)
@@ -539,11 +553,11 @@ class hdl_converter_base:
         return obj
 
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)    
+        asOp = hdl.get_assiment_op(obj)    
         return str(obj) +asOp +  str(rhs)
 
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        return rhs.__hdl_converter__._vhdl__reasign(rhs, obj,astParser,context_str)
+        return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
 
     def get_get_call_member_function(self, obj, name, args):
         args = [x.get_symbol() for x in args ]
@@ -572,12 +586,12 @@ class hdl_converter_base:
         return None
     def _vhdl__call_member_func(self, obj, name, args, astParser=None):
         
-        primary = obj.__hdl_converter__.get_primary_object(obj)
+        primary = hdl.get_primary_object(obj)
         if  primary is not obj:
-            return primary.__hdl_converter__._vhdl__call_member_func( primary, name, args, astParser)
+            return hdl._vhdl__call_member_func( primary, name, args, astParser)
         
         
-        call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
+        call_obj = hdl.get_get_call_member_function(obj, name, args)
         
         args_str = [str(x.get_type()) for x in args]
         args_str=join_str(args_str, Delimeter=", ")
@@ -715,7 +729,7 @@ class hdl_converter_base:
         return [{ "suffix":"", "symbol": obj}]
 
     def get_Name_array(self,obj):
-        return obj.__hdl_converter__.get_type_simple(obj)+"_a"
+        return hdl.get_type_simple(obj)+"_a"
 
     def length(self,obj):
         return "length(" +str(obj)+")"

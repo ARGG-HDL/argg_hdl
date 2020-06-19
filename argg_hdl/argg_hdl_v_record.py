@@ -27,8 +27,8 @@ class v_record_converter(v_class_converter):
 
 
     def make_connection(self, obj, name, parent):
-        obj.pull = obj.__hdl_converter__.getConnecting_procedure_record(obj, "pull")
-        obj.push = obj.__hdl_converter__.getConnecting_procedure_record(obj, "push")
+        obj.pull = self.getConnecting_procedure_record(obj, "pull")
+        obj.push = self.getConnecting_procedure_record(obj, "push")
 
     def getConnecting_procedure_record(self, obj, PushPull):
 
@@ -66,12 +66,12 @@ class v_record_converter(v_class_converter):
         if rhs._type != obj._type:
             raise Exception("cannot assigne different types.", str(obj), rhs._type, obj._type )
 
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
         obj._add_output()
         return obj.get_vhdl_name() + asOp +  rhs.get_vhdl_name()
     
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        return rhs.__hdl_converter__._vhdl__reasign(rhs,obj,astParser,context_str)
+        return hdl._vhdl__reasign(rhs,obj,astParser,context_str)
     
 
         
@@ -120,8 +120,8 @@ class v_record(v_class):
 
 
 def call_func_record_reset(obj, name, args, astParser=None,func_args=None):
-    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
-    val = args[0].get_type()+"_null"
+    asOp = hdl.get_assiment_op(args[0])
+    val = args[0].__hdl_converter__.get_init_values(args[0])
     
     ret =  str(args[0])  + asOp + val
     args[0]._add_output()

@@ -70,7 +70,7 @@ class v_class_converter(hdl_converter_base):
             return name + " : " +obj.getType(Inout)
         
         ret = []
-        xs = obj.__hdl_converter__.extract_conversion_types(
+        xs = hdl.extract_conversion_types(
             obj,
             exclude_class_type=v_classType_t.transition_t
         )
@@ -417,7 +417,7 @@ class v_class_converter(hdl_converter_base):
  
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
         
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
 
         
         if rhs._Inout == InOut_t.Master_t and rhs._varSigConst == varSig.signal_t:
@@ -672,7 +672,7 @@ class v_class(argg_hdl_base):
             for x in mem:
                 x["symbol"].set_vhdl_name(name+"."+x["name"],Overwrite)
         else:
-            xs = self.__hdl_converter__.extract_conversion_types(self, exclude_class_type= v_classType_t.transition_t,)
+            xs = hdl.extract_conversion_types(self, exclude_class_type= v_classType_t.transition_t,)
             for x in xs:
                 mem = x["symbol"].getMember()
                 for m in mem:
