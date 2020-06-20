@@ -64,8 +64,8 @@ class TX_shift_register_readout_slave(v_class_slave):
         self.state = v_variable(v_enum(tx_sr_cl.idle))
         self.AsicN = v_variable( v_slv(4))
         self.counter   = v_variable( sr_clk_t() )
-        self.sr_counter = v_variable( v_slv(32))
-        self.sr_counter_max = v_variable( v_slv(32,16))
+        self.sr_counter = v_variable( v_slv(16))
+        self.sr_counter_max = v_variable( v_slv(16,16))
 
         self.RO_Config= v_variable(readOutConfig())
 
@@ -178,14 +178,16 @@ class SerialDataRoutProcess_cl(v_clk_entity):
         state = v_signal(v_enum(tx_slro_st.idle))
         stateOut = v_signal(v_enum(tx_sr_out.header0))
 
-        ConIn = get_handle(self.config_in)
-        dataOut = get_handle(self.data_out)
-        ConData = v_variable(SerialDataConfig())
-        sample = v_variable(v_slv(5))
-        header  = v_variable(v_slv(32,0xABCDABCD))
-        data = v_variable(self.ShiftRegister_in.data_out)
-        data_prefix = v_variable(v_slv(12,0xDEF))
-        data_footer = v_variable(v_slv(32,0xFACEFACE))
+        ConIn       = get_handle(self.config_in)
+        dataOut     = get_handle(self.data_out)
+        ConData     = v_variable(SerialDataConfig())
+        sample      = v_variable(v_slv(5))
+        
+        header      = v_const(v_slv(32,0xABCDABCD))
+        data_prefix = v_const(v_slv(12,0xDEF))
+        data_footer = v_const(v_slv(32,0xFACEFACE))
+
+        data        = v_variable(self.ShiftRegister_in.data_out)
 
         shiftRegster = TX_shift_register_readout_slave(self.ShiftRegister_in)
 
