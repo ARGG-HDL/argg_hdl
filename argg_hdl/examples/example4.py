@@ -129,7 +129,7 @@ class test_bench_e(v_entity):
         
 
         
-        clkgen = v_create(clk_generator())
+        clkgen = clk_generator()
 
         maxCount = v_slv(32,20)
 

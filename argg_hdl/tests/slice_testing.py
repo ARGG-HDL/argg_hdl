@@ -16,7 +16,7 @@ class slice_TB(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
+        clkgen = clk_generator()
         counter = v_slv()
         counter2 = v_slv()
         counter3 = v_slv(32,1)
@@ -66,11 +66,11 @@ class slice_TB(v_entity):
 @do_simulation
 def slice_TB_sim(OutputPath, f= None):
     
-    tb1 = v_create(slice_TB())
+    tb1 = slice_TB()
     return tb1
 
 @vhdl_conversion
 def slice_TB_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(slice_TB())
+    tb1 = slice_TB()
     return tb1

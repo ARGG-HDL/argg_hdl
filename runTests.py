@@ -26,7 +26,7 @@ class TestCoreExamples(unittest.TestCase):
         
 
     def test_clk_generator_sim(self):
-        result, message = core_t.clk_generator_test_sim("tests/example2/")
+        result, message = core_t.clk_generator_test_sim("tests/example2/") 
         self.assertTrue(result,message)
 
     def test_InputDelay_sim(self):
@@ -106,3 +106,6 @@ class TestCoreExamples(unittest.TestCase):
 if __name__ == '__main__':
     remove_old_files()
     unittest.main() 
+
+
+    

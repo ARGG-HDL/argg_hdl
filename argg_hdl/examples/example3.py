@@ -117,12 +117,12 @@ class tb_entity(v_entity):
 
 
     def architecture(self):
-        clkgen = v_create(clk_generator())
+        clkgen = clk_generator()
 
         maxCount = v_slv(32,20)
-        axiSource = v_create(rollingCounter(clkgen.clk,maxCount))
-        axP       = v_create(axiPrint(clkgen.clk))
-        axFilter  = v_create(axiFilter(clkgen.clk))
+        axiSource = rollingCounter(clkgen.clk,maxCount)
+        axP       = axiPrint(clkgen.clk)
+        axFilter  = axiFilter(clkgen.clk)
         
         axiSource | axFilter | axP
         

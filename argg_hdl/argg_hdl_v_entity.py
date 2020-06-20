@@ -340,7 +340,14 @@ class v_entity_converter(hdl_converter_base):
         ret = obj.__hdl_converter__.get_definition(obj)
         return ret.strip()
 
-class v_entity(argg_hdl_base0):
+class InstantiateAfterInit(type):
+    def __call__(cls, *args, **kwargs):
+        """Called when you call MyNewClass() """
+        obj = type.__call__(cls, *args, **kwargs)
+        obj._instantiate_()
+        return obj
+
+class v_entity(argg_hdl_base0, metaclass=InstantiateAfterInit):
     def __init__(self):
         super().__init__()
 

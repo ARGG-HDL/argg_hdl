@@ -121,19 +121,19 @@ class InputDelay_tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(ahe.clk_generator())
+        clkgen = ahe.clk_generator()
         k_globals =klm_globals()
         data = v_slv(32,5)
 
 
-        dut  = v_create(InputDelay(k_globals,Delay=5) )
+        dut  = InputDelay(k_globals,Delay=5) 
 
-        axprint  =  v_create( InputDelay_print(k_globals))
+        axprint  =   InputDelay_print(k_globals)
 
         axprint.ConfigIn << dut.ConfigOut
         k_globals.clk << clkgen.clk
 
-        d_source  =  v_create( dataSource(k_globals.clk))
+        d_source  =   dataSource(k_globals.clk)
         dut.ConfigIn << d_source.DataOut
 
 
@@ -146,7 +146,7 @@ class InputDelay_tb(v_entity):
 
 def InputDelay2vhdl(OutputPath):
     g_global_reset()
-    tb  =v_create(InputDelay_tb())
+    tb  =InputDelay_tb()
     convert_to_hdl(tb, OutputPath +"/output/" + "InputDelay_tb")
 
  
@@ -161,19 +161,19 @@ class InputDelay_tb_sim(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(ahe.clk_generator())
+        clkgen = ahe.clk_generator()
         k_globals =klm_globals()
         data = v_slv(32,0)
 
 
-        dut  = v_create(InputDelay(k_globals,Delay=5) )
+        dut  = InputDelay(k_globals,Delay=5) 
 
-        axprint  =  v_create( InputDelay_print(k_globals))
+        axprint  =   InputDelay_print(k_globals)
 
         axprint.ConfigIn << dut.ConfigOut
         k_globals.clk << clkgen.clk
 
-        d_source  =  v_create( dataSource(k_globals.clk))
+        d_source  =   dataSource(k_globals.clk)
         dut.ConfigIn << d_source.DataOut
 
         @rising_edge(clkgen.clk)
@@ -188,7 +188,7 @@ class InputDelay_tb_sim(v_entity):
 @do_simulation
 def InputDelay_sim(OutputPath, f):
     
-    tb  =v_create(InputDelay_tb_sim(f))
+    tb  =InputDelay_tb_sim(f)
     return tb
     
 
@@ -199,5 +199,5 @@ def InputDelay_sim(OutputPath, f):
 @vhdl_conversion
 def InputDelay2vhdl(OutputPath):
 
-    tb  =v_create(InputDelay_tb())
+    tb  =InputDelay_tb()
     return tb

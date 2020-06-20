@@ -55,13 +55,15 @@ class test_Config(v_record):
 
 
 class data_record_tb(v_entity):
+    
+
     def __init__(self):
         super().__init__()
         self.architecture()
 
     @architecture
     def architecture(self):
-        clkgen     = v_create(clk_generator())
+        clkgen     = clk_generator()
         config1    = v_signal(test_Config())
         config2    = v_variable(test_Config())
         counter    = sr_clk_t(0)
@@ -101,11 +103,11 @@ class data_record_tb(v_entity):
 @do_simulation
 def data_record_tb_sim(OutputPath, f= None):
     
-    tb1 = v_create(data_record_tb())
+    tb1 = data_record_tb()
     return tb1
 
 @vhdl_conversion
 def data_record_tb_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(data_record_tb())
+    tb1 = data_record_tb()
     return tb1

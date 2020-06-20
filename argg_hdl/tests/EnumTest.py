@@ -24,7 +24,7 @@ class enum_TB(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
+        clkgen = clk_generator()
         counter = v_int()
         myState = v_enum( myStates.e_idle)
         myState2 = v_enum( myStates.e_idle)
@@ -61,11 +61,11 @@ class enum_TB(v_entity):
 @do_simulation
 def enum_TB_sim(OutputPath, f= None):
     
-    tb1 = v_create(enum_TB())
+    tb1 = enum_TB()
     return tb1
 
 @vhdl_conversion
 def enum_TB_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(enum_TB())
+    tb1 = enum_TB()
     return tb1

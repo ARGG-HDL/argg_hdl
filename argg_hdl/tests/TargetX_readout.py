@@ -246,7 +246,7 @@ class SerialDataRoutProcess_cl(v_clk_entity):
 @vhdl_conversion
 def TXReadout2vhdl(OutputPath):
 
-    tb  =v_create(SerialDataRoutProcess_cl())
+    tb  =SerialDataRoutProcess_cl()
     return tb
 
 
@@ -262,8 +262,8 @@ class TX_testbench(v_entity):
     def architecture(self):
         data = pd.read_csv("tests/targetx_sim/testcase/py_serialdataroutprocess_cl_tb_csv.xlsm.csv")
 
-        clkgen = v_create(clk_generator())
-        readout = v_create(SerialDataRoutProcess_cl(clkgen.clk))
+        clkgen = clk_generator()
+        readout = SerialDataRoutProcess_cl(clkgen.clk)
         configIn = get_handle(readout.config_in)
         config = v_variable(SerialDataConfig())
         counter = v_slv(32,1)
@@ -316,5 +316,5 @@ class TX_testbench(v_entity):
 @do_simulation
 def TXReadout_sim(OutputPath, f= None):
     
-    tb1 = v_create(TX_testbench())
+    tb1 = TX_testbench()
     return tb1

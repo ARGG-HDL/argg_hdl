@@ -32,8 +32,8 @@ class tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
-        cnt    = v_create(Counter(clkgen.clk))
+        clkgen = clk_generator()
+        cnt    = Counter(clkgen.clk))
 
         cnt_out = get_handle(cnt.Data_out)
         data = v_slv(32)
@@ -50,7 +50,7 @@ class tb(v_entity):
 
 @vhdl_conversion
 def ex32vhdl(OutputPath):
-    tb1 = v_create(tb())
+    tb1 = tb()
         
     return tb1
 

@@ -93,14 +93,14 @@ class InputDelay_tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
+        clkgen = clk_generator()
         k_globals = system_globals()
         data = v_slv(32,5)
 
 
-        dut  = v_create(InputDelay(k_globals,Delay=5) )
+        dut  = InputDelay(k_globals,Delay=5) 
 
-        axprint  =  v_create( InputDelay_print(k_globals))
+        axprint  =   InputDelay_print(k_globals)
 
         axprint.ConfigIn << dut.ConfigOut
         k_globals.clk << clkgen.clk

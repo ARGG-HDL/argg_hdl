@@ -119,8 +119,8 @@ class ramHandler_tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
-        ram    = v_create(ram_block())
+        clkgen = clk_generator()
+        ram    = ram_block()
         ram.clk << clkgen.clk
         ram_master = ram_handle_master(ram.DataIO)
         data = v_slv(32)
@@ -156,11 +156,11 @@ class ramHandler_tb(v_entity):
 @do_simulation
 def RamHandler_sim(OutputPath, f= None):
     
-    tb1 = v_create(ramHandler_tb())
+    tb1 = ramHandler_tb()
     return tb1
 
 @vhdl_conversion
 def RamHandler_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(ramHandler_tb())
+    tb1 = ramHandler_tb()
     return tb1

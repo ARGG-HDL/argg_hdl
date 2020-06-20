@@ -53,8 +53,8 @@ class var_sig_tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
-        vs_impl = v_create(var_sig_impl())
+        clkgen = clk_generator()
+        vs_impl = var_sig_impl()
         vs_impl.clk << clkgen.clk
             
         end_architecture()
@@ -62,11 +62,11 @@ class var_sig_tb(v_entity):
 @do_simulation
 def var_sig_tb_sim(OutputPath, f= None):
     
-    tb1 = v_create(var_sig_tb())
+    tb1 = var_sig_tb()
     return tb1
 
 @vhdl_conversion
 def var_sig_tb_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(var_sig_tb())
+    tb1 = var_sig_tb()
     return tb1

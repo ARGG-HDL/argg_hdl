@@ -80,9 +80,9 @@ class tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create( clk_generator()) 
-        axmux = v_create(axiStreamMux(clkgen.clk))
-        d_s   = v_create(d_source(clkgen.clk))
+        clkgen =  clk_generator()
+        axmux = axiStreamMux(clkgen.clk)
+        d_s   = d_source(clkgen.clk)
         axmux.data_in[0] << d_s.data_out
 
         m = memo()
@@ -101,5 +101,5 @@ class tb(v_entity):
 
 
 
-tb1 = v_create(tb())
+tb1 = tb()
 convert_to_hdl(tb1,"ex4")

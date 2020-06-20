@@ -9,7 +9,7 @@ from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 @vhdl_conversion
 def clk_generator_test(OutputFolder):
 
-    clkgen = v_create(ahe.clk_generator())
+    clkgen = ahe.clk_generator()
     return clkgen
     
     
@@ -18,6 +18,8 @@ def clk_generator_test(OutputFolder):
 
 
 class tb_clk_generator(v_entity):
+
+
     def __init__(self,f):
         super().__init__()
         self.f = f
@@ -25,7 +27,7 @@ class tb_clk_generator(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(ahe.clk_generator())
+        clkgen = ahe.clk_generator()
         
         data = v_slv(32,0)
       
@@ -40,6 +42,6 @@ class tb_clk_generator(v_entity):
 @do_simulation
 def clk_generator_test_sim(OutputFolder,f):
 
-    tb = v_create(tb_clk_generator(f))
+    tb = tb_clk_generator(f)
     return tb
     

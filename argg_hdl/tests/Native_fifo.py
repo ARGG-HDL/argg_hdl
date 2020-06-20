@@ -117,8 +117,8 @@ class fifo_cc_tb(v_entity):
 
     @architecture
     def architecture(self):
-        clkgen = v_create(clk_generator())
-        ff_readout = v_create(readout_native_fifo())
+        clkgen = clk_generator()
+        ff_readout = readout_native_fifo()
         ff_readout.clk << clkgen.clk
 
         data = dword()
@@ -140,12 +140,12 @@ class fifo_cc_tb(v_entity):
 @do_simulation
 def fifo_cc_tb_sim(OutputPath, f= None):
     
-    tb1 = v_create(fifo_cc_tb())
+    tb1 = fifo_cc_tb()
     return tb1
 
 
 @vhdl_conversion
 def fifo_cc_tb_2vhdl(OutputPath, f= None):
     
-    tb1 = v_create(fifo_cc_tb())
+    tb1 = fifo_cc_tb()
     return tb1

@@ -70,11 +70,11 @@ class tb_entity(v_entity):
 
 
     def architecture(self):
-        clkgen = v_create(clk_generator())
+        clkgen = clk_generator()
 
         Axi_out = axisStream(v_slv(32))
         counter = v_slv(32)
-        axFil = v_create(axiPrint(clkgen.clk))
+        axFil = axiPrint(clkgen.clk)
         axFil.Axi_in << Axi_out
 
 

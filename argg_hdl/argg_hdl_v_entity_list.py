@@ -16,7 +16,8 @@ class v_entity_list_converter(hdl_converter_base):
             i = 0
             for x in obj.nexted_entities:
                 i+=1
-                if x["temp"]:
+                if x["symbol"].__hdl_name__ is None or x["temp"]:
+                    x["temp"] = True
                     tempName = obj.__hdl_name__ +"_"+ str(i) + "_" +type(x["symbol"]).__name__
                     x["symbol"].set_vhdl_name(tempName)
                     ret += x["symbol"].__hdl_converter__.get_architecture_header(x["symbol"])
@@ -31,7 +32,8 @@ class v_entity_list_converter(hdl_converter_base):
             start = ""
             for x in obj.nexted_entities:
                 i+=1
-                if x["temp"]:
+                if  x["symbol"].__hdl_name__ is None or x["temp"]:
+                    x["temp"] = True
                     tempName = str(obj.__hdl_name__) +"_"+  str(i) + "_" +type(x["symbol"]).__name__
                     if not x["symbol"].__hdl_name__:
                         x["symbol"].set_vhdl_name(tempName)
