@@ -114,6 +114,13 @@ class vhdl__Pull_Push():
 
 
 
+def function_check_for_duplication(fun,list_of_fun):
+    for x in list_of_fun:
+        if fun.isSubset(x):
+            fun.isEmpty = True
+        elif x.isSubset(fun):
+            x.isEmpty = True            
+    
 class getHeader():
     def __init__(self, obj, name,parent):
         self.obj = obj
@@ -156,16 +163,20 @@ class getHeader():
         return ret
 
     def From_Functions(self):
-        ret = ""
+        
         funlist =[]
         for x in reversed(self.obj.__hdl_converter__.__ast_functions__):
             if "_onpull" in x.name.lower()  or "_onpush" in x.name.lower() :
                 continue
-            funDeclaration = x.__hdl_converter__.getHeader(x,None,None)
-            if funDeclaration in funlist:
-                x.isEmpty = True
+            function_check_for_duplication(x,funlist)
+            funlist.append(x)
+
+        ret = ""
+        for x in reversed(self.obj.__hdl_converter__.__ast_functions__):
+            if "_onpull" in x.name.lower()  or "_onpush" in x.name.lower() :
                 continue
-            funlist.append(funDeclaration)
+
+            funDeclaration = x.__hdl_converter__.getHeader(x,None,None)
             ret +=  funDeclaration
 
         return ret

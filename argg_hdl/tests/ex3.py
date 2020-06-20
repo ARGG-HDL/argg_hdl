@@ -33,7 +33,7 @@ class tb(v_entity):
     @architecture
     def architecture(self):
         clkgen = clk_generator()
-        cnt    = Counter(clkgen.clk))
+        cnt    = Counter(clkgen.clk)
 
         cnt_out = get_handle(cnt.Data_out)
         data = v_slv(32)

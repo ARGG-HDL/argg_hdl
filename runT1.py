@@ -22,9 +22,9 @@ remove_old_files()
 
 
 #dr.data_record_tb_sim("tests/data_record_tb_sim/")
-dr.data_record_tb_2vhdl("tests/data_record_tb/")
+#dr.data_record_tb_2vhdl("tests/data_record_tb/")
 
-#TX.TXReadout2vhdl("../vhdl_lecture/targetx")
+TX.TXReadout2vhdl("../vhdl_lecture/targetx")
 
 
 

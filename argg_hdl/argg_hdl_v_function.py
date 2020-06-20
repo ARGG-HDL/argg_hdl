@@ -62,6 +62,46 @@ class v_procedure(argg_hdl_base):
     def get_type(self):
         return type(self).__name__
     
+    def isSubset(self, rhs):#is either the same or is just missing templates
+        if self.name != rhs.name:
+            return False
+        
+        if self.argumentList == rhs.argumentList:
+            return True
+
+        sl_args = self.argumentList.split(";")
+        rhs_args = rhs.argumentList.split(";")
+        self_is_subset = False
+        rhs_is_subset = False
+
+        if len(sl_args) != len(rhs_args):
+            raise Exception("Different Length Not supported")
+        for s,r in zip(sl_args,rhs_args):
+            ss = s.split(":=")
+            rr = r.split(":=")
+            if ss[0].strip() != rr[0].strip():
+                return False
+            if len(ss) < len(rr):
+                self_is_subset = True
+            
+            if len(rr) < len(ss):
+                rhs_is_subset = True
+
+           # print(s,r)
+
+        if not self_is_subset and not rhs_is_subset:
+            return False
+        
+        if self_is_subset and not rhs_is_subset:
+            return True
+        
+        
+        raise Exception("Unable to Determin which one is the subset")
+
+        
+
+
+
 
 class v_function_converter(hdl_converter_base):
     def __init__(self):
@@ -123,6 +163,45 @@ class v_function(argg_hdl_base):
     def get_type(self):
         return type(self).__name__
 
+    def isSubset(self,rhs):#is either the same or is just missing templates
+
+        if self.name != rhs.name:
+            return False
+        
+        if self.argumentList == rhs.argumentList:
+            return True
+
+        if self.returnType != rhs.returnType:
+            return False
+
+        sl_args = self.argumentList.split(";")
+        rhs_args = rhs.argumentList.split(";")
+        self_is_subset = False
+        rhs_is_subset = False
+
+        if len(sl_args) != len(rhs_args):
+            raise Exception("Different Length Not supported")
+        for s,r in zip(sl_args,rhs_args):
+            ss = s.split(":=")
+            rr = r.split(":=")
+            if ss[0].strip() != rr[0].strip():
+                return False
+            if len(ss) < len(rr):
+                self_is_subset = True
+            
+            if len(rr) < len(ss):
+                rhs_is_subset = True
+
+           # print(s,r)
+
+        if not self_is_subset and not rhs_is_subset:
+            return False
+        
+        if self_is_subset and not rhs_is_subset:
+            return True
+        
+        
+        raise Exception("Unable to Determin which one is the subset")
 
 class v_process_converter(hdl_converter_base):
     def __init__(self):
