@@ -364,6 +364,8 @@ class v_entity(argg_hdl_base0, metaclass=InstantiateAfterInit):
         self._StreamOut = None
         self._StreamIn  = None
 
+    def get_clk(self):
+        raise Exception("no Clock Defined for this entity", self)
         
     def getMember(self,InOut_Filter=None, VaribleSignalFilter = None):
         ret = list()
@@ -489,6 +491,9 @@ class v_clk_entity(v_entity):
         self.clk    =  port_in(v_sl())
         if clk is not  None:
             self.clk <<  clk
+    
+    def get_clk(self):
+        return self.clk
 
     def _issubclass_(self,test):
         if super()._issubclass_(test):

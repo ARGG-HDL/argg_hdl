@@ -198,6 +198,9 @@ class SerialDataRoutProcess_cl(v_entity):
         self.data_out_raw     = port_out(v_slv(16))
         self.architecture()
 
+    def get_clk(self):
+        return self.gSystem.clk
+
     @architecture
     def architecture(self):
         gSystem123=system_globals()
@@ -384,7 +387,7 @@ class TX_testbench(v_entity):
 
         clkgen = clk_generator()
 
-        readout.gSystem.clk << clkgen.clk
+        readout.get_clk()  << clkgen.clk
 
 
         counter = v_slv(32,1)
