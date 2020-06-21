@@ -135,7 +135,7 @@ class TX_shift_register_readout_slave(v_class_slave):
         return self.sr_counter == self.sr_counter_max
 
     def __bool__(self):
-        return self.state == tx_sr_cl.received_data or self.state == tx_sr_cl.data_was_read 
+        return self.state == tx_sr_cl.received_data 
 
     def __rshift__(self, rhs):
         rhs << self.rx.data_out
@@ -288,7 +288,36 @@ class SerialDataRoutProcess_cl(v_entity):
             registers_local.sr_select_min.get_register(self.gSystem.reg)
             registers_local.sr_select_max.get_register(self.gSystem.reg)
             
+            reg_readoutConfig.sr_select.start << registers_local.sr_select_min.data[0:7]
+            reg_readoutConfig.sr_select.stop  << registers_local.sr_select_max.data[0:7]
+
+
+            registers_local.sr_clk_sampl_select_start.get_register(self.gSystem.reg)
+            registers_local.sr_clk_sampl_select_stop.get_register(self.gSystem.reg)
             
+            reg_readoutConfig.sr_clk_sampl_select.start << registers_local.sr_clk_sampl_select_start.data[0:7]
+            reg_readoutConfig.sr_clk_sampl_select.stop  << registers_local.sr_clk_sampl_select_stop.data[0:7]
+
+
+            registers_local.sr_header_start.get_register(self.gSystem.reg)
+            registers_local.sr_header_stop.get_register(self.gSystem.reg)
+            
+            reg_readoutConfig.sr_header.start << registers_local.sr_header_start.data[0:7]
+            reg_readoutConfig.sr_header.stop  << registers_local.sr_header_stop.data[0:7]
+
+
+
+            registers_local.sr_clk_high_start.get_register(self.gSystem.reg)
+            registers_local.sr_clk_high_stop.get_register(self.gSystem.reg)
+            
+            reg_readoutConfig.sr_clk_high.start << registers_local.sr_clk_high_start.data[0:7]
+            reg_readoutConfig.sr_clk_high.stop  << registers_local.sr_clk_high_stop.data[0:7]
+
+            registers_local.sr_clk_period.get_register(self.gSystem.reg)
+            registers_local.sr_clk_offset.get_register(self.gSystem.reg)
+            
+            reg_readoutConfig.sr_clk_period     << registers_local.sr_clk_period.data[0:7]
+            reg_readoutConfig.sr_clk_offset     << registers_local.sr_clk_offset.data[0:7]
 
         end_architecture()
 
