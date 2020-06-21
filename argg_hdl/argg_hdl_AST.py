@@ -879,7 +879,7 @@ def call_func(obj, name, args, astParser=None,func_args=None):
             if y["symbol"]._varSigConst ==varSig.signal_t:
                 members = y["symbol"].getMember()
                 for m in members:
-                    if m["symbol"].__writeRead__ == InOut_t.output_t:
+                    if m["symbol"].__writeRead__ == InOut_t.output_t or  m["symbol"].__writeRead__ == InOut_t.InOut_tt:
                         line = func_arg["name"] + y["suffix"]+"_"+ m["name"] +" => " + arg.__hdl_name__ + y["suffix"]  +"."+m["name"]
                         ret.append(line)
                         #print_cnvt(line)
