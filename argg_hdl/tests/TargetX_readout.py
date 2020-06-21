@@ -229,7 +229,7 @@ class SerialDataRoutProcess_cl(v_entity):
         registers_local = SerialDataRoutProcess_cl_registers()
 
         data        = v_variable(self.ShiftRegister_in.data_out)
-
+        reg_readoutConfig =  readOutConfig()
         shiftRegster = TX_shift_register_readout_slave(self.ShiftRegister_in)
 
         self.data_out_raw << self.ShiftRegister_in.data_out
