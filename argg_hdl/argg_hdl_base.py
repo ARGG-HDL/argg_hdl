@@ -13,8 +13,8 @@ from typing import Sequence, TypeVar
 T = TypeVar('T', bound='Copyable')
 
 def architecture(func):
-    def wrap(self): 
-        func(self) 
+    def wrap(self,*args, **kwargs): 
+        func(self,*args, **kwargs) 
     return wrap
 
 def end_architecture():
@@ -470,7 +470,14 @@ class hdl_converter_base:
                 })
                 return x
 
-        raise Exception("did not find primary object")
+        gHDL_objectList.append(obj)
+
+        gHDL_objectList_primary.append({
+                    "packetName"    : obj_packetName,
+                    "entiyFileName" : obj_entiyFileName,
+                    "symbol"            : obj
+        })
+        return obj
 
     def get_packet_file_name(self, obj):
         return ""

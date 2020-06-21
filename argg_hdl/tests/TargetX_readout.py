@@ -163,9 +163,35 @@ class tx_sr_out(Enum):
     processdata = auto()
     footer = auto()
 
-class SerialDataRoutProcess_cl(v_clk_entity):
-    def __init__(self, clk=None):
-        super().__init__(clk=clk)
+
+
+class reg_entry(v_data_record):
+    def __init__(self,addr = 0,data = 0):
+        super().__init__()
+        self.addr = v_slv(16,addr)
+        self.data = v_slv(16,data)
+
+    def get_register(self,reg):
+        if reg.address == self.addr:
+            self.data << reg.value
+
+class SerialDataRoutProcess_cl_registers(v_data_record):
+    def __init__(self):
+        super().__init__()
+        self.sr_select_min = reg_entry(100)
+        self.sr_select_max = reg_entry(101)
+
+    
+
+
+
+class SerialDataRoutProcess_cl(v_entity):
+    def __init__(self, gSystem=None):
+        super().__init__()
+        self.gSystem = port_in(system_globals())
+        if gSystem is not None:
+            self.gSystem << gSystem
+
         self.config_in        = port_Stream_Slave(axisStream(SerialDataConfig()))
         self.ShiftRegister_in = port_Slave(TXShiftRegisterSignals())
         self.data_out         = port_Stream_Master(axisStream(v_slv(32)))
@@ -174,7 +200,7 @@ class SerialDataRoutProcess_cl(v_clk_entity):
 
     @architecture
     def architecture(self):
-
+        gSystem123=system_globals()
         state = v_signal(v_enum(tx_slro_st.idle))
         stateOut = v_signal(v_enum(tx_sr_out.header0))
 
@@ -187,14 +213,19 @@ class SerialDataRoutProcess_cl(v_clk_entity):
         data_prefix = v_const(v_slv(12,0xDEF))
         data_footer = v_const(v_slv(32,0xFACEFACE))
 
+        registers_local = SerialDataRoutProcess_cl_registers()
+
         data        = v_variable(self.ShiftRegister_in.data_out)
 
         shiftRegster = TX_shift_register_readout_slave(self.ShiftRegister_in)
 
         self.data_out_raw << self.ShiftRegister_in.data_out
 
-        @rising_edge(self.clk)
+        @rising_edge(self.gSystem.clk)
         def proc():
+
+            shiftRegster.RO_Config.sr_select.start << registers_local.sr_select_min.data[0:7]
+            shiftRegster.RO_Config.sr_select.stop  << registers_local.sr_select_max.data[0:7]
 
             if state == tx_slro_st.idle and ConIn:
                 ConIn >> ConData
@@ -238,7 +269,11 @@ class SerialDataRoutProcess_cl(v_clk_entity):
 
 
                 
-
+        @rising_edge(self.gSystem.clk)
+        def proc_reg():
+            registers_local.sr_select_min.get_register(self.gSystem.reg)
+            registers_local.sr_select_max.get_register(self.gSystem.reg)
+            
 
 
         end_architecture()
@@ -253,70 +288,133 @@ def TXReadout2vhdl(OutputPath):
 
 
 
-class TX_testbench(v_entity):
-    def __init__(self):
+
+
+
+class entity2FileConector():
+    def __init__(self, DUT_entity, InputFileName,OutFileHandle, OutPutHeader):
         super().__init__()
-        self.pd =  pd.DataFrame(columns=["Time","shiftregister_in_s2m_sr_clock", "shiftregister_in_s2m_sampleselectany", "shiftregister_in_s2m_sr_select", "shiftregister_in_s2m_sampleselect", "shiftregister_in_s2m_sr_clear", "shiftregister_in_m2s_data_out", "config_in_s2m_ready", "config_in_m2s_data_column_select", "config_in_m2s_data_sample_stop", "config_in_m2s_data_force_test_pattern", "config_in_m2s_data_row_select", "config_in_m2s_data_sample_start", "config_in_m2s_data_asic_num", "config_in_m2s_last", "config_in_m2s_valid", "data_out_s2m_ready", "data_out_m2s_data", "data_out_m2s_last", "data_out_m2s_valid", "data_out_raw"])
+        self.InputFileName = InputFileName
+        self.DUT_entity = DUT_entity
+        self.OutPutHeader = OutPutHeader
+        self.OutFileHandle = OutFileHandle
+        self.data = pd.read_csv(self.InputFileName )
+
+
+        in_headers = [{"index": i, "name": x} for i,x in enumerate(self.data.columns)]
+        self.readout_connections =self.make_connections2pandas(self.DUT_entity , in_headers, self.DUT_entity.gSystem.clk)
+
+        out_headers = [{"index": i, "name": x} for i,x in enumerate(self.OutPutHeader.split(";"))]
+        out_connections = self.make_connections2pandas(self.DUT_entity , out_headers, self.DUT_entity.gSystem.clk)
+        self.out_connections = sorted(out_connections, key = lambda i: i['index']) 
+
+
+    def do_IO(self, counter):
+        if counter == 1:
+            out_str = "Time "
+            for x in self.out_connections:
+                out_str +=   "; " + x["name"]
+            out_str += "\n"
+            self.OutFileHandle.write(out_str)
+            
+        for x in self.readout_connections:
+            x["symbol"] <<  int(self.data.iloc[counter][x["name"]])
+        
+        out_str = str(counter) 
+        for x in self.out_connections:
+            out_str +=   "; " + str(value(x["symbol"]))
+            
+        out_str += "\n"
+        self.OutFileHandle.write( out_str)
+            
+    def reduce_name(self, name,NameFragments):
+        
+        for x in NameFragments:
+            name_sp = name.split(x.lower())
+            if len(name_sp) > 1:
+                name = name_sp[1]
+            else:
+                return ""
+
+        return name
+    
+
+    def make_connections2pandas(self, hdl_obj,  pd_data_names,VetoClock, usedNameFragment=[]):
+        
+
+
+        ret = []
+        for mem in hdl_obj.getMember():
+            candidates = [x  for x in pd_data_names if  mem["name"].lower() in self.reduce_name(x["name"],usedNameFragment )]
+            if not candidates:
+                continue
+            if type(mem["symbol"] ).__name__ == "v_symbol" and VetoClock is not mem["symbol"]:
+                ret.append({
+                    "name" : candidates[0]["name"],
+                    'index' : candidates[0]["index"],
+                    "symbol" : mem["symbol"]
+
+
+                })
+            else:
+                con = self.make_connections2pandas(mem["symbol"], candidates, VetoClock, usedNameFragment + [ mem["name"] ] )
+                ret += con
+
+        return ret    
+
+
+
+class TX_testbench(v_entity):
+    def __init__(self, DUT_entity, InputFileName,OutFileHandle, OutPutHeader):
+        super().__init__()
+        self.IO =  entity2FileConector(
+            DUT_entity = DUT_entity,
+            InputFileName = InputFileName,
+            OutFileHandle = OutFileHandle,
+            OutPutHeader = OutPutHeader
+        )
+        self.DUT_entity = DUT_entity
         self.architecture()
         
 
     @architecture
     def architecture(self):
-        data = pd.read_csv("tests/targetx_sim/testcase/py_serialdataroutprocess_cl_tb_csv.xlsm.csv")
+        readout = self.DUT_entity 
+       
 
         clkgen = clk_generator()
-        readout = SerialDataRoutProcess_cl(clkgen.clk)
-        configIn = get_handle(readout.config_in)
-        config = v_variable(SerialDataConfig())
+
+        readout.gSystem.clk << clkgen.clk
+
+
         counter = v_slv(32,1)
+        
+
+        
 
         @rising_edge(clkgen.clk)
         def proc():
-            if counter == 1:
-                printf("Time ; shiftregister_in_s2m_sr_clock; shiftregister_in_s2m_sampleselectany; shiftregister_in_s2m_sr_select; shiftregister_in_s2m_sampleselect; shiftregister_in_s2m_sr_clear; shiftregister_in_m2s_data_out; config_in_s2m_ready; config_in_m2s_data_column_select; config_in_m2s_data_sample_stop; config_in_m2s_data_force_test_pattern; config_in_m2s_data_row_select; config_in_m2s_data_sample_start; config_in_m2s_data_asic_num; config_in_m2s_last; config_in_m2s_valid; data_out_s2m_ready; data_out_m2s_data; data_out_m2s_last; data_out_m2s_valid; data_out_raw\n")
-            readout.ShiftRegister_in.data_out           << int(data.iloc[value(counter)]["shiftregister_in_m2s_data_out"])
-            readout.config_in.data.column_select        << int(data.iloc[value(counter)]["config_in_m2s_data_column_select"])
-            readout.config_in.data.sample_stop          << int(data.iloc[value(counter)]["config_in_m2s_data_sample_stop"])
-            readout.config_in.data.force_test_pattern   << int(data.iloc[value(counter)]["config_in_m2s_data_force_test_pattern"])
-            readout.config_in.data.row_Select           << int(data.iloc[value(counter)]["config_in_m2s_data_row_select"])
-            readout.config_in.data.sample_start         << int(data.iloc[value(counter)]["config_in_m2s_data_sample_start"])
-            readout.config_in.data.ASIC_NUM             << int(data.iloc[value(counter)]["config_in_m2s_data_asic_num"])
-            readout.config_in.last                      << int(data.iloc[value(counter)]["config_in_m2s_last"])
-            readout.config_in.valid                     << int(data.iloc[value(counter)]["config_in_m2s_valid"])
-            readout.data_out.ready                      << int(data.iloc[value(counter)]["data_out_s2m_ready"])
+
             
-            
-            printff(
-                counter,
-                readout.ShiftRegister_in.sr_Clock,
-                readout.ShiftRegister_in.SampleSelectAny,
-                readout.ShiftRegister_in.sr_select,
-                readout.ShiftRegister_in.SampleSelect,
-                readout.ShiftRegister_in.sr_clear,
-                readout.ShiftRegister_in.data_out,
-                readout.config_in.ready,
-                readout.config_in.data.column_select,
-                readout.config_in.data.sample_stop,
-                readout.config_in.data.force_test_pattern,
-                readout.config_in.data.row_Select,
-                readout.config_in.data.sample_start,
-                readout.config_in.data.ASIC_NUM,
-                readout.config_in.last,
-                readout.config_in.valid,
-                readout.data_out.ready,
-                readout.data_out.data,
-                readout.data_out.last,
-                readout.data_out.valid,
-                readout.data_out_raw
-            )
-            
+            self.IO.do_IO(value( counter))
             counter << counter + 1
+
+            
             
 
         end_architecture()
 
 @do_simulation
 def TXReadout_sim(OutputPath, f= None):
+    with open("tests/targetx_sim/testcase2/header.txt") as fin:
+        header = fin.readlines()[0]
+        header = header.replace('"',"")
     
-    tb1 = TX_testbench()
+    DUT = SerialDataRoutProcess_cl()
+    tb1 = TX_testbench(DUT, 
+        InputFileName="tests/targetx_sim/testcase2/py_serialdataroutprocess_cl_tb_csv2.xlsm.csv",
+        OutFileHandle= f,
+        OutPutHeader = header
+    )
     return tb1
+
