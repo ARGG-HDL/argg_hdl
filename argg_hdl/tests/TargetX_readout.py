@@ -180,9 +180,9 @@ class SerialDataRoutProcess_cl_registers(v_data_record):
         super().__init__()
         self.sr_select_min = reg_entry(100)
         self.sr_select_max = reg_entry(101)
-
-    
-
+        
+        
+        
 
 
 class SerialDataRoutProcess_cl(v_entity):
@@ -277,7 +277,7 @@ class SerialDataRoutProcess_cl(v_entity):
             registers_local.sr_select_min.get_register(self.gSystem.reg)
             registers_local.sr_select_max.get_register(self.gSystem.reg)
             
-
+            
 
         end_architecture()
 
@@ -308,7 +308,7 @@ class entity2FileConector():
         self.readout_connections =self.make_connections2pandas(self.DUT_entity , in_headers, self.DUT_entity.gSystem.clk)
 
         out_headers = [{"index": i, "name": x} for i,x in enumerate(self.OutPutHeader.split(";"))]
-        out_connections = self.make_connections2pandas(self.DUT_entity , out_headers, self.DUT_entity.gSystem.clk)
+        out_connections = self.make_connections2pandas(self.DUT_entity , out_headers, v_sl())
         self.out_connections = sorted(out_connections, key = lambda i: i['index']) 
 
 
