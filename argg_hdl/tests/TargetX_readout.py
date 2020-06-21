@@ -181,8 +181,18 @@ class SerialDataRoutProcess_cl_registers(v_data_record):
         self.sr_select_min = reg_entry(100)
         self.sr_select_max = reg_entry(101)
         
+        self.sr_clk_sampl_select_start =  reg_entry(102)
+        self.sr_clk_sampl_select_stop  =  reg_entry(103)
         
+        self.sr_header_start           =  reg_entry(104)
+        self.sr_header_stop            =  reg_entry(105)
         
+        self.sr_clk_high_start          =  reg_entry(106)
+        self.sr_clk_high_stop           =  reg_entry(107)
+        
+        self.sr_clk_period              =  reg_entry(108)
+    
+        self.sr_clk_offset              =  reg_entry(109)
 
 
 class SerialDataRoutProcess_cl(v_entity):
@@ -277,7 +287,7 @@ class SerialDataRoutProcess_cl(v_entity):
             registers_local.sr_select_min.get_register(self.gSystem.reg)
             registers_local.sr_select_max.get_register(self.gSystem.reg)
             
-            
+
 
         end_architecture()
 
