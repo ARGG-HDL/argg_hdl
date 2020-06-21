@@ -229,7 +229,7 @@ class SerialDataRoutProcess_cl(v_entity):
         registers_local = SerialDataRoutProcess_cl_registers()
 
         data        = v_variable(self.ShiftRegister_in.data_out)
-        reg_readoutConfig =  readOutConfig()
+        reg_readoutConfig = v_signal(readOutConfig())
         shiftRegster = TX_shift_register_readout_slave(self.ShiftRegister_in)
 
         self.data_out_raw << self.ShiftRegister_in.data_out
@@ -237,10 +237,11 @@ class SerialDataRoutProcess_cl(v_entity):
         @rising_edge(self.gSystem.clk)
         def proc():
 
-            shiftRegster.RO_Config.sr_select.start << registers_local.sr_select_min.data[0:7]
-            shiftRegster.RO_Config.sr_select.stop  << registers_local.sr_select_max.data[0:7]
+           
+            
 
             if state == tx_slro_st.idle and ConIn:
+                shiftRegster.RO_Config << reg_readoutConfig
                 ConIn >> ConData
                 sample << ConData.sample_start
                 state << tx_slro_st.running
@@ -287,7 +288,7 @@ class SerialDataRoutProcess_cl(v_entity):
             registers_local.sr_select_min.get_register(self.gSystem.reg)
             registers_local.sr_select_max.get_register(self.gSystem.reg)
             
-
+            
 
         end_architecture()
 
@@ -315,7 +316,7 @@ class entity2FileConector():
 
 
         in_headers = [{"index": i, "name": x} for i,x in enumerate(self.data.columns)]
-        self.readout_connections =self.make_connections2pandas(self.DUT_entity , in_headers, self.DUT_entity.gSystem.clk)
+        self.readout_connections =self.make_connections2pandas(self.DUT_entity , in_headers, v_sl())
 
         out_headers = [{"index": i, "name": x} for i,x in enumerate(self.OutPutHeader.split(";"))]
         out_connections = self.make_connections2pandas(self.DUT_entity , out_headers, v_sl())
@@ -369,6 +370,7 @@ class entity2FileConector():
 
 
                 })
+                print(usedNameFragment,mem["name"]," =>", candidates[0]["name"])
             else:
                 con = self.make_connections2pandas(mem["symbol"], candidates, VetoClock, usedNameFragment + [ mem["name"] ] )
                 ret += con
@@ -430,4 +432,6 @@ def TXReadout_sim(OutputPath, f= None):
         OutPutHeader = header
     )
     return tb1
+
+
 
