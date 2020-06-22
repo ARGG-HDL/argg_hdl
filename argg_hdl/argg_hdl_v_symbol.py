@@ -265,6 +265,19 @@ class v_symbol_converter(hdl_converter_base):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)            
         return target +asOp +  str(rhs)
     
+
+    def _vhdl__reasign_rshift__slv(self, obj, rhs, astParser=None,context_str=None):
+        rhs._add_output()
+        asOp = rhs.__hdl_converter__.get_assiment_op(rhs)            
+        return str(rhs)+"("+ str(rhs) +"'range)" +asOp +  str(obj)+"("+ str(rhs) +"'range)" 
+
+    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
+        if issubclass(type(obj),argg_hdl_base0) and issubclass(type(rhs),argg_hdl_base0):
+            if "std_logic_vector" in obj._type and "std_logic_vector" in rhs._type:
+                return self._vhdl__reasign_rshift__slv(obj, rhs,astParser,context_str)
+
+        return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
+
     def get_type_simple(self,obj:"v_symbol"):
         ret = obj._type
         if "std_logic_vector" in ret:
@@ -306,7 +319,7 @@ class v_symbol_converter(hdl_converter_base):
         return ret
     def to_arglist(self,obj:"v_symbol", name,parent,withDefault = False,astParser=None):
         inout = astParser.get_function_arg_inout_type(obj)
-        inoutstr = obj.__hdl_converter__.InOut_t2str2(inout)
+        inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
         varSigstr = ""
         if obj._varSigConst == varSig.signal_t:
             varSigstr = "signal "
