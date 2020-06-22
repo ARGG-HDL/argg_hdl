@@ -15,7 +15,11 @@ class register_t(v_record):
         super().__init__()
         self.address   = v_slv(16) 
         self.value     = v_slv(16) 
-        
+    
+    def get_value(self, addr, data):
+        if self.address == addr: 
+            self.value >> data
+
 
 
 class system_globals(v_record):
@@ -25,18 +29,30 @@ class system_globals(v_record):
         self.rst   =  v_sl() 
         self.reg   =  register_t() 
 
+
+
 class system_globals_delay(v_entity):
-    def __init__(self, gSystem, delay=5):
+    def __init__(self, gSystem):
         super().__init__()
-        self.gSystem     = port_in(gSystem)
-        self.gSystem_out = port_out(gSystem)
+        self.gSystem      = port_in(gSystem)
+        self.gSystem      << gSystem
+        self.register_out = port_out(register_t())
+        self.architecture()
 
     @architecture
     def architecture(self):
-        
-        self.gSystem_out.clk << self.gSystem.clk
+
+        reg_out1 =v_signal(register_t())
+        reg_out2 = v_signal(register_t())
+        reg_out3 = v_signal(register_t())
+        reg_out4 =v_signal( register_t())
 
         @rising_edge(self.gSystem.clk)
         def proc():
-            self.gSystem_out.reg << self.gSystem.reg 
-            self.gSystem_out.rst << self.gSystem.rst 
+            reg_out1      << self.gSystem.reg 
+            reg_out2      << reg_out1
+            reg_out3      << reg_out2
+            reg_out4      << reg_out3
+            self.register_out  << reg_out4
+
+        end_architecture()

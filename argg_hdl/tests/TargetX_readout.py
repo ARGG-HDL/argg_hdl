@@ -9,6 +9,9 @@ from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf, prin
 def sr_clk_t(val=0):
     return v_slv(8,val)
 
+def dword(val=0):
+    return v_slv(32,val)
+
 class TXShiftRegisterSignals(v_class_trans):
     def __init__(self):
         super().__init__()
@@ -178,21 +181,21 @@ class reg_entry(v_data_record):
 class SerialDataRoutProcess_cl_registers(v_data_record):
     def __init__(self):
         super().__init__()
-        self.sr_select_min = reg_entry(100)
-        self.sr_select_max = reg_entry(101)
+        self.sr_select_min = sr_clk_t(100)
+        self.sr_select_max = sr_clk_t(101)
         
-        self.sr_clk_sampl_select_start =  reg_entry(102)
-        self.sr_clk_sampl_select_stop  =  reg_entry(103)
+        self.sr_clk_sampl_select_start =  sr_clk_t(102)
+        self.sr_clk_sampl_select_stop  =  sr_clk_t(103)
         
-        self.sr_header_start           =  reg_entry(104)
-        self.sr_header_stop            =  reg_entry(105)
+        self.sr_header_start           =  sr_clk_t(104)
+        self.sr_header_stop            =  sr_clk_t(105)
         
-        self.sr_clk_high_start          =  reg_entry(106)
-        self.sr_clk_high_stop           =  reg_entry(107)
+        self.sr_clk_high_start          =  sr_clk_t(106)
+        self.sr_clk_high_stop           =  sr_clk_t(107)
         
-        self.sr_clk_period              =  reg_entry(108)
+        self.sr_clk_period              =  sr_clk_t(108)
     
-        self.sr_clk_offset              =  reg_entry(109)
+        self.sr_clk_offset              =  sr_clk_t(109)
 
 
 class SerialDataRoutProcess_cl(v_entity):
@@ -208,8 +211,7 @@ class SerialDataRoutProcess_cl(v_entity):
         self.data_out_raw     = port_out(v_slv(16))
         self.architecture()
 
-    def get_clk(self):
-        return self.gSystem.clk
+
 
     @architecture
     def architecture(self):
@@ -231,6 +233,7 @@ class SerialDataRoutProcess_cl(v_entity):
         data        = v_variable(self.ShiftRegister_in.data_out)
         reg_readoutConfig = v_signal(readOutConfig())
         shiftRegster = TX_shift_register_readout_slave(self.ShiftRegister_in)
+        
 
         self.data_out_raw << self.ShiftRegister_in.data_out
 
@@ -282,42 +285,59 @@ class SerialDataRoutProcess_cl(v_entity):
                 
 
 
-                
+        registers = system_globals_delay(self.gSystem)
         @rising_edge(self.gSystem.clk)
         def proc_reg():
-            registers_local.sr_select_min.get_register(self.gSystem.reg)
-            registers_local.sr_select_max.get_register(self.gSystem.reg)
+            registers.register_out.get_value(
+                registers_local.sr_select_min, 
+                reg_readoutConfig.sr_select.start
             
-            reg_readoutConfig.sr_select.start << registers_local.sr_select_min.data[0:7]
-            reg_readoutConfig.sr_select.stop  << registers_local.sr_select_max.data[0:7]
+            )
+            registers.register_out.get_value(
+                registers_local.sr_select_max, 
+                reg_readoutConfig.sr_select.stop
+            )
 
-
-            registers_local.sr_clk_sampl_select_start.get_register(self.gSystem.reg)
-            registers_local.sr_clk_sampl_select_stop.get_register(self.gSystem.reg)
-            
-            reg_readoutConfig.sr_clk_sampl_select.start << registers_local.sr_clk_sampl_select_start.data[0:7]
-            reg_readoutConfig.sr_clk_sampl_select.stop  << registers_local.sr_clk_sampl_select_stop.data[0:7]
-
-
-            registers_local.sr_header_start.get_register(self.gSystem.reg)
-            registers_local.sr_header_stop.get_register(self.gSystem.reg)
-            
-            reg_readoutConfig.sr_header.start << registers_local.sr_header_start.data[0:7]
-            reg_readoutConfig.sr_header.stop  << registers_local.sr_header_stop.data[0:7]
+            registers.register_out.get_value(
+                registers_local.sr_clk_sampl_select_start, 
+                reg_readoutConfig.sr_clk_sampl_select.start
+            )
+            registers.register_out.get_value(
+                registers_local.sr_clk_sampl_select_stop, 
+                reg_readoutConfig.sr_clk_sampl_select.stop
+            )
 
 
 
-            registers_local.sr_clk_high_start.get_register(self.gSystem.reg)
-            registers_local.sr_clk_high_stop.get_register(self.gSystem.reg)
-            
-            reg_readoutConfig.sr_clk_high.start << registers_local.sr_clk_high_start.data[0:7]
-            reg_readoutConfig.sr_clk_high.stop  << registers_local.sr_clk_high_stop.data[0:7]
+            registers.register_out.get_value(
+                registers_local.sr_header_start, 
+                reg_readoutConfig.sr_header.start
+            )
+            registers.register_out.get_value(
+                registers_local.sr_header_stop, 
+                reg_readoutConfig.sr_header.stop
+            )
 
-            registers_local.sr_clk_period.get_register(self.gSystem.reg)
-            registers_local.sr_clk_offset.get_register(self.gSystem.reg)
-            
-            reg_readoutConfig.sr_clk_period     << registers_local.sr_clk_period.data[0:7]
-            reg_readoutConfig.sr_clk_offset     << registers_local.sr_clk_offset.data[0:7]
+
+            registers.register_out.get_value(
+                registers_local.sr_clk_high_start, 
+                reg_readoutConfig.sr_clk_high.start
+            )
+            registers.register_out.get_value(
+                registers_local.sr_clk_high_stop, 
+                reg_readoutConfig.sr_clk_high.stop
+            )
+
+
+            registers.register_out.get_value(
+                registers_local.sr_clk_period, 
+                reg_readoutConfig.sr_clk_period
+            )
+            registers.register_out.get_value(
+                registers_local.sr_clk_offset, 
+                reg_readoutConfig.sr_clk_offset
+            )
+
 
         end_architecture()
 
@@ -428,7 +448,7 @@ class TX_testbench(v_entity):
 
         clkgen = clk_generator()
 
-        readout.get_clk()  << clkgen.clk
+        readout.gSystem.clk << clkgen.clk
 
 
         counter = v_slv(32,1)
