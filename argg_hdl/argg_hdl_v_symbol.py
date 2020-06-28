@@ -612,6 +612,10 @@ class v_symbol(argg_hdl_base):
         if not issubclass(type(rhs),argg_hdl_base0):
             self.nextValue = rhs
             self.__value_list__[self.__value_Index__] = rhs
+            self.DefaultValue  = rhs
+            self.__Driver__ = v_int(rhs,varSigConst = varSig.unnamed_const )
+            self.__Driver__.__hdl_name__ = str(rhs)
+            
             return
 
         if rhs._varSigConst == varSig.variable_t or self._varSigConst == varSig.variable_t:

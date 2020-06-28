@@ -286,6 +286,15 @@ class SerialDataRoutProcess_cl(v_entity):
 
 
         registers = system_globals_delay(self.gSystem)
+        rh = register_handler(self.gSystem)
+
+        t1 = v_slv(16)
+        t1 << rh.append(123)
+
+        a2 = v_slv(16,456)
+        t2 = v_slv(16)
+        t2 << rh.append(a2)
+
         @rising_edge(self.gSystem.clk)
         def proc_reg():
             registers.register_out.get_value(

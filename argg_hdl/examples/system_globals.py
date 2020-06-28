@@ -8,6 +8,8 @@ from argg_hdl.argg_hdl_simulation import *
 from argg_hdl.argg_hdl_v_entity import *
 from argg_hdl.argg_hdl_v_class import *
 from argg_hdl.argg_hdl_v_record import *
+from argg_hdl.argg_hdl_v_list import *
+from argg_hdl.argg_hdl_master_slave import *
 
 
 class register_t(v_record):
@@ -32,7 +34,7 @@ class system_globals(v_record):
 
 
 class system_globals_delay(v_entity):
-    def __init__(self, gSystem):
+    def __init__(self, gSystem=system_globals()):
         super().__init__()
         self.gSystem      = port_in(gSystem)
         self.gSystem      << gSystem
@@ -56,3 +58,19 @@ class system_globals_delay(v_entity):
             self.register_out  << reg_out4
 
         end_architecture()
+
+
+class register_handler(v_class_master):
+    def __init__(self,gSystem = system_globals()):
+        super().__init__()
+        self.__hdl_useDefault_value__ = False
+        self.gSystem  = signal_port_Slave(gSystem)
+        self.gSystem  << gSystem
+        self.localStorage = v_list( register_t() , 0 , varSig.signal_t)
+    
+
+    def append(self, RegisterAddres):
+        reg =  register_t()
+        reg.address << RegisterAddres
+        self.localStorage.append(reg)
+        return reg.value

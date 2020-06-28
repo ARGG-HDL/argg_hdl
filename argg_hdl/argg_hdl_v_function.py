@@ -275,10 +275,12 @@ class v_Arch_converter(hdl_converter_base):
         for x in objList:
             #print("=====")
             #print(str(x["name"]))
-            
+
+                
             if x['symbol'].__Driver__ is None:
                 #print("Has no Driver")
                 continue
+
             if x['symbol'].DriverIsProcess():
                 #print("Driver is process")
                 continue 
@@ -288,15 +290,26 @@ class v_Arch_converter(hdl_converter_base):
             if  x['symbol']._varSigConst != varSig.signal_t:
                 #print("Is not signal")
                 continue
-            if  x['symbol'].__Driver__._varSigConst != varSig.signal_t:
-                #print("Driver is not signal")
+            if  (x['symbol'].__Driver__._varSigConst == varSig.unnamed_const):
+                pass
+                #print("Driver is unnamed_const")
+            if  (x['symbol'].__Driver__._varSigConst == varSig.variable_t):
+                #print("Driver is variable_t")
                 continue
+            if  (x['symbol'].__Driver__._varSigConst == varSig.reference_t):
+                #print("Driver is reference_t")
+                continue
+            if  (x['symbol'].__Driver__._varSigConst == varSig.combined_t):
+                #print("Driver is combined_t")
+                continue
+        
             if not x['symbol'].__hdl_name__:
                 #print("Has no HDL Name")
                 continue 
             if not list_is_in_list(x['symbol'].__Driver__, objList):
                 #print("Driver is not in list")
-                continue
+                if  (x['symbol'].__Driver__._varSigConst != varSig.unnamed_const):
+                    continue
             if x['symbol'].__Driver_Is_SubConnection__:
                 #print("Is sub connection")
                 continue
