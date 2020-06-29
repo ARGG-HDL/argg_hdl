@@ -580,7 +580,10 @@ class xgenAST:
             
         self.local_function = ClassInstance.__init__.__globals__
         ClassInstance.__hdl_name__ = "!!SELF!!"
-
+        if sort_archetecture():
+            self.Archetecture_vars = sorted(ClassInstance.__local_symbols__, key=lambda element_: element_["type_name"])
+        else:
+            self.Archetecture_vars = ClassInstance.__local_symbols__
 
         try:
             body = self.Unfold_body(Arc)  ## get local vars 

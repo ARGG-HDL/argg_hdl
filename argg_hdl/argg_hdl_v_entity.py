@@ -286,6 +286,7 @@ class v_entity_converter(hdl_converter_base):
     def get_architecture_body_def(self, obj):
         ret = ""
         for x in obj.__processList__:
+            x.isEntity = True
             ret += x.__hdl_converter__.get_architecture_body(x)
         return ret 
 

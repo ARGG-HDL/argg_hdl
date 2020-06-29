@@ -236,6 +236,7 @@ class v_process(argg_hdl_base):
 class v_Arch_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
+        
 
     def includes(self,obj, name,parent):
         inc_str = ""
@@ -308,6 +309,8 @@ class v_Arch_converter(hdl_converter_base):
                 continue 
             if not list_is_in_list(x['symbol'].__Driver__, objList):
                 #print("Driver is not in list")
+                if not obj.isEntity:
+                    continue
                 if  (x['symbol'].__Driver__._varSigConst != varSig.unnamed_const):
                     continue
             if x['symbol'].__Driver_Is_SubConnection__:
@@ -363,6 +366,7 @@ class v_Arch(argg_hdl_base):
         self.__hdl_converter__ = v_Arch_converter()
         self.ports = ports
         self.name = "arc"
+        self.isEntity = False
         
     def get_type(self):
         return type(self).__name__

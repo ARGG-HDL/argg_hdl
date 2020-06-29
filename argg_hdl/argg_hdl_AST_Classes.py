@@ -624,6 +624,7 @@ def  body_unfold_assign(astParser,Node):
     if type(Node.targets[0]).__name__ != "Name":
         raise Exception(Node_line_col_2_str(astParser, Node)+" unknown type")
     
+    raise Exception(Node_line_col_2_str(astParser, Node)+" Symbol is not defined. use end_architecture() function at the end of the archetecture ")
     lhs = v_name (Node.targets[0].id)
     rhs =  astParser.Unfold_body(Node.value)
     rhs =  to_v_object(rhs)
@@ -673,7 +674,7 @@ class handle_v_switch_cl(v_ast_base):
             ret += str(x)
         default = self.Default.__hdl_converter__._vhdl__getValue(self.Default, self.ReturnToObj)
         
-        ret += str(default)
+        ret += str(default) 
         return ret
 
 def handle_v_switch(astParser,args,keywords=None):
@@ -706,8 +707,8 @@ class v_call(v_ast_base):
         self.__hdl_name__ =vhdl
     
     def __str__(self):
-        return str(self.__hdl_name__) 
-    
+            return str(self.__hdl_name__) 
+        
     def get_type(self):
         return self.symbol._type
 
@@ -1216,6 +1217,7 @@ def body_unfold_for(astParser,Node):
     if type(Node.iter).__name__ == "Call" and Node.iter.func.id == "range":
         return for_loop_indexed_based(astParser,Node)
     
+    return for_loop_ranged_based2(astParser,Node)
 
 def for_body(astParser,Node):
     localContext = astParser.Context
@@ -1226,6 +1228,32 @@ def for_body(astParser,Node):
         ret.append(l)
     astParser.Context =localContext 
     return ret
+
+def for_loop_ranged_based2(astParser,Node):
+        
+    obj=astParser.Unfold_body(Node.iter)
+
+    itt = "i"+str(v_for.range_counter)
+    v_for.range_counter += 1
+    arg = itt + " in 0 to " + str(obj.__hdl_converter__.length(obj)) +" -1"
+
+
+    vhdl_name = str(Node.target.id)
+    buff =  astParser.try_get_variable(vhdl_name)
+
+    if buff is None:
+        buff = v_copy(obj.Internal_Type)
+        buff.__hdl_name__ = str(obj) + "("+itt+")"
+        buff._varSigConst = varSig.reference_t
+        astParser.FuncArgs.append({'ScopeType':"", 'name' : vhdl_name,'symbol': buff})
+    else:
+        raise Exception("name already used")
+
+
+    body = for_body(astParser,Node.body)
+    astParser.FuncArgs =  [ x for x in astParser.FuncArgs if x['name'] != vhdl_name ]
+
+    return v_for(arg,body)
 
 
 def for_loop_ranged_based(astParser,Node):
