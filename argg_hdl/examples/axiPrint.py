@@ -31,3 +31,5 @@ class axiPrint(v_clk_entity):
             if axiSalve :
                 i_buff << axiSalve
                 printf("axiPrint valid: "+str(value(i_buff)) )
+        
+        end_architecture()

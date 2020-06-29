@@ -112,6 +112,8 @@ class dataSource(v_entity):
             if mast:
                 mast << data
                 data << data + 2
+
+        end_architecture()
            
 
 class InputDelay_tb(v_entity):

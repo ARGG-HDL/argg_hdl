@@ -33,3 +33,5 @@ class rollingCounter(v_clk_entity):
 
             if counter > self.MaxCount:
                 counter << 0
+
+        end_architecture()

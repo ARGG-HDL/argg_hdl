@@ -24,7 +24,7 @@ end entity;
 architecture rtl of axiPrint is
 
 --------------------------axiPrint-----------------
-  signal i_buff : std_logic_vector(32 -1 downto 0) := (others => '0'); 
+  signal i_buff : std_logic_vector(31 downto 0) := (others => '0'); 
 -------------------------- end axiPrint-----------------
 
 begin
