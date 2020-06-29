@@ -96,6 +96,11 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
     ret += LineBeginning + str(content[-1]) +  LineEnding
     ret += end
     return ret
+def hdl_string_fix_semicolons(hdl_str):
+    hdl_str = hdl_str.split(";")
+    hdl_str = [x for x in hdl_str if x.strip()]
+    hdl_str= join_str(hdl_str,Delimeter=";",end=";")
+    return hdl_str
 
 def file_get_contents(filename):
     with open(filename) as f:

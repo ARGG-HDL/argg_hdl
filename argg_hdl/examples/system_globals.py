@@ -67,10 +67,26 @@ class register_handler(v_class_master):
         self.gSystem  = signal_port_Slave(gSystem)
         self.gSystem  << gSystem
         self.localStorage = v_list( register_t() , 0 , varSig.signal_t)
-    
+        self.architecture()    
 
-    def append(self, RegisterAddres):
+    def get_register(self, RegisterAddres):
         reg =  register_t()
         reg.address << RegisterAddres
         self.localStorage.append(reg)
         return reg.value
+
+
+
+
+    @architecture
+    def architecture(self):
+
+        registers = system_globals_delay(self.gSystem)
+
+        @rising_edge(self.gSystem.clk)
+        def proc_register_handler():
+            for ele in  self.localStorage:
+                if registers.register_out.address == ele.address:
+                    ele.value << registers.register_out.value
+
+        end_architecture()

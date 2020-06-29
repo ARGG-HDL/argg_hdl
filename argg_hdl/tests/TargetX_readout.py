@@ -285,67 +285,14 @@ class SerialDataRoutProcess_cl(v_entity):
                 
 
 
-        registers = system_globals_delay(self.gSystem)
         rh = register_handler(self.gSystem)
 
         t1 = v_slv(16)
-        t1 << rh.append(123)
+        t1 << rh.get_register(123)
 
         a2 = v_slv(16,456)
         t2 = v_slv(16)
-        t2 << rh.append(a2)
-
-        @rising_edge(self.gSystem.clk)
-        def proc_reg():
-            registers.register_out.get_value(
-                registers_local.sr_select_min, 
-                reg_readoutConfig.sr_select.start
-            
-            )
-            registers.register_out.get_value(
-                registers_local.sr_select_max, 
-                reg_readoutConfig.sr_select.stop
-            )
-
-            registers.register_out.get_value(
-                registers_local.sr_clk_sampl_select_start, 
-                reg_readoutConfig.sr_clk_sampl_select.start
-            )
-            registers.register_out.get_value(
-                registers_local.sr_clk_sampl_select_stop, 
-                reg_readoutConfig.sr_clk_sampl_select.stop
-            )
-
-
-
-            registers.register_out.get_value(
-                registers_local.sr_header_start, 
-                reg_readoutConfig.sr_header.start
-            )
-            registers.register_out.get_value(
-                registers_local.sr_header_stop, 
-                reg_readoutConfig.sr_header.stop
-            )
-
-
-            registers.register_out.get_value(
-                registers_local.sr_clk_high_start, 
-                reg_readoutConfig.sr_clk_high.start
-            )
-            registers.register_out.get_value(
-                registers_local.sr_clk_high_stop, 
-                reg_readoutConfig.sr_clk_high.stop
-            )
-
-
-            registers.register_out.get_value(
-                registers_local.sr_clk_period, 
-                reg_readoutConfig.sr_clk_period
-            )
-            registers.register_out.get_value(
-                registers_local.sr_clk_offset, 
-                reg_readoutConfig.sr_clk_offset
-            )
+        t2 << rh.get_register(a2)
 
 
         end_architecture()

@@ -289,7 +289,7 @@ class v_class_converter(hdl_converter_base):
         obj.__hdl_converter__ = primary.__hdl_converter__
         ret = []
         for x in obj.__hdl_converter__.archetecture_list:
-            ret.append(hdl .get_architecture_body(x["symbol"]))
+            ret.append(hdl.get_architecture_body(x["symbol"]))
         
         ret=join_str(
             ret, 
@@ -651,7 +651,7 @@ class v_class(argg_hdl_base):
         self.__hdl_useDefault_value__ = True
         self.__hdl_name__ =None
         self.__Driver__ = None
-
+        self.__local_symbols__ = list()
 
         
         if not varSigConst:
@@ -659,6 +659,23 @@ class v_class(argg_hdl_base):
         self._varSigConst = varSigConst
 
         self.__inout_register__ = {}
+   
+   
+    def _add_symbol(self, name,symb):
+        for x in self.__local_symbols__:
+            if symb is x["symbol"]:
+                return
+
+        type_name = name
+
+            
+        self.__local_symbols__.append(
+            {
+                "name" : name,
+                "symbol" : symb,
+                "type_name" : type_name
+            }
+        )
 
     def set_vhdl_name(self,name, Overwrite = False):
         if self.__hdl_name__ and self.__hdl_name__ != name and not Overwrite:

@@ -219,6 +219,7 @@ class v_entity_converter(hdl_converter_base):
         ret += "\nbegin\n"
         ret +=  obj.__hdl_converter__.get_architecture_body_def(obj)
         ret += "\nend architecture;\n"
+        ret = hdl_string_fix_semicolons(ret)
         return ret 
 
     def get_architecture_header_def(self, obj):
