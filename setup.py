@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="argg_hdl", # Replace with your own username
-    version="0.0.2",
+    version="0.0.3",
     author="Richard Peschke",
     author_email="rp40@hawaii.edu",
-    description="A small example package",
+    description="High Level Object Oriented Hardware Description Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ARGG-HDL/argg_hdl",
