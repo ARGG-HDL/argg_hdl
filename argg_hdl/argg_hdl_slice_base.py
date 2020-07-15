@@ -16,8 +16,10 @@ class v_slice_base:
         self.slice = sliceObj
 
     def get_value(self):
+        val = value(self.symbol)
+        sign = 1 if val > 0 else -1
         bitSize = len(self)
-        return 2**bitSize-1 &  ( value(self.symbol) >>value(self.slice.start ))
+        return sign*(  2**bitSize-1 &  (abs(val) >>value(self.slice.start )))
 
 
     def __lshift__(self, rhs):

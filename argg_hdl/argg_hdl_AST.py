@@ -200,6 +200,7 @@ class xgenAST:
             "UnaryOp"       : body_UnaryOP,
             "Add"           : body_add,
             "Sub"           : body_sub,
+            "Mult"          : body_multi,
             'Subscript'     : body_subscript,
             "Index"         : body_index,
             'Yield'         : body_unfold_yield,
@@ -483,8 +484,8 @@ class xgenAST:
             self.local_function = ClassInstance.__init__.__globals__
 
 
-
-              
+            dummy_DefaultVarSig = getDefaultVarSig()
+            setDefaultVarSig(varSig.variable_t)
             try:
                 body = self.Unfold_body(funcDef)
             except Exception as inst:
@@ -495,6 +496,7 @@ class xgenAST:
                     ClassName, 
                     "Function Name: " + funcDef.name  +", Unable to Unfold AST.  Error In extractFunctionsForClass_impl: body = self.Unfold_body(funcDef)"
                 )
+                setDefaultVarSig(dummy_DefaultVarSig)
                 raise Exception(err_msg,ClassInstance,inst)
               
 
@@ -508,8 +510,9 @@ class xgenAST:
                     ClassName, 
                     "Function Name: " + funcDef.name  +", Unable to Convert AST to String, Error In extractFunctionsForClass_impl: bodystr= str(body)"
                 )
+                setDefaultVarSig(dummy_DefaultVarSig)
                 raise Exception(err_msg,ClassInstance,inst)
-
+            setDefaultVarSig(dummy_DefaultVarSig)
             #print_cnvt("----------" , funcDef.name)
             argList = [x["symbol"].__hdl_converter__.to_arglist(
                     x["symbol"], 

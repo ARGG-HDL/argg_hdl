@@ -71,11 +71,12 @@ def v_slv_to_vhdl(astParser,Node,Keywords=None):
             args.append(x_obj)
 
     kwargs = {}
-    for x in Keywords:
-        if x.arg =='varSigConst':
-            kwargs[x.arg] = astParser.Unfold_body(x.value).Value 
-        else:
-            kwargs[x.arg] = astParser.Unfold_body(x.value) 
+    if Keywords:
+        for x in Keywords:
+            if x.arg =='varSigConst':
+                kwargs[x.arg] = astParser.Unfold_body(x.value).Value 
+            else:
+                kwargs[x.arg] = astParser.Unfold_body(x.value) 
 
     return v_slv(*args,**kwargs)
 
@@ -623,14 +624,15 @@ def  body_unfold_assign(astParser,Node):
 
     if type(Node.targets[0]).__name__ != "Name":
         raise Exception(Node_line_col_2_str(astParser, Node)+" unknown type")
-    
-    raise Exception(Node_line_col_2_str(astParser, Node)+" Symbol is not defined. use end_architecture() function at the end of the archetecture ")
+    if not astParser.get_scope_name():
+        raise Exception(Node_line_col_2_str(astParser, Node)+" Symbol is not defined. use end_architecture() function at the end of the archetecture ")
     lhs = v_name (Node.targets[0].id)
     rhs =  astParser.Unfold_body(Node.value)
     rhs =  to_v_object(rhs)
     rhs.set_vhdl_name(lhs.Value, True)
     astParser.LocalVar.append(rhs)
-    return v_variable_cration( lhs,  rhs)
+    ret = v_variable_cration( lhs,  rhs)
+    return ret
 
 
 class v_name(v_ast_base):
@@ -865,6 +867,7 @@ class v_add(v_ast_base):
         self.lhs = lhs
         self.rhs = rhs
         self._type = lhs._type
+        self.Value = str(self.lhs) + " + " +  str(self.rhs) 
         
 
     def get_value(self):
@@ -886,9 +889,9 @@ def body_add(astParser,Node):
     if hasNumericalValue(lhs) and hasNumericalValue(rhs):
         return v_Num(value(lhs) + value(rhs))
         
-    var = astParser.get_variable(lhs.Value, Node)
+    #var = astParser.get_variable(lhs.Value, Node)
 
-    return v_add(var, rhs)
+    return v_add(lhs, rhs)
 
 class v_sub(v_ast_base):
     def __init__(self,lhs, rhs):
@@ -914,6 +917,31 @@ def body_sub(astParser,Node):
     var = astParser.get_variable(lhs.Value, Node)
 
     return v_sub(var, rhs)
+
+
+
+class v_multi(v_ast_base):
+    def __init__(self,lhs, rhs):
+        self.lhs = lhs
+        self.rhs = rhs
+        self._type = lhs._type
+        
+
+        
+
+    def __str__(self):
+        if issubclass(type(self.lhs),argg_hdl_base):
+            return self.lhs.__hdl_converter__._vhdl__multi(self.lhs, self.rhs)
+
+        return str(self.lhs) + " * " +  str(self.rhs) 
+
+def body_multi(astParser,Node):
+    rhs =  astParser.Unfold_body(Node.right)
+    lhs =  astParser.Unfold_body(Node.left)
+    
+    
+
+    return v_multi(lhs, rhs)
 
 class v_stream_assigne(v_ast_base):
     def __init__(self,lhs, rhs,StreamOut,lhsEntity,context=None):
@@ -1347,10 +1375,17 @@ class v_slice(v_ast_base):
         self.step  = step
 
     def __str__(self):
-        return  str(self.upper.value) +" downto "+ str(self.lower.value) 
+
+        upper = str(self.upper) 
+        if upper.isnumeric():
+            upper = str(int(upper) - 1 )
+        return  upper +"  downto "+ str(self.lower) 
 
 def body_unfold_slice(astParser,Node,keywords=None):
-    ret = v_slice(Node.lower, Node.upper,Node.step)
+    lower = astParser.Unfold_body( Node.lower) if Node.lower else None
+    upper = astParser.Unfold_body( Node.upper) if Node.upper else None
+    step = astParser.Unfold_body( Node.step) if Node.step else None
+    ret = v_slice(lower, upper, step)
     return ret
 
 def body_unfold_BitAnd(astParser,Node,keywords=None):

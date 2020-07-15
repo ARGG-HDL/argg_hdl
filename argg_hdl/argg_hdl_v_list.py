@@ -31,6 +31,20 @@ use ieee.std_logic_unsigned.all;
             return ""
         return obj._type+"_pack.vhd"
 
+    def get_get_call_member_function(self, obj, name, args):
+        ret = None
+        args = [x.get_symbol() for x in args ]
+        if name =="reset":
+            ret = memFunctionCall(
+            name= name,
+            args= args,
+            obj= obj,
+            call_func = call_func_v_list_reset,
+            func_args = None,
+            setDefault = False,
+            varSigIndependent = True
+        )
+        return ret
     def get_packet_file_content(self, obj):
 
         if "std_logic_vector" not in obj.Internal_Type._type:
@@ -201,8 +215,8 @@ end {objType}_pack;
     def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
         return name +" : " + obj.__hdl_converter__.InOut_t2str(obj)+"  " +obj.get_type()
 
-
-    def _vhdl__reasign(self, obj, rhs, context=None):
+    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+    #def _vhdl__reasign(self, obj, rhs, context=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         return str(obj.__hdl_name__) + asOp +  str(rhs.__hdl_name__)
 
@@ -247,6 +261,69 @@ end {objType}_pack;
         ret.__hdl_name__=str(obj)+"'length"
         return ret  
 
+class v_list_slice(argg_hdl_base):
+    def __init__(self,baseObject,slice_,content ):
+        self.baseObject = baseObject
+        self.l_append__ = []
+        self.r_append__ = []
+        self.slice = slice_
+        self.content = content
+
+    def r_append(self, rhs):
+        self.r_append__ += [rhs]
+        return self
+    
+    def l_append(self, lhs):
+        self.l_append__ =[lhs] + self.l_append__
+        return self
+
+    def __len__(self):
+        ret = 0
+        for x in  self.l_append__:
+            if isinstance(x, v_symbol):
+                ret += 1
+            else:
+                ret += len(x)             
+        
+        ret += len(self.content)
+        
+        for x in  self.r_append__:
+            if isinstance(x, v_symbol):
+                ret += 1
+            else:
+                ret += len(x)             
+
+
+        return ret
+
+    def __getitem__(self,sl) -> T:
+        if isinstance(sl, int):
+            for x in  self.l_append__:
+                if isinstance(x, v_symbol):
+                    if sl == 0:
+                        return x
+                    sl  -= 1
+                else:
+                    raise Exception("not implemented yet")
+                    ret += len(x)              
+                    
+            if  sl <  len( self.content):
+                return self.content[sl ]
+            sl -= len( self.content)
+
+            
+            for x in  self.r_append__:
+                if isinstance(x, v_symbol):
+                    if sl == 0:
+                        return x
+                    sl  -= 1
+                else:
+                    raise Exception("not implemented yet")
+                    ret += len(x)              
+                
+        
+        return v_list_slice(self, sl ,self.content[value(sl)]) 
+
 T = TypeVar('T')      
 class v_list(argg_hdl_base, Generic[T]):
     def __init__(self,Internal_Type : T,size: int,varSigConst=None ):
@@ -282,7 +359,13 @@ class v_list(argg_hdl_base, Generic[T]):
         return self._type
 
     def __getitem__(self,sl) -> T:
+        if isinstance(sl, slice):
+            
+            return v_list_slice(self, sl, self.content[value(sl)])
+        
         return self.content[value(sl)]
+        
+
 
     def set_simulation_param(self,module, name,writer):
         i = 0
@@ -300,11 +383,11 @@ class v_list(argg_hdl_base, Generic[T]):
             x.set_varSigConst(varSigConst)
 
     def __lshift__(self, rhs) -> None:
-        if len(self.content) != len(rhs.content):
+        if len(self.content) != len(rhs):
             raise Exception("Differnt list size")
 
         for x in range(len(self.content)):
-            self.content[x] << rhs.content[x]
+            self.content[x] << rhs[x]
 
     def _sim_set_push_pull(self, Pull_list, Push_list):
         for x in self.content:
@@ -335,6 +418,9 @@ class v_list(argg_hdl_base, Generic[T]):
         
     def __len__(self):
         return len(self.content)
+
+    def __iter__(self):
+        return iter(self.content)
 
     def getMember(self,InOut_Filter=None, VaribleSignalFilter = None):
         ret = []
@@ -384,3 +470,18 @@ class v_list(argg_hdl_base, Generic[T]):
             return True
 
         return self._varSigConst == varSigType
+        
+    def reset(self):
+        for x in self.content:
+            x.reset()
+
+def call_func_v_list_reset(obj, name, args, astParser=None,func_args=None):
+    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
+
+    val = "(others => (others => '0'))"
+    if val is None:
+        raise Exception("unable to reset symbol")
+    ret =  str(args[0])  + asOp + val
+    args[0]._add_output()
+    astParser.add_write(args[0])
+    return ret
