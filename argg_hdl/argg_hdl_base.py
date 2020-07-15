@@ -6,6 +6,7 @@ import argg_hdl.argg_hdl_debug_vis as debug_vis
 from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 from  argg_hdl.argg_hdl_base_helpers import *
 from  argg_hdl.argg_hdl_lib_enums import *
+from argg_hdl.argg_hdl_global_settings import *
 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
@@ -96,11 +97,37 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
     ret += LineBeginning + str(content[-1]) +  LineEnding
     ret += end
     return ret
+
+def isComment(s):
+    while s.strip():
+        b_ind = s.find("--")
+        if b_ind == -1:
+            break
+        e_ind = s.find("\n",b_ind)
+        s = s[:b_ind] + s[e_ind:]
+
+    if s.strip():
+        return False
+
+    return True
+
+
 def hdl_string_fix_semicolons(hdl_str):
     hdl_str = hdl_str.split(";")
-    hdl_str = [x for x in hdl_str if x.strip()]
-    hdl_str= join_str(hdl_str,Delimeter=";",end=";")
-    return hdl_str
+    ret = ""
+    for x in hdl_str:
+        if not x.strip():
+            continue 
+        if isComment(x):
+            ret += x 
+            continue
+        
+        ret += x + ";"
+
+
+    #hdl_str = [x for x in hdl_str if x.strip()]
+    #hdl_str= join_str(hdl_str,Delimeter=";",end=";")
+    return ret
 
 def file_get_contents(filename):
     with open(filename) as f:
@@ -178,55 +205,7 @@ class indent:
 
 
 gTemplateIndent = indent()
-gStatus = {
-    "isConverting2VHDL" : False,
-    "isProcess" : False,
-    "isPrimaryConnection" : True,
-    "MakeGraph"           : True,
-    "saveUnfinishFiles"   : False,
-    "OutputFile"          : None,
-    "isFunction"          : False,
-    "sort_archetecture"   : False
-}
 
-def isFunction():
-    return gStatus["isFunction"]
-    
-def set_isFunction(newState):
-    gStatus["isFunction"]  =   newState
-
-def isConverting2VHDL():
-    return gStatus["isConverting2VHDL"]
-
-def set_isConverting2VHDL(newStatus):
-    gStatus["isConverting2VHDL"] = newStatus
-
-def isProcess():
-    return gStatus["isProcess"]
-
-def set_isProcess(newStatus):
-    gStatus["isProcess"] = newStatus
-
-def isPrimaryConnection():
-    return gStatus["isPrimaryConnection"]
-
-def set_isPrimaryConnection(newStatus):
-    gStatus["isPrimaryConnection"] = newStatus
-
-def MakeGraph():
-    return gStatus["MakeGraph"]
-
-def set_MakeGraph(newState):
-    gStatus["MakeGraph"]  = newState
-
-def saveUnfinishedFiles():
-    return gStatus["saveUnfinishFiles"]
-
-def sort_archetecture():
-    return gStatus["sort_archetecture"]
-
-def set_sort_archetecture(newState):
-    gStatus["sort_archetecture"]  = newState
 
 
 gHDL_objectList = []
@@ -542,6 +521,9 @@ class hdl_converter_base:
     def _vhdl__Sub(self,obj,args):
         return str(obj) + " - " + str(args)
 
+    def _vhdl__multi(self,obj,args):
+        return str(obj) + " * " + str(args)
+        
     def _to_hdl___bool__(self,obj, astParser):
         return "to_bool(" + str(obj) + ") "
 
@@ -671,7 +653,8 @@ class hdl_converter_base:
 
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.DefaultValue +";\n"
 
-
+    def get_free_symbols(self,obj,parent_list=[]):
+        return []
 
     def _vhdl__Pull(self,obj):
         return ""
@@ -685,6 +668,8 @@ class hdl_converter_base:
 
         if varSigConst== varSig.signal_t:
             asOp = " <= "
+        elif varSigConst== varSig.variable_t:
+            asOp = " := "
         else: 
             asOp = " := "
 
@@ -767,18 +752,23 @@ class hdl_converter_base:
 class argg_hdl_base0:
     def __init__(self):
         super().__init__()
-        if not isConverting2VHDL():
+        if isRunning():
+            return 
+        if not isConverting2VHDL() :
             gHDL_objectList.append(self)
-        if MakeGraph():
+        if MakeGraph() :
             debug_vis.append(self)
 
-        self.__isInst__ = False
+        
         self.__hdl_converter__ = hdl_converter_base()
+
+        self.__isInst__ = False
         self.__Driver__ = None
         self.__Driver_Is_SubConnection__ = False
         self.__receiver__ = []
         self.__srcFilePath__ = get_fileName_of_object_def(self)
         self.__hdl_useDefault_value__ = False
+        self.__isFreeType__ = False
         
 
     def _set_to_sub_connection(self):
@@ -866,6 +856,8 @@ class argg_hdl_base(argg_hdl_base0):
 
     def __init__(self):
         super().__init__()
+        if isRunning():
+            return 
         self._Inout         = InOut_t.Internal_t
         self.__writeRead__  = InOut_t.Internal_t
 
