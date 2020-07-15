@@ -6,8 +6,327 @@ from  argg_hdl.examples import *
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf, printff
 
 
+class register_addr:
+    clr_start = 10
+    clr_stop  = 11
+    read_enable_start = 12
+    read_enable_stop  = 13
+    ramp_start = 14
+    ramp_stop  = 15
+    
+    row_select_start = 16
+    row_select_stop  = 17
+
+    column_select_start = 18
+    column_select_stop  = 19
+
+    cntr_max_time  = 20
+
+    wr_send_data_start = 21 
+    wr_send_data_stop  = 22
+
+    trigger_time_start  = 23
+    trigger_time_stop   = 24
+    
+    wr_counter_max   = 25
+    
+    WR_enable_start  = 26
+    WR_enable_stop   = 27
+    
+
+class TX_write_handler_signals(v_class_trans):
+    def __init__(self):
+        super().__init__()
+        self.clear = port_out(v_sl())
+        self.writeEnable_1   = port_out(v_slv(5))
+        self.writeEnable_2   = port_out(v_slv(5))
+        self.dummy   = port_in(v_slv(5))
+        
+
+class Trigger_bits_trigger(v_class_trans):
+    def __init__(self):
+        super().__init__()
+        self.ctime    = port_out(v_slv(27))
+        self.dummy   = port_in(v_slv(5))
+
+
+class TX_write_handler(v_entity):
+    def __init__(self, gSystem ):
+        super().__init__()
+        self.gSystem            =  port_in(gSystem)
+        self.gSystem            << gSystem 
+        #self.trigger_bits_in    =  port_Stream_Slave(axisStream(Trigger_bits_trigger()))
+        self.config_in          =  port_Stream_Slave(axisStream(SerialDataConfig()))
+        self.config_out         =  port_Stream_Master(axisStream(SerialDataConfig()))
+        self.TX_signals         =  port_Master(TX_write_handler_signals())
+        self.trigger            =  port_out(v_sl())
+
+        self.architecture()
+
+
+
+    @architecture
+    def architecture(self):
+
+        cnt = counter(16)
+        rx = get_handle(self.config_in)
+        tx = get_handle(self.config_out)
+        WR_enable   = span_t(0,0)       
+        clr_time    = span_t(0,0)       
+        send_data_time  = span_t(0,0)       
+        trigger_time    = span_t(0,0)       
+        WR_en = v_slv(5)
+        
+
+        cnt_max = sr_clk_t()
+        send_data = v_sl()
+
+        @rising_edge(self.gSystem.clk)
+        def proc():
+            WR_en << 31
+            if cnt.isReady() and rx:
+                cnt.StartCountTo(cnt_max)
+
+            if cnt.isDone() and rx:
+                cnt.reset()
+            
+            if send_data and rx and tx:
+                rx >> tx
+            send_data << cnt.InTimeWindowSl_r(send_data_time)
+
+            self.trigger   << cnt.InTimeWindowSl_r(trigger_time)
+            
+            self.TX_signals.clear           << cnt.InTimeWindowSl_r(clr_time)
+            self.TX_signals.writeEnable_1   << cnt.InTimeWindowSLV_r(WR_enable,WR_en)
+            self.TX_signals.writeEnable_2   << cnt.InTimeWindowSLV_r(WR_enable,WR_en)
+
+
+        rh = register_handler(self.gSystem)
+        WR_enable.start      << rh.get_register(register_addr.WR_enable_start)
+        WR_enable.stop       << rh.get_register(register_addr.WR_enable_stop)
+
+        clr_time.start       << rh.get_register(register_addr.clr_start)
+        clr_time.stop        << rh.get_register(register_addr.clr_stop)
+        
+        send_data_time.start << rh.get_register(register_addr.wr_send_data_start)
+        send_data_time.stop  << rh.get_register(register_addr.wr_send_data_stop)
+
+        trigger_time.start   << rh.get_register(register_addr.trigger_time_start)
+        trigger_time.stop    << rh.get_register(register_addr.trigger_time_stop)
+        cnt_max              << rh.get_register(register_addr.wr_counter_max)
+
+        end_architecture()
+
+class TX_write_handler_tb(v_entity):
+    def __init__(self ):
+        super().__init__()
+        self.architecture()
+
+
+
+    @architecture
+    def architecture(self):
+        clk = clk_generator()
+        regStorage = register_storage(clk.clk)
+        gSystem = system_globals()
+        gSystem  << regStorage.gSystem
+        count = v_slv(32)
+        dut = TX_write_handler(gSystem)
+        tx = get_handle(dut.config_in)
+        rx = get_handle(dut.config_out)
+        buffer1 = get_buffer(dut.config_in)
+        buffer2 = get_buffer(dut.config_in)
+
+        @rising_edge(gSystem.clk)
+        def proc():
+            count<<count+1
+            buffer1.ASIC_NUM << 1
+            buffer1.column_select << 1
+            buffer1.row_Select  << 1
+            if count == 10:
+                tx << buffer1
+
+            rx >> buffer2
+
+
+        regStorage.set_register(register_addr.WR_enable_start,10)
+        regStorage.set_register(register_addr.WR_enable_stop, 20)
+        regStorage.set_register(register_addr.wr_counter_max,200)
+        regStorage.set_register(register_addr.clr_start,10)
+
+        regStorage.set_register(register_addr.wr_send_data_start, 100)
+        regStorage.set_register(register_addr.wr_send_data_stop ,200)        
+        
+        end_architecture()
+
+@do_simulation
+def TX_write_handler_tb_sim(OutputPath, f= None):
+    tb = TX_write_handler_tb()
+    return tb
+
+@vhdl_conversion
+def  TX_write_handler2vhdl(OutputPath):
+    gSystem = system_globals()
+    tb1 =  TX_write_handler_tb()
+    tb  =SerialDataRoutProcess_cl()
+    return tb1
+
+
+############################################################################################################################
+    
+class TX_sampling_signals(v_class_trans):
+    def __init__(self):
+        super().__init__()
+        self.clr = port_out(v_sl())
+        self.read_enable   = port_out(v_sl())
+        self.ramp          = port_out(v_sl())
+        self.row_select    = port_out(v_slv(32))
+        self.column_select = port_out(v_slv(32))
+
+class TX_sampling_times(v_record):
+    def __init__(self):
+        super().__init__()
+        self.clr             = span_t(5,10)        
+        self.read_enable     = span_t(5,10)        
+        self.ramp            = span_t(5,10)        
+        self.row_select      = span_t(5,10)    
+        self.column_select   = span_t(5,10)  
+
+class TX_sampling_controller(v_entity):
+    def __init__(self, gSystem=None):
+        super().__init__()
+        self.gSystem = port_in(system_globals())
+        if gSystem is not None:
+            self.gSystem << gSystem
+        
+        self.sampling_signals = port_Master(TX_sampling_signals())
+        self.config_in        = port_Stream_Slave (axisStream(SerialDataConfig()))
+        self.config_out       = port_Stream_Master(axisStream(SerialDataConfig()))
+
+    
+        self.architecture()
+
+
+
+    @architecture
+    def architecture(self):
+        cnt = counter(16)
+        rx = get_handle(self.config_in)
+        tx = get_handle(self.config_out)
+        buffer = get_buffer(self.config_in)
+        endOfStream = v_bool()
+        sampling_times = TX_sampling_times()
+
+        max_cntr = v_slv(16)
+
+        @rising_edge(self.gSystem.clk)
+        def proc():
+            if rx and cnt.isReady():
+                rx >> buffer
+                endOfStream << rx.IsEndOfStream()
+                if buffer.force_test_pattern == 0:
+                    cnt.StartCountTo(max_cntr)
+                else:
+                    cnt.StartCountTo(0)
+                
+            if tx and cnt.isDone():
+                tx << buffer 
+                tx.Send_end_Of_Stream(endOfStream)
+                cnt.reset()
+
+            
+
+            self.sampling_signals.clr            << cnt.InTimeWindowSl_r(sampling_times.clr)
+            self.sampling_signals.read_enable    << cnt.InTimeWindowSl_r(sampling_times.read_enable)
+            self.sampling_signals.read_enable    << cnt.InTimeWindowSl_r(sampling_times.read_enable)
+            self.sampling_signals.ramp           << cnt.InTimeWindowSl_r(sampling_times.ramp)
+            
+            
+            self.sampling_signals.row_select        << cnt.InTimeWindowSLV_r(sampling_times.row_select,buffer.row_Select)
+            self.sampling_signals.column_select     << cnt.InTimeWindowSLV_r(sampling_times.column_select,buffer.column_select)
+            
+         
+        rh = register_handler(self.gSystem)
+        sampling_times.clr.start << rh.get_register(register_addr.clr_start)
+        sampling_times.clr.stop  << rh.get_register(register_addr.clr_stop)
+
+        sampling_times.ramp.start << rh.get_register(register_addr.ramp_start)
+        sampling_times.ramp.stop  << rh.get_register(register_addr.ramp_stop)
+
+        sampling_times.row_select.start << rh.get_register(register_addr.row_select_start)
+        sampling_times.row_select.stop  << rh.get_register(register_addr.row_select_stop)
+
+        sampling_times.column_select.start << rh.get_register(register_addr.column_select_start)
+        sampling_times.column_select.stop  << rh.get_register(register_addr.column_select_stop)
+
+        sampling_times.read_enable.start << rh.get_register(register_addr.read_enable_start)
+        sampling_times.read_enable.stop  << rh.get_register(register_addr.read_enable_stop)       
+        
+
+        max_cntr <<  rh.get_register(register_addr.cntr_max_time)       
+
+        end_architecture()
+
+
+
+class TX_sampling_controller_tp(v_entity):
+    def __init__(self):
+        super().__init__()
+        self.architecture()
+
+    @architecture
+    def architecture(self):
+        clk = clk_generator()
+        regStorage = register_storage(clk.clk)
+        gSystem = system_globals()
+        gSystem  << regStorage.gSystem
+        dut = TX_sampling_controller(gSystem)
+        count = v_slv(32)
+        tx = get_handle(dut.config_in)
+        rx = get_handle(dut.config_out)
+        buffer = get_buffer(dut.config_in)
+        buffer2 = get_buffer(dut.config_in)
+
+        regStorage.set_register(register_addr.clr_start,10)
+        regStorage.set_register(register_addr.clr_stop,11)
+
+        regStorage.set_register(register_addr.ramp_start,12)
+        regStorage.set_register(register_addr.ramp_stop,13)
+
+        regStorage.set_register(register_addr.row_select_start,14)
+        regStorage.set_register(register_addr.row_select_stop,15)
+
+        regStorage.set_register(register_addr.column_select_start,16)
+        regStorage.set_register(register_addr.column_select_stop,17)
+
+        regStorage.set_register(register_addr.read_enable_start,18)
+        regStorage.set_register(register_addr.read_enable_stop,19)
+        regStorage.set_register(register_addr.cntr_max_time, 30)
+
+        @rising_edge( clk.clk )
+        def proc():
+            count << count + 1
+            buffer.column_select << 1
+            buffer.row_Select << 1
+            if count == 20:
+                tx << buffer
+
+            if rx:
+                rx >> buffer2
+
+        
+    
+        end_architecture()
+
+
+@do_simulation
+def TX_sampling_controller_sim(OutputPath, f= None):
+    tb = TX_sampling_controller_tp()
+    return tb
+
+##################################################################################################################################
 def sr_clk_t(val=0):
-    return v_slv(8,val)
+    return v_slv(16,val)
 
 def dword(val=0):
     return v_slv(32,val)
@@ -301,9 +620,9 @@ class SerialDataRoutProcess_cl(v_entity):
 
 @vhdl_conversion
 def TXReadout2vhdl(OutputPath):
-
+    tb1 = TX_sampling_controller(system_globals())
     tb  =SerialDataRoutProcess_cl()
-    return tb
+    return tb1
 
 
 
@@ -439,4 +758,5 @@ def TXReadout_sim(OutputPath, f= None):
     return tb1
 
 
-
+def get_buffer( axi ) -> SerialDataConfig:
+    return v_variable(axi.data)

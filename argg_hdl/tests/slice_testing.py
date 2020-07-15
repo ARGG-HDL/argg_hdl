@@ -17,8 +17,8 @@ class slice_TB(v_entity):
     @architecture
     def architecture(self):
         clkgen = clk_generator()
-        counter = v_slv()
-        counter2 = v_slv()
+        counter = v_slv(32)
+        counter2 = v_slv(32)
         counter3 = v_slv(32,1)
         d0 = v_slv(4)
         d1 = v_slv(4)
