@@ -47,6 +47,7 @@ system_globals        = sys_globals.system_globals
 register_t            = sys_globals.register_t
 system_globals_delay  = sys_globals.system_globals_delay
 register_handler      = sys_globals.register_handler
+register_storage      = sys_globals.register_storage
 
 stream_delay = ax_s_delay.stream_delay
 stream_delay_one = ax_s_delay.stream_delay_one

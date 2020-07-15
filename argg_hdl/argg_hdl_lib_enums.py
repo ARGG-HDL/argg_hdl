@@ -21,6 +21,8 @@ class varSig(Enum):
     reference_t = 4
     combined_t = 5
     unnamed_const = 6
+    runtime_variable_t =7 
+    
 
     def __repr__(self):
         return str(self).split(".")[-1]

@@ -142,6 +142,9 @@ class v_class_converter(hdl_converter_base):
             VaribleSignalFilter=VaribleSignalFilter,
             ForceExpand=True
         )   
+        if not defaults.strip():
+            return ""
+
         ret = "\n  constant " + name + " : " + TypeName + ":= " + defaults +';\n'
 
         return ret
@@ -276,6 +279,9 @@ class v_class_converter(hdl_converter_base):
         for x in obj.__hdl_converter__.archetecture_list:
             ret.append( hdl.get_architecture_header(x["symbol"]))
 
+
+
+
         ret=join_str(
             ret, 
             LineBeginning="  "
@@ -301,6 +307,11 @@ class v_class_converter(hdl_converter_base):
 
     def get_port_list(self,obj):
         ret = []
+
+        freeSymb = hdl.get_free_symbols(obj)
+        for x in freeSymb:
+            ret.append( hdl.get_port_list(x))
+
         xs = hdl.extract_conversion_types(obj,
             exclude_class_type= v_classType_t.transition_t
         )
@@ -313,6 +324,15 @@ class v_class_converter(hdl_converter_base):
 
     def _vhdl_make_port(self, obj, name):
         ret = []
+        freeSymb = hdl.get_free_symbols(obj)
+        for x in freeSymb:
+            if x.__hdl_name__.find(obj.__hdl_name__) != 0:
+                raise Exception("unknown naming convention")
+            startIndex = obj.__hdl_name__.rfind(name)
+
+            portName = x.__hdl_name__[startIndex:]
+            ret.append( portName + " => " + str(x))
+            
 
         xs = hdl.extract_conversion_types(obj, 
                 exclude_class_type= v_classType_t.transition_t
@@ -324,7 +344,14 @@ class v_class_converter(hdl_converter_base):
 
 
            
-    
+    def get_free_symbols(self,obj,parent_list=[]):
+        
+        member = obj.getMember()
+        ret =[]
+        for m in member:
+            ret += hdl.get_free_symbols(m["symbol"], parent_list +[obj])
+       
+        return ret
 
 
            

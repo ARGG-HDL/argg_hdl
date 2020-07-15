@@ -9,6 +9,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.argg_hdl_v_class import *
+from argg_hdl.argg_hdl_master_slave import *
 
 
 class counter_state(Enum):
@@ -20,17 +21,17 @@ class time_span(v_class):
     def __init__(self, CounterLength):
         super().__init__("time_span"+ str(CounterLength))
         self.__v_classType__         = v_classType_t.Record_t
-        self.min  = v_slv(CounterLength)
+        self.start  = v_slv(CounterLength)
         self.max  = v_slv(CounterLength)
 
-class counter(v_class):
+class counter(v_class_master):
     def __init__(self, CounterLength):
         super().__init__("counter_"+ str(CounterLength))
         self.__v_classType__         = v_classType_t.Slave_t
         AddDataType(  time_span(CounterLength)  )
         self.state = v_enum(counter_state)
-        self.Count = v_slv(CounterLength)
-        self.MaxCount = v_slv(CounterLength)
+        self.Count = v_variable( v_slv(CounterLength))
+        self.MaxCount =  v_variable( v_slv(CounterLength))
 
     def _onPull(self):
         if self.isRunning():
@@ -42,18 +43,18 @@ class counter(v_class):
 
     
 
-    def StartCountTo(self, MaxCount= port_in(v_slv())):
+    def StartCountTo(self, MaxCount):
         if self.isReady():
             self.state << counter_state.running
             self.MaxCount << MaxCount
             self.Count << 0
             
 
-    def StartCountFromTo(self,MinCount= port_in(v_slv()), MaxCount= port_in(v_slv())):
+    def StartCountFromTo(self,startCount, MaxCount):
         if self.isReady():
             self.state << counter_state.running
             self.MaxCount << MaxCount
-            self.Count << MinCount
+            self.Count << startCount
 
 
         
@@ -75,7 +76,7 @@ class counter(v_class):
 
 
 
-    def InTimeWindowSLV(self,TimeMin=port_in(v_slv()),TimeMax=port_in(v_slv()), DataIn=port_in(v_slv())):
+    def InTimeWindowSLV(self,TimeMin,TimeMax, DataIn):
         
         DataOut=v_slv("DataIn'length")
         DataOut << 0
@@ -84,7 +85,7 @@ class counter(v_class):
 
         return DataOut
 
-    def InTimeWindowSl(self,TimeMin=port_in(v_slv()),TimeMax=port_in(v_slv())):
+    def InTimeWindowSl(self,TimeMin,TimeMax):
         DataOut=v_sl()
         DataOut << 0
         if self.isRunning() and TimeMin <= self.Count and self.Count < TimeMax:
@@ -92,18 +93,18 @@ class counter(v_class):
         return DataOut
         
 
-    def InTimeWindowSLV_r(self,TimeSpan=port_in(dataType()), DataIn=port_in(v_slv())):
+    def InTimeWindowSLV_r(self,TimeSpan, DataIn):
         
         DataOut=v_slv("DataIn'length")
         DataOut << 0
-        if self.isRunning() and TimeSpan.min <= self.Count and self.Count < TimeSpan.max:
+        if self.isRunning() and TimeSpan.start <= self.Count and self.Count < TimeSpan.stop:
             DataOut << DataIn
 
         return DataOut
 
-    def InTimeWindowSl_r(self,TimeSpan=port_in(dataType())):
+    def InTimeWindowSl_r(self,TimeSpan):
         DataOut=v_sl()
         DataOut << 0
-        if self.isRunning() and TimeSpan.min <= self.Count and self.Count < TimeSpan.max:
+        if self.isRunning() and TimeSpan.start <= self.Count and self.Count < TimeSpan.stop:
             DataOut << 1  
         return DataOut

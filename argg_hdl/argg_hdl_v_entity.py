@@ -174,7 +174,7 @@ class v_entity_converter(hdl_converter_base):
     def get_enity_file_content(self, obj):
         s = isConverting2VHDL()
         set_isConverting2VHDL(True)
-        
+        hdl_name = obj.__hdl_name__
         obj._un_instantiate_()
         obj.__hdl_converter__.MissingTemplate = False
         obj.__processList__ = []
@@ -193,6 +193,8 @@ class v_entity_converter(hdl_converter_base):
                 print_cnvt(str(gTemplateIndent)+'<Failed_to_convert name="' + type(obj).__name__ +'"/>')
 
         obj._instantiate_()
+        if hdl_name:
+            obj.set_vhdl_name(hdl_name , True)
         set_isConverting2VHDL(s)
         return ret
 
@@ -258,7 +260,7 @@ class v_entity_converter(hdl_converter_base):
             if sym._Inout ==InOut_t.Internal_t:
                 continue
             symName = obj.__hdl_converter__._vhdl_get_attribute(obj,x["name"])
-            sym.__hdl_name__ = symName
+            sym.set_vhdl_name( symName,True)
             
             ret +=  sym.__hdl_converter__.get_architecture_header(sym)
 
@@ -468,6 +470,10 @@ class v_entity(argg_hdl_base0, metaclass=InstantiateAfterInit):
             raise Exception("double Conversion to vhdl")
 
         self.__hdl_name__ = name
+        
+        mem = v_entity_getMember(self)
+        for x in mem:
+            self.__dict__[x["name"]].set_vhdl_name(name+"_"+x["name"], Overwrite)
 
 
 

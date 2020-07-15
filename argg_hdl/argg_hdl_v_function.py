@@ -313,7 +313,11 @@ class v_Arch_converter(hdl_converter_base):
                     continue
                 if  (x['symbol'].__Driver__._varSigConst != varSig.unnamed_const):
                     continue
-            if x['symbol'].__Driver_Is_SubConnection__:
+            if x['symbol'].__Driver_Is_SubConnection__ :
+                #print("Is sub connection")
+                continue
+
+            if x['symbol'].__isFreeType__ :
                 #print("Is sub connection")
                 continue
             #print("Connecting " +str(x['name']) )

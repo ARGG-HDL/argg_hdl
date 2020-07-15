@@ -2,7 +2,7 @@ import sys
 from vcd import VCDWriter
 import  functools 
 import inspect 
-
+from argg_hdl.argg_hdl_global_settings import *
 
 import os,sys,inspect
 
@@ -94,6 +94,7 @@ class v_simulation():
 
     def run_timed(self,testBench, MaxTime, FileName):
         self.CurrentTime = 0
+        
         objName = getNameOf(testBench)
 
             
@@ -122,5 +123,7 @@ def Simulation_reset():
     gsimulation.reset()
 
 def run_simulation(testBench, time, outputFile):
+    set_isRunning(True)
     gsimulation.run_timed(testBench, time,outputFile)
+    set_isRunning(False)
     gsimulation.reset()
