@@ -28,6 +28,7 @@ class system_globals(v_record):
     def __init__(self):
         super().__init__()
         self.clk   =  v_sl() 
+        self.clk.__isFreeType__ = True
         self.rst   =  v_sl() 
         self.reg   =  register_t() 
 
@@ -64,16 +65,19 @@ class register_handler(v_class_master):
     def __init__(self,gSystem = system_globals()):
         super().__init__()
         self.__hdl_useDefault_value__ = False
-        self.gSystem  = signal_port_Slave(gSystem)
+        self.gSystem  = system_globals()
         self.gSystem  << gSystem
-        self.localStorage = v_list( register_t() , 0 , varSig.signal_t)
+        self.localStorage_addr = v_list( v_slv(16) , 0 , varSig.signal_t)
+        self.localStorage_value = v_list( v_slv(16) , 0 , varSig.signal_t)
         self.architecture()    
 
     def get_register(self, RegisterAddres):
-        reg =  register_t()
-        reg.address << RegisterAddres
-        self.localStorage.append(reg)
-        return reg.value
+        reg = v_slv(16)
+        reg << RegisterAddres
+        val = v_slv(16)
+        self.localStorage_addr.append(reg)
+        self.localStorage_value.append(val)
+        return val
 
 
 
@@ -85,8 +89,48 @@ class register_handler(v_class_master):
 
         @rising_edge(self.gSystem.clk)
         def proc_register_handler():
-            for ele in  self.localStorage:
-                if registers.register_out.address == ele.address:
-                    ele.value << registers.register_out.value
+            for index  in  range( len(self.localStorage_addr)) :
+                if registers.register_out.address == self.localStorage_addr[index]:
+                    self.localStorage_value[index] << registers.register_out.value
+
+        end_architecture()
+
+
+
+class register_storage(v_class_master):
+    def __init__(self,clk):
+        super().__init__()
+        self.__hdl_useDefault_value__ = False
+        self.gSystem = v_signal( system_globals())
+        self.gSystem.clk << clk
+        self.localStorage = v_list( register_t() , 0 , varSig.signal_t)
+        self.architecture()    
+    
+    def set_register(self, RegisterAddres, regVal):
+        for e in self.localStorage:
+            if e.address == RegisterAddres:
+                e.value << regVal
+                return
+
+        reg =  register_t()
+        reg.address << RegisterAddres
+        reg.value << regVal
+        self.localStorage.append(reg)
+        
+
+
+    @architecture
+    def architecture(self):
+
+        cnt = v_slv(32)
+
+        @rising_edge(self.gSystem.clk)
+        def proc_register_handler():
+            
+            cnt << cnt +1
+            if cnt < len(self.localStorage):
+                self.gSystem.reg << self.localStorage[cnt]
+            else:
+               cnt << 0 
 
         end_architecture()

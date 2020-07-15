@@ -186,3 +186,5 @@ def Has_pushpull_function(obj, pushpull):
 
     
 
+def get_free_symbols(obj,parent_list=[]):
+    return obj.__hdl_converter__.get_free_symbols(obj,parent_list)

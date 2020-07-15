@@ -60,16 +60,22 @@ class v_symbol_converter(hdl_converter_base):
         return ret
         
     def recordMember(self,obj, name, parent,Inout=None):
+        if obj.__isFreeType__:
+            return []
+
         if parent._issubclass_("v_class"):
             return name + " : " +obj._type
 
-        return ""
+        return []
 
     def recordMemberDefault(self, obj,name,parent,Inout=None):
+        if obj.__isFreeType__:
+            return []
+        
         if parent._issubclass_("v_class"):
             return name + " => " + obj.DefaultValue 
 
-        return ""
+        return []
 
     def getHeader(self, obj,name,parent):
         if obj.__hdl_name__:
@@ -162,7 +168,7 @@ class v_symbol_converter(hdl_converter_base):
         name = obj.__hdl_name__
 
 
-        return  VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
+        return  VarSymb+ " " + str(name) + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
     def get_architecture_header(self, obj):
 
         if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
@@ -178,7 +184,7 @@ class v_symbol_converter(hdl_converter_base):
         #    return ""
         name = obj.__hdl_name__
 
-        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"   
+        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " +  str(obj.DefaultValue)  + "; \n"   
         return  ret
 
     def get_port_list(self,obj:"v_symbol"):
@@ -331,6 +337,12 @@ class v_symbol_converter(hdl_converter_base):
             default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
 
         return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
+    
+    def get_free_symbols(self,obj,parent_list=[]):
+        if obj.__isFreeType__:
+            return [obj]
+        
+        return []
 
 def v_symbol_reset():
     #v_symbol.__value_list__.clear()
@@ -340,42 +352,62 @@ class v_symbol(argg_hdl_base):
     __value_list__ = []
     
     def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32):
+        if isRunning():
+            self.Bitwidth = Bitwidth
+            self.nextValue  = get_value_or_default(value, DefaultValue)
+            self._varSigConst= varSig.runtime_variable_t
+            return 
+            
         super().__init__()
         if not varSigConst:
             varSigConst = getDefaultVarSig()
-
+        if isRunning():
+            varSigConst = varSig.runtime_variable_t
         self.Bitwidth = Bitwidth
-        self.__hdl_converter__= v_symbol_converter(includes)
-        self._type = v_type
-        self.DefaultValue = str(DefaultValue)
-        self._Inout = Inout
-        
+        self.BitMask = 2**Bitwidth -1
 
-        self.__hdl_name__ = None
-        self.__value_list__.append(get_value_or_default(value, DefaultValue))
-        self.__value_Index__ = len(self.__value_list__) -1
-        #self.value = get_value_or_default(value, DefaultValue)
         self.nextValue  = get_value_or_default(value, DefaultValue)
         self._varSigConst=varSigConst
-        self.__Driver__ = None 
-        self.__update_list__ = list()
-        self.__update__list_process__ = list()
-        self.__update__list_running__ =[]
-        self.__update__list_process_running__ = list()
-        self.__receiver_list_running__ = []
-        self.__got_update_list__ = False
-        self.__Pull_update_list__ = list()
-        self.__Push_update_list__ = list()
-        self.__vcd_varobj__ = None
-        self.__vcd_writer__ = None
-        self.__UpdateFlag__ = False
-        self._Simulation_name = "NotSet"
+
+        if not isRunning():
+            self.__hdl_converter__= v_symbol_converter(includes)
+            self._type = v_type
+            self.DefaultValue = str(DefaultValue)
+            self._Inout = Inout
+            self.__isFreeType__ = False
+        
+
+            self.__hdl_name__ = None
+            self.__hdl_name_inside__ = None
+            self.__hdl_name_outside__ = None
+
+            self.__value_list__.append(get_value_or_default(value, DefaultValue))
+            self.__value_Index__ = len(self.__value_list__) -1
+        
+            
+            self.__Driver__ = None 
+            self.__Driver_IsInit__ = None 
+            
+            self.__update_list__ = list()
+            self.__update__list_process__ = list()
+            self.__update__list_running__ =[]
+            self.__update__list_process_running__ = list()
+            self.__receiver_list_running__ = []
+            self.__got_update_list__ = False
+            self.__Pull_update_list__ = list()
+            self.__Push_update_list__ = list()
+            self.__vcd_varobj__ = None
+            self.__vcd_writer__ = None
+            self.__UpdateFlag__ = False
+            self._Simulation_name = "NotSet"
 
 
 
 
 
     def _sim_get_value(self):
+        if self._varSigConst==varSig.runtime_variable_t:
+            return self.nextValue
         return self.__value_list__[self.__value_Index__]
 
 
@@ -399,7 +431,15 @@ class v_symbol(argg_hdl_base):
         if self.__hdl_name__ and self.__hdl_name__ != name and not Overwrite:
             raise Exception("double Conversion to vhdl")
         
+        if self.__isFreeType__:
+            name = name.replace(".","_")
+
         self.__hdl_name__ = name
+        if self.__isInst__:
+            self.__hdl_name_outside__ = name      
+        else:
+            self.__hdl_name_inside__ = name
+        
 
 
 
@@ -446,9 +486,35 @@ class v_symbol(argg_hdl_base):
         return self._type
 
 
+    def __Get_Driver_in_scope__(self):
+        if self._Inout == InOut_t.input_t:
+            return self, None
+        if self.__Driver__ is None:
+            return self, None
+        if self.__Driver__._varSigConst != varSig.signal_t:
+             return self, None 
+        if self.__Driver__._Inout == InOut_t.input_t:
+            return self.__Driver__, self.__Driver_IsInit__ 
+        
+        if self.__Driver__._Inout == InOut_t.output_t:
+            return self.__Driver__ , self.__Driver_IsInit__ 
+
+        return self.__Driver__.__Get_Driver_in_scope__()
 
     def __str__(self):
-        if self.__hdl_name__:
+        if self.__isFreeType__:
+            driver,IsInit  = self.__Get_Driver_in_scope__()
+
+            if IsInit is None and  driver.__hdl_name__:
+                return driver.__hdl_name__
+            
+            if IsInit  and  driver.__hdl_name_outside__:
+                return driver.__hdl_name_outside__
+                        
+            if not IsInit  and  driver.__hdl_name_inside__:
+                return driver.__hdl_name_inside__
+
+        elif self.__hdl_name__:
             return str(self.__hdl_name__)
 
         raise Exception("No Name was given to symbol")
@@ -501,6 +567,9 @@ class v_symbol(argg_hdl_base):
         
         return value(self) - value(rhs) 
         
+    def __mul__(self, rhs):
+        return value(self) * value(rhs) 
+
     def __lt__(self,rhs):
         return value(self) < value(rhs) 
 
@@ -524,9 +593,9 @@ class v_symbol(argg_hdl_base):
             start = value(b)
             stop = start+1
         if stop is None:
-            stop = len(self) - 1
+            stop = len(self)
 
-        stop = min(value(stop),  len(self) - 1)
+        stop = min(value(stop),  len(self) )
         sl = slice_helper(start=start,stop=stop)
         return v_slice_base(self,sl)
         
@@ -590,9 +659,15 @@ class v_symbol(argg_hdl_base):
 
     def reset(self):
         self << 0
-    def _Connect_running(self, rhs):
+
+    def _Connect_running_runtime_variable(self, rhs):
         self.nextValue = value(rhs)
-        #print("assing: ", self.__value_Index__ , self._Simulation_name ,  value(rhs))
+       
+    def _Connect_running(self, rhs):
+        val = value(rhs) 
+        sign = 1 if val > 0 else -1
+        self.nextValue =sign*( abs(val) & self.BitMask)
+       
 
         if self.nextValue !=  value(self):
             def update():
@@ -627,6 +702,7 @@ class v_symbol(argg_hdl_base):
             rhs.__update_list__.append(update1)
         else:
             self.__Driver__ = rhs
+            self.__Driver_IsInit__  = rhs.__isInst__
             rhs.__receiver__.append(self)
             self.nextValue = rhs.nextValue
             self._sim_set_new_value_index(  rhs._sim_get_primary_driver().__value_Index__ )
@@ -634,7 +710,9 @@ class v_symbol(argg_hdl_base):
         
         
     def __lshift__(self, rhs):
-        if gsimulation.isRunning():
+        if self._varSigConst==varSig.runtime_variable_t:
+            self._Connect_running_runtime_variable(rhs)
+        elif gsimulation.isRunning():
             self._Connect_running(rhs)
         elif isFunction():
             pass
@@ -643,13 +721,18 @@ class v_symbol(argg_hdl_base):
             
     def __len__(self):
         return self.Bitwidth
+
     def __and__(self, rhs):
-        bitShift = len(rhs)
-        v  = value(self) << bitShift
-        v += value(rhs)
-        sl= slice_helper(start=0,stop=len(rhs)+len(self)-1)
-        ret = v_slice_base(v,sl)
-        return ret
+        if isinstance(rhs, v_symbol):
+            bitShift = len(rhs)
+            v  = value(self) << bitShift
+            v += value(rhs)
+            sl= slice_helper(start=0,stop=len(rhs)+len(self)-1)
+            ret = v_slice_base(v,sl)
+            return ret
+        
+        return rhs.l_append(self)
+
         
 
 
