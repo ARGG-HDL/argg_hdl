@@ -675,11 +675,9 @@ class v_symbol(argg_hdl_base):
 
 slv_includes = """
 library IEEE;
-library UNISIM;
 library work;
   use IEEE.numeric_std.all;
   use IEEE.std_logic_1164.all;
-  use UNISIM.VComponents.all;
   use ieee.std_logic_unsigned.all;
   use work.argg_hdl_core.all;
 """

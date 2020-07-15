@@ -15,10 +15,8 @@ class v_list_converter(hdl_converter_base):
     def includes(self,obj, name,parent):
         ret  = """
 library IEEE;
-library UNISIM;
 use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
-use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
         """
         if "std_logic_vector"  in obj.Internal_Type._type:

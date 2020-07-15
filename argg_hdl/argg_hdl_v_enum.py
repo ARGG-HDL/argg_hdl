@@ -38,11 +38,9 @@ class v_enum_converter(hdl_converter_base):
         PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
         fileContent = """
 library IEEE;
-library UNISIM;
 library work;
 use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
-use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 
