@@ -19,7 +19,7 @@ end entity;
 architecture rtl of InputDelay_tb is
 
 --------------------------InputDelay_tb-----------------
-  signal data : std_logic_vector(31 downto 0) := x"00000005"; 
+  signal data : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(5, 32)); 
   signal k_globals : klm_globals := klm_globals_null;
 --------------------------axprint-----------------
   signal axprint_ConfigIn_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;

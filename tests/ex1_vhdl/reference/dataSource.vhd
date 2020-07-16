@@ -22,7 +22,7 @@ end entity;
 architecture rtl of dataSource is
 
 --------------------------dataSource-----------------
-  signal data : std_logic_vector(31 downto 0) := x"00000005"; 
+  signal data : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(5, 32)); 
 -------------------------- end dataSource-----------------
 
 begin

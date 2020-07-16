@@ -7,342 +7,8 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_simulation import *
 
 from argg_hdl.argg_hdl_slice_base import v_slice_base, slice_helper
+from argg_hdl.argg_hdl__primitive_type_converter  import get_primitive_hdl_converter
 
-
-class v_symbol_converter(hdl_converter_base):
-    def __init__(self,inc_str):
-        super().__init__()
-        self.inc_str  = inc_str
-
-    def get_dependency_objects(self, obj, depList):
-        return obj
-        
-    def includes(self,obj, name,parent):
-        ret = slv_includes
-        ret += self.inc_str
-        return ret
-    def _vhdl__call_member_func(self, obj, name, args, astParser=None):
-        
-        call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
-        
-        args_str = [str(x.get_type()) for x in args]
-        args_str=join_str(args_str, Delimeter=", ")
-        if call_obj is None:
-            primary.__hdl_converter__.MissingTemplate=True
-            astParser.Missing_template = True
-
-            print_cnvt(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
-            return None
-
-        print_cnvt(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
-        call_func = call_obj["call_func"]
-        if call_func:
-            return call_func(obj, name, args, astParser, call_obj["func_args"])
-
-        primary.__hdl_converter__.MissingTemplate=True
-        astParser.Missing_template = True
-        return None
-
-    def get_get_call_member_function(self, obj, name, args):
-        ret = None
-        args = [x.get_symbol() for x in args ]
-        if name =="reset":
-            ret = {
-            "name" : name,
-            "args": args,
-            "self" :obj,
-            "call_func" : call_func_symb_reset,
-            "func_args" : None,
-            "setDefault" : False,
-            "varSigIndependent" : True
-
-        }
-        return ret
-        
-    def recordMember(self,obj, name, parent,Inout=None):
-        if obj.__isFreeType__:
-            return []
-
-        if parent._issubclass_("v_class"):
-            return name + " : " +obj._type
-
-        return []
-
-    def recordMemberDefault(self, obj,name,parent,Inout=None):
-        if obj.__isFreeType__:
-            return []
-        
-        if parent._issubclass_("v_class"):
-            return name + " => " + obj.DefaultValue 
-
-        return []
-
-    def getHeader(self, obj,name,parent):
-        if obj.__hdl_name__:
-            name = obj.__hdl_name__
-
-        if parent._issubclass_("v_class"):
-             return ""
-            
-        return name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
-
-    def getFuncArg(self,obj, name,parent):
-        return name + " : " + obj._type   
-
-    def _vhdl_slice(self,obj,sl,astParser=None):
-        astParser.add_read(obj)
-        obj._add_input()
-        if "std_logic_vector" in obj._type:
-            if type(sl).__name__ == "v_slice":
-                ret = v_slv( Inout = obj._Inout,varSigConst=obj._varSigConst)
-                ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
-            else:
-                ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
-                index = sl.__hdl_converter__._vhdl__getValue(sl,__slice_type__)
-                ret.__hdl_name__ = obj.__hdl_name__+"("+str(index)+")"
-            
-            
-            return ret
-
-        raise Exception("unexpected type")
-
-
-    def _vhdl__compare_int(self,obj, ops, rhs):
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
-
-    def _vhdl__compare_std_logic(self,obj, ops, rhs):
-        value = str(rhs).lower()
-        if value == "true":
-            rhs = "1"
-        elif value == "false":
-            rhs = "0"            
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" '" +  str(rhs) +"'"
-    
-    def _vhdl__compare_std_logic_vector(self,obj, ops, rhs):
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
-
-    def _vhdl__compare(self,obj, ops, rhs, astParser):
-        astParser.add_read(obj)
-        obj._add_input()
-        if issubclass(type(rhs),argg_hdl_base):
-            astParser.add_read(rhs)
-            rhs._add_input()
-    
-        if obj._type == "integer":
-            return obj.__hdl_converter__._vhdl__compare_int(obj, ops, rhs)
-        
-        if obj._type == "std_logic":
-            return obj.__hdl_converter__._vhdl__compare_std_logic(obj, ops, rhs)
-        
-        if "std_logic_vector" in obj._type:
-            return obj.__hdl_converter__._vhdl__compare_std_logic_vector(obj, ops, rhs)
-        
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
-
-    def _to_hdl___bool__(self,obj:v_symbol, astParser):
-        obj._add_input()
-        astParser.add_read(obj)
-        if obj._type == "std_logic":
-            return str(obj) + " = '1'"
-        if "std_logic_vector" in obj._type:
-            return str(obj) + " > 0"
-        if obj._type == "boolean":
-            return str(obj)
-        if obj._type == "integer":
-            return str(obj) + " > 0"
-
-        return "to_bool(" + str(obj) + ") "
-
-    def _vhdl__BitAnd(self,obj:"v_symbol",rhs,astParser) -> "v_symbol":
-        ret = v_slv()
-        ret.set_vhdl_name(str(obj)+ " & " +str(rhs) ,True)
-        return ret
-
-    def _vhdl__DefineSymbol(self,obj:"v_symbol", VarSymb=None):
-        print_cnvt("_vhdl__DefineSymbol is deprecated")
-        if not VarSymb:
-            VarSymb = get_varSig(obj._varSigConst)
-
-        if  obj.__Driver__ is not None and str(obj.__Driver__ ) != 'process':
-            return ""
-        name = obj.__hdl_name__
-
-
-        return  VarSymb+ " " + str(name) + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
-    def get_architecture_header(self, obj):
-
-        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
-            return ""
-        
-        if obj._varSigConst == varSig.variable_t:
-            return ""
-        
-        
-        VarSymb = get_varSig(obj._varSigConst)
-
-        #if  obj.__Driver__ != None and str(obj.__Driver__ ) != 'process':
-        #    return ""
-        name = obj.__hdl_name__
-
-        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " +  str(obj.DefaultValue)  + "; \n"   
-        return  ret
-
-    def get_port_list(self,obj:"v_symbol"):
-        ret = []
-        if obj._Inout == InOut_t.Internal_t:
-            return ret
-        
-        if obj._varSigConst != varSig.signal_t:
-            return ret
-        
-        ret.append( obj.__hdl_name__ + " : "+ obj.__hdl_converter__.InOut_t2str(obj) + " " + obj._type + " := " + obj.DefaultValue)
-        return ret
-
-
-    def _vhdl__reasign_std_logic(self, obj:"v_symbol", rhs, target, astParser=None,context_str=None):
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
-        if issubclass(type(rhs),argg_hdl_base0):
-            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj)) 
-        return target + asOp+  str(rhs) 
-
-    def _vhdl__reasign_std_logic_vector(self, obj:"v_symbol", rhs, target, astParser=None,context_str=None):
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
-        if str(rhs) == '0':
-            return target + asOp+ " (others => '0')"
-        
-        if  issubclass(type(rhs),argg_hdl_base):
-            if rhs.get_type() == 'integer':
-                return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
-                    dest=target,
-                    src = str(rhs),
-                    asOp=asOp
-                )
-
-            return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj,astParser=astParser)) 
-        
-        if  type(rhs).__name__=="v_Num":
-            return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
-                dest=target,
-                src = str(rhs.value),
-                asOp=asOp
-            )
-
-        rhs_str = str(rhs)
-        if rhs_str.isnumeric():
-            return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
-                dest=target,
-                src = rhs_str,
-                asOp=asOp
-            )
-
-        return target + asOp+  str(rhs) 
-
-    def _vhdl__reasign_int(self, obj:"v_symbol", rhs, target, astParser=None,context_str=None):
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
-
-        if issubclass(type(rhs),argg_hdl_base) and "std_logic_vector" in rhs._type:
-            return target + asOp +" to_integer(signed("+ str(rhs)+"))"
-        
-        return target +asOp +  str(rhs)
-
-    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
-        if astParser:
-            astParser.add_write(obj)
-        obj._add_output()
-        target = str(obj)
-        if obj._varSigConst == varSig.signal_t and not (context_str and (context_str == "archetecture" or context_str== "process")):
-            target = target.replace(".","_")
-
-        if issubclass(type(rhs),argg_hdl_base0)  and str( obj.__Driver__) != 'process':
-            obj.__Driver__ = rhs
-        
-        if isProcess():
-            obj.__Driver__ = 'process'
-        
-        if obj._type == "std_logic":
-            return obj.__hdl_converter__._vhdl__reasign_std_logic(obj, rhs,target, astParser,context_str)
-        
-        if "std_logic_vector" in obj._type:
-            return obj.__hdl_converter__._vhdl__reasign_std_logic_vector(obj, rhs,target, astParser,context_str)
-        
-        if obj._type == "integer":
-            return obj.__hdl_converter__._vhdl__reasign_int(obj, rhs,target, astParser,context_str)
-
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)            
-        return target +asOp +  str(rhs)
-    
-
-    def _vhdl__reasign_rshift__slv(self, obj, rhs, astParser=None,context_str=None):
-        rhs._add_output()
-        asOp = rhs.__hdl_converter__.get_assiment_op(rhs)            
-        return str(rhs)+"("+ str(rhs) +"'range)" +asOp +  str(obj)+"("+ str(rhs) +"'range)" 
-
-    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        if issubclass(type(obj),argg_hdl_base0) and issubclass(type(rhs),argg_hdl_base0):
-            if "std_logic_vector" in obj._type and "std_logic_vector" in rhs._type:
-                return self._vhdl__reasign_rshift__slv(obj, rhs,astParser,context_str)
-
-        return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
-
-    def get_type_simple(self,obj:"v_symbol"):
-        ret = obj._type
-        if "std_logic_vector" in ret:
-            sp1 = int(ret.split("downto")[0].split("(")[1])
-            sp2 = int(ret.split("downto")[1].split(")")[0])
-            sp3 = sp1 -sp2 +1
-            ret  = "slv"+str(sp3)
-        return ret
-
-    def _vhdl__getValue(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
-        if astParser:
-            astParser.add_read(obj)
-        obj._add_input()
-        if ReturnToObj.get_type() ==  obj._type:
-            return obj
-        if obj._varSigConst ==varSig.unnamed_const:
-            if ReturnToObj.get_type() == "std_logic":
-                obj.__hdl_name__="'" + str(obj)  + "'"
-                obj._type= "std_logic"
-                return  obj
-        if ReturnToObj.get_type() == "integer" and  "std_logic_vector" in obj._type:
-            return  "to_integer(signed( " + str(obj)  + "))"
-        if ReturnToObj.get_type() == "uinteger" and  "std_logic_vector" in obj._type:
-            return  "to_integer(unsigned( " + str(obj)  + "))"
-        return obj
-
-    def get_default_value(self,obj:"v_symbol"):
-        return obj.DefaultValue
-
-    def length(self,obj:"v_symbol"):
-        ret = v_int()
-        ret.__hdl_name__=str(obj)+"'length"
-        return ret
-
-    def get_type_func_arg(self,obj:"v_symbol"):
-        ret = obj.get_type()
-        if "std_logic_vector" in ret:
-            return "std_logic_vector"
-        return ret
-    def to_arglist(self,obj:"v_symbol", name,parent,withDefault = False,astParser=None):
-        inout = astParser.get_function_arg_inout_type(obj)
-        inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
-        varSigstr = ""
-        if obj._varSigConst == varSig.signal_t:
-            varSigstr = "signal "
-
-        if not inoutstr:
-            inoutstr = ""
-        default_str = ""
-        if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
-            default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
-
-        return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
-    
-    def get_free_symbols(self,obj,parent_list=[]):
-        if obj.__isFreeType__:
-            return [obj]
-        
-        return []
 
 def v_symbol_reset():
     #v_symbol.__value_list__.clear()
@@ -351,7 +17,7 @@ def v_symbol_reset():
 class v_symbol(argg_hdl_base):
     __value_list__ = []
     
-    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32):
+    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base"):
         if isRunning():
             self.Bitwidth = Bitwidth
             self.nextValue  = get_value_or_default(value, DefaultValue)
@@ -361,45 +27,44 @@ class v_symbol(argg_hdl_base):
         super().__init__()
         if not varSigConst:
             varSigConst = getDefaultVarSig()
-        if isRunning():
-            varSigConst = varSig.runtime_variable_t
+
+
         self.Bitwidth = Bitwidth
         self.BitMask = 2**Bitwidth -1
 
         self.nextValue  = get_value_or_default(value, DefaultValue)
         self._varSigConst=varSigConst
 
-        if not isRunning():
-            self.__hdl_converter__= v_symbol_converter(includes)
-            self._type = v_type
-            self.DefaultValue = str(DefaultValue)
-            self._Inout = Inout
-            self.__isFreeType__ = False
+
+        self.__hdl_converter__= get_primitive_hdl_converter(primitive_type)(slv_includes)
+        self._type = v_type
+        self.DefaultValue = str(DefaultValue)
+        self._Inout = Inout
+        self.__isFreeType__ = False
         
 
-            self.__hdl_name__ = None
-            self.__hdl_name_inside__ = None
-            self.__hdl_name_outside__ = None
-
-            self.__value_list__.append(get_value_or_default(value, DefaultValue))
-            self.__value_Index__ = len(self.__value_list__) -1
+        self.__hdl_name__ = None
+        self.__hdl_name_inside__ = None
+        self.__hdl_name_outside__ = None
+        self.__value_list__.append(get_value_or_default(value, DefaultValue))
+        self.__value_Index__ = len(self.__value_list__) -1
         
             
-            self.__Driver__ = None 
-            self.__Driver_IsInit__ = None 
+        self.__Driver__ = None
+        self.__Driver_IsInit__ = None
             
-            self.__update_list__ = list()
-            self.__update__list_process__ = list()
-            self.__update__list_running__ =[]
-            self.__update__list_process_running__ = list()
-            self.__receiver_list_running__ = []
-            self.__got_update_list__ = False
-            self.__Pull_update_list__ = list()
-            self.__Push_update_list__ = list()
-            self.__vcd_varobj__ = None
-            self.__vcd_writer__ = None
-            self.__UpdateFlag__ = False
-            self._Simulation_name = "NotSet"
+        self.__update_list__ = list()
+        self.__update__list_process__ = list()
+        self.__update__list_running__ =[]
+        self.__update__list_process_running__ = list()
+        self.__receiver_list_running__ = []
+        self.__got_update_list__ = False
+        self.__Pull_update_list__ = list()
+        self.__Push_update_list__ = list()
+        self.__vcd_varobj__ = None
+        self.__vcd_writer__ = None
+        self.__UpdateFlag__ = False
+        self._Simulation_name = "NotSet"
 
 
 
@@ -779,7 +444,8 @@ def v_bool(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
         includes=slv_includes,
         value = value,
         varSigConst=varSigConst,
-        Bitwidth=1
+        Bitwidth=1,
+        primitive_type ="boolean"
     )
  
 def v_sl(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
@@ -795,7 +461,8 @@ def v_sl(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
         includes=slv_includes,
         value = value,
         varSigConst=varSigConst,
-        Bitwidth=1
+        Bitwidth=1,
+        primitive_type ="std_logic"
     )
 
 def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
@@ -807,7 +474,10 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         Default = "(others => '0')"
 
     elif type(Default).__name__ == "int":
-        Default =  'x"'+ hex(Default)[2:].zfill(int( int(BitWidth)/4))+'"'  
+        Default = """std_logic_vector(to_unsigned({src}, {BitWidth}))""".format(
+                src = Default,
+                BitWidth=BitWidth
+            )
     
     v_type = ""
     if BitWidth is None:
@@ -826,7 +496,8 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         Inout=Inout,
         includes=slv_includes,
         varSigConst=varSigConst,
-        Bitwidth=int(BitWidth)
+        Bitwidth=int(BitWidth),
+        primitive_type ="std_logic_vector"
     )
 
 def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
@@ -838,7 +509,8 @@ def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
         Inout = Inout,
         includes=slv_includes,
         varSigConst=varSigConst,
-        Bitwidth=Bitwidth
+        Bitwidth=Bitwidth,
+        primitive_type ="integer"
     )
 
 def v_uint(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
@@ -850,24 +522,71 @@ def v_uint(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
         Inout = Inout,
         includes=slv_includes,
         varSigConst=varSigConst,
-        Bitwidth=Bitwidth
+        Bitwidth=Bitwidth,
+        primitive_type ="uinteger"
     )
 
-def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
-    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
-    val = None
-    if obj._type == "std_logic":
-        val = "'0'"
-    if "std_logic_vector" in obj._type:
-        val = "(others => '0')"
-    if obj._type == "integer":
-        val = '0'
-    
-    if val is None:
-        raise Exception("unable to reset symbol")
-    ret =  str(args[0])  + asOp + val
-    args[0]._add_output()
-    astParser.add_write(args[0])
-    return ret
 
-__slice_type__ = v_uint()
+def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
+    value = Default
+    if str(Default) == '0':
+        Default = "(others => '0')"
+
+    elif type(Default).__name__ == "int":
+        Default = """to_signed({src}, {BitWidth})""".format(
+            src=Default,
+            BitWidth=BitWidth
+        )
+
+    v_type = ""
+    if BitWidth is None:
+        v_type = "std_logic_vector"
+        BitWidth = 32
+    elif type(BitWidth).__name__ == "int":
+        v_type = "signed(" + str(BitWidth - 1) + " downto 0)"
+    else:
+        v_type = "signed(" + str(BitWidth) + " -1 downto 0)"
+        BitWidth = 32
+
+    return v_symbol(
+        v_type=v_type,
+        DefaultValue=Default,
+        value=value,
+        Inout=Inout,
+        includes=slv_includes,
+        varSigConst=varSigConst,
+        Bitwidth=int(BitWidth),
+        primitive_type="signed"
+    )
+
+def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
+    value = Default
+    if str(Default) == '0':
+        Default = "(others => '0')"
+
+    elif type(Default).__name__ == "int":
+        Default = """to_unsigned({src}, {BitWidth})""".format(
+            src=Default,
+            BitWidth=BitWidth
+        )
+
+    v_type = ""
+    if BitWidth is None:
+        v_type = "std_logic_vector"
+        BitWidth = 32
+    elif type(BitWidth).__name__ == "int":
+        v_type = "unsigned(" + str(BitWidth - 1) + " downto 0)"
+    else:
+        v_type = "unsigned(" + str(BitWidth) + " -1 downto 0)"
+        BitWidth = 32
+
+    return v_symbol(
+        v_type=v_type,
+        DefaultValue=Default,
+        value=value,
+        Inout=Inout,
+        includes=slv_includes,
+        varSigConst=varSigConst,
+        Bitwidth=int(BitWidth),
+        primitive_type="unsigned"
+    )

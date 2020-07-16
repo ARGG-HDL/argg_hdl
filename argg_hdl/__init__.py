@@ -18,6 +18,17 @@ import argg_hdl.argg_hdl_v_class_trans as v_class_trans_m
 import argg_hdl.argg_hdl_v_record as ah_rec
 
 import argg_hdl.argg_hdl_master_slave as ah_ms
+import argg_hdl.argg_hdl__primitive_type_converter_base as hdl_converter_base
+import argg_hdl.argg_hdl__primitive_converter_bool as hdl_converter_bool
+import argg_hdl.argg_hdl__primitive_converter_integer as hdl_converter_integer
+import argg_hdl.argg_hdl__primitive_converter_signed as hdl_converter_signed
+import argg_hdl.argg_hdl__primitive_converter_sl as hdl_converter_sl
+import argg_hdl.argg_hdl__primitive_converter_sl as hdl_converter_sl
+import argg_hdl.argg_hdl__primitive_converter_slv as hdl_converter_slv
+import argg_hdl.argg_hdl__primitive_converter_uinteger as hdl_converter_uinteger
+import argg_hdl.argg_hdl__primitive_converter_unsigned as hdl_converter_unsigned
+
+
 
 ## argg_hdl_base
 base0                 = ahb.argg_hdl_base0

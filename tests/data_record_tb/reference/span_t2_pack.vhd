@@ -20,8 +20,8 @@ end record;
     
     
   constant span_t2_null : span_t2:= (
-    start => x"03",
-    stop => x"30"
+    start => std_logic_vector(to_unsigned(3, 8)),
+    stop => std_logic_vector(to_unsigned(48, 8))
   );
 
 

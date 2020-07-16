@@ -13,7 +13,7 @@ entity rollingCounter is
   port(
     Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
     Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    MaxCount :  in  std_logic_vector(31 downto 0) := x"0000000a";
+    MaxCount :  in  std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(10, 32));
     clk :  in  std_logic := '0'
   );
 end entity;

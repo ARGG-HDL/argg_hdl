@@ -18,7 +18,7 @@ architecture rtl of slice_TB is
 --------------------------slice_TB-----------------
   signal counter : std_logic_vector(31 downto 0) := (others => '0'); 
   signal counter2 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal counter3 : std_logic_vector(31 downto 0) := x"00000001"; 
+  signal counter3 : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(1, 32)); 
   signal d0 : std_logic_vector(3 downto 0) := (others => '0'); 
   signal d1 : std_logic_vector(3 downto 0) := (others => '0'); 
   signal d2 : std_logic_vector(3 downto 0) := (others => '0'); 

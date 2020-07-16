@@ -27,20 +27,20 @@ end record;
     
   constant test_Config_null : test_Config:= (
     var1 => (
-    start => x"01",
-    stop => x"10"
+    start => std_logic_vector(to_unsigned(1, 8)),
+    stop => std_logic_vector(to_unsigned(16, 8))
   ),
     var2 => (
-    start => x"02",
-    stop => x"20"
+    start => std_logic_vector(to_unsigned(2, 8)),
+    stop => std_logic_vector(to_unsigned(32, 8))
   ),
     var3 => span_t2_null,
     var4 => (
-    start => x"04",
-    stop => x"40"
+    start => std_logic_vector(to_unsigned(4, 8)),
+    stop => std_logic_vector(to_unsigned(64, 8))
   ),
-    var5 => x"05",
-    var6 => x"06"
+    var5 => std_logic_vector(to_unsigned(5, 8)),
+    var6 => std_logic_vector(to_unsigned(6, 8))
   );
 
 

@@ -21,8 +21,8 @@ architecture rtl of data_record_tb is
 --------------------------data_record_tb-----------------
   signal after_range : std_logic := '0'; 
   signal anotherSpan : span_t := (
-    start => x"0c",
-    stop => x"2d"
+    start => std_logic_vector(to_unsigned(12, 8)),
+    stop => std_logic_vector(to_unsigned(45, 8))
   );
   signal befor_range : std_logic := '0'; 
   signal config1 : test_Config := test_Config_null;

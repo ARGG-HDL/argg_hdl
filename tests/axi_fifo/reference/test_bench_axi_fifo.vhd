@@ -17,12 +17,12 @@ end entity;
 architecture rtl of test_bench_axi_fifo is
 
 --------------------------test_bench_axi_fifo-----------------
-  signal maxCount : std_logic_vector(31 downto 0) := x"00000014"; 
+  signal maxCount : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(20, 32)); 
 --------------------------pipe1-----------------
 --------------------------pipe1_1_rollingCounter-----------------
   signal pipe1_1_rollingCounter_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
   signal pipe1_1_rollingCounter_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal pipe1_1_rollingCounter_MaxCount : std_logic_vector(31 downto 0) := x"0000000a"; 
+  signal pipe1_1_rollingCounter_MaxCount : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(10, 32)); 
   signal pipe1_1_rollingCounter_clk : std_logic := '0'; 
 -------------------------- end pipe1_1_rollingCounter-----------------
 --------------------------pipe1_2_axiFifo-----------------
