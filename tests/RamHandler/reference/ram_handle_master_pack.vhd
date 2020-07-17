@@ -19,7 +19,7 @@ package ram_handle_master_pack is
 ------- Start Psuedo Class ram_handle_master -------------------------
 
 type ram_handle_master is record 
-    addr : slv32_a(3 - 1 downto 0);
+    addr : slv32_a(0 to 3 - 1 );
     buff : small_buffer;
     c_data : addr_data;
     data_requested : std_logic;

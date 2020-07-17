@@ -208,7 +208,9 @@ class xgenAST:
             "Break"         : body_unfold_Break,
             "Continue"      : body_unfold_Continue,
             'Slice'         : body_unfold_slice,
-            'BitAnd'         : body_unfold_BitAnd
+            'BitAnd'        : body_unfold_BitAnd,
+            'USub'          : body_unfol_USub,
+            'Not'           : body_unfol_Not
 
         }
         with open(sourceFileName, "r") as source:

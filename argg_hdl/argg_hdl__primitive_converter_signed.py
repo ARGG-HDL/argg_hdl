@@ -48,7 +48,18 @@ class v_signed_converter(v_symbol_converter):
                     asOp=asOp
                 )
 
+
+
+        
+            if 'std_logic_vector' in rhs.get_type() :
+                return """{dest} {asOp} signed({src})""".format(
+                    dest=target,
+                    src=str(rhs),
+                    asOp=asOp
+                )
+
             return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj, astParser=astParser))
+
 
         if type(rhs).__name__ == "v_Num":
             return """{dest} {asOp} to_signed({src}, {dest}'length)""".format(
@@ -70,8 +81,9 @@ class v_signed_converter(v_symbol_converter):
     def _vhdl_slice(self, obj, sl, astParser=None):
         astParser.add_read(obj)
         obj._add_input()
+        sl.set_source(obj)
         if type(sl).__name__ == "v_slice":
-            ret = v_slv(Inout=obj._Inout, varSigConst=obj._varSigConst)
+            ret = v_signed(Inout=obj._Inout, varSigConst=obj._varSigConst)
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(sl) + ")"
         else:
             ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
@@ -82,7 +94,7 @@ class v_signed_converter(v_symbol_converter):
 
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None, context_str=None):
         if issubclass(type(obj), argg_hdl_base0) and issubclass(type(rhs), argg_hdl_base0):
-            if "unsigned" in rhs._type:
+            if "signed" in rhs._type:
                 rhs._add_output()
                 asOp = rhs.__hdl_converter__.get_assiment_op(rhs)
                 return str(rhs) + "(" + str(rhs) + "'range)" + asOp + str(obj) + "(" + str(rhs) + "'range)"
@@ -90,11 +102,11 @@ class v_signed_converter(v_symbol_converter):
         return hdl._vhdl__reasign(rhs, obj, astParser, context_str)
 
     def get_type_simple(self, obj: "v_symbol"):
-
+        ret = obj._type
         sp1 = int(ret.split("downto")[0].split("(")[1])
         sp2 = int(ret.split("downto")[1].split(")")[0])
         sp3 = sp1 - sp2 + 1
-        ret = "unsigned" + str(sp3)
+        ret = "signed" + str(sp3)
         return ret
 
     def _vhdl__getValue(self, obj: "v_symbol", ReturnToObj=None, astParser=None):

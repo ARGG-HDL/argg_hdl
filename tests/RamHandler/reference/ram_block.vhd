@@ -23,7 +23,7 @@ end entity;
 architecture rtl of ram_block is
 
 --------------------------ram_block-----------------
-  signal mem : slv32_a(10 - 1 downto 0)  := (others => (others => '0'));
+  signal mem : slv32_a(0 to 10 - 1)  := (others => (others => '0'));
 -------------------------- end ram_block-----------------
 
 begin

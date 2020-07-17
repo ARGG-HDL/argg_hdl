@@ -707,7 +707,9 @@ class v_call(v_ast_base):
         self.symbol  =  symbol
         
         self.__hdl_name__ =vhdl
-    
+        
+        self._type = symbol._type if hasattr(symbol, "_type") else None
+
     def __str__(self):
             return str(self.__hdl_name__) 
         
@@ -726,7 +728,18 @@ def body_unfold_call_local_func(astParser,Node):
     kwargs = {}
     for x in Node.keywords:
         kwargs[x.arg] = astParser.Unfold_body(x.value) 
-    return astParser.local_function[Node.func.id](*args,**kwargs)
+    
+    r = astParser.local_function[Node.func.id](*args,**kwargs)
+    start = ""
+    vhdl = str(Node.func.id) +"(" 
+    for x in args:
+        vhdl+= start + str(x)
+        start  =', '
+    
+    vhdl += ")"
+    
+    ret = v_call(str(Node.func.id),r, vhdl)
+    return ret
 
 
 def body_unfold_call(astParser,Node):
@@ -1163,10 +1176,34 @@ class v_UnaryOP(v_ast_base):
     def get_type(self):
         return "boolean"
 
+def body_unfol_Not(astParser,Node):
+    arg = astParser.Unfold_body(Node.operand)
+    arg = v_type_to_bool(astParser,arg)
+    #print_cnvt(arg)
 
+    return v_UnaryOP(arg, Node.op)
 
+class v_USubOP(v_ast_base):
+    def __init__(self,obj):
+        self.obj = obj
+        self._type = obj._type
+    
+    def __str__(self):
+
+        return  " -(" + str(self.obj) +")"
+
+def body_unfol_USub(astParser,Node):
+    arg = astParser.Unfold_body(Node.operand)
+    if issubclass(type(arg),argg_hdl_base) and arg._varSigConst==varSig.unnamed_const:
+        arg.nextValue = -arg.nextValue
+        arg.set_vhdl_name(str(arg.nextValue) , True)
+        return arg
+
+    return v_USubOP(arg)
 
 def body_UnaryOP(astParser,Node):
+    ftype = type(Node.op).__name__
+    return astParser._Unfold_body[ftype](astParser,Node)
     arg = astParser.Unfold_body(Node.operand)
     arg = v_type_to_bool(astParser,arg)
     #print_cnvt(arg)
@@ -1215,7 +1252,7 @@ class v_yield(v_ast_base):
     def __str__(self):
 
 
-        return   "wait for " + str(self.arg) 
+        return   "wait for " + str(self.arg.symbol) 
         
 def body_unfold_yield(astParser,Node):
     
@@ -1373,13 +1410,31 @@ class v_slice(v_ast_base):
         self.lower = lower
         self.upper = upper
         self.step  = step
+        self.reversed  =  False
+        self.sourceOBJ  =  None
+
+    def set_source(self,sourceOBJ):
+        self.sourceOBJ = sourceOBJ
 
     def __str__(self):
 
-        upper = str(self.upper) 
-        if upper.isnumeric():
-            upper = str(int(upper) - 1 )
-        return  upper +"  downto "+ str(self.lower) 
+        if self.upper is None:
+            upper = str(self.sourceOBJ.__hdl_converter__.length(self.sourceOBJ)) + " -1 " 
+        else:
+            upper = str(self.upper) 
+            if upper.lstrip('-').isnumeric():
+                upper = int(upper)
+                if upper < 0 :
+                    upper = str(self.sourceOBJ.__hdl_converter__.length(self.sourceOBJ)) + " - " + str( abs(upper - 1))
+                else:
+                    upper = str(int(upper) - 1 )
+            else:
+                upper += " - 1 "
+        
+        if self.reversed:
+            return str(self.lower) + " to "  + upper
+
+        return  upper  + "  downto  " + str(self.lower) 
 
 def body_unfold_slice(astParser,Node,keywords=None):
     lower = astParser.Unfold_body( Node.lower) if Node.lower else None

@@ -50,6 +50,19 @@ class v_slv_converter(v_symbol_converter):
                     asOp=asOp
                 )
 
+            if rhs.get_type() == 'signed':
+                return  """{dest} {asOp} std_logic_vector({src})""".format(
+                    dest=target,
+                    src = str(rhs),
+                    asOp=asOp
+                )
+
+            if rhs.get_type() == 'unsigned':
+                return  """{dest} {asOp} std_logic_vector({src})""".format(
+                    dest=target,
+                    src = str(rhs),
+                    asOp=asOp
+                )
             return target + asOp +  str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj,astParser=astParser)) 
         
         if  type(rhs).__name__=="v_Num":

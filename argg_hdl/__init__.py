@@ -70,6 +70,9 @@ v_bool = ah_symbol.v_bool
 v_sl = ah_symbol.v_sl
 v_slv = ah_symbol.v_slv
 v_int  = ah_symbol.v_int
+v_signed = ah_symbol.v_signed
+v_unsigned  = ah_symbol.v_unsigned
+resize  = ah_symbol.resize
 
 ## argg_hdl_v_list
 v_list = ah_list.v_list

@@ -266,6 +266,9 @@ def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
     if obj._type == "integer":
         val = '0'
     
+    if "signed" in obj._type:
+        val = "(others => '0')"
+    
     if val is None:
         raise Exception("unable to reset symbol")
     ret =  str(args[0])  + asOp + val

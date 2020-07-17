@@ -18,7 +18,7 @@ type small_buffer is record
     count : integer;
     count_old : integer;
     head : integer;
-    mem : slv32_a(10 - 1 downto 0);
+    mem : slv32_a(0 to 10 - 1 );
     tail : integer;
     tail_old : integer;
 end record;

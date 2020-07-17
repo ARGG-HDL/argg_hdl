@@ -18,10 +18,12 @@ class v_symbol(argg_hdl_base):
     __value_list__ = []
     
     def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base"):
+        self.primitive_type = primitive_type
         if isRunning():
             self.Bitwidth = Bitwidth
             self.nextValue  = get_value_or_default(value, DefaultValue)
             self._varSigConst= varSig.runtime_variable_t
+            
             return 
             
         super().__init__()
@@ -540,7 +542,7 @@ def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None
 
     v_type = ""
     if BitWidth is None:
-        v_type = "std_logic_vector"
+        v_type = "signed"
         BitWidth = 32
     elif type(BitWidth).__name__ == "int":
         v_type = "signed(" + str(BitWidth - 1) + " downto 0)"
@@ -572,7 +574,7 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
 
     v_type = ""
     if BitWidth is None:
-        v_type = "std_logic_vector"
+        v_type = "unsigned"
         BitWidth = 32
     elif type(BitWidth).__name__ == "int":
         v_type = "unsigned(" + str(BitWidth - 1) + " downto 0)"
@@ -589,4 +591,17 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
         primitive_type="unsigned"
+    )
+
+
+def resize(symbol : v_symbol, newSize:int):
+    return v_symbol(
+        v_type=symbol._type,
+        DefaultValue=symbol.DefaultValue,
+        value=value(symbol),
+        Inout=symbol._Inout,
+        includes=slv_includes,
+        varSigConst=symbol._varSigConst,
+        Bitwidth=int( value(newSize)),
+        primitive_type= symbol.primitive_type
     )
