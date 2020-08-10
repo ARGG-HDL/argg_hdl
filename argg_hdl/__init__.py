@@ -27,7 +27,7 @@ import argg_hdl.argg_hdl__primitive_converter_sl as hdl_converter_sl
 import argg_hdl.argg_hdl__primitive_converter_slv as hdl_converter_slv
 import argg_hdl.argg_hdl__primitive_converter_uinteger as hdl_converter_uinteger
 import argg_hdl.argg_hdl__primitive_converter_unsigned as hdl_converter_unsigned
-
+import argg_hdl.argg_hdl_v_free_function_template_converter as argg_hdl_v_free_function_template_converter
 
 
 ## argg_hdl_base

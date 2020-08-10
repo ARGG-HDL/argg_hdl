@@ -14,6 +14,8 @@ def v_symbol_reset():
     #v_symbol.__value_list__.clear()
     pass
 
+def get_value(symb):
+    return value(symb)
 class v_symbol(argg_hdl_base):
     __value_list__ = []
     
@@ -31,14 +33,14 @@ class v_symbol(argg_hdl_base):
             varSigConst = getDefaultVarSig()
 
 
-        self.Bitwidth = Bitwidth
-        self.BitMask = 2**Bitwidth -1
+        self.Bitwidth = get_value( Bitwidth)
+        self.BitMask = 2** get_value(Bitwidth) -1
 
         self.nextValue  = get_value_or_default(value, DefaultValue)
         self._varSigConst=varSigConst
 
 
-        self.__hdl_converter__= get_primitive_hdl_converter(primitive_type)(slv_includes)
+        self.__hdl_converter__= get_primitive_hdl_converter(get_value(primitive_type))(slv_includes)
         self._type = v_type
         self.DefaultValue = str(DefaultValue)
         self._Inout = Inout
@@ -594,14 +596,18 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
     )
 
 
+
+
+@hdl_export()
 def resize(symbol : v_symbol, newSize:int):
-    return v_symbol(
+    ret =  v_symbol(
         v_type=symbol._type,
         DefaultValue=symbol.DefaultValue,
-        value=value(symbol),
+        value=symbol,
         Inout=symbol._Inout,
-        includes=slv_includes,
-        varSigConst=symbol._varSigConst,
-        Bitwidth=int( value(newSize)),
+        Bitwidth=newSize,
         primitive_type= symbol.primitive_type
     )
+
+    ret << symbol
+    return ret

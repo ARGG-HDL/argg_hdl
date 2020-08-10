@@ -64,6 +64,10 @@ def Fill_AST_Tree(package,SourceFile):
         if x._issubclass_("v_class"):
             fun= package.astTree.extractFunctionsForClass(x ,package )
             x.__hdl_converter__.__ast_functions__ += fun
+
+        if x._issubclass_("v_free_function_template"):
+            fun= package.astTree.extractFreeFunctions(x ,package )
+            x.__hdl_converter__.__ast_functions__ += fun
     
 class v_package(argg_hdl_base):
     def __init__(self, PackageName,PackageContent, sourceFile=None):
@@ -127,3 +131,6 @@ class v_package(argg_hdl_base):
 
 
         return None
+
+    def append(self, obj):
+        self.PackageContent.append(obj)

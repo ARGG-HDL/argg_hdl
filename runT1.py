@@ -32,8 +32,8 @@ remove_old_files()
 #TX.TX_write_handler_tb_sim("tests/targetx_sim3",20000)
 #TX.TX_write_handler2vhdl("../vhdl_lecture/targetx2")
 
-fir_1.fir_basic_tb_sim("tests/fir_1_sim",20000)
-#fir_1.fir_basic_tb2vhdl("tests/fir_1")
+#fir_1.fir_basic_tb_sim("tests/fir_1_sim",20000)
+fir_1.fir_basic_tb2vhdl("../vhdl_lecture/fir_1")
 
 #TX.TXReadout_sim("tests/targetx_sim",20000)
 #test_axi_fifo.test_bench_axi_fifo_sim("tests/axi_fifo_sim")

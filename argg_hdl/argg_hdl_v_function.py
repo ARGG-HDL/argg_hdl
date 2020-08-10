@@ -3,7 +3,8 @@ import sys
 import inspect
  
 from argg_hdl.argg_hdl_base import *
-
+from argg_hdl.argg_hdl__primitive_type_converter  import get_primitive_hdl_converter
+#import argg_hdl.argg_hdl_v_Package as argg_pack
 
 class v_procedure_converter(hdl_converter_base):
     def __init__(self):
@@ -399,3 +400,23 @@ def is_element_of(obj, class_obj_list):
                 return True
 
     return False
+
+
+
+
+class v_free_function_template(argg_hdl_base):
+    def __init__(self,funcrec,FuncName):
+        super().__init__()
+        self.__hdl_converter__ = get_primitive_hdl_converter(v_free_function_template.__name__)()
+        self.funcrec = funcrec
+        self.FuncName = FuncName
+        self.__srcFilePath__ = self.funcrec.filename
+        
+    def get_type(self):
+        return type(self).__name__
+
+
+    def _issubclass_(self,test):
+        if super()._issubclass_(test):
+            return True
+        return "v_free_function_template" == test

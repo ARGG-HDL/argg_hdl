@@ -7,7 +7,7 @@ from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 from  argg_hdl.argg_hdl_base_helpers import *
 from  argg_hdl.argg_hdl_lib_enums import *
 from argg_hdl.argg_hdl_global_settings import *
-
+import  functools 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
 from typing import Sequence, TypeVar
@@ -20,6 +20,18 @@ def architecture(func):
 
 def end_architecture():
     add_symbols_to_entiy()
+
+def hdl_export(description=None):
+    funcrec = inspect.stack()
+    def decorator_hdl_export(func):
+
+        @functools.wraps(func)
+        def wrapper_hdl_export(*args, **kwargs):
+            return func(*args, **kwargs)
+        wrapper_hdl_export.funcrec = funcrec[1]
+        wrapper_hdl_export.description = description
+        return wrapper_hdl_export
+    return decorator_hdl_export
 
 
 def hdl_constructor(func):

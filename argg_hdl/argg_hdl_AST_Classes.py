@@ -10,7 +10,8 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_enum import * 
 from argg_hdl.argg_hdl_to_v_object import *
 from argg_hdl.argg_hdl_v_symbol  import *
-
+from argg_hdl.argg_hdl_v_function  import v_free_function_template
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
 def Node_line_col_2_str(astParser, Node):
     return  "Error in File: "+ astParser.sourceFileName+" line: "+str(Node.lineno) + ".\n"
@@ -59,6 +60,28 @@ def variable_port_in_to_vhdl(astParser,Node,Keywords=None):
 def variable_port_out_to_vhdl(astParser,Node,Keywords=None):
     return  variable_port_out(astParser.unfold_argList(Node[0]) )
 
+def v_symbol_to_vhdl(astParser,Node,Keywords=None):
+    args = list()
+    for x in Node:
+        x_obj = astParser.Unfold_body(x)
+        if type(x_obj).__name__ == "v_Num":
+            args.append(x_obj.value )
+        else:
+            args.append(x_obj)
+
+    kwargs = {}
+    if Keywords:
+        for x in Keywords:
+            if x.arg =='varSigConst':
+                temp = astParser.Unfold_body(x.value).Value 
+                temp._add_input()
+                kwargs[x.arg] = temp
+            else:
+                temp = astParser.Unfold_body(x.value) 
+                temp._add_input()
+                kwargs[x.arg] = temp
+
+    return v_symbol(*args,**kwargs)  
 
 
 def v_slv_to_vhdl(astParser,Node,Keywords=None):
@@ -396,7 +419,12 @@ def body_unfold_functionDef(astParser,Node):
         return body_unfold_architecture_body(astParser,Node)
 
 
-    decorator_l = astParser.Unfold_body(Node.decorator_list)
+    
+    if isDecoratorName(Node.decorator_list, "hdl_export" ):
+        decorator_l = []
+    else:
+        decorator_l = astParser.Unfold_body(Node.decorator_list)
+    
     localContext = astParser.Context
 
     ret = list()
@@ -422,9 +450,7 @@ class v_return (v_ast_base):
     def get_type(self):
         if self.value is None:
             return "None"
-        ty =  self.value.get_type()
-        if "std_logic_vector" in ty:
-            return "std_logic_vector"
+        ty = get_symbol(self.value).primitive_type
         return ty
 
 def body_unfold_return(astParser,Node):
@@ -521,7 +547,9 @@ def body_unfold_Attribute(astParser,Node):
     
 
     n = obj.__hdl_converter__._vhdl_get_attribute(obj,Node.attr)
-
+    if type(att).__name__ == "str":
+        att = to_v_object(att)
+        
     att.set_vhdl_name(n,True)
     att._add_used()
     
@@ -721,6 +749,7 @@ class v_call(v_ast_base):
 
 def body_unfold_call_local_func(astParser,Node):
 
+    FuncName = Node.func.id
     args = list()
     for x in Node.args:
         args.append(astParser.Unfold_body(x))
@@ -730,13 +759,17 @@ def body_unfold_call_local_func(astParser,Node):
         kwargs[x.arg] = astParser.Unfold_body(x.value) 
     
     r = astParser.local_function[Node.func.id](*args,**kwargs)
-    start = ""
-    vhdl = str(Node.func.id) +"(" 
-    for x in args:
-        vhdl+= start + str(x)
-        start  =', '
     
-    vhdl += ")"
+    f = astParser.local_function[Node.func.id]
+    if hasattr(f,"description") and f.description is None: 
+        f.description = v_free_function_template(f.funcrec,FuncName)
+        gHDL_objectList.append(f.description)
+        
+    vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
+    if vhdl is None:
+        astParser.Missing_template=True
+        vhdl = "$$missing Template$$"
+
     
     ret = v_call(str(Node.func.id),r, vhdl)
     return ret
@@ -886,12 +919,17 @@ class v_add(v_ast_base):
     def get_value(self):
         return value(self.lhs) + value(self.rhs)
 
+    def get_type(self):
+        return self._type
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
             return self.lhs.__hdl_converter__._vhdl__add(self.lhs, self.rhs)
 
         return str(self.lhs) + " + " +  str(self.rhs) 
+
+    def get_symbol(self):
+        return self.lhs
 
 def body_add(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)

@@ -46,6 +46,23 @@ def get_subclasses(astList,BaseNames):
                 yield astObj
 
 
+def getDecoratorName(decoratorAST):
+    if hasattr(decoratorAST,"id"):
+        return decoratorAST.id
+    
+    if hasattr(decoratorAST,"func"):
+        return decoratorAST.func.id
+    
+    raise Exception("name Not found")
+
+def get_function_with_decorater(astList,Decorator):
+    for astObj in astList:
+        if  type(astObj).__name__ == 'FunctionDef':
+            Decorators = [x  for x in astObj.decorator_list if getDecoratorName(x) in Decorator]
+            if Decorators:
+                yield astObj
+      
+
 dataType_ = list()
 def dataType(astParser=None, args=None):
     Name = None
@@ -167,6 +184,7 @@ class xgenAST:
             "v_sl"  : v_sl_to_vhdl,
             "v_int" : v_int_to_vhdl,
             "v_bool" : v_bool_to_vhdl,
+            "v_symbol" : v_symbol_to_vhdl,
             "dataType":dataType,
             "rising_edge" : handle_rising_edge,
             "print"       : handle_print,
@@ -219,6 +237,7 @@ class xgenAST:
         self.ast_v_classes = list(get_subclasses(self.tree.body,['v_class','v_class_master',"v_class_slave", "v_class_trans","v_record","v_data_record"]))
         self.ast_v_Entities = list(get_subclasses(self.tree.body,['v_entity']))
         self.ast_v_Entities.extend( list(get_subclasses(self.tree.body,['v_clk_entity'])))
+        self.free_functions =  list(get_function_with_decorater(self.tree.body,['hdl_export'])) 
     
     def AddStatementBefore(self,Statement):
         if self.Context is not None:
@@ -771,6 +790,212 @@ class xgenAST:
         
  
         return fun_ret
+    def getFreeFunctionByName(self,FreeFunctionName):
+        for x in self.free_functions:
+            if x.name == FreeFunctionName:
+                return x
+        raise Exception("Function not found: ", FreeFunctionName)
+
+    def extractFreeFunctions1(self, freeFunction ,package,Note ):        
+
+
+        Arglist = []
+        
+        Arglist += list(self.get_func_args_list(Note ,IsFreeFunction = True ))
+        exist = checkIfFunctionexists(freeFunction, freeFunction.FuncName , Arglist)
+        if  exist:
+            return
+
+        print_cnvt(str(gTemplateIndent) +'<request_new_template name="'+ str(freeFunction.FuncName)+'"/>' )
+        
+
+        freeFunction.__hdl_converter__.MemfunctionCalls.append(
+            memFunctionCall(
+            name= freeFunction.FuncName,
+            args= [x["symbol"] for x in   Arglist],
+            obj= freeFunction,
+            call_func = None,
+            func_args = None,
+            setDefault = True,
+            varSigIndependent = False
+        ))
+
+    def extractFreeFunctions2_impl(self, freeFunction ,package,Note, FuncArgs, temp ):
+            self.push_scope("function")
+            if hasMissingSymbol(FuncArgs):
+                return None
+            
+            self.reset_buffers()
+
+            ClassName  = type(freeFunction).__name__
+
+            self.parent = package
+            self.FuncArgs = FuncArgs
+            
+            
+            FuncArgsLocal = copy.copy(FuncArgs)
+            varSigSuffix = get_function_varSig_suffix(self.FuncArgs)
+            self.local_function = freeFunction.__init__.__globals__
+
+
+            dummy_DefaultVarSig = getDefaultVarSig()
+            setDefaultVarSig(varSig.variable_t)
+            try:
+                body = self.Unfold_body(Note)
+            except Exception as inst:
+                err_msg = argg_hdl_error(
+                    self.sourceFileName,
+                    funcDef.lineno, 
+                    funcDef.col_offset,
+                    ClassName, 
+                    "Function Name: " + funcDef.name  +", Unable to Unfold AST.  Error In extractFunctionsForClass_impl: body = self.Unfold_body(funcDef)"
+                )
+                setDefaultVarSig(dummy_DefaultVarSig)
+                raise Exception(err_msg,ClassInstance,inst)
+              
+
+            try:
+                bodystr= str(body)
+            except Exception as inst:
+                err_msg = argg_hdl_error(
+                    self.sourceFileName,
+                    funcDef.lineno, 
+                    funcDef.col_offset,
+                    ClassName, 
+                    "Function Name: " + funcDef.name  +", Unable to Convert AST to String, Error In extractFunctionsForClass_impl: bodystr= str(body)"
+                )
+                setDefaultVarSig(dummy_DefaultVarSig)
+                raise Exception(err_msg,ClassInstance,inst)
+            setDefaultVarSig(dummy_DefaultVarSig)
+            #print_cnvt("----------" , funcDef.name)
+            argList = [x["symbol"].__hdl_converter__.to_arglist(
+                    x["symbol"], 
+                    x['name'],
+                    ClassName, 
+                    withDefault = True,
+                    astParser=self
+                ) 
+                for x in FuncArgsLocal]
+            ArglistProcedure = join_str(argList,Delimeter="; ")
+            
+
+         
+            actual_function_name = freeFunction.__hdl_converter__.function_name_modifier(freeFunction, freeFunction.FuncName, varSigSuffix)
+
+            #print(actual_function_name, body.get_type(), type(body.get_type()).__name__)
+            if body.get_type() is not None:
+                ArglistProcedure = ArglistProcedure.replace(" in "," ").replace(" out "," ").replace(" inout "," ")
+                ret = v_function(
+                    name=actual_function_name, 
+                    body=bodystr,
+                    VariableList=self.get_local_var_def(), 
+                    returnType=body.get_type(),
+                    argumentList=ArglistProcedure,
+                    isFreeFunction=True
+                )
+                ##MemFunction_template.varSigIndependent = True
+            else:
+                ret = v_procedure(
+                    name=actual_function_name,
+                    body=bodystr,
+                    VariableList=self.get_local_var_def(), 
+                    argumentList=ArglistProcedure,
+                    isFreeFunction=True
+                )
+            self.pop_scope()
+            return ret
+    
+    def extractFreeFunctions2(self, freeFunction ,package,Note ):        
+        fun_ret = []
+        for temp in freeFunction.__hdl_converter__.MemfunctionCalls:
+            if temp.call_func is not None:
+                continue
+                
+              
+            newArglist  = self.get_arglistlocal_extractFreeFunctions2(freeFunction, Note ,package,temp)
+            
+
+            if newArglist is None:
+                continue 
+            
+            ArglistLocal_length = len(newArglist)
+            self.Missing_template = False
+            ret = self.extractFreeFunctions2_impl(
+                freeFunction, 
+                package, 
+                Note, 
+                newArglist , 
+                temp 
+            )
+            
+            if self.Missing_template:
+                ClassInstance.__hdl_converter__.MissingTemplate = True
+                continue
+            
+            temp.call_func = call_func
+            temp.func_args = newArglist[0: ArglistLocal_length] #deepcopy
+            
+            if ret:
+                fun_ret.append( ret )
+        
+        return fun_ret
+
+    def get_arglistlocal_extractFreeFunctions2(self,freeFunction, cl_body ,parent,temp):
+        ArglistLocal = []
+
+
+  
+                
+        ArglistLocal += list(self.get_func_args_list(cl_body ,IsFreeFunction =True ))
+        newArglist = GetNewArgList(
+           freeFunction.FuncName, 
+            ArglistLocal, 
+            temp
+        )
+        return newArglist
+
+    def extractFreeFunctions(self, freeFunction ,package ):        
+        fun_ret = []
+        primary = hdl.get_primary_object(freeFunction)
+        freeFunction.__hdl_converter__ = primary.__hdl_converter__
+        freeFunction.__hdl_converter__.MissingTemplate = False
+
+        try:
+            print_cnvt(str(gTemplateIndent) +'<processing name="'  + freeFunction.FuncName +'" MemfunctionCalls="' +str(len(freeFunction.__hdl_converter__.MemfunctionCalls)) +'">')
+            gTemplateIndent.inc()
+            #print(type(ClassInstance).__name__)
+            self.extractFreeFunctions1(freeFunction,package,self.getFreeFunctionByName(freeFunction.FuncName))
+
+        except Exception as inst:
+            err_msg = argg_hdl_error(
+                self.sourceFileName,
+                cl.lineno, 
+                cl.col_offset,
+                ClassName, 
+                "error while processing templates"
+            )
+            raise Exception(err_msg,ClassInstance,inst)
+        finally:
+            gTemplateIndent.deinc()
+            print_cnvt(str(gTemplateIndent)+'</processing>')   
+
+  
+        try:
+            #print(type(ClassInstance).__name__)
+            fun_ret += self.extractFreeFunctions2( freeFunction,package,self.getFreeFunctionByName(freeFunction.FuncName))
+        except Exception as inst:
+            err_msg = argg_hdl_error(
+                self.sourceFileName,
+                cl.lineno, 
+                cl.col_offset,
+                ClassName, 
+                "error while creating function from template"
+            )
+            raise Exception(err_msg,ClassInstance,inst)
+
+        fun_ret.append( self.getFreeFunctionByName(freeFunction.FuncName))
+        return fun_ret
+
 
     def Unfold_body(self,FuncDef):
         try:
@@ -836,22 +1061,30 @@ class xgenAST:
 
 
 
-    def get_func_args(self, funcDef):
+    def get_func_args(self, funcDef,IsFreeFunction = False ):
         
+        startPoint = 1
+        if IsFreeFunction:
+            startPoint = 0
+
         ret =[]
-        for i in range(len(funcDef.args.args),1,-1):
-            if len(funcDef.args.defaults ) >= i-2 +1:
-                default = funcDef.args.defaults[i-2]
+        funcDef.args.args.reverse()
+        funcDef.args.defaults.reverse()
+        for i in range(startPoint, len(funcDef.args.args)):
+            if len(funcDef.args.defaults ) > i:
+                default = funcDef.args.defaults[i]
             else:
                 default = None
-            ret.append((funcDef.args.args[i-1].arg,default))
+            ret.append((funcDef.args.args[i].arg,default))
         ret.reverse()
+        funcDef.args.args.reverse()
+        funcDef.args.defaults.reverse()
         return ret
 
-    def get_func_args_list(self, funcDef):
+    def get_func_args_list(self, funcDef, IsFreeFunction = False):
         ret =[]
     
-        for args in self.get_func_args(funcDef): 
+        for args in self.get_func_args(funcDef,IsFreeFunction): 
             inArg = None
             if args[1] is not None:
                 inArg = self.unfold_argList(args[1])
@@ -882,7 +1115,7 @@ def call_func(obj, name, args, astParser=None,func_args=None):
     for arg,func_arg  in zip(args,func_args ):
         ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
         for y in ys:
-            line = func_arg["name"] + y["suffix"]+ " => " + str(arg.__hdl_name__) + y["suffix"]
+            line = func_arg["name"] + y["suffix"]+ " => " + str(arg) + y["suffix"]
             ret.append(line)
             if y["symbol"]._varSigConst ==varSig.signal_t:
                 members = y["symbol"].getMember()

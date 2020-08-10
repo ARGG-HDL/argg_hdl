@@ -123,7 +123,7 @@ def get_get_call_member_function(obj, name, args):
     return obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
 
 def _vhdl__call_member_func(obj, name, args, astParser=None):
-    return obj.__hdl_converter__._vhdl__call_member_func(obj, name, args, astParser)
+    return obj.__hdl_converter__._vhdl__call_member_func( obj = obj, name=name, args=args, astParser=astParser)
 
 def _vhdl__DefineSymbol(obj, VarSymb="variable"):
     return obj.__hdl_converter__._vhdl__DefineSymbol(obj, VarSymb)
@@ -188,3 +188,5 @@ def Has_pushpull_function(obj, pushpull):
 
 def get_free_symbols(obj,parent_list=[]):
     return obj.__hdl_converter__.get_free_symbols(obj,parent_list)
+
+

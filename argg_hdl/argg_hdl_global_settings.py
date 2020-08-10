@@ -7,8 +7,9 @@ gStatus = {
     "OutputFile"          : None,
     "isFunction"          : False,
     "sort_archetecture"   : False,
-    "isRunning"           : False
-}
+    "isRunning"           : False,
+    'Output_HDL'          : "VHDL"
+} 
 
 def isFunction():
     return gStatus["isFunction"]
@@ -55,3 +56,10 @@ def isRunning():
 
 def set_isRunning(newState):
     gStatus["isRunning"]  = newState
+
+def Output_HDL():
+    return gStatus["Output_HDL"]
+
+
+def set_Output_HDL(newTarget):
+    gStatus["Output_HDL"] = newTarget
