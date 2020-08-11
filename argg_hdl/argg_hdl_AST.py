@@ -1063,14 +1063,14 @@ class xgenAST:
 
     def get_func_args(self, funcDef,IsFreeFunction = False ):
         
-        startPoint = 1
+        endPoint = 1
         if IsFreeFunction:
-            startPoint = 0
+            endPoint = 0
 
         ret =[]
         funcDef.args.args.reverse()
         funcDef.args.defaults.reverse()
-        for i in range(startPoint, len(funcDef.args.args)):
+        for i in range(0, len(funcDef.args.args)- endPoint):
             if len(funcDef.args.defaults ) > i:
                 default = funcDef.args.defaults[i]
             else:

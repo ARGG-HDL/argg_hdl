@@ -450,7 +450,11 @@ class v_return (v_ast_base):
     def get_type(self):
         if self.value is None:
             return "None"
-        ty = get_symbol(self.value).primitive_type
+        ty = get_symbol(self.value)
+        if ty is not None and type(ty).__name__ != "str" and ty.primitive_type != "base":
+            return ty.primitive_type
+
+        ty = get_type(self.value)
         return ty
 
 def body_unfold_return(astParser,Node):
@@ -765,7 +769,17 @@ def body_unfold_call_local_func(astParser,Node):
         f.description = v_free_function_template(f.funcrec,FuncName)
         gHDL_objectList.append(f.description)
         
-    vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
+        vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
+
+    else:
+        start = ""
+        vhdl = str(Node.func.id) +"(" 
+        for x in args:
+            vhdl+= start + str(x)
+            start  =', '
+        
+        vhdl += ")"
+
     if vhdl is None:
         astParser.Missing_template=True
         vhdl = "$$missing Template$$"
@@ -1211,6 +1225,8 @@ class v_UnaryOP(v_ast_base):
 
         return   op +  " ( " + str(self.obj) +" ) " 
 
+    def get_symbol(self):
+        return self.obj
     def get_type(self):
         return "boolean"
 

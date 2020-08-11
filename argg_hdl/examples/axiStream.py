@@ -144,7 +144,7 @@ class axisStream_slave(v_class_slave):
         
         
         
-    def observe_data(self, dataOut):
+    def observe_data(self, dataOut = variable_port_out(dataType())):
         if self.data_internal_isvalid2:
             dataOut << self.data_internal2
     
