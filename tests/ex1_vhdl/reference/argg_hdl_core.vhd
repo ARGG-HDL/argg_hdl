@@ -12,6 +12,8 @@ package argg_hdl_core is
     procedure pull(self : inout std_logic ; signal data : in std_logic) ;
     procedure push(self : inout std_logic_vector ; signal data : out std_logic_vector) ;
     procedure pull(self : inout std_logic_vector ; signal data  : in std_logic_vector) ;
+
+    function ah_min(lhs : integer; rhs : integer) return integer;
 end argg_hdl_core;
 
 
@@ -35,4 +37,16 @@ package body argg_hdl_core is
     begin 
         self := data;
     end procedure;
+    
+    function ah_min(lhs : integer; rhs : integer) return integer is
+
+    begin 
+
+        if (lhs < rhs) then 
+            return lhs;
+        end if;
+
+        return rhs;
+
+    end function;
 end argg_hdl_core;
