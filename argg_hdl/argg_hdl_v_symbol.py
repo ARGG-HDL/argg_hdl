@@ -22,7 +22,7 @@ class v_symbol(argg_hdl_base):
     def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base"):
         self.primitive_type = primitive_type
         if isRunning():
-            self.Bitwidth = Bitwidth
+            self.Bitwidth = get_value( Bitwidth)
             self.nextValue  = get_value_or_default(value, DefaultValue)
             self._varSigConst= varSig.runtime_variable_t
             
@@ -32,7 +32,7 @@ class v_symbol(argg_hdl_base):
         if not varSigConst:
             varSigConst = getDefaultVarSig()
 
-
+        self.Bitwidth_raw = Bitwidth
         self.Bitwidth = get_value( Bitwidth)
         self.BitMask = 2** get_value(Bitwidth) -1
 
@@ -42,7 +42,7 @@ class v_symbol(argg_hdl_base):
 
         self.__hdl_converter__= get_primitive_hdl_converter(get_value(primitive_type))(slv_includes)
         self._type = v_type
-        self.DefaultValue = str(DefaultValue)
+        self.DefaultValue = DefaultValue
         self._Inout = Inout
         self.__isFreeType__ = False
         
@@ -602,12 +602,12 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
 def resize(symbol : v_symbol, newSize:int):
     ret =  v_symbol(
         v_type=symbol._type,
-        DefaultValue=symbol.DefaultValue,
+        DefaultValue=0,
         value=symbol,
         Inout=symbol._Inout,
         Bitwidth=newSize,
         primitive_type= symbol.primitive_type
     )
 
-    ret << symbol
+    symbol >> ret 
     return ret

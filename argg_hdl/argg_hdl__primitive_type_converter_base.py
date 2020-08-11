@@ -127,17 +127,20 @@ class v_symbol_converter(hdl_converter_base):
         ret.set_vhdl_name(str(obj)+ " & " +str(rhs) ,True)
         return ret
 
+
     def _vhdl__DefineSymbol(self,obj:"v_symbol", VarSymb=None):
         print_cnvt("_vhdl__DefineSymbol is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 
-        if  obj.__Driver__ is not None and str(obj.__Driver__ ) != 'process':
+        if  obj.__Driver__ is not None and str(obj.__Driver__ ) != 'process' and str(obj.__Driver__ ) != 'function':
             return ""
         name = obj.__hdl_name__
 
+        ty = str(value(obj.primitive_type)) + "("+str(obj.Bitwidth_raw) +" - 1 downto 0)"
+        default_value = self.get_default_value(obj)
 
-        return  VarSymb+ " " + str(name) + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
+        return  VarSymb+ " " + str(name) + " : " + ty +" := " +  default_value  + "; \n"
     def get_architecture_header(self, obj):
 
         if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
@@ -152,8 +155,8 @@ class v_symbol_converter(hdl_converter_base):
         #if  obj.__Driver__ != None and str(obj.__Driver__ ) != 'process':
         #    return ""
         name = obj.__hdl_name__
-
-        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " +  str(obj.DefaultValue)  + "; \n"   
+        default_value = self.get_default_value(obj)
+        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " + default_value + "; \n"   
         return  ret
 
     def get_port_list(self,obj:"v_symbol"):
@@ -234,7 +237,7 @@ class v_symbol_converter(hdl_converter_base):
             inoutstr = ""
         default_str = ""
         if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
-            default_str =  " := " + obj.__hdl_converter__.get_default_value(obj)
+            default_str =  " := " + str(obj.__hdl_converter__.get_default_value(obj))
 
         return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
     

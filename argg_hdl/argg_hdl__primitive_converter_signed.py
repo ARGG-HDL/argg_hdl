@@ -33,7 +33,7 @@ class v_signed_converter(v_symbol_converter):
                 context_str and (context_str == "archetecture" or context_str == "process")):
             target = target.replace(".", "_")
 
-        if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process':
+        if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process' and str(obj.__Driver__) != 'function':
             obj.__Driver__ = rhs
 
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
@@ -94,10 +94,11 @@ class v_signed_converter(v_symbol_converter):
 
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None, context_str=None):
         if issubclass(type(obj), argg_hdl_base0) and issubclass(type(rhs), argg_hdl_base0):
-            if "signed" in rhs._type:
+            if "signed" in str(value(rhs._type)):
                 rhs._add_output()
                 asOp = rhs.__hdl_converter__.get_assiment_op(rhs)
-                return str(rhs) + "(" + str(rhs) + "'range)" + asOp + str(obj) + "(" + str(rhs) + "'range)"
+                top = "ah_min(" + str(rhs) + "'length, "+str(obj) + "'length)"
+                return str(rhs) + "( " +top +" downto 0)" + asOp + str(obj) + "( " +top +" downto 0)"
 
         return hdl._vhdl__reasign(rhs, obj, astParser, context_str)
 
@@ -125,5 +126,25 @@ class v_signed_converter(v_symbol_converter):
     def get_type_func_arg(self, obj: "v_symbol"):
         return "std_logic_vector"
 
+    def get_default_value(self,obj:"v_symbol"):
+        if str(obj.DefaultValue) == '0':
+            Default = "(others => '0')"
+            return Default
+
+        
+        if type(obj.DefaultValue).__name__ == "int":
+            Default = """to_signed({src}, {BitWidth})""".format(
+                src=obj.DefaultValue,
+                BitWidth=obj.BitWidth
+            )
+            return Default
+
+        if issubclass(type(obj.DefaultValue), argg_hdl_base0) and get_type(obj.DefaultValue):
+            default1 = "to_signed("+ str(obj.DefaultValue)   + ", "+str(obj.Bitwidth_raw) +")"
+            return default1
+            
+
+
+        return obj.DefaultValue
 
 add_primitive_hdl_converter(v_signed_converter.primitive_type, v_signed_converter)

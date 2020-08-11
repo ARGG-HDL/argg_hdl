@@ -120,7 +120,7 @@ class v_function_converter(hdl_converter_base):
         ret = '''  function {functionName} ({argumentList}) return {returnType};\n'''.format(
                 functionName=name,
                 argumentList=argumentList,
-                returnType=obj.returnType
+                returnType=value(obj.returnType)
 
         )
         return ret
@@ -142,7 +142,7 @@ class v_function_converter(hdl_converter_base):
                 argumentList=argumentList,
                 body = obj.body,
                 VariableList=obj.VariableList,
-                returnType=obj.returnType
+                returnType=value(obj.returnType)
 
         )
         return ret

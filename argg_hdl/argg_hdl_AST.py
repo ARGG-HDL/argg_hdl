@@ -816,7 +816,7 @@ class xgenAST:
             obj= freeFunction,
             call_func = None,
             func_args = None,
-            setDefault = True,
+            setDefault = False,
             varSigIndependent = False
         ))
 
@@ -993,7 +993,7 @@ class xgenAST:
             )
             raise Exception(err_msg,ClassInstance,inst)
 
-        fun_ret.append( self.getFreeFunctionByName(freeFunction.FuncName))
+
         return fun_ret
 
 
