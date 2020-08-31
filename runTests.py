@@ -17,6 +17,8 @@ import argg_hdl.tests.Native_fifo as Native_fifo
 import argg_hdl.tests.EnumTest as EnumTest
 import argg_hdl.tests.slice_testing as slice_testing
 import argg_hdl.tests.data_record as dr 
+import  argg_hdl.tests.fir_1 as fir_1
+
 
 class TestCoreExamples(unittest.TestCase):
 
@@ -102,7 +104,14 @@ class TestCoreExamples(unittest.TestCase):
         result, message = dr.data_record_tb_sim("tests/data_record_tb_sim/") 
         self.assertTrue(result,message)        
 
-     
+    def test_fir_basic_tb2vhdl(self):
+        result, message =  fir_1.fir_basic_tb2vhdl("tests/fir_1")
+        self.assertTrue(result,message)        
+    
+    def test_fir_basic_tbsim(self):    
+        result, message = fir_1.fir_basic_tb_sim("tests/fir_1_sim",20000)
+        self.assertTrue(result,message)        
+
 if __name__ == '__main__':
     remove_old_files()
     unittest.main() 

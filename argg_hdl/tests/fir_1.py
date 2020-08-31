@@ -106,8 +106,9 @@ class fir_basic_tb(v_entity):
         def proc():
             cnt << cnt +1
 
-            fir1.i_data<<  int(math.sin( value(cnt) /10) *100)
-
+            fir1.i_data <<  int(math.sin( value(cnt) /10) *100)
+            
+            printf( str(value(fir1.i_data)) + "; " + str(value(fir1.o_data)) + "\n")
         
         end_architecture()
 
