@@ -6,12 +6,72 @@ from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_conve
 from argg_hdl.argg_hdl_v_symbol import *
 
 
+
+class v_symbol_type_alias:
+    def __init__(self, obj,alias):
+        self.obj = obj
+        self.alias = alias
+
+
 class v_symbol_converter(hdl_converter_base):
 
+    defined_types = []
     primitive_type = "base"
+
+    def add_alias(self,obj,alias_name):
+        self.defined_types.append(v_symbol_type_alias(obj , alias_name))
+        self.AliasType = alias_name
+
     def __init__(self,inc_str):
         super().__init__()
         self.inc_str  = inc_str
+        self.AliasType = None
+
+    
+    def get_packet_file_name(self, obj):
+        return "v_symbol_pack.vhd"
+
+    def get_packet_file_content(self, obj):
+        
+        includes = ""
+        header = "" 
+        body = ""
+        aliases = []
+        for x in self.defined_types:
+            if x.alias is None:
+                continue
+            if x.alias in aliases:
+                continue
+            
+            aliases.append(x.alias)
+
+            
+            subtype_def       = "    subtype " +x.alias  + " is " + x.obj._type +";\n"
+            null_const        = "    constant " + x.alias+"_null : " + x.alias +" := " +x.obj.DefaultValue +";\n"
+            array_of_subtype  = "    type "+x.alias+"_a is array (natural range <>) of " + x.alias + ";\n"
+            func_declaration  = "    function to_"+x.alias+"(Data : Integer) return " + x.alias+";\n"
+            func_definition   = """
+    function to_{alias}(Data : Integer) return  {alias} is 
+    variable ret : {alias};
+    begin;
+        ret := to_{base_type}(Data , {alias}'length)
+        return ret;
+    end function;     
+
+            """.format(
+                alias = x.alias,
+                base_type =x.obj.primitive_type 
+            )
+
+            header += subtype_def +null_const +array_of_subtype+ func_declaration +"\n\n"
+            body += func_definition 
+            includes += hdl.includes(obj,"", None)
+
+
+        includes = make_unique_includes(includes, "v_symbol_pack")
+
+        ret = includes+ "\n\n\npackage v_symbol_pack is \n\n " + header  +   "\n\nend package;\n\npackage body v_symbol_pack is\n\n" + body +"\nend package body;\n"
+        return ret
 
     def get_dependency_objects(self, obj, depList):
         return obj

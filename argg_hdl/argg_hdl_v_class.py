@@ -12,7 +12,7 @@ import  argg_hdl.vhdl_v_class_helpers as  vc_helper
 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
-
+from  argg_hdl.argg_hdl_object_name_maker import  make_object_name
 
 
 class v_class_converter(hdl_converter_base):
@@ -21,6 +21,7 @@ class v_class_converter(hdl_converter_base):
         self.__ast_functions__ =list()
         self.archetecture_list = []
         self.functionNameVetoList= []
+        self.extractedTypes = []
 
     def includes(self,obj, name,parent):
         ret = ""
@@ -132,7 +133,7 @@ class v_class_converter(hdl_converter_base):
         
 
     def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
-        TypeName = obj.getType()
+        TypeName = hdl.get_type_simple(obj)
         member = obj.getMember()
 
         defaults  = obj.__hdl_converter__.get_init_values(
@@ -158,7 +159,7 @@ class v_class_converter(hdl_converter_base):
         
 
     def getHeader_make_record(self,obj, name, parent=None, InOut_Filter=None, VaribleSignalFilter = None):
-        TypeName = obj.getType()
+        TypeName = hdl.get_type_simple(obj)
         member = obj.getMember()
         start= "\ntype "+TypeName+" is record \n"
         end=  """end record;
@@ -553,7 +554,15 @@ class v_class_converter(hdl_converter_base):
         return obj._type + "_sig"
 
     def get_type_simple(self,obj):
-        return obj._type
+
+        objTypeName = obj._type
+        MemberTypeNames = []
+
+        for x in obj.getMember():
+            MemberTypeNames.append(hdl.get_type_simple(x["symbol"]))
+
+        ret = make_object_name(objTypeName,MemberTypeNames)
+        return ret 
 
 
 

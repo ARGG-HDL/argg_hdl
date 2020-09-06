@@ -220,6 +220,9 @@ gTemplateIndent = indent()
 
 
 
+
+
+
 gHDL_objectList = []
 gHDL_objectList_primary = []
 
@@ -307,6 +310,9 @@ class hdl_converter_base:
     }
 
     get_dependency_objects_index = 0
+
+    
+
     def __init__(self):
         self.MemfunctionCalls=[]
         self.IsConverted = False

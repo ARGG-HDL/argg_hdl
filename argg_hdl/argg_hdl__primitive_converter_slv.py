@@ -109,12 +109,12 @@ class v_slv_converter(v_symbol_converter):
         return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
 
     def get_type_simple(self,obj:"v_symbol"):
-        ret = obj._type
-        sp1 = int(ret.split("downto")[0].split("(")[1])
-        sp2 = int(ret.split("downto")[1].split(")")[0])
-        sp3 = sp1 -sp2 +1
-        ret  = "slv"+str(sp3)
-        return ret
+        if not self.AliasType:
+            return  obj._type
+
+        return self.AliasType
+        
+        
 
     def _vhdl__getValue(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
         if astParser:

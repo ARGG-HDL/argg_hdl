@@ -19,7 +19,7 @@ def get_value(symb):
 class v_symbol(argg_hdl_base):
     __value_list__ = []
     
-    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base"):
+    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base",Alias=None):
         self.primitive_type = primitive_type
         if isRunning():
             self.Bitwidth = get_value( Bitwidth)
@@ -41,7 +41,9 @@ class v_symbol(argg_hdl_base):
 
 
         self.__hdl_converter__= get_primitive_hdl_converter(get_value(primitive_type))(slv_includes)
+        self.__hdl_converter__.add_alias(self,Alias)
         self._type = v_type
+        
         self.DefaultValue = DefaultValue
         self._Inout = Inout
         self.__isFreeType__ = False
@@ -432,6 +434,7 @@ library work;
   use IEEE.std_logic_1164.all;
   use ieee.std_logic_unsigned.all;
   use work.argg_hdl_core.all;
+  use work.v_symbol_pack.all;
 """
 
 
@@ -472,7 +475,7 @@ def v_sl(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
 def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
 
 
-    
+    alias = None
     value = Default
     if str(Default) == '0':
         Default = "(others => '0')"
@@ -489,6 +492,7 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         BitWidth=32  
     elif type(BitWidth).__name__ == "int":
         v_type="std_logic_vector(" + str(BitWidth -1 ) + " downto 0)"
+        alias = "slv"+str(BitWidth)
     else: 
         v_type = "std_logic_vector(" + str(BitWidth ) + " -1 downto 0)"
         BitWidth=32
@@ -501,7 +505,8 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         includes=slv_includes,
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
-        primitive_type ="std_logic_vector"
+        primitive_type ="std_logic_vector",
+        Alias = alias
     )
 
 def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
@@ -533,6 +538,7 @@ def v_uint(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
 
 def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
     value = Default
+    alias = None
     if str(Default) == '0':
         Default = "(others => '0')"
 
@@ -548,6 +554,7 @@ def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None
         BitWidth = 32
     elif type(BitWidth).__name__ == "int":
         v_type = "signed(" + str(BitWidth - 1) + " downto 0)"
+        alias = "signed" + str(BitWidth)
     else:
         v_type = "signed(" + str(BitWidth) + " -1 downto 0)"
         BitWidth = 32
@@ -560,11 +567,13 @@ def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None
         includes=slv_includes,
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
-        primitive_type="signed"
+        primitive_type="signed",
+        Alias = alias
     )
 
 def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
     value = Default
+    alias = None
     if str(Default) == '0':
         Default = "(others => '0')"
 
@@ -580,6 +589,7 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
         BitWidth = 32
     elif type(BitWidth).__name__ == "int":
         v_type = "unsigned(" + str(BitWidth - 1) + " downto 0)"
+        alias = "unsigned" + str(BitWidth)
     else:
         v_type = "unsigned(" + str(BitWidth) + " -1 downto 0)"
         BitWidth = 32
@@ -592,7 +602,8 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
         includes=slv_includes,
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
-        primitive_type="unsigned"
+        primitive_type="unsigned",
+        Alias = alias
     )
 
 
