@@ -26,14 +26,14 @@ class objectName:
     def get_Name(self):
         candidats = [ x for x in self.objectNameList if x == self]
         if candidats:
-            print("reuse Name for "+ str(self) + "  -->  " +candidats[0].HDL_objectName )
+        #    print("reuse Name for "+ str(self) + "  -->  " +candidats[0].HDL_objectName )
             return candidats[0].HDL_objectName
 
         sameTypeNameCandidates = [ x for x in self.objectNameList if x.objTypeName == self.objTypeName]
 
         self.HDL_objectName = self.objTypeName + str(len(self.objectNameList)) if len(sameTypeNameCandidates) > 0 else self.objTypeName
         self.objectNameList.append(self)
-        print("New Name for ", str(self))
+        #print("New Name for ", str(self))
         return self.HDL_objectName
 
 

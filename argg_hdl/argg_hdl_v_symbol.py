@@ -8,7 +8,7 @@ from argg_hdl.argg_hdl_simulation import *
 
 from argg_hdl.argg_hdl_slice_base import v_slice_base, slice_helper
 from argg_hdl.argg_hdl__primitive_type_converter  import get_primitive_hdl_converter
-
+from argg_hdl.argg_hdl_object_factory import add_constructor
 
 def v_symbol_reset():
     #v_symbol.__value_list__.clear()
@@ -19,7 +19,7 @@ def get_value(symb):
 class v_symbol(argg_hdl_base):
     __value_list__ = []
     
-    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base",Alias=None):
+    def __init__(self, v_type, DefaultValue, Inout = InOut_t.Internal_t,includes="",value=None,varSigConst=varSig.variable_t, Bitwidth=32, primitive_type = "base",Alias=None,UseDefaultCtr=True):
         self.primitive_type = primitive_type
         if isRunning():
             self.Bitwidth = get_value( Bitwidth)
@@ -43,6 +43,7 @@ class v_symbol(argg_hdl_base):
         self.__hdl_converter__= get_primitive_hdl_converter(get_value(primitive_type))(slv_includes)
         self.__hdl_converter__.add_alias(self,Alias)
         self._type = v_type
+        self.__abstract_type_info__.UseDefaultCtr = UseDefaultCtr
         
         self.DefaultValue = DefaultValue
         self._Inout = Inout
@@ -71,7 +72,6 @@ class v_symbol(argg_hdl_base):
         self.__vcd_writer__ = None
         self.__UpdateFlag__ = False
         self._Simulation_name = "NotSet"
-
 
 
 
@@ -472,8 +472,11 @@ def v_sl(Inout=InOut_t.Internal_t,Default=0,varSigConst=None):
         primitive_type ="std_logic"
     )
 
-def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
-
+def v_slv(BitWidth=None,Default=None, Inout=InOut_t.Internal_t,varSigConst=None):
+    UseDefaultCtr = False
+    if Default is None:
+        Default =  0
+        UseDefaultCtr = True
 
     alias = None
     value = Default
@@ -506,7 +509,8 @@ def v_slv(BitWidth=None,Default=0, Inout=InOut_t.Internal_t,varSigConst=None):
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
         primitive_type ="std_logic_vector",
-        Alias = alias
+        Alias = alias,
+        UseDefaultCtr=UseDefaultCtr
     )
 
 def v_int(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
@@ -536,7 +540,13 @@ def v_uint(Default=0, Inout=InOut_t.Internal_t, varSigConst=None,Bitwidth=32):
     )
 
 
-def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
+def v_signed(BitWidth=None,Default=None, Inout=InOut_t.Internal_t, varSigConst=None):
+    UseDefaultCtr = False
+    if Default is None:
+        Default =  0
+        UseDefaultCtr = True
+
+
     value = Default
     alias = None
     if str(Default) == '0':
@@ -568,10 +578,16 @@ def v_signed(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
         primitive_type="signed",
-        Alias = alias
+        Alias = alias,
+        UseDefaultCtr=UseDefaultCtr
     )
 
-def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=None):
+def v_unsigned(BitWidth=None,Default=None, Inout=InOut_t.Internal_t, varSigConst=None):
+    UseDefaultCtr = False
+    if Default is None:
+        Default =  0
+        UseDefaultCtr = True
+    
     value = Default
     alias = None
     if str(Default) == '0':
@@ -603,7 +619,9 @@ def v_unsigned(BitWidth=None,Default=0, Inout=InOut_t.Internal_t, varSigConst=No
         varSigConst=varSigConst,
         Bitwidth=int(BitWidth),
         primitive_type="unsigned",
-        Alias = alias
+        Alias = alias,
+        UseDefaultCtr=UseDefaultCtr
+
     )
 
 
@@ -622,3 +640,5 @@ def resize(symbol : v_symbol, newSize:int):
 
     symbol >> ret 
     return ret
+
+add_constructor("v_symbol",v_symbol)

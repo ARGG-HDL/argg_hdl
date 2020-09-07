@@ -1,6 +1,11 @@
-from argg_hdl.argg_hdl_base import v_classType_t,varSig,InOut_t,join_str,argg_hdl_base,InoutFlip
+from argg_hdl.argg_hdl_base import v_classType_t,varSig,InOut_t,join_str,argg_hdl_base,InoutFlip, v_copy
 
 import argg_hdl.argg_hdl_v_function as ah_func
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
+
+from argg_hdl.argg_hdl_object_factory import get_Constructor
+#from argg_hdl.tests.ex4 import memo
+
 
 def _get_connector(symb):
     if symb._Inout == InOut_t.Master_t:
@@ -140,12 +145,12 @@ class getHeader():
 
     def From_Conversion_types(self):
         ret = ""
-        ts = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
-        for t in ts:
+        #ts = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
+        for t in self.obj.__hdl_converter__.extractedTypes:
             ret +=  self.obj.__hdl_converter__.getHeader_make_record(
                 t["symbol"],
                 self.name,
-                self.parent,
+                self.obj,
                 t["symbol"]._Inout ,
                 t["symbol"]._varSigConst
             )
@@ -390,4 +395,47 @@ class getConnecting_procedure_vector():
         )
 
         return ret
+
+
+
+def extract_primitive_records(obj):
+    ret = []
+    ts = hdl.extract_conversion_types(obj)
+    for t in ts:
+        name    = hdl.get_type_simple(obj)
+        suffix =  t["suffix"]
+        record_obj = get_Constructor("v_data_record")( name+suffix, t["symbol"]._varSigConst )
+        record_obj._Inout =  t["symbol"]._Inout if len(ts) >1 else InOut_t.Default_t
+        members = t["symbol"].getMember()
+        record_obj.__v_classType__ = t["symbol"].__v_classType__
+        
+        for x in members:
+            if  x["symbol"].__isFreeType__:
+                continue
+            setattr(record_obj,  x["name"], x["symbol"])
+
+        ret.append( {
+        "suffix" : t["suffix"],
+        "symbol" : record_obj
+        } )
+    return  ret
+
+
+def extract_FreeTypes(obj):
+    ret = []
+    ret += hdl.get_free_symbols(obj)
+    return  ret
+
+
+def extract_components(obj):
+    ret = []
+    obj_master = v_copy(obj)
+    ret += extract_primitive_records(obj_master)
+    ret += extract_FreeTypes(obj_master)
+
+    return  ret
+
+
+
+
 

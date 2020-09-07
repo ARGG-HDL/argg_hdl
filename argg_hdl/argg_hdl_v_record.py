@@ -4,6 +4,9 @@ from argg_hdl.argg_hdl_v_entity_list import *
 
 from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class
 from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
+from argg_hdl.argg_hdl_object_factory import add_constructor
+
+
 
 class v_record_converter(v_class_converter):
     def __init__(self):
@@ -131,3 +134,7 @@ class v_data_record(v_record):
     def __init__(self, Name=None, varSigConst=None):
         super().__init__(Name, varSigConst)
         self.__hdl_useDefault_value__ = False
+
+
+add_constructor("v_data_record",v_data_record)
+add_constructor("v_record",v_record)

@@ -162,7 +162,8 @@ class v_class_hanlde_converter(v_class_converter):
         
 
         ret1 = [
-            x for x in ret
+            x 
+            for x in ret
             if not( x["symbol"]._issubclass_("v_class")  and exclude_class_type and x["symbol"].__v_classType__ == exclude_class_type)
             if not(filter_inout and x["symbol"]._Inout != filter_inout)
         ]

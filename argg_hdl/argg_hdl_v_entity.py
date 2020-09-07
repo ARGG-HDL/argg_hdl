@@ -8,6 +8,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_AST import *
+from argg_hdl.argg_hdl_object_factory import add_constructor
 
 from typing import Sequence, TypeVar
 T = TypeVar('T', bound='Copyable')
@@ -263,7 +264,7 @@ class v_entity_converter(hdl_converter_base):
             symName = obj.__hdl_converter__._vhdl_get_attribute(obj,x["name"])
             sym.set_vhdl_name( symName,True)
             
-            ret +=  sym.__hdl_converter__.get_architecture_header(sym)
+            ret +=  hdl.get_architecture_header(sym)
 
         ret += "-------------------------- end "+ name  +"-----------------\n"
         return ret 
@@ -317,7 +318,7 @@ class v_entity_converter(hdl_converter_base):
         for x in obj.__hdl_converter__.getMember(obj):
             sym = x["symbol"]
             sym.__hdl_name__ = x["name"]
-            portdef += sym.__hdl_converter__.get_port_list(sym)
+            portdef += hdl.get_port_list(sym)
 
       
         ret = "entity " + obj._name + " is \n" 
@@ -508,3 +509,8 @@ class v_clk_entity(v_entity):
         if super()._issubclass_(test):
             return True
         return "v_clk_entity" == test
+
+
+
+add_constructor("v_clk_entity",v_clk_entity)
+add_constructor("v_entity",v_entity)

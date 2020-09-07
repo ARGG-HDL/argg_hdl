@@ -26,7 +26,19 @@ class v_symbol_converter(hdl_converter_base):
         super().__init__()
         self.inc_str  = inc_str
         self.AliasType = None
+        self.extractedTypes = []
 
+
+    def prepare_for_conversion(self,obj):
+        
+        
+        if not obj.__hdl_converter__.extractedTypes:
+            obj.__hdl_converter__.extractedTypes += [v_copy(obj)]
+
+        for m in obj.__dict__:
+            if not issubclass(type(m),argg_hdl_base0):
+                continue 
+            hdl.prepare_for_conversion(m)
     
     def get_packet_file_name(self, obj):
         return "v_symbol_pack.vhd"
@@ -46,6 +58,11 @@ class v_symbol_converter(hdl_converter_base):
             aliases.append(x.alias)
 
             
+            
+            
+            
+
+
             subtype_def       = "    subtype " +x.alias  + " is " + x.obj._type +";\n"
             null_const        = "    constant " + x.alias+"_null : " + x.alias +" := " +x.obj.DefaultValue +";\n"
             array_of_subtype  = "    type "+x.alias+"_a is array (natural range <>) of " + x.alias + ";\n"
@@ -125,7 +142,7 @@ class v_symbol_converter(hdl_converter_base):
             return []
 
         if parent._issubclass_("v_class"):
-            return name + " : " +obj._type
+            return name + " : " + hdl.get_type_simple(obj)
 
         return []
 
@@ -287,8 +304,11 @@ class v_symbol_converter(hdl_converter_base):
 
 
     def to_arglist(self,obj:"v_symbol", name,parent,withDefault = False,astParser=None):
-        inout = astParser.get_function_arg_inout_type(obj)
-        inoutstr = obj.__hdl_converter__.InOut_t2str(obj)
+        inoutstr =""
+        if astParser:
+            inout = astParser.get_function_arg_inout_type(obj)
+            inoutstr = obj.__hdl_converter__.InOut_t2str2(inout)
+        
         varSigstr = ""
         if obj._varSigConst == varSig.signal_t:
             varSigstr = "signal "

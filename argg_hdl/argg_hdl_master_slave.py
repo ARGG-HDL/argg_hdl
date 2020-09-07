@@ -6,7 +6,7 @@ import argg_hdl.argg_hdl_v_Package as argg_pack
 
 from argg_hdl.argg_hdl_v_class import  v_class
 from argg_hdl.argg_hdl_v_class_handle import  v_class_hanlde, v_class_hanlde_converter
-
+from argg_hdl.argg_hdl_object_factory import add_constructor
 
 class v_class_master_converter(v_class_hanlde_converter):
     def __init__(self):
@@ -50,3 +50,7 @@ def get_handle(transObj):
         return get_master(transObj)
     
     raise Exception("Unable to determint requiered handle")
+
+
+add_constructor("v_class_slave", v_class_slave)
+add_constructor("v_class_master",v_class_master)

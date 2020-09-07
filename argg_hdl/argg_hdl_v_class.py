@@ -13,7 +13,33 @@ import  argg_hdl.vhdl_v_class_helpers as  vc_helper
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
 from  argg_hdl.argg_hdl_object_name_maker import  make_object_name
+from argg_hdl.argg_hdl_object_factory import add_constructor
 
+
+class fake_ast_parser:
+    def get_function_arg_inout_type(self,obj):
+        return InOut_t.input_t
+
+
+def flat_member_list(obj, name):
+    ret = []
+    
+    if obj._issubclass_('v_symbol'):
+        return [{
+            "name": name,
+            "symbol" :obj
+            }]
+    
+    for m in obj.getMember():
+        ret += flat_member_list(m["symbol"],name + [m["name"]] )
+    
+    return ret
+
+class hdl_record:
+    def __init__(self, name, members):
+        self.name
+        self.members
+    
 
 class v_class_converter(hdl_converter_base):
     def __init__(self):
@@ -22,6 +48,7 @@ class v_class_converter(hdl_converter_base):
         self.archetecture_list = []
         self.functionNameVetoList= []
         self.extractedTypes = []
+        self.Constructor_Default_arguments=[]
 
     def includes(self,obj, name,parent):
         ret = ""
@@ -103,34 +130,97 @@ class v_class_converter(hdl_converter_base):
         return ret
             
 
+    def get_constroctor_default_list(self,obj):
+        primary = hdl.get_primary_object(obj)
+        if primary.__hdl_converter__.Constructor_Default_arguments:
+            return primary.__hdl_converter__.Constructor_Default_arguments
         
+        
+        fl = flat_member_list(primary, [])
+        primary.__hdl_converter__.Constructor_Default_arguments =[
+            x
+            for x in fl
+            if not x["symbol"].__abstract_type_info__.UseDefaultCtr
+        ]
+        return primary.__hdl_converter__.Constructor_Default_arguments
+
+
     def get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
-        if obj.__hdl_useDefault_value__ and ForceExpand == False:
+        primary = hdl.get_primary_object(obj)
+        if obj.__hdl_useDefault_value__ :
             ret = obj.getType(InOut_Filter) + "_null"
             return ret
-
-        member = obj.getMember()
-        Content = [
-            hdl.recordMemberDefault(
+        
+        if ForceExpand:
+            member = obj.getMember()
+            Content = [
+                hdl.recordMemberDefault(
                 x["symbol"], 
                 x["name"],
                 obj,
                 InOut_Filter
-            ) 
-            for x in member
-        ]
+                ) 
+                for x in member
+            ]
+            start = "(\n"
+            ret=join_str(
+                Content,
+                start= start ,
+                end=  "\n  )",
+                Delimeter=",\n",
+                LineBeginning= "    ", 
+                IgnoreIfEmpty=True
+            )
+            return ret
+
+        TypeName = hdl.get_type_simple(obj)
+        name = TypeName +"_ctr"
+        Constructor_Default_arguments=self.get_constroctor_default_list(obj)
+        fl = flat_member_list(obj, [])
         
-        start = "(\n"
-        ret=join_str(
-            Content,
-            start= start ,
-            end=  "\n  )",
-            Delimeter=",\n",
-            LineBeginning= "    ", 
-            IgnoreIfEmpty=True
-        )
+        argList = [join_str(x["name"],Delimeter="_") + "  =>  "  + str(value(x["symbol"]))
+            for i, x in enumerate(fl)
+            if not x["symbol"].__abstract_type_info__.UseDefaultCtr
+            if len(Constructor_Default_arguments)> i and value(x["symbol"]) !=  value(primary.__hdl_converter__.Constructor_Default_arguments[i]["symbol"])
+            ]
+        Argliststr = join_str(argList,Delimeter=", ",IgnoreIfEmpty=True ,start = "(" ,end = ")" )
+
+        ret  = name +Argliststr
         return ret
         
+
+    def make_constructor(self,obj,name,parent=None,InOut_Filter=None, VaribleSignalFilter = None ):
+        primary = hdl.get_primary_object(obj)
+
+        TypeName = hdl.get_type_simple(primary)
+        member = primary.getMember()  
+
+        VariableList = "  variable ret : "  + TypeName+ " := " + TypeName +"_null;"
+
+        name = TypeName +"_ctr"
+        
+        fl = flat_member_list(primary, [])
+        
+
+        Constructor_Default_arguments=self.get_constroctor_default_list(obj)
+        argList = [
+            join_str(x["name"],Delimeter="_") + " : integer := " + str(value(x["symbol"]))
+            for x in Constructor_Default_arguments 
+            ]
+        Argliststr = join_str(argList,Delimeter="; ",IgnoreIfEmpty=True)
+
+        body= [
+            "    ret." + join_str(x["name"],Delimeter=".")  + " := "+  hdl.get_type_simple(x["symbol"]) + "_ctr(" + join_str(x["name"],Delimeter="_")   +");\n"
+            for x in Constructor_Default_arguments 
+        ]
+        body = join_str(body,IgnoreIfEmpty=True)
+        body += "    return ret;\n"
+
+        func = v_function(body=body, returnType=TypeName, argumentList=Argliststr,VariableList=VariableList,name=name,IsEmpty=False,isFreeFunction=True)
+        setattr(parent, name, func)
+
+        
+
 
     def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
         TypeName = hdl.get_type_simple(obj)
@@ -150,13 +240,26 @@ class v_class_converter(hdl_converter_base):
 
         return ret
 
+    def prepare_for_conversion(self,obj):
+        primary = hdl.get_primary_object(obj)
+        obj.__hdl_converter__ = primary.__hdl_converter__
+        if not primary.__hdl_converter__.extractedTypes:
+            primary.__hdl_converter__.extractedTypes += vc_helper.extract_components(primary)
+
+        members = obj.getMember()
+        for m in members:
+            hdl.prepare_for_conversion(m["symbol"])
+
+
     def getHeader(self,obj, name,parent):
         if issubclass(type(parent),v_class):
             return ""
 
         header = vc_helper.getHeader(obj, name,parent)
+
         return str(header)
         
+    
 
     def getHeader_make_record(self,obj, name, parent=None, InOut_Filter=None, VaribleSignalFilter = None):
         TypeName = hdl.get_type_simple(obj)
@@ -170,7 +273,7 @@ class v_class_converter(hdl_converter_base):
         """.format(
           Default = obj.__hdl_converter__.make_constant(
                 obj,
-                obj.getType() + "_null" , 
+                TypeName + "_null" , 
                 parent, 
                 InOut_Filter,
                 VaribleSignalFilter
@@ -185,6 +288,11 @@ class v_class_converter(hdl_converter_base):
         ]
         ret=join_str(Content,start= start ,end= end, IgnoreIfEmpty=True,LineEnding=";\n", LineBeginning="    ")
 
+        self.make_constructor( obj,
+                TypeName + "_null" , 
+                parent, 
+                InOut_Filter,
+                VaribleSignalFilter)
 
         return ret
 
@@ -264,8 +372,8 @@ class v_class_converter(hdl_converter_base):
 
     def get_architecture_header(self, obj):
         ret = []
-        xs = hdl.extract_conversion_types(obj)
-        for x in xs:
+
+        for x in obj.__hdl_converter__.extractedTypes:
             if  x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
                 continue
             if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
@@ -275,7 +383,7 @@ class v_class_converter(hdl_converter_base):
 
             VarSymb = get_varSig(x["symbol"]._varSigConst)
 
-            ret.append(VarSymb + " " +x["symbol"].get_vhdl_name() + " : " + x["symbol"]._type+" := " + x["symbol"].__hdl_converter__.get_init_values(x["symbol"]) +";\n")
+            ret.append(VarSymb + " " + hdl.get_HDL_name(x["symbol"], obj ,x["suffix"] )  + " : " + x["symbol"]._type+" := " + x["symbol"].__hdl_converter__.get_init_values(x["symbol"]) +";\n")
         
         for x in obj.__hdl_converter__.archetecture_list:
             ret.append( hdl.get_architecture_header(x["symbol"]))
@@ -309,37 +417,27 @@ class v_class_converter(hdl_converter_base):
     def get_port_list(self,obj):
         ret = []
 
-        freeSymb = hdl.get_free_symbols(obj)
-        for x in freeSymb:
-            ret.append( hdl.get_port_list(x))
+     
+        for x in obj.__hdl_converter__.extractedTypes:
+            inout = hdl.get_Inout(x["symbol"], obj)
 
-        xs = hdl.extract_conversion_types(obj,
-            exclude_class_type= v_classType_t.transition_t
-        )
-        for x in xs:
-            inoutstr = " : "+ hdl.InOut_t2str(x["symbol"]) +" "
-            ret.append( x["symbol"].get_vhdl_name()+ inoutstr +x["symbol"]._type + " := " +  x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  )
+            if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
+                continue 
+            
+            inoutstr = " : "+ hdl.InOut_t2str2(x["symbol"],  inout) +" "
+            ret.append( hdl.get_HDL_name(x["symbol"], obj ,x["suffix"] ) + inoutstr +x["symbol"]._type + " := " +  x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  )
     
         return ret
 
 
     def _vhdl_make_port(self, obj, name):
         ret = []
-        freeSymb = hdl.get_free_symbols(obj)
-        for x in freeSymb:
-            if x.__hdl_name__.find(obj.__hdl_name__) != 0:
-                raise Exception("unknown naming convention")
-            startIndex = obj.__hdl_name__.rfind(name)
+        for x in  obj.__hdl_converter__.extractedTypes:
+            inout = hdl.get_Inout(x["symbol"], obj)
+            if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
+                continue 
 
-            portName = x.__hdl_name__[startIndex:]
-            ret.append( portName + " => " + str(x))
-            
-
-        xs = hdl.extract_conversion_types(obj, 
-                exclude_class_type= v_classType_t.transition_t
-            )
-        for x in xs:
-            ret.append( name + x["suffix"] + " => " + x["symbol"].get_vhdl_name())
+            ret.append( name + x["suffix"] + " => " + hdl.get_HDL_name(x["symbol"], obj ,x["suffix"] ) )
 
         return ret
 
@@ -719,6 +817,9 @@ class v_class(argg_hdl_base):
         
         self.__hdl_name__ = name
 
+        
+
+        
 
         if self._varSigConst == varSig.variable_t:
             mem = self.getMember()
@@ -730,6 +831,7 @@ class v_class(argg_hdl_base):
                 mem = x["symbol"].getMember()
                 for m in mem:
                     m["symbol"].set_vhdl_name(name+x["suffix"]+"."+m["name"],Overwrite)
+
 
 
     def _sim_append_update_list(self,up):
@@ -1085,3 +1187,4 @@ class v_class(argg_hdl_base):
         for x in mem:
             x["symbol"]._remove_drivers()
 
+add_constructor("v_class",v_class)

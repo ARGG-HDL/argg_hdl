@@ -111,7 +111,7 @@ class v_function_converter(hdl_converter_base):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent,True)
-        argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
+        argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True ,IgnoreIfEmpty=True).strip()
         if obj.name:
             name = obj.name
         if obj.isEmpty:
@@ -130,7 +130,7 @@ class v_function_converter(hdl_converter_base):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name(parent,True)
-        argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True).strip()
+        argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True ,IgnoreIfEmpty=True).strip()
         
         if obj.name:
             name = obj.name  
@@ -147,13 +147,37 @@ class v_function_converter(hdl_converter_base):
         )
         return ret
 
+
+
+
+def remove_signal_and_inouts_specifier(s):
+    
+    s = " " +s +" "
+    s = s.replace(";"," ; ")
+    s = s.replace(":="," := ")
+    s = s.replace(":"," : ")
+    s = s.replace(": ="," := ")
+    s = s.replace(" signal "," ")
+    s = s.replace(" inout "," ")
+    s = s.replace(" in "," ")
+    s = s.replace(" out "," ")
+    s =' '.join(s.split())
+
+    if len(s)>20:
+        s =';\n   '.join(s.split(";"))
+        s = "\n   " +s+"\n "
+    return s
+
+
 class v_function(argg_hdl_base):
     def __init__(self,body="", returnType="", argumentList="",VariableList="",name=None,IsEmpty=False,isFreeFunction=False):
         super().__init__()
         self.__hdl_converter__ = v_function_converter()
         self.body = body
         self.returnType = returnType
-        self.argumentList = argumentList
+
+
+        self.argumentList = remove_signal_and_inouts_specifier(argumentList)
 
 
         self.VariableList=VariableList
@@ -245,7 +269,7 @@ class v_Arch_converter(hdl_converter_base):
             inc_str +=  x.__hdl_converter__.includes(x, x.__hdl_name__,obj)
         
         for x in obj.Arch_vars:
-            inc_str +=  x['symbol'].__hdl_converter__.includes(x['symbol'], x['name'],obj)
+            inc_str +=  hdl.includes(x['symbol'], x['name'],obj)
         return inc_str
 
     def get_architecture_header(self, obj):
@@ -256,7 +280,7 @@ class v_Arch_converter(hdl_converter_base):
             header += x.__hdl_converter__.get_architecture_header(x)
         
         for x in obj.Arch_vars:
-            header += x['symbol'].__hdl_converter__.get_architecture_header(x['symbol'])    
+            header += hdl.get_architecture_header(x['symbol'])    
         return header
 
 

@@ -24,7 +24,7 @@ remove_old_files()
 
 
 #dr.data_record_tb_sim("tests/data_record_tb_sim/")
-#dr.data_record_tb_2vhdl("tests/data_record_tb/")
+dr.data_record_tb_2vhdl("tests/data_record_tb/")
 
 #TX.TXReadout2vhdl("../vhdl_lecture/targetx")
 
@@ -33,7 +33,7 @@ remove_old_files()
 #TX.TX_write_handler2vhdl("../vhdl_lecture/targetx2")
 
 #fir_1.fir_basic_tb_sim("tests/fir_1_sim",20000)
-fir_1.fir_basic_tb2vhdl("tests/fir_1")
+#fir_1.fir_basic_tb2vhdl("tests/fir_1")
 
 
 #TX.TXReadout_sim("tests/targetx_sim",20000)

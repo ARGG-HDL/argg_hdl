@@ -10,6 +10,8 @@ from argg_hdl.argg_hdl_global_settings import *
 import  functools 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
+from argg_hdl.argg_hdl_type_info import typeInfo
+
 from typing import Sequence, TypeVar
 T = TypeVar('T', bound='Copyable')
 
@@ -105,7 +107,8 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
 
     for x in content[0:-1]:
         ret += LineBeginning + str(x) + Delimeter + LineEnding
-
+    if len(content) == 0 and IgnoreIfEmpty:
+        return ret
     ret += LineBeginning + str(content[-1]) +  LineEnding
     ret += end
     return ret
@@ -271,6 +274,8 @@ def unfold_errors(error):
     
 
 def convert_to_hdl(Obj, FolderPath):
+    s = isConverting2VHDL()
+    set_isConverting2VHDL(True)
     try:
         core_gen.generate_files_in_folder(FolderPath)
         return hdl.convert_all(Obj,  FolderPath)
@@ -278,6 +283,8 @@ def convert_to_hdl(Obj, FolderPath):
         er_list  =  unfold_errors(inst)
         ret = join_str(er_list, Delimeter="\n")
         print_cnvt(ret)
+    finally:
+        set_isConverting2VHDL(s)
 
 
 def print_cnvt_set_file(FileName=None):
@@ -317,6 +324,12 @@ class hdl_converter_base:
         self.MemfunctionCalls=[]
         self.IsConverted = False
         self.MissingTemplate = False
+        self.extractedTypes = []
+
+
+
+
+
 
     def get_dependency_objects(self, obj, dep_list):
         self.get_dependency_objects_index += 1
@@ -382,11 +395,19 @@ class hdl_converter_base:
             return False
         return self.IsConverted
 
+    def prepare_for_conversion(self,obj):
+        for m in obj.__dict__:
+            if not issubclass(type(m),argg_hdl_base0):
+                continue 
+            hdl.prepare_for_conversion(m)
+
+
     def convert_all_packages(self, obj, ouputFolder,x,FilesDone):
         packetName =  hdl.get_packet_file_name(x)
         if packetName not in FilesDone:
             print_cnvt(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
             gTemplateIndent.inc()
+            hdl.prepare_for_conversion(x)
             hdl.reset_TemplateMissing(x)
             packet = hdl.get_packet_file_content(x)
             if packet and not (x.__hdl_converter__.MissingTemplate and not saveUnfinishedFiles()):
@@ -404,6 +425,7 @@ class hdl_converter_base:
         if entiyFileName not in FilesDone:
             print_cnvt(str(gTemplateIndent)+'<entity_conversion name="'+type(x).__name__ +'">')
             gTemplateIndent.inc()
+            hdl.prepare_for_conversion(x)
             hdl.reset_TemplateMissing(x)
             try:
                 entity_content = hdl.get_enity_file_content(x)
@@ -422,6 +444,9 @@ class hdl_converter_base:
 
     def convert_all_impl(self, obj, ouputFolder, FilesDone):
         FilesDone.clear()
+        for x in gHDL_objectList:
+            hdl.prepare_for_conversion(x)
+
         for x in gHDL_objectList:
             
             if hdl.IsSucessfullConverted(x):
@@ -693,6 +718,18 @@ class hdl_converter_base:
 
         return asOp
 
+    def get_Inout(self,obj,parent):
+        inOut = obj._Inout
+        if inOut == InOut_t.Default_t:
+            return parent._Inout
+
+        if parent._Inout == InOut_t.input_t or parent._Inout == InOut_t.Slave_t :
+            inOut =InoutFlip(inOut)
+        
+        return inOut
+        
+
+
     def InOut_t2str2(self, inOut):
 
         if inOut == InOut_t.input_t:
@@ -715,6 +752,17 @@ class hdl_converter_base:
             return " inout "
         
         raise Exception("unkown Inout type",inOut)
+
+    def InOut_t2str3(self, obj, parent):
+        inOut = obj._Inout
+        if parent._Inout == InOut_t.input_t or parent._Inout == InOut_t.Slave_t :
+            inOut =InoutFlip(inOut)
+
+        if inOut == InOut_t.Default_t:
+            inOut = parent._Inout 
+
+
+        return self.InOut_t2str2(inOut)
 
     def InOut_t2str(self, obj):
         inOut = obj._Inout
@@ -765,6 +813,8 @@ class hdl_converter_base:
     def Has_pushpull_function(self,obj, pushpull):
         return False
     
+    def get_HDL_name(self, obj, parent,suffix):
+        return parent.__hdl_name__ + suffix
 
 
 class argg_hdl_base0:
@@ -779,15 +829,60 @@ class argg_hdl_base0:
 
         
         self.__hdl_converter__ = hdl_converter_base()
+        self.__abstract_type_info__ = typeInfo()
 
-        self.__isInst__ = False
         self.__Driver__ = None
         self.__Driver_Is_SubConnection__ = False
         self.__receiver__ = []
         self.__srcFilePath__ = get_fileName_of_object_def(self)
         self.__hdl_useDefault_value__ = False
-        self.__isFreeType__ = False
-        
+
+
+    @property
+    def __isInst__(self):
+        return self.__abstract_type_info__.__isInst__
+
+    @__isInst__.setter
+    def __isInst__(self, value):
+        #print("setter of __isInst__ called")
+        self.__abstract_type_info__.__isInst__ = value
+
+    @property
+    def __isFreeType__(self):
+        return self.__abstract_type_info__.__isFreeType__
+
+    @__isFreeType__.setter
+    def __isFreeType__(self, value):
+        #print("setter of __isFreeType__ called")
+        self.__abstract_type_info__.__isFreeType__ = value
+
+    @property
+    def _Inout(self):
+        return self.__abstract_type_info__._Inout
+     
+    @_Inout.setter
+    def _Inout(self, value):
+        #print("setter of _Inout called")
+        self.__abstract_type_info__._Inout = value
+    
+    
+    @property
+    def _varSigConst(self):
+        return self.__abstract_type_info__._varSigConst
+
+    @_varSigConst.setter
+    def _varSigConst(self, value):
+        #print("setter of _varSigConst called")
+        self.__abstract_type_info__._varSigConst = value
+
+    @property
+    def __writeRead__(self):
+         return self.__abstract_type_info__.__writeRead__
+
+    @__writeRead__.setter
+    def __writeRead__(self, value):
+        #print("setter of _varSigConst called")
+        self.__abstract_type_info__.__writeRead__ = value
 
     def _set_to_sub_connection(self):
         self.__Driver_Is_SubConnection__ = True
@@ -1122,13 +1217,15 @@ def port_Stream_Slave(symbol: T) ->T:
     return ret
 
 
-def v_copy(symbol:T, varSig=None)->T:
+def v_copy(symbol:T, varSig_=None)->T:
     ret = copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.resetInout()
     ret.__isInst__ = False
     ret.__hdl_name__ = None
     ret._remove_drivers()
+    if ret._varSigConst== varSig.combined_t:
+        pass
     if varSig is None:
         ret.set_varSigConst(getDefaultVarSig())
     return ret
