@@ -247,3 +247,12 @@ def prepare_for_conversion(obj):
 
 def get_HDL_name(obj, parent,suffix):
     return obj.__hdl_converter__.get_HDL_name(obj,parent,suffix)
+
+def get_init_values(obj):
+    return obj.__hdl_converter__.get_init_values(obj)
+
+
+def get_extractedTypes(obj):
+    primary = get_primary_object(obj)
+    prepare_for_conversion(primary)
+    return primary.__hdl_converter__.extractedTypes

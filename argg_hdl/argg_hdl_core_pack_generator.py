@@ -14,6 +14,21 @@ package argg_hdl_core is
     procedure pull(self : inout std_logic_vector ; signal data  : in std_logic_vector) ;
 
     function ah_min(lhs : integer; rhs : integer) return integer;
+
+    function std_logic_vector_ctr(data : integer; size_ : integer) return std_logic_vector;
+    function to_bool(data : std_logic_vector) return boolean;
+
+    function std_logic_ctr       (data : integer)                return std_logic;
+    function to_bool(data : std_logic) return boolean;
+
+    function unsigned_ctr(data : integer; size_ : integer) return unsigned;
+    function to_bool(data :  unsigned) return boolean;
+
+    function   signed_ctr(data : integer; size_ : integer) return   signed;
+    function to_bool(data :  signed) return boolean;
+
+    function to_bool(data :  integer) return boolean;
+    
 end argg_hdl_core;
 
 
@@ -48,6 +63,62 @@ package body argg_hdl_core is
 
         return rhs;
 
+    end function;
+
+    function std_logic_vector_ctr(data : integer; size_ : integer) return std_logic_vector is
+        variable ret : std_logic_vector(size_ downto 0) :=( others => '0');
+    begin 
+        ret := std_logic_vector(to_unsigned(data, ret'length));
+        return ret;
+    end function;
+
+    function to_bool(data : std_logic_vector) return boolean is 
+    begin
+        return  (data /= 0);
+    end function;
+
+    
+    function std_logic_ctr       (data : integer)                return std_logic is 
+        variable ret : std_logic := '0';
+    begin
+        if data > 0 then
+            ret := '1';
+        end if;
+        return ret;
+    end function;
+    
+    function to_bool(data : std_logic) return boolean is 
+    begin
+        return  data = '1';
+    end function;
+
+    function unsigned_ctr(data : integer; size_ : integer) return unsigned is 
+        variable ret : unsigned(size_ downto 0) :=( others => '0');
+    begin
+        ret := to_unsigned(data, ret'length);
+        return ret;
+    end function;
+
+    function to_bool(data :  unsigned) return boolean is 
+    begin
+        return (data /= 0);
+    end function;
+
+    function   signed_ctr(data : integer; size_ : integer) return   signed is
+        variable ret : signed(size_ downto 0) :=( others => '0');
+    begin
+        ret :=  to_signed(data, ret'length);
+        return ret;
+    end function;
+
+    function to_bool(data :  signed) return boolean is 
+    begin
+        return data /= 0;
+    end function;
+
+    function to_bool(data :  integer) return boolean is 
+    begin 
+        return data /= 0;
     end function;
 end argg_hdl_core;
 """

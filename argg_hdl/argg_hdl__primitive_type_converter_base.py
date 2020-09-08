@@ -28,7 +28,9 @@ class v_symbol_converter(hdl_converter_base):
         self.AliasType = None
         self.extractedTypes = []
 
-
+    def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
+        return ""
+        
     def prepare_for_conversion(self,obj):
         
         
@@ -66,12 +68,12 @@ class v_symbol_converter(hdl_converter_base):
             subtype_def       = "    subtype " +x.alias  + " is " + x.obj._type +";\n"
             null_const        = "    constant " + x.alias+"_null : " + x.alias +" := " +x.obj.DefaultValue +";\n"
             array_of_subtype  = "    type "+x.alias+"_a is array (natural range <>) of " + x.alias + ";\n"
-            func_declaration  = "    function to_"+x.alias+"(Data : Integer) return " + x.alias+";\n"
+            func_declaration  = "    function "+x.alias+"_ctr(Data : Integer) return " + x.alias+";\n"
             func_definition   = """
-    function to_{alias}(Data : Integer) return  {alias} is 
+    function {alias}_ctr(Data : Integer) return  {alias} is 
     variable ret : {alias};
     begin;
-        ret := to_{base_type}(Data , {alias}'length)
+        ret := {base_type}_ctr(Data , {alias}'length)
         return ret;
     end function;     
 
@@ -151,7 +153,7 @@ class v_symbol_converter(hdl_converter_base):
             return []
         
         if parent._issubclass_("v_class"):
-            return name + " => " + obj.DefaultValue 
+            return name + " => " + hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")"
 
         return []
 
@@ -162,7 +164,7 @@ class v_symbol_converter(hdl_converter_base):
         if parent._issubclass_("v_class"):
              return ""
             
-        return name + " : " +obj._type +" := " +  obj.DefaultValue  + "; \n"
+        return name + " : " +obj._type +" := " +  hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")"  + "; \n"
 
     def getFuncArg(self,obj, name,parent):
         return name + " : " + obj._type   
@@ -190,14 +192,7 @@ class v_symbol_converter(hdl_converter_base):
         
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
 
-    def _to_hdl___bool__(self,obj:v_symbol, astParser):
-        obj._add_input()
-        astParser.add_read(obj)
 
-        if obj._type == "boolean":
-            return str(obj)
-
-        return "to_bool(" + str(obj) + ") "
 
     def _vhdl__BitAnd(self,obj:"v_symbol",rhs,astParser) -> "v_symbol":
         ret = v_slv()
@@ -212,12 +207,10 @@ class v_symbol_converter(hdl_converter_base):
 
         if  obj.__Driver__ is not None and str(obj.__Driver__ ) != 'process' and str(obj.__Driver__ ) != 'function':
             return ""
-        name = obj.__hdl_name__
 
-        ty = str(value(obj.primitive_type)) + "("+str(obj.Bitwidth_raw) +" - 1 downto 0)"
-        default_value = self.get_default_value(obj)
 
-        return  VarSymb+ " " + str(name) + " : " + ty +" := " +  default_value  + "; \n"
+        return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")"  + "; \n"    
+    
     def get_architecture_header(self, obj):
 
         if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
@@ -225,27 +218,27 @@ class v_symbol_converter(hdl_converter_base):
         
         if obj._varSigConst == varSig.variable_t:
             return ""
-        
-        
-        VarSymb = get_varSig(obj._varSigConst)
 
-        #if  obj.__Driver__ != None and str(obj.__Driver__ ) != 'process':
-        #    return ""
-        name = obj.__hdl_name__
-        default_value = self.get_default_value(obj)
-        ret = "  " + VarSymb+ " " + name + " : " +obj._type +" := " + default_value + "; \n"   
+        ret = "  signal "+ str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")" + "; \n"   
         return  ret
 
     def get_port_list(self,obj:"v_symbol"):
-        ret = []
         if obj._Inout == InOut_t.Internal_t:
-            return ret
+            return []
         
         if obj._varSigConst != varSig.signal_t:
-            return ret
+            return []
         
-        ret.append( obj.__hdl_name__ + " : "+ obj.__hdl_converter__.InOut_t2str(obj) + " " + obj._type + " := " + obj.DefaultValue)
-        return ret
+        return [
+            obj.__hdl_name__ + 
+            " : "+ 
+            obj.__hdl_converter__.InOut_t2str(obj) + 
+            " " +  
+            hdl.get_type_simple(obj) + 
+            " := " + 
+            hdl.get_type_simple(obj)+
+            "_ctr("+str(value(obj))+")"]
+        
 
 
 

@@ -24,7 +24,8 @@ remove_old_files()
 
 
 #dr.data_record_tb_sim("tests/data_record_tb_sim/")
-dr.data_record_tb_2vhdl("tests/data_record_tb/")
+#dr.data_record_tb_2vhdl("tests/data_record_tb/")
+result, message =  fir_1.fir_basic_tb2vhdl("tests/fir_1")
 
 #TX.TXReadout2vhdl("../vhdl_lecture/targetx")
 

@@ -7,10 +7,7 @@ class v_integer_converter(v_symbol_converter):
     def __init__(self,inc_str):
         super().__init__(inc_str)
 
-    def _to_hdl___bool__(self,obj:v_symbol, astParser):
-        obj._add_input()
-        astParser.add_read(obj)
-        return str(obj) + " > 0"
+
 
     def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         if astParser:

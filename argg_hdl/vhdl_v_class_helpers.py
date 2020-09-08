@@ -147,13 +147,7 @@ class getHeader():
         ret = ""
         #ts = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
         for t in self.obj.__hdl_converter__.extractedTypes:
-            ret +=  self.obj.__hdl_converter__.getHeader_make_record(
-                t["symbol"],
-                self.name,
-                self.obj,
-                t["symbol"]._Inout ,
-                t["symbol"]._varSigConst
-            )
+            ret += t.getHeader_make_record(self.obj, self.name)
             ret += "\n\n"
 
         return ret
@@ -397,6 +391,67 @@ class getConnecting_procedure_vector():
         return ret
 
 
+class extracted_record_t:
+    def __init__(self, symbol, suffix):
+        self.symbol = symbol
+        self.suffix = suffix
+
+    def getHeader_make_record(self, obj, name):
+        ret =  obj.__hdl_converter__.getHeader_make_record(
+                self.symbol,
+                name,
+                obj,
+                self.symbol._Inout ,
+                self.symbol._varSigConst
+            )
+        return ret
+
+    def get_architecture_header(self, obj):
+        
+        if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
+            return []
+        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
+            return []
+        if obj._varSigConst == varSig.combined_t and self.symbol._varSigConst == varSig.variable_t:
+            return []
+        if obj._varSigConst ==  varSig.variable_t:
+            return []
+
+
+        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
+        
+
+    def get_process_header(self, obj):
+        
+        if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
+            return []
+        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
+            return []
+        if obj._varSigConst == varSig.combined_t and self.symbol._varSigConst == varSig.signal_t:
+            return []
+        if obj._varSigConst ==  varSig.signal_t:
+            return []
+
+
+        
+        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
+        
+    def get_port_list(self, obj):
+        inout = hdl.get_Inout(self.symbol, obj)
+
+        if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
+            return []       
+            
+        inoutstr = " : "+ hdl.InOut_t2str2(self.symbol,  inout) +" "
+        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +  hdl.get_init_values(self.symbol) ]
+    
+    def vhdl_make_port(self, obj, name):
+        inout = hdl.get_Inout( self.symbol, obj)
+        if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
+            return []
+
+        return [name + self.suffix + " => " + hdl.get_HDL_name( self.symbol, obj ,self.suffix ) ]
+            
 
 def extract_primitive_records(obj):
     ret = []
@@ -408,22 +463,83 @@ def extract_primitive_records(obj):
         record_obj._Inout =  t["symbol"]._Inout if len(ts) >1 else InOut_t.Default_t
         members = t["symbol"].getMember()
         record_obj.__v_classType__ = t["symbol"].__v_classType__
-        
+        record_obj.__vetoHDLConversion__  = True
         for x in members:
             if  x["symbol"].__isFreeType__:
                 continue
             setattr(record_obj,  x["name"], x["symbol"])
 
-        ret.append( {
-        "suffix" : t["suffix"],
-        "symbol" : record_obj
-        } )
+        ret.append( 
+            extracted_record_t(record_obj, t["suffix"]) 
+        )
+        
     return  ret
+
+class extracted_freeType:
+    def __init__(self, symbol, suffix=""):
+        self.symbol = symbol
+        self.suffix = suffix
+    
+    def getHeader_make_record(self, obj, name):
+        return ""
+
+
+    def get_architecture_header(self, obj):
+        
+        if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
+            return []
+        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
+            return []
+        if obj._varSigConst == varSig.combined_t and self.symbol._varSigConst == varSig.variable_t:
+            return []
+        if obj._varSigConst ==  varSig.variable_t:
+            return []
+
+
+        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
+        
+
+    def get_process_header(self, obj):
+        
+        if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
+            return []
+        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
+            return []
+        if obj._varSigConst == varSig.combined_t and self.symbol._varSigConst == varSig.signal_t:
+            return []
+        if obj._varSigConst ==  varSig.signal_t:
+            return []
+
+
+        
+        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
+        
+    def get_port_list(self, obj):
+        inout = hdl.get_Inout(self.symbol, obj)
+
+        if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
+            return []       
+            
+        inoutstr = " : "+ hdl.InOut_t2str2(self.symbol,  inout) +" "
+        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +  hdl.get_init_values(self.symbol) ]
+    
+    def vhdl_make_port(self, obj, name):
+        inout = hdl.get_Inout( self.symbol, obj)
+        if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
+            return []
+
+        return [name + self.suffix + " => " + hdl.get_HDL_name( self.symbol, obj ,self.suffix ) ]
+            
+
 
 
 def extract_FreeTypes(obj):
     ret = []
-    ret += hdl.get_free_symbols(obj)
+    ret += hdl.get_free_symbols(obj )
+    ret = [
+        extracted_freeType(x)
+        for x in ret
+    ]
     return  ret
 
 

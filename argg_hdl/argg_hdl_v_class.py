@@ -147,9 +147,6 @@ class v_class_converter(hdl_converter_base):
 
     def get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
         primary = hdl.get_primary_object(obj)
-        if obj.__hdl_useDefault_value__ :
-            ret = obj.getType(InOut_Filter) + "_null"
-            return ret
         
         if ForceExpand:
             member = obj.getMember()
@@ -373,17 +370,9 @@ class v_class_converter(hdl_converter_base):
     def get_architecture_header(self, obj):
         ret = []
 
-        for x in obj.__hdl_converter__.extractedTypes:
-            if  x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
-                continue
-            if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
-                continue
-            if x["symbol"]._varSigConst == varSig.variable_t:
-                continue
-
-            VarSymb = get_varSig(x["symbol"]._varSigConst)
-
-            ret.append(VarSymb + " " + hdl.get_HDL_name(x["symbol"], obj ,x["suffix"] )  + " : " + x["symbol"]._type+" := " + x["symbol"].__hdl_converter__.get_init_values(x["symbol"]) +";\n")
+        for x in hdl.get_extractedTypes(obj):
+            ret +=  x.get_architecture_header(obj)
+            
         
         for x in obj.__hdl_converter__.archetecture_list:
             ret.append( hdl.get_architecture_header(x["symbol"]))
@@ -416,28 +405,16 @@ class v_class_converter(hdl_converter_base):
 
     def get_port_list(self,obj):
         ret = []
+        for x in hdl.get_extractedTypes(obj):
+            ret += x.get_port_list(obj)
 
-     
-        for x in obj.__hdl_converter__.extractedTypes:
-            inout = hdl.get_Inout(x["symbol"], obj)
-
-            if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
-                continue 
-            
-            inoutstr = " : "+ hdl.InOut_t2str2(x["symbol"],  inout) +" "
-            ret.append( hdl.get_HDL_name(x["symbol"], obj ,x["suffix"] ) + inoutstr +x["symbol"]._type + " := " +  x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  )
-    
         return ret
 
 
     def _vhdl_make_port(self, obj, name):
         ret = []
-        for x in  obj.__hdl_converter__.extractedTypes:
-            inout = hdl.get_Inout(x["symbol"], obj)
-            if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
-                continue 
-
-            ret.append( name + x["suffix"] + " => " + hdl.get_HDL_name(x["symbol"], obj ,x["suffix"] ) )
+        for x in  hdl.get_extractedTypes(obj):
+            ret += x.vhdl_make_port(obj,name)
 
         return ret
 
@@ -625,18 +602,19 @@ class v_class_converter(hdl_converter_base):
     def get_process_header(self,obj):
 
         
-        ret = ""
-        if obj._Inout != InOut_t.Internal_t:
-            return ""
+
+        ret = []
+
+        for x in hdl.get_extractedTypes(obj): 
+            ret += x.get_process_header(obj)
         
-        xs = hdl.extract_conversion_types(obj)
-        for x in xs:
-            if x["symbol"]._varSigConst != varSig.variable_t:
-                continue
+        
+        ret=join_str(
+            ret, 
+            LineBeginning="  "
+            )
 
-            VarSymb = get_varSig(x["symbol"]._varSigConst)
-            ret += VarSymb +" " +str(x["symbol"]) + " : " +x["symbol"]._type +" := " +  x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  +";\n"
-
+        
         return ret
 
 

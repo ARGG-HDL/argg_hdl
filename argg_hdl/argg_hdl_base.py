@@ -568,6 +568,8 @@ class hdl_converter_base:
         return str(obj) + " * " + str(args)
         
     def _to_hdl___bool__(self,obj, astParser):
+        obj._add_input()
+        astParser.add_read(obj)
         return "to_bool(" + str(obj) + ") "
 
     def _vhdl__BitAnd(self,obj,rhs,astParser):
@@ -820,6 +822,8 @@ class hdl_converter_base:
 class argg_hdl_base0:
     def __init__(self):
         super().__init__()
+        self.__abstract_type_info__ = typeInfo()
+        
         if isRunning():
             return 
         if not isConverting2VHDL() :
@@ -829,7 +833,6 @@ class argg_hdl_base0:
 
         
         self.__hdl_converter__ = hdl_converter_base()
-        self.__abstract_type_info__ = typeInfo()
 
         self.__Driver__ = None
         self.__Driver_Is_SubConnection__ = False
@@ -868,12 +871,17 @@ class argg_hdl_base0:
     
     @property
     def _varSigConst(self):
-        return self.__abstract_type_info__._varSigConst
+        if hasattr(self, '__abstract_type_info__'):
+            return self.__abstract_type_info__._varSigConst
+        
+        return varSig.runtime_variable_t
 
     @_varSigConst.setter
     def _varSigConst(self, value):
         #print("setter of _varSigConst called")
-        self.__abstract_type_info__._varSigConst = value
+        if hasattr(self, '__abstract_type_info__'):
+            self.__abstract_type_info__._varSigConst = value
+
 
     @property
     def __writeRead__(self):

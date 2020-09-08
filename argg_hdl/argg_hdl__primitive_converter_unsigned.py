@@ -18,11 +18,7 @@ class v_unsigned_converter(v_symbol_converter):
 
         return str(obj) + "  "+ obj.__hdl_converter__.ops2str(ops) +" " + str(rhs)
 
-    def _to_hdl___bool__(self, obj: v_symbol, astParser):
-        obj._add_input()
-        astParser.add_read(obj)
 
-        return str(obj) + " > 0"
 
     def _vhdl__reasign(self, obj: "v_symbol", rhs, astParser=None, context_str=None):
         if astParser:
