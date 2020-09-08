@@ -5,6 +5,7 @@ import inspect
 import time
 
 
+import debugpy
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_AST_Classes import * 
@@ -814,7 +815,7 @@ class xgenAST:
             name= freeFunction.FuncName,
             args= [x["symbol"] for x in   Arglist],
             obj= freeFunction,
-            call_func = None,
+            call_func = call_func,
             func_args = None,
             setDefault = False,
             varSigIndependent = False
@@ -995,7 +996,6 @@ class xgenAST:
 
 
         return fun_ret
-
 
     def Unfold_body(self,FuncDef):
         try:

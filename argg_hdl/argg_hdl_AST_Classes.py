@@ -771,6 +771,9 @@ def body_unfold_call_local_func(astParser,Node):
         
         vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
 
+    if hasattr(f,"description") and f.description is not None: 
+       
+        vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
     else:
         start = ""
         vhdl = str(Node.func.id) +"(" 
