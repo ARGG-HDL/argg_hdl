@@ -632,7 +632,7 @@ def resize(symbol : v_symbol, newSize:int):
     ret =  v_symbol(
         v_type=symbol._type,
         DefaultValue=0,
-        value=symbol,
+        value=0,
         Inout=symbol._Inout,
         Bitwidth=newSize,
         primitive_type= symbol.primitive_type

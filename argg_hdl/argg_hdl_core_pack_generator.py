@@ -18,7 +18,7 @@ package argg_hdl_core is
     function std_logic_vector_ctr(data : integer; size_ : integer) return std_logic_vector;
     function to_bool(data : std_logic_vector) return boolean;
 
-    function std_logic_ctr       (data : integer)                return std_logic;
+    function std_logic_ctr(data : integer; size_ : integer := 1 ) return std_logic;
     function to_bool(data : std_logic) return boolean;
 
     function unsigned_ctr(data : integer; size_ : integer) return unsigned;
@@ -78,7 +78,7 @@ package body argg_hdl_core is
     end function;
 
     
-    function std_logic_ctr       (data : integer)                return std_logic is 
+    function std_logic_ctr(data : integer; size_ : integer := 1 ) return std_logic is 
         variable ret : std_logic := '0';
     begin
         if data > 0 then

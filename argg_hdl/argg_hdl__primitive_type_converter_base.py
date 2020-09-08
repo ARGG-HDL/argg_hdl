@@ -153,7 +153,7 @@ class v_symbol_converter(hdl_converter_base):
             return []
         
         if parent._issubclass_("v_class"):
-            return name + " => " + hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")"
+            return name + " => " + hdl.get_constructor(obj)
 
         return []
 
@@ -164,7 +164,7 @@ class v_symbol_converter(hdl_converter_base):
         if parent._issubclass_("v_class"):
              return ""
             
-        return name + " : " +obj._type +" := " +  hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")"  + "; \n"
+        return name + " : " +obj._type +" := " +  hdl.get_constructor(obj) + "; \n"
 
     def getFuncArg(self,obj, name,parent):
         return name + " : " + obj._type   
@@ -209,7 +209,7 @@ class v_symbol_converter(hdl_converter_base):
             return ""
 
 
-        return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")"  + "; \n"    
+        return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.get_constructor(obj) + "; \n"    
     
     def get_architecture_header(self, obj):
 
@@ -219,7 +219,7 @@ class v_symbol_converter(hdl_converter_base):
         if obj._varSigConst == varSig.variable_t:
             return ""
 
-        ret = "  signal "+ str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.get_type_simple(obj)+"_ctr("+str(value(obj))+")" + "; \n"   
+        ret = "  signal "+ str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.get_constructor(obj) + "; \n"   
         return  ret
 
     def get_port_list(self,obj:"v_symbol"):
@@ -236,8 +236,7 @@ class v_symbol_converter(hdl_converter_base):
             " " +  
             hdl.get_type_simple(obj) + 
             " := " + 
-            hdl.get_type_simple(obj)+
-            "_ctr("+str(value(obj))+")"]
+            hdl.get_constructor(obj)]
         
 
 
@@ -268,7 +267,10 @@ class v_symbol_converter(hdl_converter_base):
 
     def get_type_simple(self,obj:"v_symbol"):
         return obj._type
-
+    
+    def get_constructor(self,obj):
+        return obj.primitive_type+"_ctr(" +str(value(obj))+ ", " + str(obj.Bitwidth_raw) + ")"
+    
     def _vhdl__getValue(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
         if astParser:
             astParser.add_read(obj)

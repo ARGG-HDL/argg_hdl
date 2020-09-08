@@ -91,7 +91,10 @@ class v_signed_converter(v_symbol_converter):
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None, context_str=None):
         if issubclass(type(obj), argg_hdl_base0) and issubclass(type(rhs), argg_hdl_base0):
             if "signed" in str(value(rhs._type)):
+                if astParser:
+                    astParser.add_write(rhs)
                 rhs._add_output()
+                obj._add_input()
                 asOp = rhs.__hdl_converter__.get_assiment_op(rhs)
                 top = "ah_min(" + str(rhs) + "'length, "+str(obj) + "'length)"
                 return str(rhs) + "( " +top +" downto 0)" + asOp + str(obj) + "( " +top +" downto 0)"
@@ -100,6 +103,8 @@ class v_signed_converter(v_symbol_converter):
 
     def get_type_simple(self, obj: "v_symbol"):
         ret = obj._type
+        if issubclass(type(obj._type),v_symbol):
+            return obj.primitive_type + "(" + str(obj.Bitwidth_raw) + " - 1 downto 0)"
         sp1 = int(ret.split("downto")[0].split("(")[1])
         sp2 = int(ret.split("downto")[1].split(")")[0])
         sp3 = sp1 - sp2 + 1

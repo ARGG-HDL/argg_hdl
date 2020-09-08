@@ -521,6 +521,9 @@ class hdl_converter_base:
     def get_type_simple(self,obj):
         return type(obj).__name__
 
+    def get_constructor(self,obj):
+        return hdl.get_type_simple(obj)+"_ctr(" +value(obj)+")"
+
     def parse_file(self,obj):
         return ""
 
@@ -743,6 +746,7 @@ class hdl_converter_base:
         if inOut == InOut_t.InOut_tt:
             return " inout "
         
+        return " in "
         inOut = obj.__writeRead__
         if inOut == InOut_t.input_t:
             return " in "
