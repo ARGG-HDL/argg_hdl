@@ -12,6 +12,10 @@ import argg_hdl.argg_hdl_debug_vis as debug_vis
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 
+def clock_t():
+    clk   =  v_sl() 
+    clk.__isFreeType__ = True
+    return clk 
 
 class SerialDataConfig(v_record):
     def __init__(self):
@@ -35,7 +39,7 @@ class register_t(v_record):
 class klm_globals(v_record):
     def __init__(self):
         super().__init__()
-        self.clk   =  v_sl() 
+        self.clk   =  clock_t() 
         self.rst   =  v_sl() 
         self.reg   =  register_t() 
 

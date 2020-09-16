@@ -12,6 +12,13 @@ from argg_hdl.argg_hdl_v_list import *
 from argg_hdl.argg_hdl_master_slave import *
 
 
+
+def clock_t():
+    clk   =  v_sl() 
+    clk.__isFreeType__ = True
+    return clk 
+    
+
 class register_t(v_record):
     def __init__(self):
         super().__init__()
