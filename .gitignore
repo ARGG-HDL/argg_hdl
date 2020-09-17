@@ -111,7 +111,7 @@ dmypy.json
 /argg_hdl.egg-info/
 /.vscode/
 /.idea/
-*temp*
+
 /.vs/
 /tests/ex1_vhdl/output/
 /tests/example1/output/*
