@@ -5,7 +5,7 @@ from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_conve
 
 from argg_hdl.argg_hdl_v_symbol import *
 
-
+from  argg_hdl.free_type_helper import extracted_freeType
 
 class v_symbol_type_alias:
     def __init__(self, obj,alias):
@@ -219,6 +219,9 @@ class v_symbol_converter(hdl_converter_base):
         if obj._varSigConst == varSig.variable_t:
             return ""
 
+        if obj.__isFreeType__ and obj._Inout == InOut_t.output_t:
+            return ""
+
         ret = "  signal "+ str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.get_constructor(obj) + "; \n"   
         return  ret
 
@@ -316,11 +319,18 @@ class v_symbol_converter(hdl_converter_base):
 
         return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
     
-    def get_free_symbols(self,obj,parent_list=[]):
+    def get_free_symbols(self,obj,name, parent_list=[]):
         if obj.__isFreeType__:
-            return [obj]
+            suffix = join_str([x["name"] for x in parent_list],Delimeter="_",end="_"+name)
+            ret = extracted_freeType(obj, suffix)
+            return [ret]
         
         return []
+    
+    def get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
+        ret =  hdl.get_constructor(obj)
+        return ret
+
 
 
 slv_includes = """

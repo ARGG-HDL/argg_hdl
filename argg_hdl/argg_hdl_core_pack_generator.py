@@ -28,6 +28,8 @@ package argg_hdl_core is
     function to_bool(data :  signed) return boolean;
 
     function to_bool(data :  integer) return boolean;
+
+    function to_bool(data :  boolean) return boolean;
     
 end argg_hdl_core;
 
@@ -120,6 +122,11 @@ package body argg_hdl_core is
     begin 
         return data /= 0;
     end function;
+
+      function to_bool(data :  boolean) return boolean is 
+      begin 
+        return data;
+      end function;
 end argg_hdl_core;
 """
 

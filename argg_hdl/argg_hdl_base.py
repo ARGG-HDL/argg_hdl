@@ -403,6 +403,9 @@ class hdl_converter_base:
 
 
     def convert_all_packages(self, obj, ouputFolder,x,FilesDone):
+        if x.__abstract_type_info__.vetoHDLConversion:
+            return 
+
         packetName =  hdl.get_packet_file_name(x)
         if packetName not in FilesDone:
             print_cnvt(str(gTemplateIndent)+ '<package_conversion name="'+type(x).__name__ +'">')
@@ -701,7 +704,7 @@ class hdl_converter_base:
 
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.DefaultValue +";\n"
 
-    def get_free_symbols(self,obj,parent_list=[]):
+    def get_free_symbols(self,obj,name,parent_list=[]):
         return []
 
     def _vhdl__Pull(self,obj):

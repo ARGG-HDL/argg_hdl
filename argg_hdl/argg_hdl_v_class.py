@@ -65,8 +65,7 @@ class v_class_converter(hdl_converter_base):
         return ret
 
     def get_packet_file_name(self, obj):
-        if obj.__vetoHDLConversion__:
-            return ""
+
         return hdl.get_type_simple(obj)+"_pack.vhd"
 
     def get_packet_file_content(self, obj):
@@ -420,12 +419,12 @@ class v_class_converter(hdl_converter_base):
 
 
            
-    def get_free_symbols(self,obj,parent_list=[]):
+    def get_free_symbols(self,obj,name, parent_list=[]):
         
         member = obj.getMember()
         ret =[]
         for m in member:
-            ret += hdl.get_free_symbols(m["symbol"], parent_list +[obj])
+            ret += hdl.get_free_symbols(m["symbol"], m["name"], parent_list +[{"symbol" :obj  , "name":name}])
        
         return ret
 
@@ -759,7 +758,7 @@ class v_class(argg_hdl_base):
 
         self.__vectorPush__ = False
         self.__vectorPull__ = False
-        self.__vetoHDLConversion__ = False
+
         self.__hdl_useDefault_value__ = True
         self.__hdl_name__ =None
         self.__Driver__ = None

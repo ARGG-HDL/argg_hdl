@@ -34,7 +34,8 @@ class v_class_hanlde_converter(v_class_converter):
             name = obj._type
         x = v_class(name, VarSig)
         x.__v_classType__ = v_classType_t.Record_t
-        x.__vetoHDLConversion__  = True
+        x.__abstract_type_info__.vetoHDLConversion = True
+        
         x._Inout= obj._Inout
         x.__writeRead__ = obj.__writeRead__
         x.__hdl_name__ = vc_helper.append_hdl_name(str(obj.__hdl_name__),Suffix)

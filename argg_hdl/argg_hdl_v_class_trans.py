@@ -136,7 +136,8 @@ class v_class_trans_converter(v_class_converter):
 
         x = v_class(name, obj._varSigConst)
         x.__v_classType__ = v_classType_t.Record_t
-        x.__vetoHDLConversion__  = True
+        x.__abstract_type_info__.vetoHDLConversion = True
+        
         x.__hdl_name__ =vc_helper.append_hdl_name(obj.__hdl_name__,suffix)
         x._Inout=Inout
         if obj._Inout == InOut_t.input_t or obj._Inout == InOut_t.Slave_t:

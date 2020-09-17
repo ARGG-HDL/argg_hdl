@@ -463,7 +463,8 @@ def extract_primitive_records(obj):
         record_obj._Inout =  t["symbol"]._Inout if len(ts) >1 else InOut_t.Default_t
         members = t["symbol"].getMember()
         record_obj.__v_classType__ = t["symbol"].__v_classType__
-        record_obj.__vetoHDLConversion__  = True
+
+        record_obj.__abstract_type_info__.vetoHDLConversion = True
         for x in members:
             if  x["symbol"].__isFreeType__:
                 continue
@@ -475,71 +476,10 @@ def extract_primitive_records(obj):
         
     return  ret
 
-class extracted_freeType:
-    def __init__(self, symbol, suffix=""):
-        self.symbol = symbol
-        self.suffix = suffix
-    
-    def getHeader_make_record(self, obj, name):
-        return ""
-
-
-    def get_architecture_header(self, obj):
-        
-        if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
-            return []
-        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
-            return []
-        if obj._varSigConst == varSig.combined_t and self.symbol._varSigConst == varSig.variable_t:
-            return []
-        if obj._varSigConst ==  varSig.variable_t:
-            return []
-
-
-        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
-        
-
-    def get_process_header(self, obj):
-        
-        if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
-            return []
-        if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
-            return []
-        if obj._varSigConst == varSig.combined_t and self.symbol._varSigConst == varSig.signal_t:
-            return []
-        if obj._varSigConst ==  varSig.signal_t:
-            return []
-
-
-        
-        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
-        
-    def get_port_list(self, obj):
-        inout = hdl.get_Inout(self.symbol, obj)
-
-        if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
-            return []       
-            
-        inoutstr = " : "+ hdl.InOut_t2str2(self.symbol,  inout) +" "
-        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +  hdl.get_init_values(self.symbol) ]
-    
-    def vhdl_make_port(self, obj, name):
-        inout = hdl.get_Inout( self.symbol, obj)
-        if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):
-            return []
-
-        return [name + self.suffix + " => " + hdl.get_HDL_name( self.symbol, obj ,self.suffix ) ]
-            
-
 
 
 def extract_FreeTypes(obj):
-    ret = []
-    ret += hdl.get_free_symbols(obj )
-    ret = [
-        extracted_freeType(x)
-        for x in ret
-    ]
+    ret = hdl.get_free_symbols(obj,"" )
     return  ret
 
 

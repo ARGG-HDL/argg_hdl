@@ -494,11 +494,16 @@ class v_entity(argg_hdl_base0, metaclass=InstantiateAfterInit):
         if super()._issubclass_(test):
             return True
         return "v_entity" == test
-        
+
+def clock_t():
+    clk   =  v_sl() 
+    clk.__isFreeType__ = True
+    return clk 
+
 class v_clk_entity(v_entity):
     def __init__(self,clk=None):
         super().__init__()
-        self.clk    =  port_in(v_sl())
+        self.clk    =  port_in(clock_t())
         if clk is not  None:
             self.clk <<  clk
     

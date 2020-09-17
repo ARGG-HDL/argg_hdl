@@ -97,11 +97,10 @@ class InputDelay_print(v_entity):
 
         end_architecture()
 
-class dataSource(v_entity):
+class dataSource(v_clk_entity):
     def __init__(self,clk,outputType =v_slv(32)):
-        super().__init__()
-        self.clk = port_in(v_sl())
-        self.clk << clk
+        super().__init__(clk)
+
 
         self.DataOut = port_Stream_Master(ahe.axisStream( outputType))
         self.architecture()

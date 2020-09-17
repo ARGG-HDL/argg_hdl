@@ -236,8 +236,8 @@ def Has_pushpull_function(obj, pushpull):
     return obj.__hdl_converter__.Has_pushpull_function(obj, pushpull)
 
 
-def get_free_symbols(obj, parent_list=[]):
-    return obj.__hdl_converter__.get_free_symbols(obj, parent_list)
+def get_free_symbols(obj, name, parent_list=[]):
+    return obj.__hdl_converter__.get_free_symbols(obj,name, parent_list)
 
 
 def get_component_suffix(obj, Inout_type, varsignal_type):
