@@ -119,3 +119,5 @@ dmypy.json
 /tests/example2/output/*
 /tests/RamHandler/output/*
 /tests/RamHandler/output/*
+
+*data.vcd
