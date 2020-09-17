@@ -56,6 +56,9 @@ class extracted_freeType:
             return []
 
         driver,IsInit = x.__Get_Driver_in_scope__()
+        
+        if driver is not x:
+            return [name + self.suffix + " => " + str( driver )   ]
 
-        return [name + self.suffix + " => " + hdl.get_HDL_name( self.symbol, driver ,self.suffix ) ]
+        return [name + self.suffix + " => " + hdl.get_HDL_name( self.symbol, x ,self.suffix ) ]
             
