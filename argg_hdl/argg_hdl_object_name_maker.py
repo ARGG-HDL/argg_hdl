@@ -31,6 +31,11 @@ class objectName:
 
         sameTypeNameCandidates = [ x for x in self.objectNameList if x.objTypeName == self.objTypeName]
 
+        sameMembers = [ x for x in  sameTypeNameCandidates if    sorted(self.MemberTypeNames)   == sorted(x.MemberTypeNames)         ]
+
+        if sameMembers:
+            return sameMembers[0].HDL_objectName
+
         self.HDL_objectName = self.objTypeName + str(len(self.objectNameList)) if len(sameTypeNameCandidates) > 0 else self.objTypeName
         self.objectNameList.append(self)
         #print("New Name for ", str(self))

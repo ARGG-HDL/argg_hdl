@@ -634,6 +634,8 @@ class v_class_converter(hdl_converter_base):
         MemberTypeNames = []
 
         for x in obj.getMember():
+            if x["symbol"].__isFreeType__:
+                continue
             MemberTypeNames.append(hdl.get_type_simple(x["symbol"]))
 
         ret = make_object_name(objTypeName,MemberTypeNames)
