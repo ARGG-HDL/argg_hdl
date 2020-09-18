@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package optional_t_pack is 
@@ -14,27 +15,28 @@ package optional_t_pack is
 ------- Start Psuedo Class optional_t -------------------------
 
 type optional_t is record 
-    data : std_logic_vector(31 downto 0);
+    data : slv32;
     valid : std_logic;
 end record;
     
     
   constant optional_t_null : optional_t:= (
-    data => (others => '0'),
-    valid => '0'
+    data => std_logic_vector_ctr(0, 32),
+    valid => std_logic_ctr(0, 1)
   );
 
 
     type optional_t_a is array (natural range <>) of optional_t;
         
 
+  function optional_t_ctr () return optional_t;
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
-  function to_bool (self :   optional_t) return boolean;
+  function to_bool (self : optional_t) return boolean;
   procedure set_inValid_0 (self :  inout  optional_t);
-  function is_valid_0 (self :   optional_t) return boolean;
+  function is_valid_0 (self : optional_t) return boolean;
   procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_vector);
   procedure reset_0 (self :  inout  optional_t);
 ------- End Psuedo Class optional_t -------------------------
@@ -48,6 +50,13 @@ package body optional_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class optional_t -------------------------
+function optional_t_ctr () return optional_t is
+    variable ret : optional_t := optional_t_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
@@ -67,7 +76,7 @@ procedure set_value_00_lshift (self :  inout  optional_t; rhs :  in  std_logic_v
    
 end procedure;
 
-function is_valid_0 (self :   optional_t) return boolean is
+function is_valid_0 (self : optional_t) return boolean is
    
   begin 
  return self.valid = '1';
@@ -81,7 +90,7 @@ procedure set_inValid_0 (self :  inout  optional_t) is
    
 end procedure;
 
-function to_bool (self :   optional_t) return boolean is
+function to_bool (self : optional_t) return boolean is
    
   begin 
  return is_valid_0(self => self);

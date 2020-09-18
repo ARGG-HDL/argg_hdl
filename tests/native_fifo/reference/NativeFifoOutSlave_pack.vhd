@@ -9,6 +9,7 @@ use work.NativeFifoOut_pack.all;
 use work.argg_hdl_core.all;
 use work.slv32_a_pack.all;
 use work.small_buffer_pack.all;
+use work.v_symbol_pack.all;
 
 
 package NativeFifoOutSlave_pack is 
@@ -23,8 +24,8 @@ end record;
     
     
   constant NativeFifoOutSlave_sig_null : NativeFifoOutSlave_sig:= (
-    rx1 => NativeFifoOut_null,
-    rx2 => NativeFifoOut_null
+    rx1 => NativeFifoOut_ctr,
+    rx2 => NativeFifoOut_ctr
   );
 
 
@@ -32,7 +33,7 @@ end record;
         
 
 
-type NativeFifoOutSlave is record 
+type NativeFifoOutSlave23 is record 
     buff : small_buffer;
     empty1 : std_logic;
     enable1 : std_logic;
@@ -40,23 +41,26 @@ type NativeFifoOutSlave is record
 end record;
     
     
-  constant NativeFifoOutSlave_null : NativeFifoOutSlave:= (
-    buff => small_buffer_null,
-    empty1 => '0',
-    enable1 => '0',
-    rx => NativeFifoOut_null
+  constant NativeFifoOutSlave23_null : NativeFifoOutSlave23:= (
+    buff => small_buffer_ctr,
+    empty1 => std_logic_ctr(0, 1),
+    enable1 => std_logic_ctr(0, 1),
+    rx => NativeFifoOut_ctr
   );
 
 
-    type NativeFifoOutSlave_a is array (natural range <>) of NativeFifoOutSlave;
+    type NativeFifoOutSlave23_a is array (natural range <>) of NativeFifoOutSlave23;
         
 
+  function NativeFifoOutSlave_sig_ctr () return NativeFifoOutSlave_sig;
+  function NativeFifoOutSlave23_ctr () return NativeFifoOutSlave23;
   procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  NativeFifoOutSlave);
   procedure push (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  NativeFifoOutSlave;  signal self_sig_rx2_s2m : out NativeFifoOut_s2m);
   procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig_a;  self :  inout  NativeFifoOutSlave_a);
   procedure push (signal self_sig :  in  NativeFifoOutSlave_sig_a;  self :  inout  NativeFifoOutSlave_a;  signal self_sig_rx2_s2m : out NativeFifoOut_s2m_a);
   procedure read_data_01 (Signal self_sig :  in  NativeFifoOutSlave_sig; self :  inout  NativeFifoOutSlave; signal data :  out  std_logic_vector);
-  function isReceivingData_0 (Signal self_sig :   NativeFifoOutSlave_sig; self :   NativeFifoOutSlave) return boolean;
+  function isReceivingData_0 (Signal self_sig : NativeFifoOutSlave_sig ;
+    self : NativeFifoOutSlave) return boolean;
 ------- End Psuedo Class NativeFifoOutSlave -------------------------
 -------------------------------------------------------------------------
 
@@ -68,6 +72,20 @@ package body NativeFifoOutSlave_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class NativeFifoOutSlave -------------------------
+function NativeFifoOutSlave_sig_ctr () return NativeFifoOutSlave_sig is
+    variable ret : NativeFifoOutSlave_sig := NativeFifoOutSlave_sig_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function NativeFifoOutSlave23_ctr () return NativeFifoOutSlave23 is
+    variable ret : NativeFifoOutSlave23 := NativeFifoOutSlave23_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  NativeFifoOutSlave) is
    
   begin 
@@ -79,7 +97,7 @@ procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  N
 
 -- End Connecting
     
-    if (( self.enable1 = '1' and  not  ( self.empty1 = '1' ) ) ) then 
+    if (( to_bool(self.enable1)  and  not  ( to_bool(self.empty1)  ) ) ) then 
       set_value_00_lshift(self => self.buff, rhs => self.rx.data);
       
     end if;
@@ -95,7 +113,7 @@ procedure push (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  N
   begin 
  
     
-    if ( not  ( isReceivingData_0(self => self.buff) ) ) then 
+    if ( not  ( to_bool(isReceivingData_0(self => self.buff))  ) ) then 
       self.rx.enable := '1';
       
     end if;
@@ -129,7 +147,8 @@ procedure push (signal self_sig :  in  NativeFifoOutSlave_sig_a;  self :  inout 
              
 end procedure;
 
-function isReceivingData_0 (Signal self_sig :   NativeFifoOutSlave_sig; self :   NativeFifoOutSlave) return boolean is
+function isReceivingData_0 (Signal self_sig : NativeFifoOutSlave_sig ;
+    self : NativeFifoOutSlave) return boolean is
    
   begin 
  return isReceivingData_0(self => self.buff);

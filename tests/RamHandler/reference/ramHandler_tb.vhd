@@ -12,6 +12,7 @@ use work.ram_handle_master_pack.all;
 use work.ram_handler_pack.all;
 use work.slv32_a_pack.all;
 use work.small_buffer_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity ramHandler_tb is 
@@ -22,17 +23,17 @@ end entity;
 architecture rtl of ramHandler_tb is
 
 --------------------------ramHandler_tb-----------------
-  signal addr_out : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal adr : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal data_out : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal addr_out : slv32 := std_logic_vector_ctr(0, 32); 
+  signal adr : slv32 := std_logic_vector_ctr(0, 32); 
+  signal data : slv32 := std_logic_vector_ctr(0, 32); 
+  signal data_out : slv32 := std_logic_vector_ctr(0, 32); 
 --------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
+  signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end clkgen-----------------
 --------------------------ram-----------------
-  signal ram_DataIO_s2m : ram_handler_s2m := ram_handler_s2m_null;
-  signal ram_DataIO_m2s : ram_handler_m2s := ram_handler_m2s_null;
-  signal ram_clk : std_logic := '0'; 
+  signal   ram_DataIO_s2m : ram_handler_s2m := ram_handler_s2m_ctr;
+  signal   ram_DataIO_m2s : ram_handler_m2s := ram_handler_m2s_ctr;
+  signal ram_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end ram-----------------
 -------------------------- end ramHandler_tb-----------------
 
@@ -41,15 +42,15 @@ begin
   
 -----------------------------------
 proc : process(clkgen_clk) is
-  variable ram_master : ram_handle_master := ram_handle_master_null;
-  variable data_out_opt : optional_t := optional_t_null;
+    variable   ram_master : ram_handle_master := ram_handle_master_ctr;
+    variable   data_out_opt : optional_t := optional_t_ctr;
   begin
     if rising_edge(clkgen_clk) then 
       pull( self  =>  ram_master, tx => ram_DataIO_s2m);
   data <= data + 10;
     adr <= adr + 1;
     
-      if (( ready_to_send_0(self => ram_master) and adr < 10) ) then 
+      if (( to_bool(ready_to_send_0(self => ram_master))  and adr < 10) ) then 
         send_data_011(self => ram_master, adr => adr, data => data);
         
       end if;

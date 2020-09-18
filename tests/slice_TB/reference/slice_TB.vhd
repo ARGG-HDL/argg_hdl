@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 entity slice_TB is 
@@ -16,16 +17,16 @@ end entity;
 architecture rtl of slice_TB is
 
 --------------------------slice_TB-----------------
-  signal counter : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal counter2 : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal counter3 : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(1, 32)); 
-  signal d0 : std_logic_vector(3 downto 0) := (others => '0'); 
-  signal d1 : std_logic_vector(3 downto 0) := (others => '0'); 
-  signal d2 : std_logic_vector(3 downto 0) := (others => '0'); 
-  signal d3 : std_logic_vector(3 downto 0) := (others => '0'); 
-  signal d4 : std_logic_vector(15 downto 0) := (others => '0'); 
+  signal counter : slv32 := std_logic_vector_ctr(0, 32); 
+  signal counter2 : slv32 := std_logic_vector_ctr(0, 32); 
+  signal counter3 : slv32 := std_logic_vector_ctr(1, 32); 
+  signal d0 : slv4 := std_logic_vector_ctr(0, 4); 
+  signal d1 : slv4 := std_logic_vector_ctr(0, 4); 
+  signal d2 : slv4 := std_logic_vector_ctr(0, 4); 
+  signal d3 : slv4 := std_logic_vector_ctr(0, 4); 
+  signal d4 : slv16 := std_logic_vector_ctr(0, 16); 
 --------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
+  signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end clkgen-----------------
 -------------------------- end slice_TB-----------------
 

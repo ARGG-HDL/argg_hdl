@@ -7,6 +7,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.register_t_pack.all;
+use work.v_symbol_pack.all;
 
 
 package klm_globals_pack is 
@@ -15,22 +16,23 @@ package klm_globals_pack is
 ------- Start Psuedo Class klm_globals -------------------------
 
 type klm_globals is record 
-    clk : std_logic;
     reg : register_t;
     rst : std_logic;
 end record;
     
     
   constant klm_globals_null : klm_globals:= (
-    clk => '0',
-    reg => register_t_null,
-    rst => '0'
+    reg => register_t_ctr,
+    rst => std_logic_ctr(0, 1)
   );
 
 
     type klm_globals_a is array (natural range <>) of klm_globals;
         
 
+
+
+  function klm_globals_ctr () return klm_globals;
   procedure pull (self : inout klm_globals; signal data_IO :  in  klm_globals);
   procedure push (self : inout klm_globals; signal data_IO :  out  klm_globals);
 ------- End Psuedo Class klm_globals -------------------------
@@ -44,6 +46,13 @@ package body klm_globals_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class klm_globals -------------------------
+function klm_globals_ctr () return klm_globals is
+    variable ret : klm_globals := klm_globals_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self : inout klm_globals; signal data_IO :  in  klm_globals) is
    
   begin 

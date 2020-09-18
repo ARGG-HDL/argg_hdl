@@ -9,13 +9,15 @@ use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
 use work.klm_globals_pack.all;
 use work.register_t_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity InputDelay_print is 
   port(
-    ConfigIn_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    ConfigIn_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    globals :  in  klm_globals := klm_globals_null
+    ConfigIn_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    ConfigIn_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    globals :  in  klm_globals := klm_globals_ctr;
+    globals_clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -24,18 +26,18 @@ end entity;
 architecture rtl of InputDelay_print is
 
 --------------------------InputDelay_print-----------------
-  signal counter : integer := 0; 
-  signal d : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal counter : integer := integer_ctr(0, 32); 
+  signal d : slv32 := std_logic_vector_ctr(0, 32); 
 -------------------------- end InputDelay_print-----------------
 
 begin
   -- begin architecture
   
 -----------------------------------
-proc : process(globals.clk) is
-  variable ax_slave : axiStream_slv32_slave := axiStream_slv32_slave_null;
+proc : process(globals_clk) is
+    variable   ax_slave : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
   begin
-    if rising_edge(globals.clk) then 
+    if rising_edge(globals_clk) then 
       pull( self  =>  ax_slave, rx => ConfigIn_m2s);
   counter <= counter + 1;
     

@@ -10,13 +10,14 @@ use work.NativeFifoOut_pack.all;
 use work.argg_hdl_core.all;
 use work.slv32_a_pack.all;
 use work.small_buffer_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity readout_native_fifo is 
   port(
-    Data_in_s2m :  out  NativeFifoOut_s2m := NativeFifoOut_s2m_null;
-    Data_in_m2s :  in  NativeFifoOut_m2s := NativeFifoOut_m2s_null;
-    clk :  in  std_logic := '0'
+    Data_in_s2m :  out  NativeFifoOut_s2m := NativeFifoOut_s2m_ctr;
+    Data_in_m2s :  in  NativeFifoOut_m2s := NativeFifoOut_m2s_ctr;
+    clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -25,9 +26,9 @@ end entity;
 architecture rtl of readout_native_fifo is
 
 --------------------------readout_native_fifo-----------------
-  signal counter : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
-  signal fifo_s_sig : NativeFifoOutSlave_sig := NativeFifoOutSlave_sig_null;
+  signal counter : slv32 := std_logic_vector_ctr(0, 32); 
+  signal data : slv32 := std_logic_vector_ctr(0, 32); 
+  signal   fifo_s_sig : NativeFifoOutSlave_sig := NativeFifoOutSlave_sig_ctr;
   -------------------------- end readout_native_fifo-----------------
 
 begin
@@ -35,13 +36,13 @@ begin
   
 -----------------------------------
 proc : process(clk) is
-  variable fifo_s : NativeFifoOutSlave := NativeFifoOutSlave_null;
+    variable   fifo_s : NativeFifoOutSlave := NativeFifoOutSlave23_ctr;
   begin
     if rising_edge(clk) then 
       pull( self_sig  =>  fifo_s_sig, self  =>  fifo_s);
   counter <= counter + 1;
     
-      if (isReceivingData_0(self_sig => fifo_s_sig, self => fifo_s)) then 
+      if (to_bool(isReceivingData_0(self_sig => fifo_s_sig, self => fifo_s)) ) then 
         read_data_01(self_sig => fifo_s_sig, self => fifo_s, data => data);
         
       end if;

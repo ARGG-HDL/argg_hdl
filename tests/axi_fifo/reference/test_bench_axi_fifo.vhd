@@ -7,6 +7,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
+use work.v_symbol_pack.all;
 
 
 entity test_bench_axi_fifo is 
@@ -17,29 +18,26 @@ end entity;
 architecture rtl of test_bench_axi_fifo is
 
 --------------------------test_bench_axi_fifo-----------------
-  signal maxCount : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(20, 32)); 
+  signal maxCount : slv32 := std_logic_vector_ctr(20, 32); 
 --------------------------pipe1-----------------
 --------------------------pipe1_1_rollingCounter-----------------
-  signal pipe1_1_rollingCounter_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-  signal pipe1_1_rollingCounter_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal pipe1_1_rollingCounter_MaxCount : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(10, 32)); 
-  signal pipe1_1_rollingCounter_clk : std_logic := '0'; 
+  signal   pipe1_1_rollingCounter_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_1_rollingCounter_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+  signal pipe1_1_rollingCounter_MaxCount : slv32 := std_logic_vector_ctr(20, 32); 
 -------------------------- end pipe1_1_rollingCounter-----------------
 --------------------------pipe1_2_axiFifo-----------------
-  signal pipe1_2_axiFifo_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-  signal pipe1_2_axiFifo_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal pipe1_2_axiFifo_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-  signal pipe1_2_axiFifo_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal pipe1_2_axiFifo_clk : std_logic := '0'; 
+  signal   pipe1_2_axiFifo_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_2_axiFifo_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+  signal   pipe1_2_axiFifo_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_2_axiFifo_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
 -------------------------- end pipe1_2_axiFifo-----------------
 --------------------------pipe1_3_axiPrint-----------------
-  signal pipe1_3_axiPrint_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-  signal pipe1_3_axiPrint_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-  signal pipe1_3_axiPrint_clk : std_logic := '0'; 
+  signal   pipe1_3_axiPrint_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_3_axiPrint_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
 -------------------------- end pipe1_3_axiPrint-----------------
 -------------------------- end pipe1-----------------
 --------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
+  signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end clkgen-----------------
 -------------------------- end test_bench_axi_fifo-----------------
 
@@ -49,35 +47,32 @@ begin
     Axi_out_s2m => pipe1_1_rollingCounter_Axi_out_s2m,
     Axi_out_m2s => pipe1_1_rollingCounter_Axi_out_m2s,
     MaxCount => pipe1_1_rollingCounter_MaxCount,
-    clk => pipe1_1_rollingCounter_clk
+    clk => clkgen_clk
   );
   pipe1_2_axiFifo : entity work.axiFifo port map (
     Axi_in_s2m => pipe1_2_axiFifo_Axi_in_s2m,
     Axi_in_m2s => pipe1_2_axiFifo_Axi_in_m2s,
     Axi_out_s2m => pipe1_2_axiFifo_Axi_out_s2m,
     Axi_out_m2s => pipe1_2_axiFifo_Axi_out_m2s,
-    clk => pipe1_2_axiFifo_clk
+    clk => clkgen_clk
   );
   pipe1_3_axiPrint : entity work.axiPrint port map (
     Axi_in_s2m => pipe1_3_axiPrint_Axi_in_s2m,
     Axi_in_m2s => pipe1_3_axiPrint_Axi_in_m2s,
-    clk => pipe1_3_axiPrint_clk
+    clk => clkgen_clk
   );
   
   clkgen : entity work.clk_generator port map (
     clk => clkgen_clk
   );
   pipe1_1_rollingCounter_MaxCount <= maxCount;
-  pipe1_1_rollingCounter_clk <= clkgen_clk;
   ---------------------------------------------------------------------
 --  pipe1_2_axiFifo_Axi_in << pipe1_1_rollingCounter_Axi_out
 pipe1_2_axiFifo_Axi_in_m2s <= pipe1_1_rollingCounter_Axi_out_m2s;
 pipe1_1_rollingCounter_Axi_out_s2m <= pipe1_2_axiFifo_Axi_in_s2m;
-  pipe1_2_axiFifo_clk <= clkgen_clk;
   ---------------------------------------------------------------------
 --  pipe1_3_axiPrint_Axi_in << pipe1_2_axiFifo_Axi_out
 pipe1_3_axiPrint_Axi_in_m2s <= pipe1_2_axiFifo_Axi_out_m2s;
 pipe1_2_axiFifo_Axi_out_s2m <= pipe1_3_axiPrint_Axi_in_s2m;
-  pipe1_3_axiPrint_clk <= clkgen_clk;
   
 end architecture;

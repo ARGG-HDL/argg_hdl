@@ -8,13 +8,14 @@ use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.ram_handler_pack.all;
 use work.slv32_a_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity ram_block is 
   port(
-    DataIO_s2m :  out  ram_handler_s2m := ram_handler_s2m_null;
-    DataIO_m2s :  in  ram_handler_m2s := ram_handler_m2s_null;
-    clk :  in  std_logic := '0'
+    DataIO_s2m :  out  ram_handler_s2m := ram_handler_s2m_ctr;
+    DataIO_m2s :  in  ram_handler_m2s := ram_handler_m2s_ctr;
+    clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -34,7 +35,7 @@ proc : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (DataIO_m2s.write_enable = '1') then 
+      if (to_bool(DataIO_m2s.write_enable) ) then 
         mem(to_integer(signed( DataIO_m2s.Write_address))) <= DataIO_m2s.Write_Data;
         
       end if;

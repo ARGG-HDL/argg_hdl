@@ -9,6 +9,9 @@
     <entity_conversion name="clk_generator">
       <status ="sucess">
     </entity_conversion>
+    <package_conversion name="v_symbol">
+      <status ="sucess">
+    </package_conversion>
     <entity_conversion name="readout_native_fifo">
       <Missing_Template function="isReceivingData" args="NativeFifoOutSlave" />
       <Missing_Template function="read_data" args="NativeFifoOutSlave, std_logic_vector(31 downto 0)" />

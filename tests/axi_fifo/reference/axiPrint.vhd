@@ -7,13 +7,14 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
+use work.v_symbol_pack.all;
 
 
 entity axiPrint is 
   port(
-    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    clk :  in  std_logic := '0'
+    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -22,14 +23,14 @@ end entity;
 architecture rtl of axiPrint is
 
 --------------------------axiPrint-----------------
-  signal i_buff : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal i_buff : slv32 := std_logic_vector_ctr(0, 32); 
 -------------------------- end axiPrint-----------------
 
 begin
 
   -----------------------------------
   proc : process(clk) is
-    variable axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_null;
+      variable   axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
     variable axiSalve_buff : std_logic_vector(31 downto 0) := (others => '0');
     begin
       if rising_edge(clk) then 

@@ -7,6 +7,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.NativeFifoOut_pack.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 entity fifo_cc_tb is 
@@ -17,14 +18,14 @@ end entity;
 architecture rtl of fifo_cc_tb is
 
 --------------------------fifo_cc_tb-----------------
-  signal data : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal data : slv32 := std_logic_vector_ctr(0, 32); 
 --------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
+  signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end clkgen-----------------
 --------------------------ff_readout-----------------
-  signal ff_readout_Data_in_s2m : NativeFifoOut_s2m := NativeFifoOut_s2m_null;
-  signal ff_readout_Data_in_m2s : NativeFifoOut_m2s := NativeFifoOut_m2s_null;
-  signal ff_readout_clk : std_logic := '0'; 
+  signal   ff_readout_Data_in_s2m : NativeFifoOut_s2m := NativeFifoOut_s2m_ctr;
+  signal   ff_readout_Data_in_m2s : NativeFifoOut_m2s := NativeFifoOut_m2s_ctr;
+  signal ff_readout_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end ff_readout-----------------
 -------------------------- end fifo_cc_tb-----------------
 
@@ -43,7 +44,7 @@ proc : process(clkgen_clk) is
         
       end if;
     
-      if (ff_readout_Data_in_s2m.enable = '1') then 
+      if (to_bool(ff_readout_Data_in_s2m.enable) ) then 
         ff_readout_Data_in_m2s.data <= data;
         
       end if;

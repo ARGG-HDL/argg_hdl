@@ -7,14 +7,15 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
+use work.v_symbol_pack.all;
 
 
 entity rollingCounter is 
   port(
-    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    MaxCount :  in  std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(10, 32));
-    clk :  in  std_logic := '0'
+    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    MaxCount :  in  slv32 := std_logic_vector_ctr(20, 32);
+    clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -23,14 +24,14 @@ end entity;
 architecture rtl of rollingCounter is
 
 --------------------------rollingCounter-----------------
-  signal counter : std_logic_vector(31 downto 0) := (others => '0'); 
+  signal counter : slv32 := std_logic_vector_ctr(0, 32); 
 -------------------------- end rollingCounter-----------------
 
 begin
 
   -----------------------------------
   proc : process(clk) is
-    variable v_Axi_out : axiStream_slv32_master := axiStream_slv32_master_null;
+      variable   v_Axi_out : axiStream_slv32_master := axiStream_slv32_master_ctr;
     begin
       if rising_edge(clk) then 
         pull( self  =>  v_Axi_out, tx => Axi_out_s2m);

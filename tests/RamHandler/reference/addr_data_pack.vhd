@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package addr_data_pack is 
@@ -14,20 +15,21 @@ package addr_data_pack is
 ------- Start Psuedo Class addr_data -------------------------
 
 type addr_data is record 
-    address : std_logic_vector(31 downto 0);
-    data : std_logic_vector(31 downto 0);
+    address : slv32;
+    data : slv32;
 end record;
     
     
   constant addr_data_null : addr_data:= (
-    address => (others => '0'),
-    data => (others => '0')
+    address => std_logic_vector_ctr(0, 32),
+    data => std_logic_vector_ctr(0, 32)
   );
 
 
     type addr_data_a is array (natural range <>) of addr_data;
         
 
+  function addr_data_ctr () return addr_data;
   procedure pull (self : inout addr_data; signal data_IO :  in  addr_data);
   procedure push (self : inout addr_data; signal data_IO :  out  addr_data);
 ------- End Psuedo Class addr_data -------------------------
@@ -41,6 +43,13 @@ package body addr_data_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class addr_data -------------------------
+function addr_data_ctr () return addr_data is
+    variable ret : addr_data := addr_data_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self : inout addr_data; signal data_IO :  in  addr_data) is
    
   begin 

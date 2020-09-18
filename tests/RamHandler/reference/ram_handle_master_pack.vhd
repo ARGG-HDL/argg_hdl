@@ -11,6 +11,7 @@ use work.optional_t_pack.all;
 use work.ram_handler_pack.all;
 use work.slv32_a_pack.all;
 use work.small_buffer_pack.all;
+use work.v_symbol_pack.all;
 
 
 package ram_handle_master_pack is 
@@ -29,10 +30,10 @@ end record;
     
   constant ram_handle_master_null : ram_handle_master:= (
     addr => (others => (others => '0')),
-    buff => small_buffer_null,
-    c_data => addr_data_null,
-    data_requested => '0',
-    tx => ram_handler_null
+    buff => small_buffer_ctr,
+    c_data => addr_data_ctr,
+    data_requested => std_logic_ctr(0, 1),
+    tx => ram_handler_ctr
   );
 
 
@@ -40,6 +41,7 @@ end record;
         
 
 -- v_list getHeader
+  function ram_handle_master_ctr () return ram_handle_master;
   procedure pull (self :  inout  ram_handle_master;  signal tx :  in  ram_handler_s2m);
   procedure push (self :  inout  ram_handle_master;  signal tx :  out  ram_handler_m2s);
   procedure pull (self :  inout  ram_handle_master_a;  signal tx :  in  ram_handler_s2m_a);
@@ -47,7 +49,7 @@ end record;
   procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; data :  inout  optional_t);
   procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; signal data :  out  std_logic_vector);
   procedure send_data_011 (self :  inout  ram_handle_master; signal adr :  in  std_logic_vector; signal data :  in  std_logic_vector);
-  function ready_to_send_0 (self :   ram_handle_master) return boolean;
+  function ready_to_send_0 (self : ram_handle_master) return boolean;
 ------- End Psuedo Class ram_handle_master -------------------------
 -------------------------------------------------------------------------
 
@@ -59,6 +61,13 @@ package body ram_handle_master_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class ram_handle_master -------------------------
+function ram_handle_master_ctr () return ram_handle_master is
+    variable ret : ram_handle_master := ram_handle_master_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self :  inout  ram_handle_master;  signal tx :  in  ram_handler_s2m) is
    
   begin 
@@ -125,7 +134,7 @@ procedure push (self :  inout  ram_handle_master_a;  signal tx :  out  ram_handl
              
 end procedure;
 
-function ready_to_send_0 (self :   ram_handle_master) return boolean is
+function ready_to_send_0 (self : ram_handle_master) return boolean is
    
   begin 
  return self.tx.write_enable = '0';
@@ -149,7 +158,7 @@ procedure request_data_011 (self :  inout  ram_handle_master; signal adr :  in  
   re_read_0(self => self.buff);
   for i5 in 0 to 10 -1 loop 
       
-      if (isReceivingData_0(self => self.buff)) then 
+      if (to_bool(isReceivingData_0(self => self.buff)) ) then 
         get_value_00_rshift(self => self.buff, rhs => self.c_data);
         
         if (self.c_data.address = adr) then 
@@ -179,7 +188,7 @@ procedure request_data_010 (self :  inout  ram_handle_master; signal adr :  in  
   re_read_0(self => self.buff);
   for i7 in 0 to 10 -1 loop 
       
-      if (isReceivingData_0(self => self.buff)) then 
+      if (to_bool(isReceivingData_0(self => self.buff)) ) then 
         get_value_00_rshift(self => self.buff, rhs => self.c_data);
         
         if (self.c_data.address = adr) then 

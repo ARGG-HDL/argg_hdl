@@ -7,15 +7,16 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
+use work.v_symbol_pack.all;
 
 
 entity stream_delay_one is 
   port(
-    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    clk :  in  std_logic := '0'
+    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -30,8 +31,8 @@ begin
 
   -----------------------------------
   proc : process(clk) is
-    variable axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_null;
-    variable axMaster : axiStream_slv32_master := axiStream_slv32_master_null;
+      variable   axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
+      variable   axMaster : axiStream_slv32_master := axiStream_slv32_master_ctr;
     begin
       if rising_edge(clk) then 
         pull( self  =>  axiSalve, rx => Axi_in_m2s);

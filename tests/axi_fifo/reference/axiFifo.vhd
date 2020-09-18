@@ -8,15 +8,16 @@ use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
 use work.slv32_a_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity axiFifo is 
   port(
-    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    clk :  in  std_logic := '0'
+    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+    clk :  in  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 
@@ -25,11 +26,11 @@ end entity;
 architecture rtl of axiFifo is
 
 --------------------------axiFifo-----------------
-  constant array_size : integer := 1024; 
-  constant depth : integer := 10; 
-  signal head_index : std_logic_vector(10 downto 0) := (others => '0'); 
+  constant array_size : integer := integer_ctr(1024, 32); 
+  constant depth : integer := integer_ctr(10, 32); 
+  signal head_index : slv11 := std_logic_vector_ctr(0, 11); 
   signal sList : slv32_a(0 to array_size - 1)  := (others => (others => '0'));
-  signal tail_index : std_logic_vector(10 downto 0) := (others => '0'); 
+  signal tail_index : slv11 := std_logic_vector_ctr(0, 11); 
 -------------------------- end axiFifo-----------------
 
 begin
@@ -39,7 +40,7 @@ begin
   
   -----------------------------------
   proc : process(clk) is
-    variable axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_null;
+      variable   axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
     variable counter : std_logic_vector(10 downto 0) := (others => '0');
     variable axiSalve_buff : std_logic_vector(31 downto 0) := (others => '0');
     variable i_valid : std_logic := '0';
@@ -60,14 +61,14 @@ begin
           
         end if;
       
-        if (( Axi_out_s2m.ready = '1' and i_valid = '1') ) then 
+        if (( to_bool(Axi_out_s2m.ready)  and to_bool(i_valid) ) ) then 
           i_valid := '0';
           tail_index <= tail_index + 1;
           counter := counter - 1;
           
         end if;
       
-        if ((  not  ( i_valid = '1' )  and counter > 0) ) then 
+        if ((  not  ( to_bool(i_valid)  )  and counter > 0) ) then 
           i_valid := '1';
           
         end if;

@@ -6,11 +6,12 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 entity clk_generator is 
   port(
-    clk :  out  std_logic := '0'
+    clk :  out  std_logic := std_logic_ctr(0, 1)
   );
 end entity;
 

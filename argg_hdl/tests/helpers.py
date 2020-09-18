@@ -96,7 +96,6 @@ def do_simulation(func):
     def wrap(OutputPath, SimulationTime=3000):
         mkdir_if_not_exist(OutputPath)
         mkdir_if_not_exist(OutputPath+"/output")
-        mkdir_if_not_exist(OutputPath+"/reference")
         mkdir_if_not_exist(OutputPath+"/temp")
         
         create_git_ignoreFile_for_folder(OutputPath+ "/output/")

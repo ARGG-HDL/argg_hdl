@@ -9,6 +9,9 @@
     <entity_conversion name="clk_generator">
       <status ="sucess">
     </entity_conversion>
+    <package_conversion name="v_symbol">
+      <status ="sucess">
+    </package_conversion>
   </Converting>
 <!--=======================-->
   <Converting Index="2">

@@ -7,6 +7,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.myStates_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity enum_TB is 
@@ -17,9 +18,9 @@ end entity;
 architecture rtl of enum_TB is
 
 --------------------------enum_TB-----------------
-  signal counter : integer := 0; 
+  signal counter : integer := integer_ctr(0, 32); 
 --------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
+  signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end clkgen-----------------
 -------------------------- end enum_TB-----------------
 

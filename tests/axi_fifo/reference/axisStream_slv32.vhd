@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package axisStream_slv32 is 
@@ -19,7 +20,7 @@ end record;
     
     
   constant axiStream_slv32_s2m_null : axiStream_slv32_s2m:= (
-    ready => '0'
+    ready => std_logic_ctr(0, 1)
   );
 
 
@@ -28,16 +29,16 @@ end record;
 
 
 type axiStream_slv32_m2s is record 
-    data : std_logic_vector(31 downto 0);
+    data : slv32;
     last : std_logic;
     valid : std_logic;
 end record;
     
     
   constant axiStream_slv32_m2s_null : axiStream_slv32_m2s:= (
-    data => (others => '0'),
-    last => '0',
-    valid => '0'
+    data => std_logic_vector_ctr(0, 32),
+    last => std_logic_ctr(0, 1),
+    valid => std_logic_ctr(0, 1)
   );
 
 
@@ -46,7 +47,7 @@ end record;
 
 
 type axiStream_slv32 is record 
-    data : std_logic_vector(31 downto 0);
+    data : slv32;
     last : std_logic;
     ready : std_logic;
     valid : std_logic;
@@ -54,16 +55,19 @@ end record;
     
     
   constant axiStream_slv32_null : axiStream_slv32:= (
-    data => (others => '0'),
-    last => '0',
-    ready => '0',
-    valid => '0'
+    data => std_logic_vector_ctr(0, 32),
+    last => std_logic_ctr(0, 1),
+    ready => std_logic_ctr(0, 1),
+    valid => std_logic_ctr(0, 1)
   );
 
 
     type axiStream_slv32_a is array (natural range <>) of axiStream_slv32;
         
 
+  function axiStream_slv32_s2m_ctr () return axiStream_slv32_s2m;
+  function axiStream_slv32_m2s_ctr () return axiStream_slv32_m2s;
+  function axiStream_slv32_ctr () return axiStream_slv32;
   procedure pull (self :  inout axiStream_slv32; signal IO_data :  in axiStream_slv32_s2m);
   procedure push (self :  inout axiStream_slv32; signal IO_data :  out axiStream_slv32_m2s);
   procedure pull (self :  inout axiStream_slv32; signal IO_data :  in axiStream_slv32_m2s);
@@ -81,22 +85,23 @@ end record;
     
     
   constant axiStream_slv32_master_null : axiStream_slv32_master:= (
-    tx => axiStream_slv32_null
+    tx => axiStream_slv32_ctr
   );
 
 
     type axiStream_slv32_master_a is array (natural range <>) of axiStream_slv32_master;
         
 
+  function axiStream_slv32_master_ctr () return axiStream_slv32_master;
   procedure pull (self :  inout  axiStream_slv32_master;  signal tx :  in  axiStream_slv32_s2m);
   procedure push (self :  inout  axiStream_slv32_master;  signal tx :  out  axiStream_slv32_m2s);
   procedure pull (self :  inout  axiStream_slv32_master_a;  signal tx :  in  axiStream_slv32_s2m_a);
   procedure push (self :  inout  axiStream_slv32_master_a;  signal tx :  out  axiStream_slv32_m2s_a);
   procedure send_data_01 (self :  inout  axiStream_slv32_master; signal dataIn :  in  std_logic_vector);
-  function to_bool (self :   axiStream_slv32_master) return boolean;
+  function to_bool (self : axiStream_slv32_master) return boolean;
   procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStream :  in  boolean := True);
   procedure reset_0 (self :  inout  axiStream_slv32_master);
-  function ready_to_send_0 (self :   axiStream_slv32_master) return boolean;
+  function ready_to_send_0 (self : axiStream_slv32_master) return boolean;
 ------- End Psuedo Class axiStream_slv32_master -------------------------
 -------------------------------------------------------------------------
 
@@ -105,7 +110,7 @@ end record;
 ------- Start Psuedo Class axiStream_slv32_slave -------------------------
 
 type axiStream_slv32_slave is record 
-    data_internal2 : std_logic_vector(31 downto 0);
+    data_internal2 : slv32;
     data_internal_isLast2 : std_logic;
     data_internal_isvalid2 : std_logic;
     data_internal_was_read2 : std_logic;
@@ -115,26 +120,27 @@ end record;
     
     
   constant axiStream_slv32_slave_null : axiStream_slv32_slave:= (
-    data_internal2 => (others => '0'),
-    data_internal_isLast2 => '0',
-    data_internal_isvalid2 => '0',
-    data_internal_was_read2 => '0',
-    data_isvalid => '0',
-    rx => axiStream_slv32_null
+    data_internal2 => std_logic_vector_ctr(0, 32),
+    data_internal_isLast2 => std_logic_ctr(0, 1),
+    data_internal_isvalid2 => std_logic_ctr(0, 1),
+    data_internal_was_read2 => std_logic_ctr(0, 1),
+    data_isvalid => std_logic_ctr(0, 1),
+    rx => axiStream_slv32_ctr
   );
 
 
     type axiStream_slv32_slave_a is array (natural range <>) of axiStream_slv32_slave;
         
 
+  function axiStream_slv32_slave_ctr () return axiStream_slv32_slave;
   procedure pull (self :  inout  axiStream_slv32_slave;  signal rx :  in  axiStream_slv32_m2s);
   procedure push (self :  inout  axiStream_slv32_slave;  signal rx :  out  axiStream_slv32_s2m);
   procedure pull (self :  inout  axiStream_slv32_slave_a;  signal rx :  in  axiStream_slv32_m2s_a);
   procedure push (self :  inout  axiStream_slv32_slave_a;  signal rx :  out  axiStream_slv32_s2m_a);
   procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector);
-  function to_bool (self :   axiStream_slv32_slave) return boolean;
-  function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean;
-  function isReceivingData_0 (self :   axiStream_slv32_slave) return boolean;
+  function to_bool (self : axiStream_slv32_slave) return boolean;
+  function IsEndOfStream_0 (self : axiStream_slv32_slave) return boolean;
+  function isReceivingData_0 (self : axiStream_slv32_slave) return boolean;
   procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  std_logic_vector);
 ------- End Psuedo Class axiStream_slv32_slave -------------------------
 -------------------------------------------------------------------------
@@ -147,6 +153,27 @@ package body axisStream_slv32 is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class axiStream_slv32 -------------------------
+function axiStream_slv32_s2m_ctr () return axiStream_slv32_s2m is
+    variable ret : axiStream_slv32_s2m := axiStream_slv32_s2m_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function axiStream_slv32_m2s_ctr () return axiStream_slv32_m2s is
+    variable ret : axiStream_slv32_m2s := axiStream_slv32_m2s_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function axiStream_slv32_ctr () return axiStream_slv32 is
+    variable ret : axiStream_slv32 := axiStream_slv32_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self :  inout axiStream_slv32; signal IO_data :  in axiStream_slv32_s2m) is
    
   begin 
@@ -209,6 +236,13 @@ end procedure;
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class axiStream_slv32_master -------------------------
+function axiStream_slv32_master_ctr () return axiStream_slv32_master is
+    variable ret : axiStream_slv32_master := axiStream_slv32_master_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self :  inout  axiStream_slv32_master;  signal tx :  in  axiStream_slv32_s2m) is
    
   begin 
@@ -219,7 +253,7 @@ procedure pull (self :  inout  axiStream_slv32_master;  signal tx :  in  axiStre
 
 -- End Connecting
     
-    if (self.tx.ready = '1') then 
+    if (to_bool(self.tx.ready) ) then 
       self.tx.valid := '0';
       self.tx.last := '0';
       self.tx.data := (others => '0');
@@ -262,10 +296,10 @@ procedure push (self :  inout  axiStream_slv32_master_a;  signal tx :  out  axiS
              
 end procedure;
 
-function ready_to_send_0 (self :   axiStream_slv32_master) return boolean is
+function ready_to_send_0 (self : axiStream_slv32_master) return boolean is
    
   begin 
- return  not  ( self.tx.valid = '1' ) ;
+ return  not  ( to_bool(self.tx.valid)  ) ;
    
 end function;
 
@@ -280,7 +314,7 @@ procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStr
    
   begin 
  
-    if (EndOfStream) then 
+    if (to_bool(EndOfStream) ) then 
       self.tx.last := '1';
       
     else
@@ -290,7 +324,7 @@ procedure Send_end_Of_Stream_00 (self :  inout  axiStream_slv32_master; EndOfStr
    
 end procedure;
 
-function to_bool (self :   axiStream_slv32_master) return boolean is
+function to_bool (self : axiStream_slv32_master) return boolean is
    
   begin 
  return ready_to_send_0(self => self);
@@ -311,6 +345,13 @@ end procedure;
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class axiStream_slv32_slave -------------------------
+function axiStream_slv32_slave_ctr () return axiStream_slv32_slave is
+    variable ret : axiStream_slv32_slave := axiStream_slv32_slave_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self :  inout  axiStream_slv32_slave;  signal rx :  in  axiStream_slv32_m2s) is
    
   begin 
@@ -321,14 +362,14 @@ procedure pull (self :  inout  axiStream_slv32_slave;  signal rx :  in  axiStrea
 
 -- End Connecting
     
-    if (( self.rx.ready = '1' and self.rx.valid = '1') ) then 
+    if (( to_bool(self.rx.ready)  and to_bool(self.rx.valid) ) ) then 
       self.data_isvalid := '1';
       
     end if;
   self.data_internal_was_read2 := '0';
   self.rx.ready := '0';
   
-    if (( self.data_isvalid = '1' and  not  ( self.data_internal_isvalid2 = '1' ) ) ) then 
+    if (( to_bool(self.data_isvalid)  and  not  ( to_bool(self.data_internal_isvalid2)  ) ) ) then 
       self.data_internal2 := self.rx.data;
       self.data_internal_isvalid2 := self.data_isvalid;
       self.data_internal_isLast2 := self.rx.last;
@@ -344,12 +385,12 @@ procedure push (self :  inout  axiStream_slv32_slave;  signal rx :  out  axiStre
   begin 
  
     
-    if (self.data_internal_was_read2 = '1') then 
+    if (to_bool(self.data_internal_was_read2) ) then 
       self.data_internal_isvalid2 := '0';
       
     end if;
   
-    if ((  not  ( self.data_isvalid = '1' )  and  not  ( self.data_internal_isvalid2 = '1' ) ) ) then 
+    if ((  not  ( to_bool(self.data_isvalid)  )  and  not  ( to_bool(self.data_internal_isvalid2)  ) ) ) then 
       self.rx.ready := '1';
       
     end if;
@@ -386,28 +427,28 @@ procedure observe_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out 
    
   begin 
  
-    if (self.data_internal_isvalid2 = '1') then 
+    if (to_bool(self.data_internal_isvalid2) ) then 
       dataOut := self.data_internal2;
       
     end if;
    
 end procedure;
 
-function isReceivingData_0 (self :   axiStream_slv32_slave) return boolean is
+function isReceivingData_0 (self : axiStream_slv32_slave) return boolean is
    
   begin 
  return self.data_internal_isvalid2 = '1';
    
 end function;
 
-function IsEndOfStream_0 (self :   axiStream_slv32_slave) return boolean is
+function IsEndOfStream_0 (self : axiStream_slv32_slave) return boolean is
    
   begin 
  return ( self.data_internal_isvalid2 > '0' and self.data_internal_isLast2 > '0') ;
    
 end function;
 
-function to_bool (self :   axiStream_slv32_slave) return boolean is
+function to_bool (self : axiStream_slv32_slave) return boolean is
    
   begin 
  return isReceivingData_0(self => self);
@@ -418,7 +459,7 @@ procedure read_data_00 (self :  inout  axiStream_slv32_slave; dataOut :  out  st
    
   begin 
  
-    if (self.data_internal_isvalid2 = '1') then 
+    if (to_bool(self.data_internal_isvalid2) ) then 
       dataOut := self.data_internal2;
       self.data_internal_was_read2 := '1';
       

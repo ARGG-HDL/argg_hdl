@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package NativeFifoOut_pack is 
@@ -19,7 +20,7 @@ end record;
     
     
   constant NativeFifoOut_s2m_null : NativeFifoOut_s2m:= (
-    enable => '0'
+    enable => std_logic_ctr(0, 1)
   );
 
 
@@ -28,14 +29,14 @@ end record;
 
 
 type NativeFifoOut_m2s is record 
-    data : std_logic_vector(31 downto 0);
+    data : slv32;
     empty : std_logic;
 end record;
     
     
   constant NativeFifoOut_m2s_null : NativeFifoOut_m2s:= (
-    data => (others => '0'),
-    empty => '0'
+    data => std_logic_vector_ctr(0, 32),
+    empty => std_logic_ctr(0, 1)
   );
 
 
@@ -44,22 +45,25 @@ end record;
 
 
 type NativeFifoOut is record 
-    data : std_logic_vector(31 downto 0);
+    data : slv32;
     empty : std_logic;
     enable : std_logic;
 end record;
     
     
   constant NativeFifoOut_null : NativeFifoOut:= (
-    data => (others => '0'),
-    empty => '0',
-    enable => '0'
+    data => std_logic_vector_ctr(0, 32),
+    empty => std_logic_ctr(0, 1),
+    enable => std_logic_ctr(0, 1)
   );
 
 
     type NativeFifoOut_a is array (natural range <>) of NativeFifoOut;
         
 
+  function NativeFifoOut_s2m_ctr () return NativeFifoOut_s2m;
+  function NativeFifoOut_m2s_ctr () return NativeFifoOut_m2s;
+  function NativeFifoOut_ctr () return NativeFifoOut;
   procedure pull (self :  inout NativeFifoOut; signal IO_data :  in NativeFifoOut_s2m);
   procedure push (self :  inout NativeFifoOut; signal IO_data :  out NativeFifoOut_m2s);
   procedure pull (self :  inout NativeFifoOut; signal IO_data :  in NativeFifoOut_m2s);
@@ -75,6 +79,27 @@ package body NativeFifoOut_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class NativeFifoOut -------------------------
+function NativeFifoOut_s2m_ctr () return NativeFifoOut_s2m is
+    variable ret : NativeFifoOut_s2m := NativeFifoOut_s2m_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function NativeFifoOut_m2s_ctr () return NativeFifoOut_m2s is
+    variable ret : NativeFifoOut_m2s := NativeFifoOut_m2s_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function NativeFifoOut_ctr () return NativeFifoOut is
+    variable ret : NativeFifoOut := NativeFifoOut_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self :  inout NativeFifoOut; signal IO_data :  in NativeFifoOut_s2m) is
    
   begin 

@@ -7,6 +7,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.slv32_a_pack.all;
+use work.v_symbol_pack.all;
 
 
 package small_buffer_pack is 
@@ -25,12 +26,12 @@ end record;
     
     
   constant small_buffer_null : small_buffer:= (
-    count => 0,
-    count_old => 0,
-    head => 0,
+    count => integer_ctr(0, 32),
+    count_old => integer_ctr(0, 32),
+    head => integer_ctr(0, 32),
     mem => (others => (others => '0')),
-    tail => 0,
-    tail_old => 0
+    tail => integer_ctr(0, 32),
+    tail_old => integer_ctr(0, 32)
   );
 
 
@@ -38,18 +39,19 @@ end record;
         
 
 -- v_list getHeader
+  function small_buffer_ctr () return small_buffer;
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
   procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic_vector);
   procedure reset_0 (self :  inout  small_buffer);
-  function length (self :   small_buffer) return integer;
-  function ready_to_send_0 (self :   small_buffer) return boolean;
-  function length_0 (self :   small_buffer) return integer;
+  function length (self : small_buffer) return integer;
+  function ready_to_send_0 (self : small_buffer) return boolean;
+  function length_0 (self : small_buffer) return integer;
   procedure re_read_0 (self :  inout  small_buffer);
   procedure get_value_01_rshift (self :  inout  small_buffer; signal rhs :  out  std_logic_vector);
-  function isReceivingData_0 (self :   small_buffer) return boolean;
+  function isReceivingData_0 (self : small_buffer) return boolean;
 ------- End Psuedo Class small_buffer -------------------------
 -------------------------------------------------------------------------
 
@@ -61,11 +63,18 @@ package body small_buffer_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class small_buffer -------------------------
+function small_buffer_ctr () return small_buffer is
+    variable ret : small_buffer := small_buffer_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
 -- empty procedure removed. name: 'pull'
 -- empty procedure removed. name: 'push'
-function isReceivingData_0 (self :   small_buffer) return boolean is
+function isReceivingData_0 (self : small_buffer) return boolean is
    
   begin 
  return self.count > 0;
@@ -99,21 +108,21 @@ procedure re_read_0 (self :  inout  small_buffer) is
    
 end procedure;
 
-function length_0 (self :   small_buffer) return integer is
+function length_0 (self : small_buffer) return integer is
    
   begin 
  return self.mem'length;
    
 end function;
 
-function ready_to_send_0 (self :   small_buffer) return boolean is
+function ready_to_send_0 (self : small_buffer) return boolean is
    
   begin 
  return self.count < self.mem'length;
    
 end function;
 
-function length (self :   small_buffer) return integer is
+function length (self : small_buffer) return integer is
    
   begin 
  return self.mem'length;
@@ -133,7 +142,7 @@ procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic
    
   begin 
  
-    if (ready_to_send_0(self => self)) then 
+    if (to_bool(ready_to_send_0(self => self)) ) then 
       self.mem(self.head) := rhs;
       self.head := self.head + 1;
       self.count := self.count + 1;

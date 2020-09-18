@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package ram_handler_pack is 
@@ -14,12 +15,12 @@ package ram_handler_pack is
 ------- Start Psuedo Class ram_handler -------------------------
 
 type ram_handler_s2m is record 
-    read_data : std_logic_vector(31 downto 0);
+    read_data : slv32;
 end record;
     
     
   constant ram_handler_s2m_null : ram_handler_s2m:= (
-    read_data => (others => '0')
+    read_data => std_logic_vector_ctr(0, 32)
   );
 
 
@@ -28,18 +29,18 @@ end record;
 
 
 type ram_handler_m2s is record 
-    Write_Data : std_logic_vector(31 downto 0);
-    Write_address : std_logic_vector(31 downto 0);
-    read_address : std_logic_vector(31 downto 0);
+    Write_Data : slv32;
+    Write_address : slv32;
+    read_address : slv32;
     write_enable : std_logic;
 end record;
     
     
   constant ram_handler_m2s_null : ram_handler_m2s:= (
-    Write_Data => (others => '0'),
-    Write_address => (others => '0'),
-    read_address => (others => '0'),
-    write_enable => '0'
+    Write_Data => std_logic_vector_ctr(0, 32),
+    Write_address => std_logic_vector_ctr(0, 32),
+    read_address => std_logic_vector_ctr(0, 32),
+    write_enable => std_logic_ctr(0, 1)
   );
 
 
@@ -48,26 +49,29 @@ end record;
 
 
 type ram_handler is record 
-    Write_Data : std_logic_vector(31 downto 0);
-    Write_address : std_logic_vector(31 downto 0);
-    read_address : std_logic_vector(31 downto 0);
-    read_data : std_logic_vector(31 downto 0);
+    Write_Data : slv32;
+    Write_address : slv32;
+    read_address : slv32;
+    read_data : slv32;
     write_enable : std_logic;
 end record;
     
     
   constant ram_handler_null : ram_handler:= (
-    Write_Data => (others => '0'),
-    Write_address => (others => '0'),
-    read_address => (others => '0'),
-    read_data => (others => '0'),
-    write_enable => '0'
+    Write_Data => std_logic_vector_ctr(0, 32),
+    Write_address => std_logic_vector_ctr(0, 32),
+    read_address => std_logic_vector_ctr(0, 32),
+    read_data => std_logic_vector_ctr(0, 32),
+    write_enable => std_logic_ctr(0, 1)
   );
 
 
     type ram_handler_a is array (natural range <>) of ram_handler;
         
 
+  function ram_handler_s2m_ctr () return ram_handler_s2m;
+  function ram_handler_m2s_ctr () return ram_handler_m2s;
+  function ram_handler_ctr () return ram_handler;
   procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_s2m);
   procedure push (self :  inout ram_handler; signal IO_data :  out ram_handler_m2s);
   procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_m2s);
@@ -83,6 +87,27 @@ package body ram_handler_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class ram_handler -------------------------
+function ram_handler_s2m_ctr () return ram_handler_s2m is
+    variable ret : ram_handler_s2m := ram_handler_s2m_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function ram_handler_m2s_ctr () return ram_handler_m2s is
+    variable ret : ram_handler_m2s := ram_handler_m2s_null; 
+  begin 
+     return ret;
+ 
+end function;
+
+function ram_handler_ctr () return ram_handler is
+    variable ret : ram_handler := ram_handler_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_s2m) is
    
   begin 
