@@ -7,6 +7,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 

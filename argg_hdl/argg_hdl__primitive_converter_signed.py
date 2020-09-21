@@ -125,7 +125,7 @@ class v_signed_converter(v_symbol_converter):
         return obj
 
     def get_type_func_arg(self, obj: "v_symbol"):
-        return "std_logic_vector"
+        return "signed"
 
     def get_default_value(self,obj:"v_symbol"):
         if str(obj.DefaultValue) == '0':

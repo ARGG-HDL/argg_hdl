@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package span_t_pack is 
@@ -14,23 +15,26 @@ package span_t_pack is
 ------- Start Psuedo Class span_t -------------------------
 
 type span_t is record 
-    start : std_logic_vector(7 downto 0);
-    stop : std_logic_vector(7 downto 0);
+    start : slv8;
+    stop : slv8;
 end record;
     
     
   constant span_t_null : span_t:= (
-    start => std_logic_vector(to_unsigned(1, 8)),
-    stop => std_logic_vector(to_unsigned(16, 8))
+    start => std_logic_vector_ctr(1, 8),
+    stop => std_logic_vector_ctr(16, 8)
   );
 
 
     type span_t_a is array (natural range <>) of span_t;
         
 
+  function span_t_ctr (start : integer := 1 ;
+    stop : integer := 16) return span_t;
   procedure pull (self : inout span_t; signal data_IO :  in  span_t);
   procedure push (self : inout span_t; signal data_IO :  out  span_t);
-  function isInRange_11 (Signal self :   span_t; signal counter :   std_logic_vector) return boolean;
+  function isInRange_11 (Signal self : span_t ;
+    counter : std_logic_vector) return boolean;
 ------- End Psuedo Class span_t -------------------------
 -------------------------------------------------------------------------
 
@@ -42,6 +46,16 @@ package body span_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class span_t -------------------------
+function span_t_ctr (start : integer := 1 ;
+    stop : integer := 16) return span_t is
+    variable ret : span_t := span_t_null; 
+  begin 
+     ret.start := slv8_ctr(start);
+    ret.stop := slv8_ctr(stop);
+    return ret;
+ 
+end function;
+
 procedure pull (self : inout span_t; signal data_IO :  in  span_t) is
    
   begin 
@@ -54,7 +68,8 @@ procedure push (self : inout span_t; signal data_IO :  out  span_t) is
  data_IO  <=  self; 
 end procedure;
 
-function isInRange_11 (Signal self :   span_t; signal counter :   std_logic_vector) return boolean is
+function isInRange_11 (Signal self : span_t ;
+    counter : std_logic_vector) return boolean is
    
   begin 
  return ( self.start <= counter and counter <= self.stop) ;

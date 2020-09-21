@@ -124,7 +124,7 @@ class v_record(v_class):
 
 def call_func_record_reset(obj, name, args, astParser=None,func_args=None):
     asOp = hdl.get_assiment_op(args[0])
-    val = args[0].__hdl_converter__.get_init_values(args[0])
+    val = args[0].__hdl_converter__.get_init_values(args[0],args[0])
     
     ret =  str(args[0])  + asOp + val
     args[0]._add_output()

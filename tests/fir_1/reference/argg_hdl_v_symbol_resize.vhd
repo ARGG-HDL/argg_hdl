@@ -6,19 +6,22 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package argg_hdl_v_symbol_resize_pack is 
 
-  function resize_10 (signal symbol :   std_logic_vector := (others => '0'); newSize :   integer := 16) return signed;
+  function resize_10 (symbol : signed := (others => '0') ;
+    newSize : integer := 16) return signed;
 
 end argg_hdl_v_symbol_resize_pack;
 
 
 package body argg_hdl_v_symbol_resize_pack is
 
-function resize_10 (signal symbol :   std_logic_vector := (others => '0'); newSize :   integer := 16) return signed is
-  variable ret : signed(newSize - 1 downto 0) := (others => '0'); 
+function resize_10 (symbol : signed := (others => '0') ;
+    newSize : integer := 16) return signed is
+  variable ret : signed(newSize - 1 downto 0) := signed_ctr(0, newSize); 
  
   begin 
  ret( ah_min(ret'length, symbol'length) downto 0) := symbol( ah_min(ret'length, symbol'length) downto 0);

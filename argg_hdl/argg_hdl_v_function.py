@@ -188,6 +188,10 @@ class v_function(argg_hdl_base):
     def get_type(self):
         return type(self).__name__
 
+    def __eq__(self, rhs):
+        return self.isSubset(rhs)
+
+        
     def isSubset(self,rhs):#is either the same or is just missing templates
 
         if self.name != rhs.name:

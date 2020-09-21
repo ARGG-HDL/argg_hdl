@@ -8,6 +8,9 @@
     <entity_conversion name="system_globals">
       <status ="sucess">
     </entity_conversion>
+    <package_conversion name="v_symbol">
+      <status ="sucess">
+    </package_conversion>
     <package_conversion name="register_t">
       <processing name="register_t" MemfunctionCalls="1">
         <request_new_template name="get_value"/>
@@ -19,7 +22,11 @@
       <use_template function ="reset" args="signed16_a" />
       <use_template function ="reset" args="signed17_a" />
       <Missing_Template function="resize" args="signed(15 downto 0), integer" />
+      <Missing_Template function="resize" args="signed(15 downto 0), integer" />
+      <Missing_Template function="resize" args="signed(15 downto 0), integer" />
       <use_template function ="reset" args="signed(17 downto 0)" />
+      <Missing_Template function="resize" args="signed(16 downto 0), integer" />
+      <Missing_Template function="resize" args="signed(16 downto 0), integer" />
       <use_template function ="reset" args="std_logic_vector(7 downto 0)" />
       <Failed_to_convert name="fir_basic"/>
       <status ="failed">
@@ -34,9 +41,10 @@
       <status ="sucess">
     </package_conversion>
     <package_conversion name="v_free_function_template">
-      <processing name="resize" MemfunctionCalls="1">
+      <processing name="resize" MemfunctionCalls="2">
         <request_new_template name="resize"/>
       </processing>
+_vhdl__DefineSymbol is deprecated
 _vhdl__DefineSymbol is deprecated
       <status ="sucess">
     </package_conversion>
@@ -50,7 +58,11 @@ _vhdl__DefineSymbol is deprecated
       <use_template function ="reset" args="signed8_a" />
       <use_template function ="reset" args="signed16_a" />
       <use_template function ="reset" args="signed17_a" />
+      <use_template function ="resize" args="signed(15 downto 0), integer" />
+      <use_template function ="resize" args="signed(15 downto 0), integer" />
       <use_template function ="reset" args="signed(17 downto 0)" />
+      <use_template function ="resize" args="signed(16 downto 0), integer" />
+      <use_template function ="resize" args="signed(16 downto 0), integer" />
       <use_template function ="reset" args="std_logic_vector(7 downto 0)" />
       <status ="sucess">
     </entity_conversion>

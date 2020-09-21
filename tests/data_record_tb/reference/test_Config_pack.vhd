@@ -8,6 +8,7 @@ use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.span_t2_pack.all;
 use work.span_t_pack.all;
+use work.v_symbol_pack.all;
 
 
 package test_Config_pack is 
@@ -20,33 +21,34 @@ type test_Config is record
     var2 : span_t;
     var3 : span_t2;
     var4 : span_t2;
-    var5 : std_logic_vector(7 downto 0);
-    var6 : std_logic_vector(7 downto 0);
+    var5 : slv8;
+    var6 : slv8;
 end record;
     
     
   constant test_Config_null : test_Config:= (
-    var1 => (
-    start => std_logic_vector(to_unsigned(1, 8)),
-    stop => std_logic_vector(to_unsigned(16, 8))
-  ),
-    var2 => (
-    start => std_logic_vector(to_unsigned(2, 8)),
-    stop => std_logic_vector(to_unsigned(32, 8))
-  ),
-    var3 => span_t2_null,
-    var4 => (
-    start => std_logic_vector(to_unsigned(4, 8)),
-    stop => std_logic_vector(to_unsigned(64, 8))
-  ),
-    var5 => std_logic_vector(to_unsigned(5, 8)),
-    var6 => std_logic_vector(to_unsigned(6, 8))
+    var1 => span_t_ctr,
+    var2 => span_t_ctr(start  =>  2, stop  =>  32),
+    var3 => span_t2_ctr,
+    var4 => span_t2_ctr(start  =>  4, stop  =>  64),
+    var5 => std_logic_vector_ctr(5, 8),
+    var6 => std_logic_vector_ctr(6, 8)
   );
 
 
     type test_Config_a is array (natural range <>) of test_Config;
         
 
+  function test_Config_ctr (var1_start : integer := 1 ;
+    var1_stop : integer := 16 ;
+    var2_start : integer := 2 ;
+    var2_stop : integer := 32 ;
+    var3_start : integer := 3 ;
+    var3_stop : integer := 48 ;
+    var4_start : integer := 4 ;
+    var4_stop : integer := 64 ;
+    var5 : integer := 5 ;
+    var6 : integer := 6) return test_Config;
   procedure pull (self : inout test_Config; signal data_IO :  in  test_Config);
   procedure push (self : inout test_Config; signal data_IO :  out  test_Config);
 ------- End Psuedo Class test_Config -------------------------
@@ -60,6 +62,32 @@ package body test_Config_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class test_Config -------------------------
+function test_Config_ctr (var1_start : integer := 1 ;
+    var1_stop : integer := 16 ;
+    var2_start : integer := 2 ;
+    var2_stop : integer := 32 ;
+    var3_start : integer := 3 ;
+    var3_stop : integer := 48 ;
+    var4_start : integer := 4 ;
+    var4_stop : integer := 64 ;
+    var5 : integer := 5 ;
+    var6 : integer := 6) return test_Config is
+    variable ret : test_Config := test_Config_null; 
+  begin 
+     ret.var1.start := slv8_ctr(var1_start);
+    ret.var1.stop := slv8_ctr(var1_stop);
+    ret.var2.start := slv8_ctr(var2_start);
+    ret.var2.stop := slv8_ctr(var2_stop);
+    ret.var3.start := slv8_ctr(var3_start);
+    ret.var3.stop := slv8_ctr(var3_stop);
+    ret.var4.start := slv8_ctr(var4_start);
+    ret.var4.stop := slv8_ctr(var4_stop);
+    ret.var5 := slv8_ctr(var5);
+    ret.var6 := slv8_ctr(var6);
+    return ret;
+ 
+end function;
+
 procedure pull (self : inout test_Config; signal data_IO :  in  test_Config) is
    
   begin 

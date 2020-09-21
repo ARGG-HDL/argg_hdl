@@ -418,7 +418,7 @@ class extracted_record_t:
             return []
 
 
-        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
+        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(obj = obj, parent = self.symbol) +";\n"]
         
 
     def get_process_header(self, obj):
@@ -434,7 +434,7 @@ class extracted_record_t:
 
 
         
-        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " + hdl.get_init_values(self.symbol) +";\n"]
+        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + self.symbol._type+ " := " +  hdl.get_init_values(obj = obj, parent = self.symbol) +";\n"]
         
     def get_port_list(self, obj):
         inout = hdl.get_Inout(self.symbol, obj)
@@ -443,7 +443,7 @@ class extracted_record_t:
             return []       
             
         inoutstr = " : "+ hdl.InOut_t2str2(self.symbol,  inout) +" "
-        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +  hdl.get_init_values(self.symbol) ]
+        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +   hdl.get_init_values(obj = obj, parent = self.symbol)  ]
     
     def vhdl_make_port(self, obj, name):
         inout = hdl.get_Inout( self.symbol, obj)

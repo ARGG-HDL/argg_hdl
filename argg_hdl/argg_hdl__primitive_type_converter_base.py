@@ -143,19 +143,19 @@ class v_symbol_converter(hdl_converter_base):
         if obj.__isFreeType__:
             return []
 
-        if parent._issubclass_("v_class"):
-            return name + " : " + hdl.get_type_simple(obj)
 
-        return []
+        return name + " : " + hdl.get_type_simple(obj)
+
+
 
     def recordMemberDefault(self, obj,name,parent,Inout=None):
         if obj.__isFreeType__:
             return []
         
-        if parent._issubclass_("v_class"):
-            return name + " => " + hdl.get_constructor(obj)
 
-        return []
+        return name + " => " + hdl.get_constructor(obj)
+
+
 
     def getHeader(self, obj,name,parent):
         if obj.__hdl_name__:

@@ -9,6 +9,7 @@ use work.argg_hdl_core.all;
 use work.span_t2_pack.all;
 use work.span_t_pack.all;
 use work.test_Config_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity data_record_tb is 
@@ -19,17 +20,14 @@ end entity;
 architecture rtl of data_record_tb is
 
 --------------------------data_record_tb-----------------
-  signal after_range : std_logic := '0'; 
-  signal anotherSpan : span_t := (
-    start => std_logic_vector(to_unsigned(12, 8)),
-    stop => std_logic_vector(to_unsigned(45, 8))
-  );
-  signal befor_range : std_logic := '0'; 
-  signal config1 : test_Config := test_Config_null;
-  signal counter : std_logic_vector(7 downto 0) := (others => '0'); 
-  signal in_range : std_logic := '0'; 
+  signal after_range : std_logic := std_logic_ctr(0, 1); 
+  signal   anotherSpan : span_t := span_t_ctr(start  =>  12, stop  =>  45);
+  signal befor_range : std_logic := std_logic_ctr(0, 1); 
+  signal   config1 : test_Config := test_Config_ctr;
+  signal counter : slv8 := std_logic_vector_ctr(0, 8); 
+  signal in_range : std_logic := std_logic_ctr(0, 1); 
 --------------------------clkgen-----------------
-  signal clkgen_clk : std_logic := '0'; 
+  signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
 -------------------------- end clkgen-----------------
 -------------------------- end data_record_tb-----------------
 
@@ -38,7 +36,7 @@ begin
   
 -----------------------------------
 proc : process(clkgen_clk) is
-  variable config2 : test_Config := test_Config_null;
+    variable   config2 : test_Config := test_Config_ctr;
   begin
     if rising_edge(clkgen_clk) then 
   in_range <= '0';
@@ -48,22 +46,22 @@ proc : process(clkgen_clk) is
     config1.var1 <= config2.var1;
     config2.var2 := config1.var2;
     
-      if (isInRange_11(self => config1.var3, counter => counter)) then 
+      if (to_bool(isInRange_11(self => config1.var3, counter => counter)) ) then 
         in_range <= '1';
         
       end if;
     
-      if (isBeforeRange_11(self => config1.var4, counter => counter)) then 
+      if (to_bool(isBeforeRange_11(self => config1.var4, counter => counter)) ) then 
         befor_range <= '1';
         
       end if;
     
-      if (isAfterRange_11(self => config1.var4, counter => counter)) then 
+      if (to_bool(isAfterRange_11(self => config1.var4, counter => counter)) ) then 
         after_range <= '1';
         
       end if;
     
-      if (isInRange_11(self => anotherSpan, counter => counter)) then 
+      if (to_bool(isInRange_11(self => anotherSpan, counter => counter)) ) then 
         
       end if;
     end if;

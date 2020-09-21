@@ -174,8 +174,7 @@ use ieee.std_logic_unsigned.all;
     
     def recordMember(self,obj, name,parent,Inout=None):
         ret =""
-        if not parent._issubclass_("v_class"):
-            return ""
+
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
         for x in obj1:
 
@@ -188,8 +187,7 @@ use ieee.std_logic_unsigned.all;
     
     def recordMemberDefault(self, obj, name,parent,Inout=None):
         ret =""
-        if not parent._issubclass_("v_class"):
-            return ""
+
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
         for x in obj1:
 

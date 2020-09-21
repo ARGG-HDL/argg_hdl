@@ -7,6 +7,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.register_t_pack.all;
+use work.v_symbol_pack.all;
 
 
 package system_globals_pack is 
@@ -21,14 +22,17 @@ end record;
     
     
   constant system_globals_null : system_globals:= (
-    reg => register_t_null,
-    rst => '0'
+    reg => register_t_ctr,
+    rst => std_logic_ctr(0, 1)
   );
 
 
     type system_globals_a is array (natural range <>) of system_globals;
         
 
+
+
+  function system_globals_ctr () return system_globals;
   procedure pull (self : inout system_globals; signal data_IO :  in  system_globals);
   procedure push (self : inout system_globals; signal data_IO :  out  system_globals);
 ------- End Psuedo Class system_globals -------------------------
@@ -42,6 +46,13 @@ package body system_globals_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class system_globals -------------------------
+function system_globals_ctr () return system_globals is
+    variable ret : system_globals := system_globals_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self : inout system_globals; signal data_IO :  in  system_globals) is
    
   begin 

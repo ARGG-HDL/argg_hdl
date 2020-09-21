@@ -110,14 +110,13 @@ class v_class_converter(hdl_converter_base):
 
     def recordMemberDefault(self, obj, name,parent,Inout=None):
         
-        if not issubclass(type(parent),v_class):
-            return []
+
         
         if obj._Inout == InOut_t.Slave_t:
             Inout = InoutFlip(Inout)
         
         if not( obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt):
-            return name + " => " + obj.__hdl_converter__.get_init_values(obj,InOut_Filter=Inout)
+            return name + " => " + obj.__hdl_converter__.get_init_values(obj, parent=parent, InOut_Filter=Inout)
         
         ret = []
         xs = hdl.extract_conversion_types(
@@ -153,7 +152,7 @@ class v_class_converter(hdl_converter_base):
                 hdl.recordMemberDefault(
                 x["symbol"], 
                 x["name"],
-                obj,
+                obj.getMember(name=x["name"]),
                 InOut_Filter
                 ) 
                 for x in member
@@ -169,15 +168,16 @@ class v_class_converter(hdl_converter_base):
             )
             return ret
 
-        TypeName = hdl.get_type_simple(obj)
+        TypeName = hdl.get_type_simple(parent)
         name = TypeName +"_ctr"
         Constructor_Default_arguments=self.get_constroctor_default_list(obj)
         fl = flat_member_list(obj, [])
+       # print(name, Constructor_Default_arguments, fl)
         
         argList = [join_str(x["name"],Delimeter="_") + "  =>  "  + str(value(x["symbol"]))
             for i, x in enumerate(fl)
             if not x["symbol"].__abstract_type_info__.UseDefaultCtr
-            if len(Constructor_Default_arguments)> i and value(x["symbol"]) !=  value(primary.__hdl_converter__.Constructor_Default_arguments[i]["symbol"])
+            if len(Constructor_Default_arguments)> i and value(x["symbol"]) !=  value(Constructor_Default_arguments[i]["symbol"])
             ]
         Argliststr = join_str(argList,Delimeter=", ",IgnoreIfEmpty=True ,start = "(" ,end = ")" )
 
@@ -967,7 +967,7 @@ class v_class(argg_hdl_base):
         pass 
 
     
-    def getMember(self,InOut_Filter=None, VaribleSignalFilter = None):
+    def getMember(self,InOut_Filter=None, VaribleSignalFilter = None,name=None):
         ret = list()
         for x in self.__dict__.items():
             t = getattr(self, x[0])
@@ -979,6 +979,8 @@ class v_class(argg_hdl_base):
                 continue
             if not t.isVarSigType(VaribleSignalFilter):
                 continue
+            if name and name == x[0]:
+                return t
 
             ret.append({
                         "name": x[0],

@@ -6,6 +6,7 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
+use work.v_symbol_pack.all;
 
 
 package register_t_pack is 
@@ -14,20 +15,21 @@ package register_t_pack is
 ------- Start Psuedo Class register_t -------------------------
 
 type register_t is record 
-    address : std_logic_vector(15 downto 0);
-    value : std_logic_vector(15 downto 0);
+    address : slv16;
+    value : slv16;
 end record;
     
     
   constant register_t_null : register_t:= (
-    address => (others => '0'),
-    value => (others => '0')
+    address => std_logic_vector_ctr(0, 16),
+    value => std_logic_vector_ctr(0, 16)
   );
 
 
     type register_t_a is array (natural range <>) of register_t;
         
 
+  function register_t_ctr () return register_t;
   procedure pull (self : inout register_t; signal data_IO :  in  register_t);
   procedure push (self : inout register_t; signal data_IO :  out  register_t);
 ------- End Psuedo Class register_t -------------------------
@@ -41,6 +43,13 @@ package body register_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class register_t -------------------------
+function register_t_ctr () return register_t is
+    variable ret : register_t := register_t_null; 
+  begin 
+     return ret;
+ 
+end function;
+
 procedure pull (self : inout register_t; signal data_IO :  in  register_t) is
    
   begin 

@@ -9,18 +9,19 @@ use work.argg_hdl_core.all;
 use work.signed16_a_pack.all;
 use work.signed17_a_pack.all;
 use work.signed8_a_pack.all;
+use work.v_symbol_pack.all;
 
 
 entity fir_basic is 
   port(
-    clk :  in  std_logic := '0';
-    i_coeff_0 :  in  std_logic_vector(7 downto 0) := (others => '0');
-    i_coeff_1 :  in  std_logic_vector(7 downto 0) := (others => '0');
-    i_coeff_2 :  in  std_logic_vector(7 downto 0) := (others => '0');
-    i_coeff_3 :  in  std_logic_vector(7 downto 0) := (others => '0');
-    i_data :  in  std_logic_vector(7 downto 0) := (others => '0');
-    i_rstb :  in  std_logic := '0';
-    o_data :  out  std_logic_vector(7 downto 0) := (others => '0')
+    clk :  in  std_logic := std_logic_ctr(0, 1);
+    i_coeff_0 :  in  slv8 := std_logic_vector_ctr(0, 8);
+    i_coeff_1 :  in  slv8 := std_logic_vector_ctr(0, 8);
+    i_coeff_2 :  in  slv8 := std_logic_vector_ctr(0, 8);
+    i_coeff_3 :  in  slv8 := std_logic_vector_ctr(0, 8);
+    i_data :  in  slv8 := std_logic_vector_ctr(0, 8);
+    i_rstb :  in  std_logic := std_logic_ctr(0, 1);
+    o_data :  out  slv8 := std_logic_vector_ctr(0, 8)
   );
 end entity;
 
@@ -29,10 +30,10 @@ end entity;
 architecture rtl of fir_basic is
 
 --------------------------fir_basic-----------------
-  signal local_data : signed(7 downto 0) := (others => '0'); 
+  signal local_data : signed8 := signed_ctr(0, 8); 
   signal p_data : signed8_a(0 to 4 - 1)  := (others => (others => '0'));
   signal r_add_st0 : signed17_a(0 to 2 - 1)  := (others => (others => '0'));
-  signal r_add_st1 : signed(17 downto 0) := (others => '0'); 
+  signal r_add_st1 : signed18 := signed_ctr(0, 18); 
   signal r_coeff : signed8_a(0 to 4 - 1)  := (others => (others => '0'));
   signal r_mult : signed16_a(0 to 4 - 1)  := (others => (others => '0'));
 -------------------------- end fir_basic-----------------
@@ -45,7 +46,7 @@ p_input : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (i_rstb = '1') then 
+      if (to_bool(i_rstb) ) then 
         r_coeff <= (others => (others => '0'));
         
       end if;
@@ -63,7 +64,7 @@ p_mult : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (i_rstb = '1') then 
+      if (to_bool(i_rstb) ) then 
         r_mult <= (others => (others => '0'));
         
       end if;
@@ -79,12 +80,12 @@ p_add_st0 : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (i_rstb = '1') then 
+      if (to_bool(i_rstb) ) then 
         r_add_st0 <= (others => (others => '0'));
         
       end if;
     for i14 in 0 to 2 -1 loop 
-        r_add_st0(i14) <= resize(r_mult(2 * i14), 16 + 1) + resize(r_mult(2 * i14 + 1), 16 + 1);
+        r_add_st0(i14) <= resize_10(symbol => r_mult(2 * i14), newSize => 16 + 1) + resize_10(symbol => r_mult(2 * i14 + 1), newSize => 16 + 1);
       end loop;
     end if;
   
@@ -95,11 +96,11 @@ p_add_st1 : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (i_rstb = '1') then 
+      if (to_bool(i_rstb) ) then 
         r_add_st1 <= (others => '0');
         
       end if;
-    r_add_st1 <= resize(r_add_st0(0), 16 + 2) + resize(r_add_st0(1), 16 + 2);
+    r_add_st1 <= resize_10(symbol => r_add_st0(0), newSize => 16 + 2) + resize_10(symbol => r_add_st0(1), newSize => 16 + 2);
     end if;
   
   end process;
@@ -109,7 +110,7 @@ p_output : process(clk) is
   begin
     if rising_edge(clk) then 
   
-      if (i_rstb = '1') then 
+      if (to_bool(i_rstb) ) then 
         o_data <= (others => '0');
         
       end if;

@@ -55,6 +55,14 @@ class v_package_converter(hdl_converter_base):
         
         return ret
 
+def make_inque_list(list_in):
+    uniqueList = []
+    for ele in list_in:
+        if ele not in uniqueList:
+            uniqueList.append(ele)
+    return uniqueList
+
+
 def Fill_AST_Tree(package,SourceFile):
     if not SourceFile:
         return
@@ -68,6 +76,9 @@ def Fill_AST_Tree(package,SourceFile):
         if x._issubclass_("v_free_function_template"):
             fun= package.astTree.extractFreeFunctions(x ,package )
             x.__hdl_converter__.__ast_functions__ += fun
+    
+    x.__hdl_converter__.__ast_functions__ = make_inque_list(x.__hdl_converter__.__ast_functions__)
+
     
 class v_package(argg_hdl_base):
     def __init__(self, PackageName,PackageContent, sourceFile=None):

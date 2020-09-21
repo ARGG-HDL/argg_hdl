@@ -250,8 +250,8 @@ def prepare_for_conversion(obj):
 def get_HDL_name(obj, parent,suffix):
     return obj.__hdl_converter__.get_HDL_name(obj,parent,suffix)
 
-def get_init_values(obj):
-    return obj.__hdl_converter__.get_init_values(obj)
+def get_init_values(obj,parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
+    return obj.__hdl_converter__.get_init_values(obj, parent, InOut_Filter, VaribleSignalFilter ,ForceExpand)
 
 
 def get_extractedTypes(obj):
