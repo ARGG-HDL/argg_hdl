@@ -63,3 +63,22 @@ def Output_HDL():
 
 def set_Output_HDL(newTarget):
     gStatus["Output_HDL"] = newTarget
+
+
+def print_cnvt_set_file(FileName=None):
+    
+    if gStatus["OutputFile"] is not None:
+        gStatus["OutputFile"].close()
+        gStatus["OutputFile"] = None
+
+    if FileName is not None:
+        gStatus["OutputFile"] = open(FileName,"w",newline="")
+    else:
+        gStatus["OutputFile"] = None
+        
+
+def print_cnvt(Str_in):
+    if gStatus["OutputFile"] is not None:
+        gStatus["OutputFile"].write(Str_in +"\n")
+    else:
+        print(Str_in)

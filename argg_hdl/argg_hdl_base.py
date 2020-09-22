@@ -79,39 +79,8 @@ def remove_duplications_types(In_list):
             ret.append(x)
     return ret
 
-def flatten_list(In_list):
-    ret = []
-    for x in  In_list:
-        if type(x).__name__ == "list":
-            buff = flatten_list(x)
-            ret += buff
-        else:
-            ret.append(x)
 
-    return ret
 
-def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="", IgnoreIfEmpty=False, RemoveEmptyElements = False):
-    ret = ""
-    content = flatten_list(content)
-    if len(content) == 0 and IgnoreIfEmpty:
-        return ret
-    
-    if len(content) == 0:
-        ret += start
-        ret += end
-        return ret
-
-    ret += start
-    if RemoveEmptyElements:
-        content = [x for x in content if x]
-
-    for x in content[0:-1]:
-        ret += LineBeginning + str(x) + Delimeter + LineEnding
-    if len(content) == 0 and IgnoreIfEmpty:
-        return ret
-    ret += LineBeginning + str(content[-1]) +  LineEnding
-    ret += end
-    return ret
 
 def isComment(s):
     while s.strip():
@@ -201,25 +170,6 @@ def add_symbols_to_entiy():
 
         
 
-class indent:
-    def __init__(self):
-        self.ind = 2
-
-    def inc(self):
-        self.ind += 2
-    
-    def deinc(self):
-        self.ind -= 2
-
-    def __str__(self):
-        ret  = ''.ljust(self.ind)
-        return ret
-
-    def reset(self):
-        self.ind = 2
-
-
-gTemplateIndent = indent()
 
 
 
@@ -287,25 +237,11 @@ def convert_to_hdl(Obj, FolderPath):
         set_isConverting2VHDL(s)
 
 
-def print_cnvt_set_file(FileName=None):
-    
-    if gStatus["OutputFile"] is not None:
-        gStatus["OutputFile"].close()
-        gStatus["OutputFile"] = None
-
-    if FileName is not None:
-        gStatus["OutputFile"] = open(FileName,"w",newline="")
-    else:
-        gStatus["OutputFile"] = None
 
 
 
 
-def print_cnvt(Str_in):
-    if gStatus["OutputFile"] is not None:
-        gStatus["OutputFile"].write(Str_in +"\n")
-    else:
-        print(Str_in)
+
 
 class hdl_converter_base:
     __VHDL__OPS_to2str= {
@@ -612,18 +548,15 @@ class hdl_converter_base:
     def get_get_call_member_function(self, obj, name, args):
         args = [x.get_symbol() for x in args ]
 
-        needAdding =True
+ 
         for x  in obj.__hdl_converter__.MemfunctionCalls:
             if x.name != name:
                 continue
             if not x.isSameArgs(args):
                 continue
-            if x.call_func is None:
-                needAdding = False
-                continue
             return x
-        if needAdding:
-            obj.__hdl_converter__.MemfunctionCalls.append( memFunctionCall(
+ 
+        x =  memFunctionCall(
             name= name,
             args= args,
             obj= obj,
@@ -631,35 +564,21 @@ class hdl_converter_base:
             func_args = None,
             setDefault = False,
             varSigIndependent = False
-        ))
+        )
+        obj.__hdl_converter__.MemfunctionCalls.append(x)
         obj.IsConverted = False
-        return None
+        return x
+
     def _vhdl__call_member_func(self, obj, name, args, astParser=None):
         
         primary = hdl.get_primary_object(obj)
-        if  primary is not obj:
-            return hdl._vhdl__call_member_func( primary, name, args, astParser)
+        obj.__hdl_converter__ = primary.__hdl_converter__
         
         
         call_obj = hdl.get_get_call_member_function(obj, name, args)
-        
-        args_str = [str(x.get_type()) for x in args]
-        args_str=join_str(args_str, Delimeter=", ")
-        if call_obj is None:
-            primary.__hdl_converter__.MissingTemplate=True
-            astParser.Missing_template = True
+        ret = call_obj.HDL_Call(astParser, args, obj)
+        return ret
 
-            print_cnvt(str(gTemplateIndent)+'<Missing_Template function="' + str(name) +'" args="' +args_str+'" />' )
-            return None
-
-        print_cnvt(str(gTemplateIndent)+'<use_template function ="' + str(name)  +'" args="' +args_str+'" />'  )
-        call_func = call_obj.call_func
-        if call_func:
-            return call_func(obj, name, args, astParser, call_obj.func_args)
-
-        primary.__hdl_converter__.MissingTemplate=True
-        astParser.Missing_template = True
-        return None
 
 
 
