@@ -156,7 +156,7 @@ class AST_FreeFunction:
                 type(self.freeFunction).__name__, 
                 "Function Name: " + self.Function_Node.name  +", Unable to Unfold AST.  Error In extractFunctionsForClass_impl: body = self.Unfold_body(funcDef)"
             )
-            setDefaultVarSig(dummy_DefaultVarSig)
+
             raise Exception(err_msg,self.package,inst)
         
               
@@ -172,7 +172,7 @@ class AST_FreeFunction:
                 type(self.freeFunction).__name__, 
                 "Function Name: " + self.Function_Node.name  +", Unable to Convert AST to String, Error In extractFunctionsForClass_impl: bodystr= str(body)"
             )
-            setDefaultVarSig(dummy_DefaultVarSig)
+
             raise Exception(err_msg,self.package,inst)
 
     def make_function_or_procedure(self, returnType , bodystr, FuncArgsLocal):

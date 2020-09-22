@@ -16,9 +16,7 @@ from  argg_hdl.argg_hdl_object_name_maker import  make_object_name
 from argg_hdl.argg_hdl_object_factory import add_constructor
 
 
-class fake_ast_parser:
-    def get_function_arg_inout_type(self,obj):
-        return InOut_t.input_t
+
 
 
 def flat_member_list(obj, name):
@@ -35,10 +33,7 @@ def flat_member_list(obj, name):
     
     return ret
 
-class hdl_record:
-    def __init__(self, name, members):
-        self.name
-        self.members
+
     
 
 class v_class_converter(hdl_converter_base):
