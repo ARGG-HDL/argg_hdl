@@ -5,57 +5,11 @@ import os,sys,inspect
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_AST import *
 from argg_hdl.argg_hdl_to_v_object import *
+from argg_hdl.argg_hdl__primitive_type_converter import get_primitive_hdl_converter
 
 
 
-class v_package_converter(hdl_converter_base):
-    def parse_file(self,obj):
-        
-        for t  in obj.PackageContent:
-            t = to_v_object(t)
-            
-            t.__hdl_converter__.parse_file(t)
-
-
-    def includes(self, obj, name,parent):
-        #print(obj.PackageName)
-        bufffer  = ""
-        for t  in obj.PackageContent:
-            t = to_v_object(t)
-            bufffer += t.__hdl_converter__.includes(t,"",obj)
-            dep_list = t.__hdl_converter__.get_dependency_objects(t,[])
-            for y in dep_list:
-                bufffer += y.__hdl_converter__.includes(y,"",obj)
-        ret = make_unique_includes(bufffer, obj.PackageName)
-        return ret
-
-    def getHeader(self, obj, name,parent):
-        ret = ""
-        for t  in obj.PackageContent:
-            t = to_v_object(t)
-            ret += t.__hdl_converter__.getHeader(t,"",obj)
-        
-        return ret
-
-    def getBody(self,obj, name,parent):
-        ret = ""
-        for t  in obj.PackageContent:
-            t = to_v_object(t)
-            ret += t.__hdl_converter__.getBody(t,"",obj)
-        
-        return ret
-
-    def get_entity_definition(self, obj):
-        ret = ""
-        for t  in obj.PackageContent:
-            t = to_v_object(t)
-            entity_def = t.__hdl_converter__.get_entity_definition(t)
-            if entity_def.strip():
-                ret += "\n\n" + entity_def + "\n\n"
-        
-        return ret
-
-def make_inque_list(list_in):
+def make_unique_list(list_in):
     uniqueList = []
     for ele in list_in:
         if ele not in uniqueList:
@@ -77,13 +31,13 @@ def Fill_AST_Tree(package,SourceFile):
             fun= package.astTree.extractFreeFunctions(x ,package )
             x.__hdl_converter__.__ast_functions__ += fun
     
-    x.__hdl_converter__.__ast_functions__ = make_inque_list(x.__hdl_converter__.__ast_functions__)
+    x.__hdl_converter__.__ast_functions__ = make_unique_list(x.__hdl_converter__.__ast_functions__)
 
     
 class v_package(argg_hdl_base):
     def __init__(self, PackageName,PackageContent, sourceFile=None):
         super().__init__()
-        self.__hdl_converter__ = v_package_converter()
+        self.__hdl_converter__ =  get_primitive_hdl_converter("v_package" )() 
         
         s = isConverting2VHDL()
         set_isConverting2VHDL(True)

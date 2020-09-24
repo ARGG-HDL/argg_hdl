@@ -5,8 +5,10 @@ from argg_hdl.argg_hdl_v_entity_list import *
 import argg_hdl.argg_hdl_v_Package as argg_pack
 
 from argg_hdl.argg_hdl_v_class import  v_class
-from argg_hdl.argg_hdl_v_class_handle import  v_class_hanlde, v_class_hanlde_converter
+from argg_hdl.argg_hdl_v_class_handle import  v_class_hanlde
 from argg_hdl.argg_hdl_object_factory import add_constructor
+from argg_hdl.converter.argg_hdl_v_class_handle_converter import v_class_hanlde_converter
+
 
 class v_class_master_converter(v_class_hanlde_converter):
     def __init__(self):

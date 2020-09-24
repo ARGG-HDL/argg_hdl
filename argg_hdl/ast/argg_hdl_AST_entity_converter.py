@@ -7,7 +7,7 @@ from argg_hdl.ast.argg_hdl_AST_MemFunctionCalls import memFunctionCall, call_fun
 from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error,Hanlde_errors
 from  argg_hdl.argg_hdl_lib_enums import  getDefaultVarSig ,setDefaultVarSig, varSig, InOut_t
 from  argg_hdl.argg_hdl_base_helpers import join_str
-from argg_hdl.argg_hdl_v_function import v_procedure, v_function ,v_Arch
+from argg_hdl.argg_hdl_v_function import v_procedure, v_function ,v_Arch, v_process
 from argg_hdl.argg_hdl_global_settings import sort_archetecture
 
 

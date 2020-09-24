@@ -6,7 +6,7 @@ from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_conve
 from argg_hdl.argg_hdl_v_symbol import *
 
 from  argg_hdl.free_type_helper import extracted_freeType
-
+from argg_hdl.converter.argg_hdl_hdl_converter_base import hdl_converter_base
 class v_symbol_type_alias:
     def __init__(self, obj,alias):
         self.obj = obj

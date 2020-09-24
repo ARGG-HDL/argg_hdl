@@ -7,6 +7,8 @@ from argg_hdl.argg_hdl_v_Package import *
 from argg_hdl.argg_hdl_v_class import *
 from argg_hdl.argg_hdl_v_class_trans import *
 from argg_hdl.argg_hdl_master_slave import *
+from argg_hdl.converter.argg_hdl_v_class_trans_converter import v_class_trans_converter
+
 
 class axisStream_converter(v_class_trans_converter):
     def __init__(self):
