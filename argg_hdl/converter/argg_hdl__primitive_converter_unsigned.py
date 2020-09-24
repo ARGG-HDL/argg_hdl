@@ -1,9 +1,9 @@
 
-from argg_hdl.argg_hdl__primitive_type_converter_base import *
+from argg_hdl.converter.argg_hdl__primitive_type_converter_base import *
 
 
-class v_signed_converter(v_symbol_converter):
-    primitive_type = "signed"
+class v_unsigned_converter(v_symbol_converter):
+    primitive_type = "unsigned"
 
     def __init__(self ,inc_str):
         super().__init__(inc_str)
@@ -29,7 +29,7 @@ class v_signed_converter(v_symbol_converter):
                 context_str and (context_str == "archetecture" or context_str == "process")):
             target = target.replace(".", "_")
 
-        if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process' and str(obj.__Driver__) != 'function':
+        if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process':
             obj.__Driver__ = rhs
 
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
@@ -38,17 +38,7 @@ class v_signed_converter(v_symbol_converter):
 
         if issubclass(type(rhs), argg_hdl_base):
             if rhs.get_type() == 'integer':
-                return """{dest} {asOp} to_signed({src}, {dest}'length)""".format(
-                    dest=target,
-                    src=str(rhs),
-                    asOp=asOp
-                )
-
-
-
-        
-            if 'std_logic_vector' in rhs.get_type() :
-                return """{dest} {asOp} signed({src})""".format(
+                return """{dest} {asOp} to_unsigned({src}, {dest}'length)""".format(
                     dest=target,
                     src=str(rhs),
                     asOp=asOp
@@ -56,9 +46,8 @@ class v_signed_converter(v_symbol_converter):
 
             return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj, astParser=astParser))
 
-
         if type(rhs).__name__ == "v_Num":
-            return """{dest} {asOp} to_signed({src}, {dest}'length)""".format(
+            return """{dest} {asOp} to_unsigned({src}, {dest}'length)""".format(
                 dest=target,
                 src=str(rhs.value),
                 asOp=asOp
@@ -66,7 +55,7 @@ class v_signed_converter(v_symbol_converter):
 
         rhs_str = str(rhs)
         if rhs_str.isnumeric():
-            return """{dest} {asOp} to_signed({src}, {dest}'length)""".format(
+            return """{dest} {asOp} to_unsigned({src}, {dest}'length)""".format(
                 dest=target,
                 src=rhs_str,
                 asOp=asOp
@@ -77,9 +66,8 @@ class v_signed_converter(v_symbol_converter):
     def _vhdl_slice(self, obj, sl, astParser=None):
         astParser.add_read(obj)
         obj._add_input()
-        sl.set_source(obj)
         if type(sl).__name__ == "v_slice":
-            ret = v_signed(Inout=obj._Inout, varSigConst=obj._varSigConst)
+            ret = v_slv(Inout=obj._Inout, varSigConst=obj._varSigConst)
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(sl) + ")"
         else:
             ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
@@ -90,14 +78,10 @@ class v_signed_converter(v_symbol_converter):
 
     def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None, context_str=None):
         if issubclass(type(obj), argg_hdl_base0) and issubclass(type(rhs), argg_hdl_base0):
-            if "signed" in str(value(rhs._type)):
-                if astParser:
-                    astParser.add_write(rhs)
+            if "unsigned" in rhs._type:
                 rhs._add_output()
-                obj._add_input()
                 asOp = rhs.__hdl_converter__.get_assiment_op(rhs)
-                top = "ah_min(" + str(rhs) + "'length, "+str(obj) + "'length)"
-                return str(rhs) + "( " +top +" downto 0)" + asOp + str(obj) + "( " +top +" downto 0)"
+                return str(rhs) + "(" + str(rhs) + "'range)" + asOp + str(obj) + "(" + str(rhs) + "'range)"
 
         return hdl._vhdl__reasign(rhs, obj, astParser, context_str)
 
@@ -108,7 +92,7 @@ class v_signed_converter(v_symbol_converter):
         sp1 = int(ret.split("downto")[0].split("(")[1])
         sp2 = int(ret.split("downto")[1].split(")")[0])
         sp3 = sp1 - sp2 + 1
-        ret = "signed" + str(sp3)
+        ret = "unsigned" + str(sp3)
         return ret
 
     def _vhdl__getValue(self, obj: "v_symbol", ReturnToObj=None, astParser=None):
@@ -125,27 +109,7 @@ class v_signed_converter(v_symbol_converter):
         return obj
 
     def get_type_func_arg(self, obj: "v_symbol"):
-        return "signed"
-
-    def get_default_value(self,obj:"v_symbol"):
-        if str(obj.DefaultValue) == '0':
-            Default = "(others => '0')"
-            return Default
-
-        
-        if type(obj.DefaultValue).__name__ == "int":
-            Default = """to_signed({src}, {BitWidth})""".format(
-                src=obj.DefaultValue,
-                BitWidth=obj.BitWidth
-            )
-            return Default
-
-        if issubclass(type(obj.DefaultValue), argg_hdl_base0) and get_type(obj.DefaultValue):
-            default1 = "to_signed("+ str(obj.DefaultValue)   + ", "+str(obj.Bitwidth_raw) +")"
-            return default1
-            
+        return "std_logic_vector"
 
 
-        return obj.DefaultValue
-
-add_primitive_hdl_converter(v_signed_converter.primitive_type, v_signed_converter)
+add_primitive_hdl_converter(v_unsigned_converter.primitive_type, v_unsigned_converter)

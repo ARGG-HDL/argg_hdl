@@ -1,4 +1,4 @@
-from argg_hdl.argg_hdl__primitive_type_converter_base import *
+from argg_hdl.converter.argg_hdl__primitive_type_converter_base import *
 
 
 class v_bool_converter(v_symbol_converter):

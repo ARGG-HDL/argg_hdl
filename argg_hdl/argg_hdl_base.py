@@ -3,7 +3,7 @@ import copy
 import  inspect 
 import argg_hdl.argg_hdl_core_pack_generator as core_gen
 import argg_hdl.argg_hdl_debug_vis as debug_vis
-from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
+from argg_hdl.ast.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 from  argg_hdl.argg_hdl_base_helpers import *
 from  argg_hdl.argg_hdl_lib_enums import *
 from argg_hdl.argg_hdl_global_settings import *

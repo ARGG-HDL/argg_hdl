@@ -36,11 +36,11 @@
         <request_new_template name="_onPull"/>
         <request_new_template name="__lshift__"/>
         <request_new_template name="__bool__"/>
+        <use_template function ="reset" args="std_logic" />
+        <use_template function ="reset" args="std_logic" />
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+        <use_template function ="ready_to_send" args="axiStream_slv32_master" />
       </processing>
-      <use_template function ="reset" args="std_logic" />
-      <use_template function ="reset" args="std_logic" />
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
-      <use_template function ="ready_to_send" args="axiStream_slv32_master" />
       <processing name="axisStream_slave" MemfunctionCalls="0">
         <request_new_template name="observe_data"/>
         <request_new_template name="read_data"/>
@@ -50,8 +50,8 @@
         <request_new_template name="__bool__"/>
         <request_new_template name="_onPull"/>
         <request_new_template name="_onPush"/>
+        <use_template function ="isReceivingData" args="axiStream_slv32_slave" />
       </processing>
-      <use_template function ="isReceivingData" args="axiStream_slv32_slave" />
       <status ="sucess">
     </package_conversion>
     <entity_conversion name="stream_delay_one">
@@ -100,10 +100,10 @@
       <processing name="axisStream_slave" MemfunctionCalls="10">
         <request_new_template name="read_data"/>
         <request_new_template name="__rshift__"/>
+        <use_template function ="reset" args="axiStream_slv32_master" />
+        <Missing_Template function="send_data" args="axiStream_slv32_master, std_logic_vector(31 downto 0)" />
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
       </processing>
-      <use_template function ="reset" args="axiStream_slv32_master" />
-      <Missing_Template function="send_data" args="axiStream_slv32_master, std_logic_vector(31 downto 0)" />
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
       <status ="failed">
     </package_conversion>
     <entity_conversion name="InputDelay_print">
@@ -141,9 +141,9 @@
       <processing name="axisStream_slave" MemfunctionCalls="12">
         <request_new_template name="read_data"/>
         <request_new_template name="__rshift__"/>
+        <use_template function ="reset" args="axiStream_slv32_master" />
+        <use_template function ="send_data" args="axiStream_slv32_master, std_logic_vector(31 downto 0)" />
       </processing>
-      <use_template function ="reset" args="axiStream_slv32_master" />
-      <use_template function ="send_data" args="axiStream_slv32_master, std_logic_vector(31 downto 0)" />
       <status ="sucess">
     </package_conversion>
   </Converting>

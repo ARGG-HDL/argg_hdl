@@ -34,18 +34,18 @@
         <request_new_template name="_onPush"/>
         <request_new_template name="send_data"/>
         <request_new_template name="request_data"/>
+        <Missing_Template function="reset" args="small_buffer" />
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+        <Missing_Template function="re_read" args="small_buffer" />
+        <Missing_Template function="isReceivingData" args="small_buffer" />
+        <Missing_Template function="__rshift__" args="small_buffer, addr_data" />
+        <Missing_Template function="reset" args="optional_t" />
+        <Missing_Template function="re_read" args="small_buffer" />
+        <Missing_Template function="isReceivingData" args="small_buffer" />
+        <Missing_Template function="__rshift__" args="small_buffer, addr_data" />
+        <Missing_Template function="__lshift__" args="optional_t, std_logic_vector(31 downto 0)" />
+        <Missing_Template function="__lshift__" args="small_buffer, addr_data" />
       </processing>
-      <Missing_Template function="reset" args="small_buffer" />
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
-      <Missing_Template function="re_read" args="small_buffer" />
-      <Missing_Template function="isReceivingData" args="small_buffer" />
-      <Missing_Template function="__rshift__" args="small_buffer, addr_data" />
-      <Missing_Template function="reset" args="optional_t" />
-      <Missing_Template function="re_read" args="small_buffer" />
-      <Missing_Template function="isReceivingData" args="small_buffer" />
-      <Missing_Template function="__rshift__" args="small_buffer, addr_data" />
-      <Missing_Template function="__lshift__" args="optional_t, std_logic_vector(31 downto 0)" />
-      <Missing_Template function="__lshift__" args="small_buffer, addr_data" />
       <status ="failed">
     </package_conversion>
     <package_conversion name="addr_data">
@@ -62,9 +62,9 @@
         <request_new_template name="length"/>
         <request_new_template name="ready_to_send"/>
         <request_new_template name="__len__"/>
+        <use_template function ="reset" args="addr_data" />
+        <Missing_Template function="ready_to_send" args="small_buffer" />
       </processing>
-      <use_template function ="reset" args="addr_data" />
-      <Missing_Template function="ready_to_send" args="small_buffer" />
       <status ="failed">
     </package_conversion>
     <package_conversion name="optional_t">
@@ -76,8 +76,8 @@
         <request_new_template name="set_data"/>
         <request_new_template name="__lshift__"/>
         <request_new_template name="__bool__"/>
+        <use_template function ="is_valid" args="optional_t" />
       </processing>
-      <use_template function ="is_valid" args="optional_t" />
       <status ="sucess">
     </package_conversion>
   </Converting>
@@ -98,18 +98,18 @@
       <processing name="ram_handle_master" MemfunctionCalls="8">
         <request_new_template name="send_data"/>
         <request_new_template name="request_data"/>
+        <use_template function ="reset" args="small_buffer" />
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+        <use_template function ="re_read" args="small_buffer" />
+        <use_template function ="isReceivingData" args="small_buffer" />
+        <use_template function ="__rshift__" args="small_buffer, addr_data" />
+        <use_template function ="reset" args="optional_t" />
+        <use_template function ="re_read" args="small_buffer" />
+        <use_template function ="isReceivingData" args="small_buffer" />
+        <use_template function ="__rshift__" args="small_buffer, addr_data" />
+        <use_template function ="__lshift__" args="optional_t, std_logic_vector(31 downto 0)" />
+        <Missing_Template function="__lshift__" args="small_buffer, addr_data" />
       </processing>
-      <use_template function ="reset" args="small_buffer" />
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
-      <use_template function ="re_read" args="small_buffer" />
-      <use_template function ="isReceivingData" args="small_buffer" />
-      <use_template function ="__rshift__" args="small_buffer, addr_data" />
-      <use_template function ="reset" args="optional_t" />
-      <use_template function ="re_read" args="small_buffer" />
-      <use_template function ="isReceivingData" args="small_buffer" />
-      <use_template function ="__rshift__" args="small_buffer, addr_data" />
-      <use_template function ="__lshift__" args="optional_t, std_logic_vector(31 downto 0)" />
-      <Missing_Template function="__lshift__" args="small_buffer, addr_data" />
       <status ="failed">
     </package_conversion>
     <package_conversion name="small_buffer">
@@ -118,8 +118,8 @@
         <request_new_template name="__rshift__"/>
         <request_new_template name="send_data"/>
         <request_new_template name="__lshift__"/>
+        <use_template function ="ready_to_send" args="small_buffer" />
       </processing>
-      <use_template function ="ready_to_send" args="small_buffer" />
       <status ="sucess">
     </package_conversion>
   </Converting>
@@ -139,8 +139,8 @@
       <processing name="ram_handle_master" MemfunctionCalls="10">
         <request_new_template name="send_data"/>
         <request_new_template name="request_data"/>
+        <use_template function ="__lshift__" args="small_buffer, addr_data" />
       </processing>
-      <use_template function ="__lshift__" args="small_buffer, addr_data" />
       <status ="sucess">
     </package_conversion>
   </Converting>

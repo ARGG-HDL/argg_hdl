@@ -12,6 +12,7 @@ from argg_hdl.argg_hdl_to_v_object import *
 from argg_hdl.argg_hdl_v_symbol  import *
 from argg_hdl.argg_hdl_v_function  import v_free_function_template
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
+from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
 
 def Node_line_col_2_str(astParser, Node):
     return  "Error in File: "+ astParser.sourceFileName+" line: "+str(Node.lineno) + ".\n"

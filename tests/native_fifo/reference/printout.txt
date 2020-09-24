@@ -28,12 +28,12 @@
         <request_new_template name="_onPull"/>
         <request_new_template name="_onPush"/>
         <request_new_template name="read_data"/>
+        <Missing_Template function="isReceivingData" args="small_buffer" />
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+        <Missing_Template function="__rshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+        <Missing_Template function="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+        <Missing_Template function="isReceivingData" args="small_buffer" />
       </processing>
-      <Missing_Template function="isReceivingData" args="small_buffer" />
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
-      <Missing_Template function="__rshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
-      <Missing_Template function="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
-      <Missing_Template function="isReceivingData" args="small_buffer" />
       <status ="failed">
     </package_conversion>
     <package_conversion name="small_buffer">
@@ -47,9 +47,9 @@
         <request_new_template name="ready_to_send"/>
         <request_new_template name="__len__"/>
         <request_new_template name="reset"/>
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+        <Missing_Template function="ready_to_send" args="small_buffer" />
       </processing>
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
-      <Missing_Template function="ready_to_send" args="small_buffer" />
       <status ="failed">
     </package_conversion>
     <package_conversion name="v_list">
@@ -70,12 +70,12 @@
     <package_conversion name="NativeFifoOutSlave">
       <processing name="NativeFifoOutSlave" MemfunctionCalls="5">
         <request_new_template name="read_data"/>
+        <use_template function ="isReceivingData" args="small_buffer" />
+        <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
+        <use_template function ="__rshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+        <Missing_Template function="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
+        <use_template function ="isReceivingData" args="small_buffer" />
       </processing>
-      <use_template function ="isReceivingData" args="small_buffer" />
-      <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
-      <use_template function ="__rshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
-      <Missing_Template function="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
-      <use_template function ="isReceivingData" args="small_buffer" />
       <status ="failed">
     </package_conversion>
     <package_conversion name="small_buffer">
@@ -84,8 +84,8 @@
         <request_new_template name="__rshift__"/>
         <request_new_template name="send_data"/>
         <request_new_template name="__lshift__"/>
+        <use_template function ="ready_to_send" args="small_buffer" />
       </processing>
-      <use_template function ="ready_to_send" args="small_buffer" />
       <status ="sucess">
     </package_conversion>
   </Converting>
@@ -102,8 +102,8 @@
     <package_conversion name="NativeFifoOutSlave">
       <processing name="NativeFifoOutSlave" MemfunctionCalls="6">
         <request_new_template name="read_data"/>
+        <use_template function ="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
       </processing>
-      <use_template function ="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
       <status ="sucess">
     </package_conversion>
   </Converting>

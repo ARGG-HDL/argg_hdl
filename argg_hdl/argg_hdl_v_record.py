@@ -3,7 +3,7 @@ from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 
 from argg_hdl.argg_hdl_v_class import v_class_converter,  v_class
-from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall
+from argg_hdl.ast.argg_hdl_AST_MemFunctionCalls import memFunctionCall
 from argg_hdl.argg_hdl_object_factory import add_constructor
 
 

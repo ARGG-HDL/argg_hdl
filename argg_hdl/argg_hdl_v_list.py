@@ -326,7 +326,7 @@ class v_list_slice(argg_hdl_base):
                     sl  -= 1
                 else:
                     raise Exception("not implemented yet")
-                    ret += len(x)              
+                  
                     
             if  sl <  len( self.content):
                 return self.content[sl ]
@@ -340,7 +340,7 @@ class v_list_slice(argg_hdl_base):
                     sl  -= 1
                 else:
                     raise Exception("not implemented yet")
-                    ret += len(x)              
+         
                 
         
         return v_list_slice(self, sl ,self.content[value(sl)]) 

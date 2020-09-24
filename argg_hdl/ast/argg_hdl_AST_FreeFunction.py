@@ -2,37 +2,13 @@ import  functools
 import copy
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 from argg_hdl.argg_hdl_base import print_cnvt, gTemplateIndent
-from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall, call_func, checkIfFunctionexists, hasMissingSymbol, get_function_varSig_suffix, GetNewArgList
-from argg_hdl.argg_hdl_ast_hdl_error import argg_hdl_error
-from  argg_hdl.argg_hdl_lib_enums import  getDefaultVarSig ,setDefaultVarSig, varSig
-from  argg_hdl.argg_hdl_base_helpers import join_str
+from argg_hdl.ast.argg_hdl_AST_MemFunctionCalls import memFunctionCall, call_func, checkIfFunctionexists, hasMissingSymbol, get_function_varSig_suffix, GetNewArgList
+from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error , Hanlde_errors
+from argg_hdl.argg_hdl_lib_enums import  getDefaultVarSig ,setDefaultVarSig, varSig
+from argg_hdl.argg_hdl_base_helpers import join_str
 from argg_hdl.argg_hdl_v_function import v_procedure, v_function
 
-def Hanlde_errors(description=""):
 
-    def decorator_Hanlde_errors(func):
-        @functools.wraps(func)
-        def wrapper_Hanlde_errors(self, *args, **kwargs):
-            try:
-                
-                gTemplateIndent.inc()
-                return func(self, *args, **kwargs)
-            except Exception as inst:
-                err_msg = argg_hdl_error(
-                    self.astParser.sourceFileName,
-                    self.Function_Node.cl.lineno, 
-                    self.Function_Node.cl.col_offset,
-                    self.freeFunction.FuncName, 
-                    description
-                )
-                raise Exception(err_msg,self.freeFunction,inst)
-            finally:
-                gTemplateIndent.deinc()
-
-
-        return wrapper_Hanlde_errors
-    
-    return decorator_Hanlde_errors
 
 
 
@@ -42,6 +18,18 @@ class AST_FreeFunction:
         self.freeFunction = freeFunction
         self.package = package
         self.Function_Node = astParser.getFreeFunctionByName(freeFunction.FuncName)
+    
+    def sourceFileName(self):
+        return self.astParser.sourceFileName
+    
+    def lineno(self):
+        return self.Function_Node.cl.lineno
+    
+    def col_offset(self):
+        return self.Function_Node.cl.col_offset
+
+    def Name(self):
+        return self.freeFunction.FuncName
 
 
 

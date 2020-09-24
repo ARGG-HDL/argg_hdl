@@ -8,22 +8,19 @@ import time
 import debugpy
 
 from argg_hdl.argg_hdl_base import *
-from argg_hdl.argg_hdl_AST_Classes import * 
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_symbol  import *
-from argg_hdl.argg_hdl_AST_MemFunctionCalls import memFunctionCall, call_func, get_function_varSig_suffix, checkIfFunctionexists, hasMissingSymbol, GetNewArgList
 
-from argg_hdl.argg_hdl_AST_FreeFunction import AST_FreeFunction
-from argg_hdl.argg_hdl_ast_hdl_error import argg_hdl_error
+from argg_hdl.ast.argg_hdl_AST_Classes import * 
+from argg_hdl.ast.argg_hdl_AST_MemFunctionCalls import memFunctionCall, call_func, get_function_varSig_suffix, checkIfFunctionexists, hasMissingSymbol, GetNewArgList
+from argg_hdl.ast.argg_hdl_AST_FreeFunction import AST_FreeFunction
+from argg_hdl.ast.argg_hdl_AST_member_function_converter import AST_member_function_converter
+from argg_hdl.ast.argg_hdl_AST_entity_converter import AST_entity_converter, extractFunctionsForEntity
+
+from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
 
 
-def get_function_definition(b_list, name):
-    ret = []
-    for x in b_list:
-        if x.name == name:
-            ret.append(x)
 
-    return ret
 
 
 
@@ -303,458 +300,34 @@ class xgenAST:
         })
 
     def extractArchetectureForEntity(self, ClassInstance, parent):
-        setDefaultVarSig(varSig.signal_t)
+        entity_conv=AST_entity_converter(self, ClassInstance, parent)
+        entity_conv.get_architechtures()
 
-        ClassName  = type(ClassInstance).__name__
-        cl = self.getClassByName(ClassName)
-        for f in cl.body:
-            if  f.name in self.functionNameVetoList:
-                continue
-
-            self.Missing_template = False
-            ClassInstance.__hdl_converter__.reset_TemplateMissing(ClassInstance)
-            self.reset_buffers()
-
-            self.parent = parent
-            self.FuncArgs.append({
-                "name":"self",
-                "symbol": ClassInstance,
-                "ScopeType": InOut_t.InOut_tt
-            })
-            
-            
-            
-            self.local_function = ClassInstance.__init__.__globals__
-
-            if sort_archetecture():
-                self.Archetecture_vars = sorted(ClassInstance.__local_symbols__, key=lambda element_: element_["type_name"])
-            else:
-                self.Archetecture_vars = ClassInstance.__local_symbols__
-
-            try:
-                body = self.Unfold_body(f)  ## get local vars 
-            except Exception as inst:
-                err_msg = argg_hdl_error(
-                    self.sourceFileName,
-                    f.lineno, 
-                    f.col_offset,
-                    ClassName, 
-                    "Function Name: " + f.name  +", Unable to Unfold AST, Error In extractArchetectureForEntity: body = self.Unfold_body(f)"
-                )
-                raise Exception(err_msg,ClassInstance,inst)
-            
-
-            if self.Missing_template:
-                ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
-                ClassInstance.__hdl_converter__.MissingTemplate = True
-            else:
-                proc = v_Arch(
-                    body=body,
-                    Symbols=self.LocalVar, 
-                    Arch_vars=self.Archetecture_vars,
-                    ports=ClassInstance.getMember()
-                )
-                ClassInstance.__processList__.append(proc)
-
-            return self
 
     def extractFunctionsForEntity(self, ClassInstance, parent):
-        ClassName  = type(ClassInstance).__name__
-        cl = self.getClassByName(ClassName)
-        for f in cl.body:
-            
-            if  f.name in self.functionNameVetoList:
-                continue
-            self.parent = parent
-            
-            self.reset_buffers()
-            
-            
-            
-            self.FuncArgs.append(
-                {
-                    "name":"self",
-                    "symbol": ClassInstance,
-                    "ScopeType": InOut_t.InOut_tt
-
-                }
-            )
-            #p=ClassInstance._process1()
-            
-            #self.local_function = p.__globals__
-            self.local_function = ClassInstance.__init__.__globals__
-
-            try:
-                body = self.Unfold_body(f)  ## get local vars 
-            except Exception as inst:
-                err_msg = argg_hdl_error(
-                    self.sourceFileName,
-                    f.lineno, 
-                    f.col_offset,
-                    ClassName, 
-                    "Function Name: " + f.name  +", Unable to Convert AST to String, Error In extractFunctionsForEntity: body = self.Unfold_body(f)"
-                )
-                raise Exception(err_msg,ClassInstance,inst)
+        extractFunctionsForEntity(self, ClassInstance, parent)
+        
 
 
-            
-
-            header =""
-            for x in self.LocalVar:
-                if x._type == "undef":
-                    continue
-                header += x.__hdl_converter__._vhdl__DefineSymbol(x, "variable")
-
-            pull =""
-            for x in self.LocalVar:
-                if x._type == "undef":
-                    continue
-                pull += x._vhdl__Pull()
-
-            push =""
-            for x in self.LocalVar:
-                if x._type == "undef":
-                    continue
-                push += x._vhdl__push()
-            
-            for x in f.body:
-                if type(x).__name__ == "FunctionDef":
-                    b = self.Unfold_body(x)
-                    body = str(b)  ## unfold function of intressed  
-                    break
-            
-            body =pull +"\n" + body +"\n" + push
-            
-            proc = v_process(
-                body=body, 
-                SensitivityList=b.dec[0].get_sensitivity_list(),
-                prefix=b.dec[0].get_prefix(), 
-                VariableList=header
-            )
-            ClassInstance.__processList__.append(proc)
-            
     
-    def extractFunctionsForClass_impl(self, ClassInstance,parent, funcDef, FuncArgs , setDefault = False , MemFunction_template= None ):
-            self.push_scope("function")
-            if hasMissingSymbol(FuncArgs):
-                return None
-            
-            self.reset_buffers()
-
-            ClassName  = type(ClassInstance).__name__
-
-            self.parent = parent
-            self.FuncArgs = FuncArgs
-            
-            
-            FuncArgsLocal = copy.copy(FuncArgs)
-            varSigSuffix = get_function_varSig_suffix(self.FuncArgs)
-            self.local_function = ClassInstance.__init__.__globals__
-
-
-            dummy_DefaultVarSig = getDefaultVarSig()
-            setDefaultVarSig(varSig.variable_t)
-            try:
-                body = self.Unfold_body(funcDef)
-            except Exception as inst:
-                err_msg = argg_hdl_error(
-                    self.sourceFileName,
-                    funcDef.lineno, 
-                    funcDef.col_offset,
-                    ClassName, 
-                    "Function Name: " + funcDef.name  +", Unable to Unfold AST.  Error In extractFunctionsForClass_impl: body = self.Unfold_body(funcDef)"
-                )
-                setDefaultVarSig(dummy_DefaultVarSig)
-                raise Exception(err_msg,ClassInstance,inst)
-              
-
-            try:
-                bodystr= str(body)
-            except Exception as inst:
-                err_msg = argg_hdl_error(
-                    self.sourceFileName,
-                    funcDef.lineno, 
-                    funcDef.col_offset,
-                    ClassName, 
-                    "Function Name: " + funcDef.name  +", Unable to Convert AST to String, Error In extractFunctionsForClass_impl: bodystr= str(body)"
-                )
-                setDefaultVarSig(dummy_DefaultVarSig)
-                raise Exception(err_msg,ClassInstance,inst)
-            setDefaultVarSig(dummy_DefaultVarSig)
-            #print_cnvt("----------" , funcDef.name)
-            argList = [x["symbol"].__hdl_converter__.to_arglist(
-                    x["symbol"], 
-                    x['name'],
-                    ClassName, 
-                    withDefault = setDefault and  (x["name"] != "self"),
-                    astParser=self
-                ) 
-                for x in FuncArgsLocal]
-            ArglistProcedure = join_str(argList,Delimeter="; ")
-            
-
-         
-            actual_function_name = ClassInstance.__hdl_converter__.function_name_modifier(ClassInstance, funcDef.name, varSigSuffix)
-
-            #print(actual_function_name, body.get_type(), type(body.get_type()).__name__)
-            if body.get_type() is not None:
-                ArglistProcedure = ArglistProcedure.replace(" in "," ").replace(" out "," ").replace(" inout "," ")
-                ret = v_function(
-                    name=actual_function_name, 
-                    body=bodystr,
-                    VariableList=self.get_local_var_def(), 
-                    returnType=body.get_type(),
-                    argumentList=ArglistProcedure,
-                    isFreeFunction=True
-                )
-                MemFunction_template.varSigIndependent = True
-            else:
-                ret = v_procedure(
-                    name=actual_function_name,
-                    body=bodystr,
-                    VariableList=self.get_local_var_def(), 
-                    argumentList=ArglistProcedure,
-                    isFreeFunction=True
-                )
-            self.pop_scope()
-            return ret
-
-    def extractArchetectureForClass0(self,ClassInstance,Arc):
-        if not (Arc.decorator_list and Arc.decorator_list[0].id == 'architecture') :
-            return 
-        if not (Arc.name not in [x["name"] for x in ClassInstance.__hdl_converter__.archetecture_list ]):
-            return 
-        
-        arc = self.extractArchetectureForClass(ClassInstance,Arc)
-        
-        if not arc:
-            return
-        
-        ClassInstance.__hdl_converter__.archetecture_list.append({
-        "name"   : Arc.name,
-        "symbol" : arc
-        })
-            
-
-    def extractArchetectureForClass(self,ClassInstance,Arc):
-        ret = None
-        primary = ClassInstance.__hdl_converter__.get_primary_object(ClassInstance)
-        ClassInstance.__hdl_converter__ = primary.__hdl_converter__
-        ClassInstance = copy.deepcopy(ClassInstance)
-        self.reset_buffers()
-        
-        self.FuncArgs.append({
-            "name":"self",
-            "symbol":  ClassInstance,
-            "ScopeType": InOut_t.InOut_tt
-        })
-            
-        self.local_function = ClassInstance.__init__.__globals__
-        ClassInstance.__hdl_name__ = "!!SELF!!"
-        if sort_archetecture():
-            self.Archetecture_vars = sorted(ClassInstance.__local_symbols__, key=lambda element_: element_["type_name"])
-        else:
-            self.Archetecture_vars = ClassInstance.__local_symbols__
-
-        try:
-            body = self.Unfold_body(Arc)  ## get local vars 
-        
-        except Exception as inst:
-            err_msg = argg_hdl_error(
-                self.sourceFileName, 
-                Arc.lineno, 
-                Arc.col_offset, 
-                type(ClassInstance).__name__, 
-                "FileName: " + Arc.name +", Unable to Unfold AST, Error In extractArchetectureForClass:  body = self.Unfold_body(Arc)"
-            )
-            raise Exception(err_msg,ClassInstance,inst)
-              
-
-
-        if self.Missing_template:
-            ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(
-                ClassInstance
-            )
-            ClassInstance.__hdl_converter__.MissingTemplate = True
-
-        else:
-            ret = v_Arch(
-                body=body,
-                Symbols=self.LocalVar, 
-                Arch_vars=self.Archetecture_vars,
-                ports=ClassInstance.getMember()
-            )
-
-        self.reset_buffers()
-       
-        return ret
-
-    def get_arglistlocal_extractFunctionsForClass2(self,ClassInstance, cl_body ,parent,temp):
-        ArglistLocal = []
-        ArglistLocal.append({
-            "name":"self",
-            "symbol": v_deepcopy(ClassInstance),
-            "ScopeType": InOut_t.InOut_tt
-        })
-
-        f =  get_function_definition(cl_body,temp.name)
-        if len(f) == 0:
-            raise Exception(
-                "unable to find function template: ",
-                temp["name"],
-                ClassInstance
-            )
-                
-        ArglistLocal += list(self.get_func_args_list(f[0]))
-        newArglist = GetNewArgList(
-            f[0].name, 
-            ArglistLocal, 
-            temp
-        )
-        return f,newArglist
-
-    def extractFunctionsForClass2(self,ClassInstance, cl_body ,parent):
-        fun_ret = []
-        for temp in ClassInstance.__hdl_converter__.MemfunctionCalls:
-            if temp.call_func is not None:
-                continue
-                
-              
-            f,newArglist  = self.get_arglistlocal_extractFunctionsForClass2(ClassInstance, cl_body ,parent,temp)
-            
-
-            if newArglist is None:
-                continue 
-            
-            ArglistLocal_length = len(newArglist)
-            self.Missing_template = False
-            ret = self.extractFunctionsForClass_impl(
-                ClassInstance, 
-                parent, 
-                f[0], 
-                newArglist , 
-                temp.setDefault ,
-                temp 
-            )
-            
-            if self.Missing_template:
-                ClassInstance.__hdl_converter__.MissingTemplate = True
-                continue
-            
-            temp.call_func = call_func
-            temp.func_args = newArglist[0: ArglistLocal_length] #deepcopy
-            
-            if ret:
-                fun_ret.append( ret )
-        
-        return fun_ret
-    #@profile
-    def extractFunctionsForClass1a(self,ClassInstance,parent,f ):
-        if f.decorator_list and f.decorator_list[0].id == 'architecture' :
-            return
-
-
-        ClassInstance.set_vhdl_name ( "self",True)
-        Arglist = []
-        Arglist.append({
-            "name":"self",
-            "symbol": v_deepcopy(ClassInstance),
-            "ScopeType": InOut_t.InOut_tt
-        })
-        Arglist[-1]["symbol"]._Inout  = InOut_t.InOut_tt
-        Arglist += list(self.get_func_args_list(f))
-        exist = checkIfFunctionexists(ClassInstance,f.name , Arglist)
-        if  exist:
-            return
-
-        print_cnvt(str(gTemplateIndent) +'<request_new_template name="'+ str(f.name)+'"/>' )
-        
-
-        ClassInstance.__hdl_converter__.MemfunctionCalls.append(
-            memFunctionCall(
-            name= f.name,
-            args= [x["symbol"] for x in   Arglist],
-            obj= ClassInstance,
-            call_func = None,
-            func_args = None,
-            setDefault = True,
-            varSigIndependent = False
-        ))
-
-    def extractFunctionsForClass1(self,ClassInstance,parent,cl_body ):
-        for f in cl_body:
-
-            if  f.name in self.functionNameVetoList:
-                continue
-            if f.name in ClassInstance.__hdl_converter__.functionNameVetoList:
-                continue
-
-            self.extractArchetectureForClass0(ClassInstance,f)
-            self.extractFunctionsForClass1a(ClassInstance,parent,f)
-
             
     def extractFunctionsForClass(self,ClassInstance,parent ):
-        fun_ret = []
-        primary = ClassInstance.__hdl_converter__.get_primary_object(ClassInstance)
-        ClassInstance.__hdl_converter__ = primary.__hdl_converter__
-        ClassInstance.__hdl_converter__.MissingTemplate = False
-        ClassName  = type(ClassInstance).__name__
+        mem_functions = AST_member_function_converter(ClassInstance,self, parent)
+        ret = mem_functions.get_functions()
+        return ret
+     
+    def extractFreeFunctions(self, freeFunction ,package ):
+        free = AST_FreeFunction(self, freeFunction ,package)
+        ret = free.get_functions()
+        return ret
 
-        
-        cl = self.getClassByName(ClassName)
-        try:
-            print_cnvt(str(gTemplateIndent) +'<processing name="'  + str(ClassName) +'" MemfunctionCalls="' +str(len(ClassInstance.__hdl_converter__.MemfunctionCalls)) +'">')
-            gTemplateIndent.inc()
-            #print(type(ClassInstance).__name__)
-            self.extractFunctionsForClass1(ClassInstance,parent,cl.body)
-            gTemplateIndent.deinc()
-            print_cnvt(str(gTemplateIndent)+'</processing>')   
-        except Exception as inst:
-            err_msg = argg_hdl_error(
-                self.sourceFileName,
-                cl.lineno, 
-                cl.col_offset,
-                ClassName, 
-                "error while processing templates"
-            )
-            raise Exception(err_msg,ClassInstance,inst)
-        finally:
-            gTemplateIndent.deinc
 
-        try:
-            #print(type(ClassInstance).__name__)
-            fun_ret += self.extractFunctionsForClass2( ClassInstance,cl.body,parent)
-        except Exception as inst:
-            err_msg = argg_hdl_error(
-                self.sourceFileName,
-                cl.lineno, 
-                cl.col_offset,
-                ClassName, 
-                "error while creating function from template"
-            )
-            raise Exception(err_msg,ClassInstance,inst)
-        
- 
-        return fun_ret
     def getFreeFunctionByName(self,FreeFunctionName):
         for x in self.free_functions:
             if x.name == FreeFunctionName:
                 return x
         raise Exception("Function not found: ", FreeFunctionName)
 
-
-
-
-
-
-
-
-
-
-    def extractFreeFunctions(self, freeFunction ,package ):
-        free = AST_FreeFunction(self, freeFunction ,package)
-        ret = free.get_functions()
-        return ret
     
     def Unfold_body(self,FuncDef):
         try:
