@@ -1330,6 +1330,12 @@ class v_for(v_ast_base):
         gIndent.deinc()
         return ret
 
+def v_for_reset():
+    v_for.range_counter = 0
+
+g_add_global_reset_function(v_for_reset)
+
+
 def body_unfold_for(astParser,Node):
     if hasattr(Node.iter,"id"):
         return for_loop_ranged_based(astParser,Node)

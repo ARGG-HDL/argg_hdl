@@ -68,8 +68,8 @@ p_mult : process(clk) is
         r_mult <= (others => (others => '0'));
         
       end if;
-    for i13 in 0 to r_mult'length -1 loop 
-        r_mult(i13) <= p_data(i13) * r_coeff(i13);
+    for i2 in 0 to r_mult'length -1 loop 
+        r_mult(i2) <= p_data(i2) * r_coeff(i2);
       end loop;
     end if;
   
@@ -84,8 +84,8 @@ p_add_st0 : process(clk) is
         r_add_st0 <= (others => (others => '0'));
         
       end if;
-    for i14 in 0 to 2 -1 loop 
-        r_add_st0(i14) <= resize_10(symbol => r_mult(2 * i14), newSize => 16 + 1) + resize_10(symbol => r_mult(2 * i14 + 1), newSize => 16 + 1);
+    for i3 in 0 to 2 -1 loop 
+        r_add_st0(i3) <= resize_10(symbol => r_mult(2 * i3), newSize => 16 + 1) + resize_10(symbol => r_mult(2 * i3 + 1), newSize => 16 + 1);
       end loop;
     end if;
   

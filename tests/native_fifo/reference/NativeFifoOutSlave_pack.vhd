@@ -33,7 +33,7 @@ end record;
         
 
 
-type NativeFifoOutSlave23 is record 
+type NativeFifoOutSlave1 is record 
     buff : small_buffer;
     empty1 : std_logic;
     enable1 : std_logic;
@@ -41,7 +41,7 @@ type NativeFifoOutSlave23 is record
 end record;
     
     
-  constant NativeFifoOutSlave23_null : NativeFifoOutSlave23:= (
+  constant NativeFifoOutSlave1_null : NativeFifoOutSlave1:= (
     buff => small_buffer_ctr,
     empty1 => std_logic_ctr(0, 1),
     enable1 => std_logic_ctr(0, 1),
@@ -49,11 +49,11 @@ end record;
   );
 
 
-    type NativeFifoOutSlave23_a is array (natural range <>) of NativeFifoOutSlave23;
+    type NativeFifoOutSlave1_a is array (natural range <>) of NativeFifoOutSlave1;
         
 
   function NativeFifoOutSlave_sig_ctr () return NativeFifoOutSlave_sig;
-  function NativeFifoOutSlave23_ctr () return NativeFifoOutSlave23;
+  function NativeFifoOutSlave1_ctr () return NativeFifoOutSlave1;
   procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  NativeFifoOutSlave);
   procedure push (signal self_sig :  in  NativeFifoOutSlave_sig;  self :  inout  NativeFifoOutSlave;  signal self_sig_rx2_s2m : out NativeFifoOut_s2m);
   procedure pull (signal self_sig :  in  NativeFifoOutSlave_sig_a;  self :  inout  NativeFifoOutSlave_a);
@@ -79,8 +79,8 @@ function NativeFifoOutSlave_sig_ctr () return NativeFifoOutSlave_sig is
  
 end function;
 
-function NativeFifoOutSlave23_ctr () return NativeFifoOutSlave23 is
-    variable ret : NativeFifoOutSlave23 := NativeFifoOutSlave23_null; 
+function NativeFifoOutSlave1_ctr () return NativeFifoOutSlave1 is
+    variable ret : NativeFifoOutSlave1 := NativeFifoOutSlave1_null; 
   begin 
      return ret;
  

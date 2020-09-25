@@ -1,3 +1,5 @@
+from argg_hdl.argg_hdl_base import g_add_global_reset_function
+
 class objectName:
     objectNameList = []
 
@@ -26,7 +28,7 @@ class objectName:
     def get_Name(self):
         candidats = [ x for x in self.objectNameList if x == self]
         if candidats:
-        #    print("reuse Name for "+ str(self) + "  -->  " +candidats[0].HDL_objectName )
+            #print("reuse Name for "+ str(self) + "  -->  " +candidats[0].HDL_objectName )
             return candidats[0].HDL_objectName
 
         sameTypeNameCandidates = [ x for x in self.objectNameList if x.objTypeName == self.objTypeName]
@@ -36,7 +38,7 @@ class objectName:
         if sameMembers:
             return sameMembers[0].HDL_objectName
 
-        self.HDL_objectName = self.objTypeName + str(len(self.objectNameList)) if len(sameTypeNameCandidates) > 0 else self.objTypeName
+        self.HDL_objectName = self.objTypeName + str(len(sameTypeNameCandidates)) if len(sameTypeNameCandidates) > 0 else self.objTypeName
         self.objectNameList.append(self)
         #print("New Name for ", str(self))
         return self.HDL_objectName
@@ -48,3 +50,11 @@ class objectName:
 def make_object_name(objTypeName,MemberTypeNames):
     obj = objectName(objTypeName,MemberTypeNames)
     return obj.get_Name()
+
+
+
+def reset_obj_name_maker():
+    objectName.objectNameList = []
+
+
+g_add_global_reset_function(reset_obj_name_maker)

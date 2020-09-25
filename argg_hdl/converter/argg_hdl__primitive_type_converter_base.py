@@ -271,6 +271,11 @@ class v_symbol_converter(hdl_converter_base):
     def get_type_simple(self,obj:"v_symbol"):
         return obj._type
     
+    def get_type_simple_template(self,obj:"v_symbol"):
+        if obj._varSigConst == varSig.const_t:
+            return "c_" + obj._type + "_" + str(value(obj))
+        return obj._type
+    
     def get_constructor(self,obj):
         return obj.primitive_type+"_ctr(" +str(value(obj))+ ", " + str(obj.Bitwidth_raw) + ")"
     
@@ -367,3 +372,9 @@ def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
 
 
 add_primitive_hdl_converter("base",v_symbol_converter )
+
+
+def reset_v_symbols():
+    v_symbol_converter.defined_types = []
+
+#g_add_global_reset_function(reset_v_symbols)

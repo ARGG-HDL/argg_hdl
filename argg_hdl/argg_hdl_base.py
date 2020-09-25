@@ -174,8 +174,10 @@ def add_symbols_to_entiy():
 
 
 
+g_global_reset_functions = []
 
-
+def g_add_global_reset_function(fun):
+    g_global_reset_functions.append(fun)
 
 gHDL_objectList = []
 gHDL_objectList_primary = []
@@ -190,6 +192,8 @@ def g_global_reset():
     gStatus["saveUnfinishFiles"] = False
 
     gTemplateIndent.reset()
+    for e in g_global_reset_functions:
+        e()
 
 
 

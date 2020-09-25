@@ -64,6 +64,9 @@ def get_entity_file_name(obj):
 
 def get_type_simple(obj):
     return obj.__hdl_converter__.get_type_simple(obj)
+
+def get_type_simple_template(obj):
+    return obj.__hdl_converter__.get_type_simple_template(obj)
     
 def get_constructor(obj):
     return obj.__hdl_converter__.get_constructor(obj)

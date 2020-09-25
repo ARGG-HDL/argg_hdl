@@ -36,7 +36,7 @@ begin
   
 -----------------------------------
 proc : process(clk) is
-    variable   fifo_s : NativeFifoOutSlave := NativeFifoOutSlave23_ctr;
+    variable   fifo_s : NativeFifoOutSlave1 := NativeFifoOutSlave1_ctr;
   begin
     if rising_edge(clk) then 
       pull( self_sig  =>  fifo_s_sig, self  =>  fifo_s);

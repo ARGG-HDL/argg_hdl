@@ -237,6 +237,9 @@ class hdl_converter_base:
     def get_type_simple(self,obj):
         return type(obj).__name__
 
+    def get_type_simple_template(self,obj):
+        return self.get_type_simple(obj)
+        
     def get_constructor(self,obj):
         return hdl.get_type_simple(obj)+"_ctr(" +value(obj)+")"
 

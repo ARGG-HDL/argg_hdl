@@ -27,6 +27,12 @@ package v_symbol_pack is
     function slv11_ctr(Data : Integer) return slv11;
 
 
+    subtype slv6 is std_logic_vector(5 downto 0);
+    constant slv6_null : slv6 := (others => '0');
+    type slv6_a is array (natural range <>) of slv6;
+    function slv6_ctr(Data : Integer) return slv6;
+
+
     subtype slv8 is std_logic_vector(7 downto 0);
     constant slv8_null : slv8 := std_logic_vector(to_unsigned(1, 8));
     type slv8_a is array (natural range <>) of slv8;
@@ -90,6 +96,14 @@ package body v_symbol_pack is
     variable ret : slv11;
     begin;
         ret := std_logic_vector_ctr(Data , slv11'length)
+        return ret;
+    end function;     
+
+            
+    function slv6_ctr(Data : Integer) return  slv6 is 
+    variable ret : slv6;
+    begin;
+        ret := std_logic_vector_ctr(Data , slv6'length)
         return ret;
     end function;     
 

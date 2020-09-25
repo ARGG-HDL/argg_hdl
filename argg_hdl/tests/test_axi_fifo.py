@@ -14,6 +14,7 @@ class test_bench_axi_fifo(v_entity):
         maxCount = v_slv(32,20)
         pipe1 = rollingCounter(clkgen.clk,maxCount) \
             | axiFifo(clkgen.clk)  \
+            | axiFifo(clkgen.clk, depth = 5)  \
             | axiPrint(clkgen.clk) 
         
         end_architecture()

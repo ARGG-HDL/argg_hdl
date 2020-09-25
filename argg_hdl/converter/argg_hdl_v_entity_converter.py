@@ -1,5 +1,6 @@
 from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_converter
-
+from  argg_hdl.argg_hdl_object_name_maker import  make_object_name
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
 from argg_hdl.argg_hdl_v_entity_list import *
@@ -12,8 +13,21 @@ class v_entity_converter(hdl_converter_base):
         super().__init__()
         self.astTree = None
 
+    def get_type_simple(self,obj):
+
+        objTypeName = type(obj).__name__
+
+        MemberTypeNames = [
+            hdl.get_type_simple_template(x["symbol"])
+            for x in obj.getMember()
+        ]
+
+        ret = make_object_name(objTypeName,MemberTypeNames)
+        return ret 
+
     def get_entity_file_name(self, obj):
-        return type(obj).__name__+".vhd"
+        type_name  = self.get_type_simple(obj)
+        return type_name+".vhd"
 
     def get_enity_file_content(self, obj):
         s = isConverting2VHDL()
@@ -59,8 +73,8 @@ class v_entity_converter(hdl_converter_base):
         return attName
 
     def get_archhitecture(self,obj):
-
-        ret = "architecture rtl of "+ obj._name +" is\n\n"
+        type_name  = self.get_type_simple(obj)
+        ret = "architecture rtl of "+ type_name +" is\n\n"
 
         ret +=  obj.__hdl_converter__.get_architecture_header_def(obj)
         ret += "\nbegin\n"
@@ -114,6 +128,7 @@ class v_entity_converter(hdl_converter_base):
 
 
     def get_architecture_body(self, obj):
+        type_name  = self.get_type_simple(obj)
         content = []
 
         for x in v_entity_getMember(obj):
@@ -125,7 +140,7 @@ class v_entity_converter(hdl_converter_base):
             content += x["symbol"].__hdl_converter__._vhdl_make_port(x["symbol"], x["name"] )
 
 
-        start = str(obj.__hdl_name__) +" : entity work." + obj._name+" port map (\n    "
+        start = str(obj.__hdl_name__) +" : entity work." + type_name +" port map (\n    "
         ret=join_str(content,start=start ,end="\n  )",Delimeter=",\n    ")
         return ret
  
@@ -156,6 +171,7 @@ class v_entity_converter(hdl_converter_base):
         return ret
 
     def get_declaration(self,obj):
+        type_name  = self.get_type_simple(obj)
         portdef=[]
         
         for x in obj.__hdl_converter__.getMember(obj):
@@ -164,7 +180,7 @@ class v_entity_converter(hdl_converter_base):
             portdef += hdl.get_port_list(sym)
 
       
-        ret = "entity " + obj._name + " is \n" 
+        ret = "entity " + type_name + " is \n" 
         ret+=join_str(portdef,start="  port(\n    " ,end="\n  );\n",Delimeter=";\n    ",IgnoreIfEmpty=True)
         ret += "end entity;\n\n"
         return ret

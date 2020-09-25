@@ -27,9 +27,9 @@ class axiFifo(v_clk_entity):
         #axMaster = get_master(self.Axi_out) 
         sList = v_list(v_copy(self.Axi_in.data), self.array_size)
 
-        head_index = v_slv( value( self.depth)+1)
-        tail_index =v_slv(value(self.depth)+1)
-        counter = v_variable(v_slv(value(self.depth)+1))
+        head_index = v_slv( self.depth+1)
+        tail_index =v_slv( self.depth+1 )
+        counter = v_variable(v_slv(self.depth+1))
         i_valid = v_variable(v_sl())
 
         @combinational()

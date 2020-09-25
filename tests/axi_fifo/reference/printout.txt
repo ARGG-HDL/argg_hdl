@@ -54,6 +54,12 @@
     <package_conversion name="v_list">
       <status ="sucess">
     </package_conversion>
+    <entity_conversion name="axiFifo">
+      <use_template function ="isReceivingData" args="axiStream_slv32_slave" />
+      <Missing_Template function="read_data" args="axiStream_slv32_slave, std_logic_vector(31 downto 0)" />
+      <Failed_to_convert name="axiFifo"/>
+      <status ="failed">
+    </entity_conversion>
     <entity_conversion name="axiPrint">
       <use_template function ="isReceivingData" args="axiStream_slv32_slave" />
       <Missing_Template function="read_data" args="axiStream_slv32_slave, std_logic_vector(31 downto 0)" />
@@ -85,6 +91,11 @@
       </processing>
       <status ="sucess">
     </package_conversion>
+    <entity_conversion name="axiFifo">
+      <use_template function ="isReceivingData" args="axiStream_slv32_slave" />
+      <use_template function ="read_data" args="axiStream_slv32_slave, std_logic_vector(31 downto 0)" />
+      <status ="sucess">
+    </entity_conversion>
     <entity_conversion name="axiFifo">
       <use_template function ="isReceivingData" args="axiStream_slv32_slave" />
       <use_template function ="read_data" args="axiStream_slv32_slave, std_logic_vector(31 downto 0)" />

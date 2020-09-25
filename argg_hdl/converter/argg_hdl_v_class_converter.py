@@ -352,6 +352,7 @@ class v_class_converter(hdl_converter_base):
     
     def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
         print_cnvt("_vhdl__DefineSymbol is deprecated")
+        TypeName = hdl.get_type_simple(obj)
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 
@@ -359,7 +360,7 @@ class v_class_converter(hdl_converter_base):
             return ""
 
         
-        return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.__hdl_converter__.get_init_values(obj) +";\n"
+        return VarSymb +" " +str(obj) + " : " + TypeName +" := " + obj.__hdl_converter__.get_init_values(obj) +";\n"
     
 
     def get_architecture_header(self, obj):
@@ -632,7 +633,7 @@ class v_class_converter(hdl_converter_base):
         for x in obj.getMember():
             if x["symbol"].__isFreeType__:
                 continue
-            MemberTypeNames.append(hdl.get_type_simple(x["symbol"]))
+            MemberTypeNames.append(hdl.get_type_simple_template(x["symbol"]))
 
         ret = make_object_name(objTypeName,MemberTypeNames)
         return ret 

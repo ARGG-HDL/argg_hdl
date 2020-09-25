@@ -31,10 +31,16 @@ architecture rtl of test_bench_axi_fifo is
   signal   pipe1_2_axiFifo_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
   signal   pipe1_2_axiFifo_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
 -------------------------- end pipe1_2_axiFifo-----------------
---------------------------pipe1_3_axiPrint-----------------
-  signal   pipe1_3_axiPrint_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
-  signal   pipe1_3_axiPrint_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
--------------------------- end pipe1_3_axiPrint-----------------
+--------------------------pipe1_3_axiFifo-----------------
+  signal   pipe1_3_axiFifo_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_3_axiFifo_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+  signal   pipe1_3_axiFifo_Axi_out_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_3_axiFifo_Axi_out_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+-------------------------- end pipe1_3_axiFifo-----------------
+--------------------------pipe1_4_axiPrint-----------------
+  signal   pipe1_4_axiPrint_Axi_in_s2m : axiStream_slv32_s2m := axiStream_slv32_s2m_ctr;
+  signal   pipe1_4_axiPrint_Axi_in_m2s : axiStream_slv32_m2s := axiStream_slv32_m2s_ctr;
+-------------------------- end pipe1_4_axiPrint-----------------
 -------------------------- end pipe1-----------------
 --------------------------clkgen-----------------
   signal clkgen_clk : std_logic := std_logic_ctr(0, 1); 
@@ -56,9 +62,16 @@ begin
     Axi_out_m2s => pipe1_2_axiFifo_Axi_out_m2s,
     clk => clkgen_clk
   );
-  pipe1_3_axiPrint : entity work.axiPrint port map (
-    Axi_in_s2m => pipe1_3_axiPrint_Axi_in_s2m,
-    Axi_in_m2s => pipe1_3_axiPrint_Axi_in_m2s,
+  pipe1_3_axiFifo : entity work.axiFifo1 port map (
+    Axi_in_s2m => pipe1_3_axiFifo_Axi_in_s2m,
+    Axi_in_m2s => pipe1_3_axiFifo_Axi_in_m2s,
+    Axi_out_s2m => pipe1_3_axiFifo_Axi_out_s2m,
+    Axi_out_m2s => pipe1_3_axiFifo_Axi_out_m2s,
+    clk => clkgen_clk
+  );
+  pipe1_4_axiPrint : entity work.axiPrint port map (
+    Axi_in_s2m => pipe1_4_axiPrint_Axi_in_s2m,
+    Axi_in_m2s => pipe1_4_axiPrint_Axi_in_m2s,
     clk => clkgen_clk
   );
   
@@ -71,8 +84,12 @@ begin
 pipe1_2_axiFifo_Axi_in_m2s <= pipe1_1_rollingCounter_Axi_out_m2s;
 pipe1_1_rollingCounter_Axi_out_s2m <= pipe1_2_axiFifo_Axi_in_s2m;
   ---------------------------------------------------------------------
---  pipe1_3_axiPrint_Axi_in << pipe1_2_axiFifo_Axi_out
-pipe1_3_axiPrint_Axi_in_m2s <= pipe1_2_axiFifo_Axi_out_m2s;
-pipe1_2_axiFifo_Axi_out_s2m <= pipe1_3_axiPrint_Axi_in_s2m;
+--  pipe1_3_axiFifo_Axi_in << pipe1_2_axiFifo_Axi_out
+pipe1_3_axiFifo_Axi_in_m2s <= pipe1_2_axiFifo_Axi_out_m2s;
+pipe1_2_axiFifo_Axi_out_s2m <= pipe1_3_axiFifo_Axi_in_s2m;
+  ---------------------------------------------------------------------
+--  pipe1_4_axiPrint_Axi_in << pipe1_3_axiFifo_Axi_out
+pipe1_4_axiPrint_Axi_in_m2s <= pipe1_3_axiFifo_Axi_out_m2s;
+pipe1_3_axiFifo_Axi_out_s2m <= pipe1_4_axiPrint_Axi_in_s2m;
   
 end architecture;
