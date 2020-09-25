@@ -6,13 +6,23 @@ from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_conve
 from argg_hdl.argg_hdl_lib_enums import  *
 from argg_hdl.converter.argg_hdl_hdl_converter_base import hdl_converter_base
 from argg_hdl.argg_hdl_v_enum import  v_enum
+from  argg_hdl.argg_hdl_object_name_maker import  make_object_name
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
+
 
 class v_enum_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
 
     def get_type_simple(self,obj):
-        return obj.name
+        
+        objTypeName = obj.name        
+
+        enumNames =[e.name for e in obj._type ] 
+        ret = make_object_name(objTypeName,enumNames)
+        return ret 
+
+
     def includes(self,obj, name,parent):
         PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
         return "  use work." + PackageName+".all;\n"
@@ -21,7 +31,7 @@ class v_enum_converter(hdl_converter_base):
              return ""
             
         # type T_STATE is (RESET, START, EXECUTE, FINISH);
-        name = obj.name
+        name = hdl.get_type_simple(obj)
         enumNames =[e.name for e in obj._type ] 
         start = "" 
         ret =  "\n  type " + name + " is ( \n    " 
@@ -70,7 +80,7 @@ end  {PackageName};
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
-            return name + " : " +obj.name
+            return name + " : " + hdl.get_type_simple(obj)
        
         return ""
 
@@ -92,7 +102,7 @@ end  {PackageName};
 
         VarSymb = get_varSig(obj._varSigConst)
 
-        return VarSymb +" " +str(obj) + " : " + obj.name +" := " + obj._type(value(obj.symbol)).name +";\n"
+        return VarSymb +" " +str(obj) + " : " +  hdl.get_type_simple(obj) +" := " + obj._type(value(obj.symbol)).name +";\n"
 
     
     def get_architecture_header(self, obj):
@@ -104,7 +114,7 @@ end  {PackageName};
 
         VarSymb = get_varSig(obj._varSigConst)
 
-        return VarSymb +" " +str(obj) + " : " + obj.name +" := " +obj._type(value(obj.symbol)).name+";\n"
+        return VarSymb +" " +str(obj) + " : " +  hdl.get_type_simple(obj) +" := " +obj._type(value(obj.symbol)).name+";\n"
 
 
 add_primitive_hdl_converter("v_enum" ,v_enum_converter)
