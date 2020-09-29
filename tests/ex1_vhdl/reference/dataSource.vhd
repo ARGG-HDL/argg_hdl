@@ -30,19 +30,23 @@ begin
   -- begin architecture
   
 -----------------------------------
-proc : process(clk) is
+proc : process(clk, DataOut_s2m) is
     variable   mast : axiStream_slv32_master := axiStream_slv32_master_ctr;
+  
   begin
-    if rising_edge(clk) then 
-      pull( self  =>  mast, tx => DataOut_s2m);
+        pull( clk  =>  clk, self  =>  mast, tx => DataOut_s2m);
+  
+  if rising_edge(clk) then
   
       if (ready_to_send_0(self => mast)) then 
         send_data_01(self => mast, dataIn => data);
         data <= data + 2;
         
       end if;
-        push( self  =>  mast, tx => DataOut_m2s);
+    
   end if;
+        push( clk  =>  clk, self  =>  mast, tx => DataOut_m2s);
+  
   
   end process;
   -- end architecture

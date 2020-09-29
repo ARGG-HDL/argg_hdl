@@ -29,9 +29,11 @@ end record;
     type register_t_a is array (natural range <>) of register_t;
         
 
-  function register_t_ctr () return register_t;
-  procedure pull (self : inout register_t; signal data_IO :  in  register_t);
-  procedure push (self : inout register_t; signal data_IO :  out  register_t);
+  function register_t_ctr  return register_t;
+  procedure pull_01 (signal clk: in std_logic; self : inout register_t; signal data_IO :  in  register_t);
+  procedure push_01 (signal clk: in std_logic; self : inout register_t; signal data_IO :  out  register_t);
+  procedure pull_11 (signal clk: in std_logic;  signal self : inout register_t; signal data_IO :  in  register_t);
+  procedure push_11 (signal clk: in std_logic;  signal self : inout register_t; signal data_IO :  out  register_t);
 ------- End Psuedo Class register_t -------------------------
 -------------------------------------------------------------------------
 
@@ -43,20 +45,32 @@ package body register_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class register_t -------------------------
-function register_t_ctr () return register_t is
+function register_t_ctr  return register_t is
     variable ret : register_t := register_t_null; 
   begin 
      return ret;
  
 end function;
 
-procedure pull (self : inout register_t; signal data_IO :  in  register_t) is
+procedure pull_01 (signal clk: in std_logic; self : inout register_t; signal data_IO :  in  register_t) is
    
   begin 
- self  := data_IO; 
+ self   :=  data_IO; 
 end procedure;
 
-procedure push (self : inout register_t; signal data_IO :  out  register_t) is
+procedure push_01 (signal clk: in std_logic; self : inout register_t; signal data_IO :  out  register_t) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
+procedure pull_11 (signal clk: in std_logic;  signal self : inout register_t; signal data_IO :  in  register_t) is
+   
+  begin 
+ self   <=  data_IO; 
+end procedure;
+
+procedure push_11 (signal clk: in std_logic;  signal self : inout register_t; signal data_IO :  out  register_t) is
    
   begin 
  data_IO  <=  self; 

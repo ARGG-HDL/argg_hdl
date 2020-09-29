@@ -32,9 +32,11 @@ end record;
 
 
 
-  function klm_globals_ctr () return klm_globals;
-  procedure pull (self : inout klm_globals; signal data_IO :  in  klm_globals);
-  procedure push (self : inout klm_globals; signal data_IO :  out  klm_globals);
+  function klm_globals_ctr  return klm_globals;
+  procedure pull_01 (signal clk: in std_logic; self : inout klm_globals; signal data_IO :  in  klm_globals);
+  procedure push_01 (signal clk: in std_logic; self : inout klm_globals; signal data_IO :  out  klm_globals);
+  procedure pull_11 (signal clk: in std_logic;  signal self : inout klm_globals; signal data_IO :  in  klm_globals);
+  procedure push_11 (signal clk: in std_logic;  signal self : inout klm_globals; signal data_IO :  out  klm_globals);
 ------- End Psuedo Class klm_globals -------------------------
 -------------------------------------------------------------------------
 
@@ -46,20 +48,32 @@ package body klm_globals_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class klm_globals -------------------------
-function klm_globals_ctr () return klm_globals is
+function klm_globals_ctr  return klm_globals is
     variable ret : klm_globals := klm_globals_null; 
   begin 
      return ret;
  
 end function;
 
-procedure pull (self : inout klm_globals; signal data_IO :  in  klm_globals) is
+procedure pull_01 (signal clk: in std_logic; self : inout klm_globals; signal data_IO :  in  klm_globals) is
    
   begin 
- self  := data_IO; 
+ self   :=  data_IO; 
 end procedure;
 
-procedure push (self : inout klm_globals; signal data_IO :  out  klm_globals) is
+procedure push_01 (signal clk: in std_logic; self : inout klm_globals; signal data_IO :  out  klm_globals) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
+procedure pull_11 (signal clk: in std_logic;  signal self : inout klm_globals; signal data_IO :  in  klm_globals) is
+   
+  begin 
+ self   <=  data_IO; 
+end procedure;
+
+procedure push_11 (signal clk: in std_logic;  signal self : inout klm_globals; signal data_IO :  out  klm_globals) is
    
   begin 
  data_IO  <=  self; 

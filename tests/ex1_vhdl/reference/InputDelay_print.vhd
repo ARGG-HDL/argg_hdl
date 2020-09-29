@@ -34,11 +34,13 @@ begin
   -- begin architecture
   
 -----------------------------------
-proc : process(globals_clk) is
+proc : process(globals_clk, ConfigIn_m2s) is
     variable   ax_slave : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
+  
   begin
-    if rising_edge(globals_clk) then 
-      pull( self  =>  ax_slave, rx => ConfigIn_m2s);
+        pull( clk  =>  globals_clk, self  =>  ax_slave, rx => ConfigIn_m2s);
+  
+  if rising_edge(globals_clk) then
   counter <= counter + 1;
     
       if (isReceivingData_0(self => ax_slave)) then 
@@ -50,8 +52,10 @@ proc : process(globals_clk) is
         counter <= 0;
         
       end if;
-        push( self  =>  ax_slave, rx => ConfigIn_s2m);
+    
   end if;
+        push( clk  =>  globals_clk, self  =>  ax_slave, rx => ConfigIn_s2m);
+  
   
   end process;
   -- end architecture
