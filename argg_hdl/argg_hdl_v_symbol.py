@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 import sys
 import inspect
-
+import copy
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_simulation import *
 
@@ -10,6 +10,30 @@ from argg_hdl.argg_hdl_slice_base import v_slice_base, slice_helper
 from argg_hdl.argg_hdl__primitive_type_converter  import get_primitive_hdl_converter
 from argg_hdl.argg_hdl_object_factory import add_constructor
 
+vetoNone = [
+    "__Driver__",
+    "__Driver_IsInit__"
+    "__vcd_varobj__",
+    "__vcd_writer__",
+]
+vetoList = [
+    '__update__list_running__',
+    '__receiver_list_running__',
+    
+    
+            
+    "__update_list__",
+    "__update__list_process__",
+    "__update__list_running__",
+    "__update__list_process_running__",
+    "__receiver_list_running__",
+    
+    "__Pull_update_list__",
+    "__Push_update_list__",
+
+
+
+]
 def v_symbol_reset():
     #v_symbol.__value_list__.clear()
     pass
@@ -74,7 +98,19 @@ class v_symbol(argg_hdl_base):
         self._Simulation_name = "NotSet"
 
 
-
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k in vetoList:
+                setattr(result, k, [])
+                continue
+            if k in vetoNone:
+                setattr(result, k, None)
+                continue
+            setattr(result, k, copy.deepcopy(v, memo))
+        return result
 
     def _sim_get_value(self):
         if self._varSigConst==varSig.runtime_variable_t:

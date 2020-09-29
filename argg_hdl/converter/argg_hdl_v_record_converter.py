@@ -8,6 +8,8 @@ from argg_hdl.argg_hdl_object_factory import add_constructor
 
 from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_converter
 
+from  argg_hdl.argg_hdl_lib_enums import varSig
+
 class v_record_converter(v_class_converter):
     def __init__(self):
         super().__init__()
@@ -30,23 +32,31 @@ class v_record_converter(v_class_converter):
 
 
     def make_connection(self, obj, name, parent):
-        obj.pull = self.getConnecting_procedure_record(obj, "pull")
-        obj.push = self.getConnecting_procedure_record(obj, "push")
+        obj.pull_var = self.getConnecting_procedure_record(obj, "pull",varSig.variable_t)
+        obj.push_var = self.getConnecting_procedure_record(obj, "push",varSig.variable_t)
 
-    def getConnecting_procedure_record(self, obj, PushPull):
+        obj.pull_sig = self.getConnecting_procedure_record(obj, "pull",varSig.signal_t)
+        obj.push_sig = self.getConnecting_procedure_record(obj, "push",varSig.signal_t)
+
+
+    def getConnecting_procedure_record(self, obj, PushPull, varSig_):
+
+        varSig_str  = "" if varSig_ == varSig.variable_t else " signal "
+        assign = " := " if varSig_ == varSig.variable_t else " <= "
+        name = PushPull+"_01" if varSig_ == varSig.variable_t else PushPull + "_11"
 
         if PushPull == "push":
             inout = " out "
             line = "data_IO  <=  self;"
         else:
             inout = " in "
-            line = "self  := data_IO;"
+            line = "self  " + assign +" data_IO;"
 
-        TypeName = obj.getType()
-        args = "self : inout " + TypeName + "; signal data_IO : " + inout + " " + TypeName
+        type_name  = self.get_type_simple(obj)
+        args = "signal clk: in std_logic; " + varSig_str+ "self : inout " + type_name + "; signal data_IO : " + inout + " " + type_name
 
         ret = v_procedure(
-            name=None,
+            name=name,
             argumentList=args,
             body=line,
             isFreeFunction=True,

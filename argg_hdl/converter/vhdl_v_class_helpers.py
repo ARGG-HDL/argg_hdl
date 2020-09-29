@@ -39,12 +39,14 @@ def append_hdl_name(name, suffix):
     return ret
     
 class vhdl__Pull_Push():
-    def __init__(self,obj, inout):
+    def __init__(self,obj, inout, clk):
         self.obj = obj
         self.Inout = inout
+        self.clk = clk
 
     def get_selfHandles(self):
         selfHandles = []
+
         xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
         for x in xs:
             arg = "self"+x["suffix"] + "  =>  " +str(self.obj) + x["suffix"]
@@ -53,7 +55,7 @@ class vhdl__Pull_Push():
 
     def getConnections(self):
         content = []
-        for x in self.obj.getMember( self.Inout,varSig.variable_t):
+        for x in self.obj.getMember( self.Inout):
             n_connector = _get_connector( x["symbol"])
 
 
@@ -67,44 +69,23 @@ class vhdl__Pull_Push():
 
         return content
 
-    def getConnections_outputs(self):
-        content = []
-        if not(self.Inout == InOut_t.output_t):
-            return content
-
-        members = self.obj.__hdl_converter__.get_internal_connections(self.obj)
-        for x in members:
-            inout_local =  self.Inout
-            if x["type"] == 'sig2var':
-                inout_local =  InoutFlip(self.Inout)
-
-
-
-            sig = x["source"]["symbol"].__hdl_converter__.extract_conversion_types(
-                    x["source"]["symbol"],
-                    exclude_class_type= v_classType_t.transition_t,
-                    filter_inout=inout_local
-                )
-            connector = "_"
-            content.append(self.obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +" => " +self.obj.__hdl_name__+"_sig."  + x["source"]["name"]+ sig[0]["suffix"])
-
-        return content
+    def get_clock_connection(self):
+        return ["clk  =>  " +str(self.clk)]
 
 
     def __str__(self):
         if self.obj.__v_classType__  == v_classType_t.Record_t:
             return ""
-        content = self.get_selfHandles()
+        
+        pushpull = "pull" if self.Inout == InOut_t.input_t else "push"
 
+        if  not hdl.Has_pushpull_function(self.obj, pushpull):
+            return ""
 
-
+        content  = self.get_clock_connection()
+        content += self.get_selfHandles()
         content += self.getConnections()
 
-        content += self.getConnections_outputs()
-
-        pushpull= "push"
-        if self.Inout == InOut_t.input_t:
-            pushpull = "pull"
 
         ret=join_str(
             content,
@@ -113,8 +94,6 @@ class vhdl__Pull_Push():
             Delimeter=", "
             )
 
-        if  not self.obj.__hdl_converter__.Has_pushpull_function(self.obj, pushpull):
-            return ""
         return ret
 
 
@@ -286,29 +265,31 @@ class getMemberArgs():
 
 
 class getConnecting_procedure_vector():
-    def __init__(self,obj, InOut_Filter,PushPull,procedureName=None):
+    def __init__(self,obj, InOut_Filter,PushPull,procedureName=None,clk=None):
         super().__init__()
         self.obj = obj
         self.InOut_Filter = InOut_Filter
         self.PushPull = PushPull
         self.procedureName = procedureName
+        self.clk = clk
 
     def get_isempty_From_non_vector_method(self):
         isEmpty = False
-        if self.PushPull== "push":
+        if  "push" in self.PushPull:
             isEmpty = self.obj.push.isEmpty
 
         else:
             isEmpty = self.obj.pull.isEmpty
         return isEmpty
 
+
     def get_argumentList(self):
         inout = " in "
-        if self.PushPull== "push":
+        if "push" in self.PushPull :
             inout = " out "
 
-
-        argumentList =  self.obj.__hdl_converter__.getMemberArgs(
+        argumentList =  "signal clk  : in std_logic; " 
+        argumentList +=  self.obj.__hdl_converter__.getMemberArgs(
             self.obj,
             self.InOut_Filter,
             inout,
@@ -363,8 +344,8 @@ class getConnecting_procedure_vector():
         content += self.get_internal_connections()
 
         members = self.obj.getMember(self.InOut_Filter)
-
-        args = join_str(content + [
+        args = "clk => clk, " 
+        args += join_str(content + [
                 str(x["name"]) + " => " + str(x["name"]+"(i)")
                 for x in members
             ],

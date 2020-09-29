@@ -185,14 +185,7 @@ class axisStream_slave(v_class_slave):
             self.data_internal_isvalid2 << self.data_isvalid
             self.data_internal_isLast2 << self.rx.last
             self.data_isvalid << 0
-        
-   
-      
-    def _sim_get_value(self):
-        if self.data_internal_isvalid2:
-            self.data_internal_was_read2 << 1
 
-        return self.data_internal2._sim_get_value()
 
     def _onPush(self):
         if self.data_internal_was_read2:
@@ -201,6 +194,11 @@ class axisStream_slave(v_class_slave):
         if not self.data_isvalid and not self.data_internal_isvalid2:
             self.rx.ready << 1
         
+    def _sim_get_value(self):
+        if self.data_internal_isvalid2:
+            self.data_internal_was_read2 << 1
+
+        return self.data_internal2._sim_get_value()
 
 
 class axisStream_master_converter(v_class_master_converter):

@@ -2,7 +2,7 @@ from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 
-import  argg_hdl.vhdl_v_class_helpers as  vc_helper
+import  argg_hdl.converter.vhdl_v_class_helpers as  vc_helper
 import argg_hdl.argg_hdl_v_Package as argg_pack
 from argg_hdl.argg_hdl_v_class import   v_class
 

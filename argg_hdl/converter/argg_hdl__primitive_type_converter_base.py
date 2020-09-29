@@ -72,8 +72,8 @@ class v_symbol_converter(hdl_converter_base):
             func_definition   = """
     function {alias}_ctr(Data : Integer) return  {alias} is 
     variable ret : {alias};
-    begin;
-        ret := {base_type}_ctr(Data , {alias}'length)
+    begin
+        ret := {base_type}_ctr(Data , {alias}'length);
         return ret;
     end function;     
 

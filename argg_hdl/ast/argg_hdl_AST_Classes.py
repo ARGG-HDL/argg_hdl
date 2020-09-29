@@ -192,34 +192,87 @@ class v_process_body_Def(v_ast_base):
         self.dec = dec
         self.name = name
         self.LocalVar = LocalVar
-    
-    def __str__(self):
-        pull =""
+
+    def get_local_var(self):
         for x in self.LocalVar:
             if x._type == "undef":
                 continue
-            pull += x.__hdl_converter__._vhdl__Pull(x)
-        push =""
+            yield x
+
+    def get_sensitivity_list(self):
+        ret =[str(self.dec[0].argList[0])]
+        ret += [
+            hdl.get_process_sensitivity_list(x)
+            for x in self.get_local_var()
+        ]
+        ret = join_str(ret,Delimeter=", ",IgnoreIfEmpty=True)
+        return ret
+
+    def get_combinatorial_pull(self):
+        ret =[
+             hdl.get_process_combinatorial_pull(x,str(self.dec[0].argList[0]))
+            for x in self.get_local_var()
+        ]
+        ret = join_str(ret,LineBeginning="  ",LineEnding=";\n",IgnoreIfEmpty=True)
+        return ret
+    def get_combinatorial_push(self):
+        ret =[
+            hdl.get_process_combinatorial_push(x,str(self.dec[0].argList[0]))
+            for x in self.get_local_var()
+        ]
+        ret = join_str(ret,LineBeginning="  ",LineEnding=";\n",IgnoreIfEmpty=True)
+        return ret
+
+
+    def get_process_header(self):
+        process_header = ""
         for x in self.LocalVar:
-            if x._type == "undef":
-                continue
-            push += x.__hdl_converter__._vhdl__push(x)
-        
-        ret =  "("+ str(self.dec[0].argList[0])+ ") is\n"
-        
-        for x in self.LocalVar:
-            ret += x.__hdl_converter__.get_process_header(x)
-        ret += "begin\n  " 
-        ret += "if " + self.dec[0].name +"(" + str(self.dec[0].argList[0])+") then \n"
-        ret += pull
+            process_header += hdl.get_process_header(x)
+        return process_header
+
+    def get_body(self):
+        body = ""
         for x in self.BodyList:
             x_str =str(x) 
             if x_str:
                 x_str = x_str.replace("\n", "\n  ")
-                ret += x_str+";\n  "
-        ret += push
-        ret += "end if;\n"
+                body += x_str+";\n  "
+        return body
+
+    def get_process_decorator(self):
+        process_decorator = self.dec[0].name +"(" + str(self.dec[0].argList[0])+")"
+        return process_decorator
+
+    def __str__(self):
+
+        sensitivity_list = self.get_sensitivity_list()
+        process_header = self.get_process_header()
+        body = self.get_body() 
+        process_decorator = self.get_process_decorator()
+        combinatorial_pull = self.get_combinatorial_pull()
+        combinatorial_push = self.get_combinatorial_push()
+
+        ret = """({sensitivity_list}) is
+{process_header}
+begin
+{combinatorial_pull}
+if {process_decorator} then
+{body}
+end if;
+{combinatorial_push}
+""".format(
+    sensitivity_list=sensitivity_list,
+    combinatorial_pull= combinatorial_pull,
+    process_decorator=process_decorator,
+    process_header=process_header,
+    body=body,
+    combinatorial_push=combinatorial_push
+)
         return ret
+
+        
+
+
 
 def body_unfold_porcess_body(astParser,Node):
     if astParser.get_scope_name() != GNames.process:

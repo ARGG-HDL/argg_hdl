@@ -353,11 +353,22 @@ class argg_hdl_base0:
         pass
 
     def _sim_set_push_pull(self, Pull_list, Push_list):
+        if hasattr(self, "_onPull_comb"):
+            _onPull_comb=getattr(self, '_onPull_comb')
+            Pull_list.append(_onPull_comb)
+            self._sim_append_update_list(_onPull_comb)
+
         if hasattr(self, "_onPull"):
             Pull_list.append(getattr(self, '_onPull'))
 
         if hasattr(self, "_onPush"):
             Push_list.append(getattr(self, '_onPush'))
+        
+        if hasattr(self, "_onPush_comb"):
+            _onPush_comb=getattr(self, '_onPush_comb')
+            Push_list.append(getattr(self, '_onPush_comb'))
+            self._sim_append_update_list(_onPush_comb)
+
 
     def js_dump(self):
         return debug_vis.js_dump()
@@ -681,3 +692,26 @@ def v_deepcopy(symbol: T) ->T:
     ret.__receiver__ = receiver
 
     return ret
+
+
+def is_argg_hdl_obj(obj):
+    obj = get_symbol(obj)
+    return issubclass(type(obj),argg_hdl_base0)
+        
+    
+
+
+def is_variable(obj):
+    obj = get_symbol(obj)
+    if is_argg_hdl_obj(obj):
+        return obj._varSigConst == varSig.variable_t
+
+    return False
+    
+
+def is_signal(obj):
+    obj = get_symbol(obj)
+    if is_argg_hdl_obj(obj):
+        return obj._varSigConst == varSig.signal_t
+
+    return False

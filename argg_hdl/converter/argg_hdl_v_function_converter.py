@@ -65,13 +65,21 @@ class v_function_converter(hdl_converter_base):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent,True)
-        argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True ,IgnoreIfEmpty=True).strip()
+        argumentList = join_str( 
+            [classDef, obj.argumentList ],
+            Delimeter="; " ,
+            RemoveEmptyElements = True ,
+            IgnoreIfEmpty=True,
+            start="(",
+            end=")"
+        ).strip()
+        
         if obj.name:
             name = obj.name
         if obj.isEmpty:
             return "-- empty function removed. name: '"  + name+"'\n"
 
-        ret = '''  function {functionName} ({argumentList}) return {returnType};\n'''.format(
+        ret = '''  function {functionName} {argumentList} return {returnType};\n'''.format(
                 functionName=name,
                 argumentList=argumentList,
                 returnType=value(obj.returnType)
@@ -84,14 +92,21 @@ class v_function_converter(hdl_converter_base):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name(parent,True)
-        argumentList = join_str( [classDef, obj.argumentList ],Delimeter="; " ,RemoveEmptyElements = True ,IgnoreIfEmpty=True).strip()
+        argumentList = join_str( 
+            [classDef, obj.argumentList ],
+            Delimeter="; " ,
+            RemoveEmptyElements = True ,
+            IgnoreIfEmpty=True,
+            start="(",
+            end=")"
+        ).strip()
         
         if obj.name:
             name = obj.name  
         if obj.isEmpty:
             return "-- empty function removed. name: '"  + name   +"'\n"
 
-        ret = '''function {functionName} ({argumentList}) return {returnType} is\n  {VariableList} \n  begin \n {body} \nend function;\n\n'''.format(
+        ret = '''function {functionName} {argumentList} return {returnType} is\n  {VariableList} \n  begin \n {body} \nend function;\n\n'''.format(
                 functionName=name,
                 argumentList=argumentList,
                 body = obj.body,

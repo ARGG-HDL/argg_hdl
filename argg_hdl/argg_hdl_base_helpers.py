@@ -49,7 +49,7 @@ def join_str(content, start="",end="",LineEnding="",Delimeter="",LineBeginning="
     for x in content[0:-1]:
         ret += LineBeginning + str(x) + Delimeter + LineEnding
     if len(content) == 0 and IgnoreIfEmpty:
-        return ret
+        return ""
     ret += LineBeginning + str(content[-1]) +  LineEnding
     ret += end
     return ret

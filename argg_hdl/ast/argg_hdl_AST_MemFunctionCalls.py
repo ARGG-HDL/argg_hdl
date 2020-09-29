@@ -2,6 +2,7 @@
 from  argg_hdl.argg_hdl_base_helpers import *
 from argg_hdl.argg_hdl_global_settings import print_cnvt
 from  argg_hdl.argg_hdl_lib_enums import varSig, InOut_t
+import argg_hdl.argg_hdl_hdl_converter as hdl
 import copy
 
 class memFunctionCall:
@@ -88,18 +89,8 @@ def call_func(obj, name, args, astParser=None,func_args=None):
     ret = []
 
     for arg,func_arg  in zip(args,func_args ):
-        ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
-        for y in ys:
-            line = func_arg["name"] + y["suffix"]+ " => " + str(arg) + y["suffix"]
-            ret.append(line)
-            if y["symbol"]._varSigConst ==varSig.signal_t:
-                members = y["symbol"].getMember()
-                for m in members:
-                    if m["symbol"].__writeRead__ == InOut_t.output_t or  m["symbol"].__writeRead__ == InOut_t.InOut_tt:
-                        line = func_arg["name"] + y["suffix"]+"_"+ m["name"] +" => " + arg.__hdl_name__ + y["suffix"]  +"."+m["name"]
-                        ret.append(line)
-                        #print_cnvt(line)
-            
+        ret += hdl.make_function_variable_assignment( func_arg["symbol"], func_arg ,arg )
+
 
     varSigSuffix = get_function_varSig_suffix(func_args)
     actual_function_name = func_args[0]["symbol"].__hdl_converter__.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)

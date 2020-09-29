@@ -269,7 +269,23 @@ class hdl_converter_base:
         ret.append(name + " => " + objName)
         return  ret
 
+    def make_function_variable_assignment(self, obj,func_arg, arg):
+        ret = []
+        ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
+        for y in ys:
+            line = func_arg["name"] + y["suffix"]+ " => " + str(arg) + y["suffix"]
+            ret.append(line)
+            if y["symbol"]._varSigConst ==varSig.signal_t:
+                members = y["symbol"].getMember()
+                for m in members:
+                    if m["symbol"].__writeRead__ == InOut_t.output_t or  m["symbol"].__writeRead__ == InOut_t.InOut_tt:
+                        line = func_arg["name"] + y["suffix"]+"_"+ m["name"] +" => " + arg.__hdl_name__ + y["suffix"]  +"."+m["name"]
+                        ret.append(line)
+                        #print_cnvt(line)
 
+        return ret
+
+        
     def _vhdl_get_attribute(self,obj, attName):
         return str(obj) + "." +str(attName)
 
@@ -392,6 +408,10 @@ class hdl_converter_base:
     def get_port_list(self,obj):
         return ""
 
+
+    def get_process_sensitivity_list(self, obj):
+        return []
+
     def get_process_header(self,obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
@@ -402,6 +422,12 @@ class hdl_converter_base:
         VarSymb = get_varSig(obj._varSigConst)
 
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.DefaultValue +";\n"
+    
+    def get_process_combinatorial_pull(self,obj,clk):
+        return []
+
+    def get_process_combinatorial_push(self,obj,clk):
+        return []
 
     def get_free_symbols(self,obj,name,parent_list=[]):
         return []

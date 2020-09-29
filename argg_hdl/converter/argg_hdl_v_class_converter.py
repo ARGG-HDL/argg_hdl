@@ -9,7 +9,7 @@ from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_simulation import *
 from argg_hdl.argg_hdl_v_class import *
 import argg_hdl.argg_hdl_v_Package as argg_pack
-import  argg_hdl.vhdl_v_class_helpers as  vc_helper
+import  argg_hdl.converter.vhdl_v_class_helpers as  vc_helper
 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
@@ -299,26 +299,52 @@ class v_class_converter(hdl_converter_base):
 
     def getBody_onPush(self, obj):
         for x in obj.__hdl_converter__.__ast_functions__:
-            if "_onpush" in x.name.lower():
+            if "_onpush" in x.name.lower()  and not "_onpush_comb" in x.name.lower():
                 return x.body
         return ""
 
     def getBody_onPull(self, obj):
         for x in obj.__hdl_converter__.__ast_functions__:
-            if  "_onpull" in x.name.lower() :
+            if  "_onpull" in x.name.lower() and not "_onpull_comb" in x.name.lower():
                 return x.body
         return ""
+
+
+    def getBody_onPush_comb(self, obj):
+        for x in obj.__hdl_converter__.__ast_functions__:
+            if "_onpush_comb" in x.name.lower():
+                return x.body
+        return ""
+
+    def getBody_onPull_comb(self, obj):
+        for x in obj.__hdl_converter__.__ast_functions__:
+            if  "_onpull_comb" in x.name.lower() :
+                return x.body
+        return ""
+
 
     def get_before_after_conection(self, obj, InOut_Filter, PushPull):
         beforeConnecting = ""
         AfterConnecting = ""
         
-        if PushPull== "push":
-            beforeConnecting = obj.__hdl_converter__.getBody_onPush(obj)
+        if  "push" in PushPull:
             inout = " out "
+            beforeConnecting_comb = obj.__hdl_converter__.getBody_onPush_comb(obj)
+            beforeConnecting = obj.__hdl_converter__.getBody_onPush(obj)
+            if beforeConnecting.strip():
+                beforeConnecting =  "  if rising_edge(clk) then\n" + beforeConnecting + "  end if;"
+
+            if beforeConnecting_comb.strip():
+                beforeConnecting +="\n"+beforeConnecting_comb
+
         else:
-            AfterConnecting = obj.__hdl_converter__.getBody_onPull(obj)
             inout = " in "
+            AfterConnecting_comb = obj.__hdl_converter__.getBody_onPull_comb(obj)
+            AfterConnecting = obj.__hdl_converter__.getBody_onPull(obj)
+            if AfterConnecting.strip():
+                AfterConnecting =  "  if rising_edge(clk) then\n" + AfterConnecting + "  end if;"
+            if AfterConnecting_comb.strip():
+                AfterConnecting = AfterConnecting_comb + "\n" +AfterConnecting
             
         return beforeConnecting, AfterConnecting, inout
 
@@ -352,14 +378,14 @@ class v_class_converter(hdl_converter_base):
     
     def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
         print_cnvt("_vhdl__DefineSymbol is deprecated")
-        TypeName = hdl.get_type_simple(obj)
-        if not VarSymb:
-            VarSymb = get_varSig(obj._varSigConst)
+        
+        VarSymb =  VarSymb if VarSymb else  get_varSig(obj._varSigConst)
 
         if obj.__Driver__ and str( obj.__Driver__) != 'process':
             return ""
 
         
+        TypeName = hdl.get_type_simple(obj)
         return VarSymb +" " +str(obj) + " : " + TypeName +" := " + obj.__hdl_converter__.get_init_values(obj) +";\n"
     
 
@@ -428,14 +454,21 @@ class v_class_converter(hdl_converter_base):
 
            
         
-    def _vhdl__Pull(self,obj):
-        Pull_Push_handle = vc_helper.vhdl__Pull_Push(obj,InOut_t.input_t)
-        return str(Pull_Push_handle)
+    def get_process_combinatorial_pull(self,obj, clk):
+        ret = []
+        Pull_Push_handle = vc_helper.vhdl__Pull_Push(obj,InOut_t.input_t, clk)
+        st = str(Pull_Push_handle)
+        if st:
+            ret +=[st]
+        return ret
 
-
-    def _vhdl__push(self,obj):
-        Pull_Push_handle = vc_helper.vhdl__Pull_Push(obj,InOut_t.output_t)
-        return str(Pull_Push_handle)
+    def get_process_combinatorial_push(self,obj,clk):
+        ret = []
+        Pull_Push_handle = vc_helper.vhdl__Pull_Push(obj,InOut_t.output_t,clk)
+        st = str(Pull_Push_handle)
+        if st:
+            ret +=[st]
+        return ret
 
 
     def Has_pushpull_function(self,obj, pushpull):
@@ -510,7 +543,8 @@ class v_class_converter(hdl_converter_base):
                 exclude_class_type= v_classType_t.transition_t,
                 filter_inout=InOut_Filter)
             for y in ys:
-                ret.append(PushPull+"(self." + x["name"]+", "+PushPullPrefix + x["name"] +");")
+
+                ret.append(PushPull+"(clk, self." + x["name"]+", "+PushPullPrefix + x["name"] +");")
         return ret      
          
  

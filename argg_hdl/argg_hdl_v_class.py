@@ -8,7 +8,7 @@ from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_simulation import *
 import argg_hdl.argg_hdl_v_Package as argg_pack
-import  argg_hdl.vhdl_v_class_helpers as  vc_helper
+import  argg_hdl.converter.vhdl_v_class_helpers as  vc_helper
 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
@@ -366,9 +366,13 @@ class v_class(argg_hdl_base):
     def _instantiate_(self):
         if self.__isInst__:
             return
+        
+        
         self_members = self.getMember()
         for x in self_members:
             x["symbol"]._instantiate_()
+        
+
 
         self._Inout = InoutFlip(self._Inout)
         self.__isInst__ = True

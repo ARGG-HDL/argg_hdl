@@ -3,11 +3,12 @@ from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_entity_list import *
 from argg_hdl.argg_hdl_simulation import *
 import argg_hdl.argg_hdl_v_Package as argg_pack
-import  argg_hdl.vhdl_v_class_helpers as  vc_helper
+import  argg_hdl.converter.vhdl_v_class_helpers as  vc_helper
 from argg_hdl.argg_hdl_v_class import  v_class
 from argg_hdl.converter.argg_hdl_v_class_converter import v_class_converter
 from argg_hdl.argg_hdl_lib_enums import  varSig, InOut_t, v_classType_t
 from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_converter
+import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
 class v_class_trans_converter(v_class_converter):
     def __init__(self):
@@ -34,8 +35,7 @@ class v_class_trans_converter(v_class_converter):
         ret += rhs.get_vhdl_name(InOut_t.input_t) + asOp + obj.get_vhdl_name(InOut_t.input_t)
         return ret 
 
-    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        raise Exception("Unsupported r shift", str(obj), rhs._type, obj._type )        
+
 
     def _vhdl_get_attribute(self,obj, attName):
         attName = str(attName)
@@ -57,12 +57,17 @@ class v_class_trans_converter(v_class_converter):
 
 
     def make_connection(self, obj, name, parent):
-        obj.pull          =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "pull", procedureName="pull" )
-        obj.push          =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "push", procedureName="push")
-        obj.pull_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "pull", procedureName="pull")
-        obj.push_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "push", procedureName="push")
+        obj.pull          =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "pull_01", procedureName="pull_01",varSig_=varSig.variable_t)
+        obj.push          =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "push_01", procedureName="push_01",varSig_=varSig.variable_t)
+        obj.pull_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "pull_01", procedureName="pull_01",varSig_=varSig.variable_t)
+        obj.push_rev      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "push_01", procedureName="push_01",varSig_=varSig.variable_t)
+
+        obj.pull_sig      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "pull_11", procedureName="pull_11",varSig_=varSig.signal_t)
+        obj.push_sig      =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "push_11", procedureName="push_11",varSig_=varSig.signal_t)
+        obj.pull_rev_sig  =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.output_t, "pull_11", procedureName="pull_11",varSig_=varSig.signal_t)
+        obj.push_rev_sig  =  obj.__hdl_converter__.getConnecting_procedure(obj, InOut_t.input_t , "push_11", procedureName="push_11",varSig_=varSig.signal_t)
             
-    def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None):
+    def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None,varSig_=varSig.variable_t):
         
         beforeConnecting, AfterConnecting, inout = obj.__hdl_converter__.get_before_after_conection(
             obj,
@@ -73,7 +78,12 @@ class v_class_trans_converter(v_class_converter):
 
         classType = obj.getType(InOut_Filter)
         ClassName="IO_data"
-        argumentList = "signal " + ClassName +" : " + inout+ classType
+        varSig__str = "" if varSig_ == varSig.variable_t else " signal "
+        type_name  = self.get_type_simple(obj)
+        
+        argumentList = "signal clk : in std_logic; "
+        argumentList += varSig__str + " self : inout " + type_name
+        argumentList += " ; signal " + ClassName +" : " + inout+ classType
 
 
         Connecting = obj.__hdl_converter__.getMemeber_Connect(
@@ -90,23 +100,25 @@ class v_class_trans_converter(v_class_converter):
             IgnoreIfEmpty = True 
         )
 
-        IsEmpty=len(Connecting.strip()) == 0 and len(beforeConnecting.strip()) == 0 and  len(AfterConnecting.strip()) == 0
-        ret        = v_procedure(
-            name=procedureName, 
-            argumentList=argumentList , 
-            body='''
-    {beforeConnecting}
+       
+        body='''
+{beforeConnecting}
 -- Start Connecting
 {Connecting}
 -- End Connecting
-    {AfterConnecting}
-            '''.format(
-               beforeConnecting=beforeConnecting,
-               Connecting = Connecting,
-               AfterConnecting=AfterConnecting
-            ),
-            IsEmpty=IsEmpty,
-            isFreeFunction=False
+{AfterConnecting}
+        '''.format(
+            beforeConnecting=beforeConnecting,
+            Connecting = Connecting,
+            AfterConnecting=AfterConnecting
+        )
+
+        ret        = v_procedure(
+            name=procedureName, 
+            argumentList=argumentList , 
+            body=body,
+            IsEmpty=len(body.strip()) == 0,
+            isFreeFunction=True
             )
         
         return ret     

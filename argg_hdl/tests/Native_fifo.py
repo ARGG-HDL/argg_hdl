@@ -45,25 +45,25 @@ class NativeFifoOutSlave(v_class_slave):
         
         self.rx1 = signal_port_Slave(Data)
         self.rx1 << Data
-        self.rx2 = v_signal(Data)
-
         self.rx = v_variable(Data)
-        self.rx  << self.rx2
+        
         self.buff = small_buffer(Data.data)
         self.enable1 = v_variable(v_sl())
         self.empty1  = v_variable(v_sl())
-        self.architecture()
 
 
-    @architecture
-    def architecture(self):
-        @combinational()
-        def p2():
-            self.rx1.enable << v_switch(0,[v_case(self.rx1.empty == 0, self.rx2.enable)])
-            self.rx2.empty << self.rx1.empty
-            self.rx2.data << self.rx1.data
+    
 
-        end_architecture()
+    def _onPush_comb(self):
+        if self.rx1.empty == 0:
+            self.rx1.enable << self.rx.enable
+        else:
+            self.rx1.enable << 0
+            
+        self.rx.empty << self.rx1.empty
+        self.rx.data << self.rx1.data  
+
+        
 
     def _onPull(self):
         if self.enable1 and not self.empty1:

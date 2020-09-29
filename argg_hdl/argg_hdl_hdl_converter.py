@@ -102,6 +102,8 @@ def getBody(obj, name, parent):
 def _vhdl_make_port(obj, name):
     return obj.__hdl_converter__._vhdl_make_port(obj, name)
 
+def make_function_variable_assignment(obj, func_arg, arg):
+    return obj.__hdl_converter__.make_function_variable_assignment(obj, func_arg, arg)
 
 def _vhdl_get_attribute(obj, attName):
     return obj.__hdl_converter__._vhdl_get_attribute(obj, attName)
@@ -187,6 +189,15 @@ def get_port_list(obj):
 
 def get_process_header(obj):
     return obj.__hdl_converter__.get_process_header(obj)
+
+def get_process_sensitivity_list(obj):
+    return obj.__hdl_converter__.get_process_sensitivity_list(obj)
+
+def get_process_combinatorial_pull(obj,clk):
+    return obj.__hdl_converter__.get_process_combinatorial_pull(obj,clk)
+    
+def get_process_combinatorial_push(obj,clk):
+    return obj.__hdl_converter__.get_process_combinatorial_push(obj,clk)
 
 
 def _vhdl__Pull(obj):
