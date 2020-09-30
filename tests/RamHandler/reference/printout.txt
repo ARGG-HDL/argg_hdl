@@ -25,9 +25,6 @@
       </processing>
       <status ="sucess">
     </package_conversion>
-    <package_conversion name="v_list">
-      <status ="sucess">
-    </package_conversion>
     <package_conversion name="ram_handle_master">
       <processing name="ram_handle_master" MemfunctionCalls="4">
         <request_new_template name="_onPull"/>

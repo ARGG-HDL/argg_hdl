@@ -29,9 +29,11 @@ end record;
     type addr_data_a is array (natural range <>) of addr_data;
         
 
-  function addr_data_ctr () return addr_data;
-  procedure pull (self : inout addr_data; signal data_IO :  in  addr_data);
-  procedure push (self : inout addr_data; signal data_IO :  out  addr_data);
+  function addr_data_ctr  return addr_data;
+  procedure pull_01 (signal clk: in std_logic; self : inout addr_data; signal data_IO :  in  addr_data);
+  procedure push_01 (signal clk: in std_logic; self : inout addr_data; signal data_IO :  out  addr_data);
+  procedure pull_11 (signal clk: in std_logic;  signal self : inout addr_data; signal data_IO :  in  addr_data);
+  procedure push_11 (signal clk: in std_logic;  signal self : inout addr_data; signal data_IO :  out  addr_data);
 ------- End Psuedo Class addr_data -------------------------
 -------------------------------------------------------------------------
 
@@ -43,20 +45,32 @@ package body addr_data_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class addr_data -------------------------
-function addr_data_ctr () return addr_data is
+function addr_data_ctr  return addr_data is
     variable ret : addr_data := addr_data_null; 
   begin 
      return ret;
  
 end function;
 
-procedure pull (self : inout addr_data; signal data_IO :  in  addr_data) is
+procedure pull_01 (signal clk: in std_logic; self : inout addr_data; signal data_IO :  in  addr_data) is
    
   begin 
- self  := data_IO; 
+ self   :=  data_IO; 
 end procedure;
 
-procedure push (self : inout addr_data; signal data_IO :  out  addr_data) is
+procedure push_01 (signal clk: in std_logic; self : inout addr_data; signal data_IO :  out  addr_data) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
+procedure pull_11 (signal clk: in std_logic;  signal self : inout addr_data; signal data_IO :  in  addr_data) is
+   
+  begin 
+ self   <=  data_IO; 
+end procedure;
+
+procedure push_11 (signal clk: in std_logic;  signal self : inout addr_data; signal data_IO :  out  addr_data) is
    
   begin 
  data_IO  <=  self; 

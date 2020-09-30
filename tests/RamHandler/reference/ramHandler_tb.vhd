@@ -10,7 +10,6 @@ use work.argg_hdl_core.all;
 use work.optional_t_pack.all;
 use work.ram_handle_master_pack.all;
 use work.ram_handler_pack.all;
-use work.slv32_a_pack.all;
 use work.small_buffer_pack.all;
 use work.v_symbol_pack.all;
 
@@ -41,12 +40,14 @@ begin
   -- begin architecture
   
 -----------------------------------
-proc : process(clkgen_clk) is
+proc : process(clkgen_clk, ram_DataIO_s2m) is
     variable   ram_master : ram_handle_master := ram_handle_master_ctr;
     variable   data_out_opt : optional_t := optional_t_ctr;
+  
   begin
-    if rising_edge(clkgen_clk) then 
-      pull( self  =>  ram_master, tx => ram_DataIO_s2m);
+        pull( clk  =>  clkgen_clk, self  =>  ram_master, tx => ram_DataIO_s2m);
+  
+  if rising_edge(clkgen_clk) then
   data <= data + 10;
     adr <= adr + 1;
     
@@ -70,8 +71,10 @@ proc : process(clkgen_clk) is
         addr_out <=  (others => '0');
         
       end if;
-        push( self  =>  ram_master, tx => ram_DataIO_m2s);
+    
   end if;
+        push( clk  =>  clkgen_clk, self  =>  ram_master, tx => ram_DataIO_m2s);
+  
   
   end process;
   -- end architecture

@@ -69,13 +69,17 @@ end record;
     type ram_handler_a is array (natural range <>) of ram_handler;
         
 
-  function ram_handler_s2m_ctr () return ram_handler_s2m;
-  function ram_handler_m2s_ctr () return ram_handler_m2s;
-  function ram_handler_ctr () return ram_handler;
-  procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_s2m);
-  procedure push (self :  inout ram_handler; signal IO_data :  out ram_handler_m2s);
-  procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_m2s);
-  procedure push (self :  inout ram_handler; signal IO_data :  out ram_handler_s2m);
+  function ram_handler_s2m_ctr  return ram_handler_s2m;
+  function ram_handler_m2s_ctr  return ram_handler_m2s;
+  function ram_handler_ctr  return ram_handler;
+  procedure pull_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  in ram_handler_s2m);
+  procedure push_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  out ram_handler_m2s);
+  procedure pull_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  in ram_handler_m2s);
+  procedure push_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  out ram_handler_s2m);
+  procedure pull_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  in ram_handler_s2m);
+  procedure push_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  out ram_handler_m2s);
+  procedure pull_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  in ram_handler_m2s);
+  procedure push_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  out ram_handler_s2m);
 ------- End Psuedo Class ram_handler -------------------------
 -------------------------------------------------------------------------
 
@@ -87,83 +91,141 @@ package body ram_handler_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class ram_handler -------------------------
-function ram_handler_s2m_ctr () return ram_handler_s2m is
+function ram_handler_s2m_ctr  return ram_handler_s2m is
     variable ret : ram_handler_s2m := ram_handler_s2m_null; 
   begin 
      return ret;
  
 end function;
 
-function ram_handler_m2s_ctr () return ram_handler_m2s is
+function ram_handler_m2s_ctr  return ram_handler_m2s is
     variable ret : ram_handler_m2s := ram_handler_m2s_null; 
   begin 
      return ret;
  
 end function;
 
-function ram_handler_ctr () return ram_handler is
+function ram_handler_ctr  return ram_handler is
     variable ret : ram_handler := ram_handler_null; 
   begin 
      return ret;
  
 end function;
 
-procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_s2m) is
+procedure pull_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  in ram_handler_s2m) is
    
   begin 
  
-    
+
 -- Start Connecting
-    pull(self.read_data, IO_data.read_data);
+    pull_01(clk, self.read_data, IO_data.read_data);
 
 -- End Connecting
-    
-             
+
+         
 end procedure;
 
-procedure push (self :  inout ram_handler; signal IO_data :  out ram_handler_m2s) is
+procedure push_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  out ram_handler_m2s) is
    
   begin 
  
-    
+
 -- Start Connecting
-    push(self.Write_Data, IO_data.Write_Data);
-    push(self.Write_address, IO_data.Write_address);
-    push(self.read_address, IO_data.read_address);
-    push(self.write_enable, IO_data.write_enable);
+    push_01(clk, self.Write_Data, IO_data.Write_Data);
+    push_01(clk, self.Write_address, IO_data.Write_address);
+    push_01(clk, self.read_address, IO_data.read_address);
+    push_01(clk, self.write_enable, IO_data.write_enable);
 
 -- End Connecting
-    
-             
+
+         
 end procedure;
 
-procedure pull (self :  inout ram_handler; signal IO_data :  in ram_handler_m2s) is
+procedure pull_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  in ram_handler_m2s) is
    
   begin 
  
-    
+
 -- Start Connecting
-    pull(self.Write_Data, IO_data.Write_Data);
-    pull(self.Write_address, IO_data.Write_address);
-    pull(self.read_address, IO_data.read_address);
-    pull(self.write_enable, IO_data.write_enable);
+    pull_01(clk, self.Write_Data, IO_data.Write_Data);
+    pull_01(clk, self.Write_address, IO_data.Write_address);
+    pull_01(clk, self.read_address, IO_data.read_address);
+    pull_01(clk, self.write_enable, IO_data.write_enable);
 
 -- End Connecting
-    
-             
+
+         
 end procedure;
 
-procedure push (self :  inout ram_handler; signal IO_data :  out ram_handler_s2m) is
+procedure push_01 (signal clk : in std_logic;  self : inout ram_handler ; signal IO_data :  out ram_handler_s2m) is
    
   begin 
  
-    
+
 -- Start Connecting
-    push(self.read_data, IO_data.read_data);
+    push_01(clk, self.read_data, IO_data.read_data);
 
 -- End Connecting
-    
-             
+
+         
+end procedure;
+
+procedure pull_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  in ram_handler_s2m) is
+   
+  begin 
+ 
+
+-- Start Connecting
+    pull_11(clk, self.read_data, IO_data.read_data);
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure push_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  out ram_handler_m2s) is
+   
+  begin 
+ 
+
+-- Start Connecting
+    push_11(clk, self.Write_Data, IO_data.Write_Data);
+    push_11(clk, self.Write_address, IO_data.Write_address);
+    push_11(clk, self.read_address, IO_data.read_address);
+    push_11(clk, self.write_enable, IO_data.write_enable);
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure pull_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  in ram_handler_m2s) is
+   
+  begin 
+ 
+
+-- Start Connecting
+    pull_11(clk, self.Write_Data, IO_data.Write_Data);
+    pull_11(clk, self.Write_address, IO_data.Write_address);
+    pull_11(clk, self.read_address, IO_data.read_address);
+    pull_11(clk, self.write_enable, IO_data.write_enable);
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure push_11 (signal clk : in std_logic;  signal  self : inout ram_handler ; signal IO_data :  out ram_handler_s2m) is
+   
+  begin 
+ 
+
+-- Start Connecting
+    push_11(clk, self.read_data, IO_data.read_data);
+
+-- End Connecting
+
+         
 end procedure;
 
 ------- End Psuedo Class ram_handler -------------------------

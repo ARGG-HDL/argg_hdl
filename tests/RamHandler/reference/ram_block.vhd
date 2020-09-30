@@ -7,7 +7,6 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.ram_handler_pack.all;
-use work.slv32_a_pack.all;
 use work.v_symbol_pack.all;
 
 
@@ -32,15 +31,19 @@ begin
   
 -----------------------------------
 proc : process(clk) is
+  
   begin
-    if rising_edge(clk) then 
+  
+  if rising_edge(clk) then
   
       if (to_bool(DataIO_m2s.write_enable) ) then 
         mem(to_integer(signed( DataIO_m2s.Write_address))) <= DataIO_m2s.Write_Data;
         
       end if;
     DataIO_s2m.read_data <= mem(to_integer(signed( DataIO_m2s.read_address)));
-    end if;
+    
+  end if;
+  
   
   end process;
   -- end architecture

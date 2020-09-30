@@ -29,11 +29,11 @@ end record;
     type optional_t_a is array (natural range <>) of optional_t;
         
 
-  function optional_t_ctr () return optional_t;
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
+  function optional_t_ctr  return optional_t;
+  procedure pull (signal clk : in std_logic;  self :  inout  optional_t);
+  procedure push (signal clk : in std_logic;  self :  inout  optional_t);
+  procedure pull (signal clk  : in std_logic; self :  inout  optional_t_a);
+  procedure push (signal clk  : in std_logic; self :  inout  optional_t_a);
   function to_bool (self : optional_t) return boolean;
   procedure set_inValid_0 (self :  inout  optional_t);
   function is_valid_0 (self : optional_t) return boolean;
@@ -50,17 +50,57 @@ package body optional_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class optional_t -------------------------
-function optional_t_ctr () return optional_t is
+function optional_t_ctr  return optional_t is
     variable ret : optional_t := optional_t_null; 
   begin 
      return ret;
  
 end function;
 
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
+procedure pull (signal clk : in std_logic;  self :  inout  optional_t) is
+   
+  begin 
+ 
+
+-- Start Connecting
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure push (signal clk : in std_logic;  self :  inout  optional_t) is
+   
+  begin 
+ 
+
+-- Start Connecting
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure pull (signal clk  : in std_logic; self :  inout  optional_t_a) is
+   
+  begin 
+ 
+        for i in 0 to self'length - 1 loop
+        pull( clk => clk, self =>  self(i));
+        end loop;
+             
+end procedure;
+
+procedure push (signal clk  : in std_logic; self :  inout  optional_t_a) is
+   
+  begin 
+ 
+        for i in 0 to self'length - 1 loop
+        push( clk => clk, self =>  self(i));
+        end loop;
+             
+end procedure;
+
 procedure reset_0 (self :  inout  optional_t) is
    
   begin 
