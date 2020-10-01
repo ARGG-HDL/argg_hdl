@@ -25,6 +25,7 @@
     </package_conversion>
     <package_conversion name="NativeFifoOutSlave">
       <processing name="NativeFifoOutSlave" MemfunctionCalls="2">
+        <request_new_template name="_onPush_comb"/>
         <request_new_template name="_onPull"/>
         <request_new_template name="_onPush"/>
         <request_new_template name="read_data"/>
@@ -52,9 +53,6 @@
       </processing>
       <status ="failed">
     </package_conversion>
-    <package_conversion name="v_list">
-      <status ="sucess">
-    </package_conversion>
   </Converting>
 <!--=======================-->
   <Converting Index="2">
@@ -68,7 +66,7 @@
       <status ="failed">
     </entity_conversion>
     <package_conversion name="NativeFifoOutSlave">
-      <processing name="NativeFifoOutSlave" MemfunctionCalls="5">
+      <processing name="NativeFifoOutSlave" MemfunctionCalls="6">
         <request_new_template name="read_data"/>
         <use_template function ="isReceivingData" args="small_buffer" />
         <use_template function ="reset" args="std_logic_vector(31 downto 0)" />
@@ -100,7 +98,7 @@
       <status ="sucess">
     </entity_conversion>
     <package_conversion name="NativeFifoOutSlave">
-      <processing name="NativeFifoOutSlave" MemfunctionCalls="6">
+      <processing name="NativeFifoOutSlave" MemfunctionCalls="7">
         <request_new_template name="read_data"/>
         <use_template function ="__lshift__" args="small_buffer, std_logic_vector(31 downto 0)" />
       </processing>

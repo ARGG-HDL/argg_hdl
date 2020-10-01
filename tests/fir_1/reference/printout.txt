@@ -31,15 +31,6 @@
       <Failed_to_convert name="fir_basic"/>
       <status ="failed">
     </entity_conversion>
-    <package_conversion name="v_list">
-      <status ="sucess">
-    </package_conversion>
-    <package_conversion name="v_list">
-      <status ="sucess">
-    </package_conversion>
-    <package_conversion name="v_list">
-      <status ="sucess">
-    </package_conversion>
     <package_conversion name="v_free_function_template">
       <processing name="resize" MemfunctionCalls="2">
         <request_new_template name="resize"/>

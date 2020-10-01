@@ -7,7 +7,6 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
 use work.axisStream_slv32.all;
-use work.slv32_a_pack.all;
 use work.v_symbol_pack.all;
 
 
@@ -39,14 +38,16 @@ begin
     -- end p2;
   
   -----------------------------------
-  proc : process(clk) is
+  proc : process(clk, Axi_in_m2s) is
       variable   axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
     variable counter : std_logic_vector(5 downto 0) := (others => '0');
     variable axiSalve_buff : std_logic_vector(31 downto 0) := (others => '0');
     variable i_valid : std_logic := '0';
+    
     begin
-      if rising_edge(clk) then 
-        pull( self  =>  axiSalve, rx => Axi_in_m2s);
+          pull( clk  =>  clk, self  =>  axiSalve, rx => Axi_in_m2s);
+    
+    if rising_edge(clk) then
     
         if (( isReceivingData_0(self => axiSalve) and counter < sList'length) ) then 
           read_data_00(self => axiSalve, dataOut => axiSalve_buff);
@@ -78,8 +79,10 @@ begin
           
         end if;
       Axi_out_m2s.valid <= i_valid;
-          push( self  =>  axiSalve, rx => Axi_in_s2m);
+      
     end if;
+          push( clk  =>  clk, self  =>  axiSalve, rx => Axi_in_s2m);
+    
     
     end process;
   

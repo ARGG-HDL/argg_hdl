@@ -34,8 +34,10 @@ begin
   
 -----------------------------------
 proc : process(clkgen_clk) is
+  
   begin
-    if rising_edge(clkgen_clk) then 
+  
+  if rising_edge(clkgen_clk) then
   ff_readout_Data_in_m2s.empty <= '1';
     data <= data + 1;
     
@@ -48,7 +50,9 @@ proc : process(clkgen_clk) is
         ff_readout_Data_in_m2s.data <= data;
         
       end if;
-    end if;
+    
+  end if;
+  
   
   end process;
   -- end architecture

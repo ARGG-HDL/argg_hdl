@@ -32,9 +32,11 @@ end record;
 
 
 
-  function system_globals_ctr () return system_globals;
-  procedure pull (self : inout system_globals; signal data_IO :  in  system_globals);
-  procedure push (self : inout system_globals; signal data_IO :  out  system_globals);
+  function system_globals_ctr  return system_globals;
+  procedure pull_01 (signal clk: in std_logic; self : inout system_globals; signal data_IO :  in  system_globals);
+  procedure push_01 (signal clk: in std_logic; self : inout system_globals; signal data_IO :  out  system_globals);
+  procedure pull_11 (signal clk: in std_logic;  signal self : inout system_globals; signal data_IO :  in  system_globals);
+  procedure push_11 (signal clk: in std_logic;  signal self : inout system_globals; signal data_IO :  out  system_globals);
 ------- End Psuedo Class system_globals -------------------------
 -------------------------------------------------------------------------
 
@@ -46,20 +48,32 @@ package body system_globals_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class system_globals -------------------------
-function system_globals_ctr () return system_globals is
+function system_globals_ctr  return system_globals is
     variable ret : system_globals := system_globals_null; 
   begin 
      return ret;
  
 end function;
 
-procedure pull (self : inout system_globals; signal data_IO :  in  system_globals) is
+procedure pull_01 (signal clk: in std_logic; self : inout system_globals; signal data_IO :  in  system_globals) is
    
   begin 
- self  := data_IO; 
+ self   :=  data_IO; 
 end procedure;
 
-procedure push (self : inout system_globals; signal data_IO :  out  system_globals) is
+procedure push_01 (signal clk: in std_logic; self : inout system_globals; signal data_IO :  out  system_globals) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
+procedure pull_11 (signal clk: in std_logic;  signal self : inout system_globals; signal data_IO :  in  system_globals) is
+   
+  begin 
+ self   <=  data_IO; 
+end procedure;
+
+procedure push_11 (signal clk: in std_logic;  signal self : inout system_globals; signal data_IO :  out  system_globals) is
    
   begin 
  data_IO  <=  self; 

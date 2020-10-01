@@ -37,8 +37,10 @@ begin
 -----------------------------------
 proc : process(clkgen_clk) is
     variable   config2 : test_Config := test_Config_ctr;
+  
   begin
-    if rising_edge(clkgen_clk) then 
+  
+  if rising_edge(clkgen_clk) then
   in_range <= '0';
     befor_range <= '0';
     after_range <= '0';
@@ -64,7 +66,9 @@ proc : process(clkgen_clk) is
       if (to_bool(isInRange_11(self => anotherSpan, counter => counter)) ) then 
         
       end if;
-    end if;
+    
+  end if;
+  
   
   end process;
   -- end architecture

@@ -31,8 +31,10 @@ begin
 proc : process(clkgen_clk) is
   variable myState : myStates := e_idle;
   variable myState2 : myStates := e_idle;
+  
   begin
-    if rising_edge(clkgen_clk) then 
+  
+  if rising_edge(clkgen_clk) then
   counter <= counter + 1;
     
       if (counter = 10) then 
@@ -60,7 +62,9 @@ proc : process(clkgen_clk) is
         myState := myState2;
         
       end if;
-    end if;
+    
+  end if;
+  
   
   end process;
   -- end architecture

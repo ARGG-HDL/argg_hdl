@@ -8,7 +8,6 @@ use ieee.std_logic_unsigned.all;
 use work.NativeFifoOutSlave_pack.all;
 use work.NativeFifoOut_pack.all;
 use work.argg_hdl_core.all;
-use work.slv32_a_pack.all;
 use work.small_buffer_pack.all;
 use work.v_symbol_pack.all;
 
@@ -29,42 +28,31 @@ architecture rtl of readout_native_fifo is
   signal counter : slv32 := std_logic_vector_ctr(0, 32); 
   signal data : slv32 := std_logic_vector_ctr(0, 32); 
   signal   fifo_s_sig : NativeFifoOutSlave_sig := NativeFifoOutSlave_sig_ctr;
-  -------------------------- end readout_native_fifo-----------------
+-------------------------- end readout_native_fifo-----------------
 
 begin
   -- begin architecture
   
 -----------------------------------
-proc : process(clk) is
+proc : process(clk, Data_in_m2s, fifo_s_sig) is
     variable   fifo_s : NativeFifoOutSlave1 := NativeFifoOutSlave1_ctr;
+  
   begin
-    if rising_edge(clk) then 
-      pull( self_sig  =>  fifo_s_sig, self  =>  fifo_s);
+        pull( clk  =>  clk, self_sig  =>  fifo_s_sig, self  =>  fifo_s, rx1 => Data_in_m2s);
+  
+  if rising_edge(clk) then
   counter <= counter + 1;
     
       if (to_bool(isReceivingData_0(self_sig => fifo_s_sig, self => fifo_s)) ) then 
         read_data_01(self_sig => fifo_s_sig, self => fifo_s, data => data);
         
       end if;
-        push( self_sig  =>  fifo_s_sig, self  =>  fifo_s, fifo_s_sig_rx2_s2m => fifo_s_sig.rx2_s2m);
+    
   end if;
+        push( clk  =>  clk, self_sig  =>  fifo_s_sig, self  =>  fifo_s, rx1 => Data_in_s2m);
+  
   
   end process;
   -- end architecture
 
-      -- begin architecture
-    -- begin p2
-  fifo_s_sig.rx1_s2m.enable <= 
-    fifo_s_sig.rx2_s2m.enable when fifo_s_sig.rx1_m2s.empty = '0' else
-    '0';
-  fifo_s_sig.rx2_m2s.empty <= fifo_s_sig.rx1_m2s.empty;
-  fifo_s_sig.rx2_m2s.data <= fifo_s_sig.rx1_m2s.data;
-  -- end p2;
-  -- end architecture
-
-  ---------------------------------------------------------------------
---  fifo_s_sig.rx1 << Data_in
-fifo_s_sig.rx1_m2s <= Data_in_m2s;
-Data_in_s2m <= fifo_s_sig.rx1_s2m;
-  
 end architecture;

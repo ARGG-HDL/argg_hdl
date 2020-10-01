@@ -6,7 +6,6 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
-use work.slv32_a_pack.all;
 use work.v_symbol_pack.all;
 
 
@@ -39,11 +38,11 @@ end record;
         
 
 -- v_list getHeader
-  function small_buffer_ctr () return small_buffer;
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
+  function small_buffer_ctr  return small_buffer;
+  procedure pull (signal clk : in std_logic;  self :  inout  small_buffer);
+  procedure push (signal clk : in std_logic;  self :  inout  small_buffer);
+  procedure pull (signal clk  : in std_logic; self :  inout  small_buffer_a);
+  procedure push (signal clk  : in std_logic; self :  inout  small_buffer_a);
   procedure set_value_00_lshift (self :  inout  small_buffer; rhs :  in  std_logic_vector);
   procedure reset_0 (self :  inout  small_buffer);
   function length (self : small_buffer) return integer;
@@ -63,17 +62,57 @@ package body small_buffer_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class small_buffer -------------------------
-function small_buffer_ctr () return small_buffer is
+function small_buffer_ctr  return small_buffer is
     variable ret : small_buffer := small_buffer_null; 
   begin 
      return ret;
  
 end function;
 
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
--- empty procedure removed. name: 'pull'
--- empty procedure removed. name: 'push'
+procedure pull (signal clk : in std_logic;  self :  inout  small_buffer) is
+   
+  begin 
+ 
+
+-- Start Connecting
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure push (signal clk : in std_logic;  self :  inout  small_buffer) is
+   
+  begin 
+ 
+
+-- Start Connecting
+
+-- End Connecting
+
+         
+end procedure;
+
+procedure pull (signal clk  : in std_logic; self :  inout  small_buffer_a) is
+   
+  begin 
+ 
+        for i in 0 to self'length - 1 loop
+        pull( clk => clk, self =>  self(i));
+        end loop;
+             
+end procedure;
+
+procedure push (signal clk  : in std_logic; self :  inout  small_buffer_a) is
+   
+  begin 
+ 
+        for i in 0 to self'length - 1 loop
+        push( clk => clk, self =>  self(i));
+        end loop;
+             
+end procedure;
+
 function isReceivingData_0 (self : small_buffer) return boolean is
    
   begin 

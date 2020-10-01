@@ -78,80 +78,80 @@ package body v_symbol_pack is
 
     function slv32_ctr(Data : Integer) return  slv32 is 
     variable ret : slv32;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv32'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv32'length);
         return ret;
     end function;     
 
             
     function slv16_ctr(Data : Integer) return  slv16 is 
     variable ret : slv16;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv16'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv16'length);
         return ret;
     end function;     
 
             
     function slv11_ctr(Data : Integer) return  slv11 is 
     variable ret : slv11;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv11'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv11'length);
         return ret;
     end function;     
 
             
     function slv6_ctr(Data : Integer) return  slv6 is 
     variable ret : slv6;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv6'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv6'length);
         return ret;
     end function;     
 
             
     function slv8_ctr(Data : Integer) return  slv8 is 
     variable ret : slv8;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv8'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv8'length);
         return ret;
     end function;     
 
             
     function signed8_ctr(Data : Integer) return  signed8 is 
     variable ret : signed8;
-    begin;
-        ret := signed_ctr(Data , signed8'length)
+    begin
+        ret := signed_ctr(Data , signed8'length);
         return ret;
     end function;     
 
             
     function signed16_ctr(Data : Integer) return  signed16 is 
     variable ret : signed16;
-    begin;
-        ret := signed_ctr(Data , signed16'length)
+    begin
+        ret := signed_ctr(Data , signed16'length);
         return ret;
     end function;     
 
             
     function signed17_ctr(Data : Integer) return  signed17 is 
     variable ret : signed17;
-    begin;
-        ret := signed_ctr(Data , signed17'length)
+    begin
+        ret := signed_ctr(Data , signed17'length);
         return ret;
     end function;     
 
             
     function signed18_ctr(Data : Integer) return  signed18 is 
     variable ret : signed18;
-    begin;
-        ret := signed_ctr(Data , signed18'length)
+    begin
+        ret := signed_ctr(Data , signed18'length);
         return ret;
     end function;     
 
             
     function slv4_ctr(Data : Integer) return  slv4 is 
     variable ret : slv4;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv4'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv4'length);
         return ret;
     end function;     
 

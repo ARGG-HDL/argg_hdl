@@ -42,32 +42,32 @@ package body v_symbol_pack is
 
     function slv32_ctr(Data : Integer) return  slv32 is 
     variable ret : slv32;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv32'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv32'length);
         return ret;
     end function;     
 
             
     function slv16_ctr(Data : Integer) return  slv16 is 
     variable ret : slv16;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv16'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv16'length);
         return ret;
     end function;     
 
             
     function slv11_ctr(Data : Integer) return  slv11 is 
     variable ret : slv11;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv11'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv11'length);
         return ret;
     end function;     
 
             
     function slv6_ctr(Data : Integer) return  slv6 is 
     variable ret : slv6;
-    begin;
-        ret := std_logic_vector_ctr(Data , slv6'length)
+    begin
+        ret := std_logic_vector_ctr(Data , slv6'length);
         return ret;
     end function;     
 

@@ -39,7 +39,8 @@ end record;
     type test_Config_a is array (natural range <>) of test_Config;
         
 
-  function test_Config_ctr (var1_start : integer := 1 ;
+  function test_Config_ctr (
+   var1_start : integer := 1 ;
     var1_stop : integer := 16 ;
     var2_start : integer := 2 ;
     var2_stop : integer := 32 ;
@@ -48,9 +49,12 @@ end record;
     var4_start : integer := 4 ;
     var4_stop : integer := 64 ;
     var5 : integer := 5 ;
-    var6 : integer := 6) return test_Config;
-  procedure pull (self : inout test_Config; signal data_IO :  in  test_Config);
-  procedure push (self : inout test_Config; signal data_IO :  out  test_Config);
+    var6 : integer := 6
+ ) return test_Config;
+  procedure pull_01 (signal clk: in std_logic; self : inout test_Config; signal data_IO :  in  test_Config);
+  procedure push_01 (signal clk: in std_logic; self : inout test_Config; signal data_IO :  out  test_Config);
+  procedure pull_11 (signal clk: in std_logic;  signal self : inout test_Config; signal data_IO :  in  test_Config);
+  procedure push_11 (signal clk: in std_logic;  signal self : inout test_Config; signal data_IO :  out  test_Config);
 ------- End Psuedo Class test_Config -------------------------
 -------------------------------------------------------------------------
 
@@ -62,7 +66,8 @@ package body test_Config_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class test_Config -------------------------
-function test_Config_ctr (var1_start : integer := 1 ;
+function test_Config_ctr (
+   var1_start : integer := 1 ;
     var1_stop : integer := 16 ;
     var2_start : integer := 2 ;
     var2_stop : integer := 32 ;
@@ -71,7 +76,8 @@ function test_Config_ctr (var1_start : integer := 1 ;
     var4_start : integer := 4 ;
     var4_stop : integer := 64 ;
     var5 : integer := 5 ;
-    var6 : integer := 6) return test_Config is
+    var6 : integer := 6
+ ) return test_Config is
     variable ret : test_Config := test_Config_null; 
   begin 
      ret.var1.start := slv8_ctr(var1_start);
@@ -88,13 +94,25 @@ function test_Config_ctr (var1_start : integer := 1 ;
  
 end function;
 
-procedure pull (self : inout test_Config; signal data_IO :  in  test_Config) is
+procedure pull_01 (signal clk: in std_logic; self : inout test_Config; signal data_IO :  in  test_Config) is
    
   begin 
- self  := data_IO; 
+ self   :=  data_IO; 
 end procedure;
 
-procedure push (self : inout test_Config; signal data_IO :  out  test_Config) is
+procedure push_01 (signal clk: in std_logic; self : inout test_Config; signal data_IO :  out  test_Config) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
+procedure pull_11 (signal clk: in std_logic;  signal self : inout test_Config; signal data_IO :  in  test_Config) is
+   
+  begin 
+ self   <=  data_IO; 
+end procedure;
+
+procedure push_11 (signal clk: in std_logic;  signal self : inout test_Config; signal data_IO :  out  test_Config) is
    
   begin 
  data_IO  <=  self; 

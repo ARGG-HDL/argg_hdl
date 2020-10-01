@@ -11,16 +11,20 @@ use work.v_symbol_pack.all;
 
 package argg_hdl_v_symbol_resize_pack is 
 
-  function resize_10 (symbol : signed := (others => '0') ;
-    newSize : integer := 16) return signed;
+  function resize_10 (
+   symbol : signed := (others => '0') ;
+    newSize : integer := 16
+ ) return signed;
 
 end argg_hdl_v_symbol_resize_pack;
 
 
 package body argg_hdl_v_symbol_resize_pack is
 
-function resize_10 (symbol : signed := (others => '0') ;
-    newSize : integer := 16) return signed is
+function resize_10 (
+   symbol : signed := (others => '0') ;
+    newSize : integer := 16
+ ) return signed is
   variable ret : signed(newSize - 1 downto 0) := signed_ctr(0, newSize); 
  
   begin 

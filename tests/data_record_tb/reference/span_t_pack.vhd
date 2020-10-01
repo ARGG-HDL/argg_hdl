@@ -29,12 +29,18 @@ end record;
     type span_t_a is array (natural range <>) of span_t;
         
 
-  function span_t_ctr (start : integer := 1 ;
-    stop : integer := 16) return span_t;
-  procedure pull (self : inout span_t; signal data_IO :  in  span_t);
-  procedure push (self : inout span_t; signal data_IO :  out  span_t);
-  function isInRange_11 (Signal self : span_t ;
-    counter : std_logic_vector) return boolean;
+  function span_t_ctr (
+   start : integer := 1 ;
+    stop : integer := 16
+ ) return span_t;
+  procedure pull_01 (signal clk: in std_logic; self : inout span_t; signal data_IO :  in  span_t);
+  procedure push_01 (signal clk: in std_logic; self : inout span_t; signal data_IO :  out  span_t);
+  procedure pull_11 (signal clk: in std_logic;  signal self : inout span_t; signal data_IO :  in  span_t);
+  procedure push_11 (signal clk: in std_logic;  signal self : inout span_t; signal data_IO :  out  span_t);
+  function isInRange_11 (
+   Signal self : span_t ;
+    counter : std_logic_vector
+ ) return boolean;
 ------- End Psuedo Class span_t -------------------------
 -------------------------------------------------------------------------
 
@@ -46,8 +52,10 @@ package body span_t_pack is
 
 -------------------------------------------------------------------------
 ------- Start Psuedo Class span_t -------------------------
-function span_t_ctr (start : integer := 1 ;
-    stop : integer := 16) return span_t is
+function span_t_ctr (
+   start : integer := 1 ;
+    stop : integer := 16
+ ) return span_t is
     variable ret : span_t := span_t_null; 
   begin 
      ret.start := slv8_ctr(start);
@@ -56,20 +64,34 @@ function span_t_ctr (start : integer := 1 ;
  
 end function;
 
-procedure pull (self : inout span_t; signal data_IO :  in  span_t) is
+procedure pull_01 (signal clk: in std_logic; self : inout span_t; signal data_IO :  in  span_t) is
    
   begin 
- self  := data_IO; 
+ self   :=  data_IO; 
 end procedure;
 
-procedure push (self : inout span_t; signal data_IO :  out  span_t) is
+procedure push_01 (signal clk: in std_logic; self : inout span_t; signal data_IO :  out  span_t) is
    
   begin 
  data_IO  <=  self; 
 end procedure;
 
-function isInRange_11 (Signal self : span_t ;
-    counter : std_logic_vector) return boolean is
+procedure pull_11 (signal clk: in std_logic;  signal self : inout span_t; signal data_IO :  in  span_t) is
+   
+  begin 
+ self   <=  data_IO; 
+end procedure;
+
+procedure push_11 (signal clk: in std_logic;  signal self : inout span_t; signal data_IO :  out  span_t) is
+   
+  begin 
+ data_IO  <=  self; 
+end procedure;
+
+function isInRange_11 (
+   Signal self : span_t ;
+    counter : std_logic_vector
+ ) return boolean is
    
   begin 
  return ( self.start <= counter and counter <= self.stop) ;

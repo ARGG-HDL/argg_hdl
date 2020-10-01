@@ -30,11 +30,13 @@ architecture rtl of rollingCounter is
 begin
 
   -----------------------------------
-  proc : process(clk) is
+  proc : process(clk, Axi_out_s2m) is
       variable   v_Axi_out : axiStream_slv32_master := axiStream_slv32_master_ctr;
+    
     begin
-      if rising_edge(clk) then 
-        pull( self  =>  v_Axi_out, tx => Axi_out_s2m);
+          pull( clk  =>  clk, self  =>  v_Axi_out, tx => Axi_out_s2m);
+    
+    if rising_edge(clk) then
     
         if (ready_to_send_0(self => v_Axi_out)) then 
           send_data_01(self => v_Axi_out, dataIn => counter);
@@ -46,8 +48,10 @@ begin
           counter <=  (others => '0');
           
         end if;
-          push( self  =>  v_Axi_out, tx => Axi_out_m2s);
+      
     end if;
+          push( clk  =>  clk, self  =>  v_Axi_out, tx => Axi_out_m2s);
+    
     
     end process;
   

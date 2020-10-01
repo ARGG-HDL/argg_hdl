@@ -6,9 +6,6 @@ use IEEE.numeric_std.all;
 use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
-use work.signed16_a_pack.all;
-use work.signed17_a_pack.all;
-use work.signed8_a_pack.all;
 use work.v_symbol_pack.all;
 
 
@@ -43,8 +40,10 @@ begin
   
 -----------------------------------
 p_input : process(clk) is
+  
   begin
-    if rising_edge(clk) then 
+  
+  if rising_edge(clk) then
   
       if (to_bool(i_rstb) ) then 
         r_coeff <= (others => (others => '0'));
@@ -55,14 +54,18 @@ p_input : process(clk) is
     r_coeff(1)  <=  signed(i_coeff_1);
     r_coeff(2)  <=  signed(i_coeff_2);
     r_coeff(3)  <=  signed(i_coeff_3);
-    end if;
+    
+  end if;
+  
   
   end process;
   
 -----------------------------------
 p_mult : process(clk) is
+  
   begin
-    if rising_edge(clk) then 
+  
+  if rising_edge(clk) then
   
       if (to_bool(i_rstb) ) then 
         r_mult <= (others => (others => '0'));
@@ -71,14 +74,18 @@ p_mult : process(clk) is
     for i2 in 0 to r_mult'length -1 loop 
         r_mult(i2) <= p_data(i2) * r_coeff(i2);
       end loop;
-    end if;
+    
+  end if;
+  
   
   end process;
   
 -----------------------------------
 p_add_st0 : process(clk) is
+  
   begin
-    if rising_edge(clk) then 
+  
+  if rising_edge(clk) then
   
       if (to_bool(i_rstb) ) then 
         r_add_st0 <= (others => (others => '0'));
@@ -87,35 +94,45 @@ p_add_st0 : process(clk) is
     for i3 in 0 to 2 -1 loop 
         r_add_st0(i3) <= resize_10(symbol => r_mult(2 * i3), newSize => 16 + 1) + resize_10(symbol => r_mult(2 * i3 + 1), newSize => 16 + 1);
       end loop;
-    end if;
+    
+  end if;
+  
   
   end process;
   
 -----------------------------------
 p_add_st1 : process(clk) is
+  
   begin
-    if rising_edge(clk) then 
+  
+  if rising_edge(clk) then
   
       if (to_bool(i_rstb) ) then 
         r_add_st1 <= (others => '0');
         
       end if;
     r_add_st1 <= resize_10(symbol => r_add_st0(0), newSize => 16 + 2) + resize_10(symbol => r_add_st0(1), newSize => 16 + 2);
-    end if;
+    
+  end if;
+  
   
   end process;
   
 -----------------------------------
 p_output : process(clk) is
+  
   begin
-    if rising_edge(clk) then 
+  
+  if rising_edge(clk) then
   
       if (to_bool(i_rstb) ) then 
         o_data <= (others => '0');
         
       end if;
     o_data  <=  std_logic_vector(r_add_st1(r_add_st1'length -1   downto  8));
-    end if;
+    
+  end if;
+  
   
   end process;
   -- end architecture

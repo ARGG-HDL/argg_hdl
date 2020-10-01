@@ -35,8 +35,10 @@ begin
   
 -----------------------------------
 proc : process(clkgen_clk) is
+  
   begin
-    if rising_edge(clkgen_clk) then 
+  
+  if rising_edge(clkgen_clk) then
   counter <= counter + 1;
     counter2(31  downto  15) <= counter(22  downto  1);
     counter3(31  downto  1) <= counter3;
@@ -61,7 +63,9 @@ proc : process(clkgen_clk) is
         d3  <=  std_logic_vector(to_unsigned(13, d3'length));
         
       end if;
-    end if;
+    
+  end if;
+  
   
   end process;
   -- end architecture

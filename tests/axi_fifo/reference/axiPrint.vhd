@@ -29,20 +29,24 @@ architecture rtl of axiPrint is
 begin
 
   -----------------------------------
-  proc : process(clk) is
+  proc : process(clk, Axi_in_m2s) is
       variable   axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_ctr;
     variable axiSalve_buff : std_logic_vector(31 downto 0) := (others => '0');
+    
     begin
-      if rising_edge(clk) then 
-        pull( self  =>  axiSalve, rx => Axi_in_m2s);
+          pull( clk  =>  clk, self  =>  axiSalve, rx => Axi_in_m2s);
+    
+    if rising_edge(clk) then
     
         if (isReceivingData_0(self => axiSalve)) then 
           read_data_00(self => axiSalve, dataOut => axiSalve_buff);
           i_buff <= axiSalve_buff;
           
         end if;
-          push( self  =>  axiSalve, rx => Axi_in_s2m);
+      
     end if;
+          push( clk  =>  clk, self  =>  axiSalve, rx => Axi_in_s2m);
+    
     
     end process;
   
