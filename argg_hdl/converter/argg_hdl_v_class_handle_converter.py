@@ -76,7 +76,7 @@ class v_class_hanlde_converter(v_class_converter):
         members = obj.__hdl_converter__.get_internal_connections(obj)
         for x in members:
             inout_local = vc_helper.InoutFlip_if(InOut_Filter, x["type"] == 'sig2var')
-            connector   = vc_helper.if_true_get_first(PushPull == "pull", [".","_"])
+            
             
             sig =x["destination"]["symbol"].__hdl_converter__.extract_conversion_types(
                 x["destination"]["symbol"],
@@ -84,7 +84,7 @@ class v_class_hanlde_converter(v_class_converter):
                 filter_inout=inout_local
             )
             
-            ret.append(PushPull + "(" +obj.__hdl_name__+"."+x["destination"]["name"] +", "  +obj.__hdl_name__+"_sig" + connector + x["source"]["name"]+ sig[0]["suffix"] +")" )
+            ret.append(PushPull + "(" +obj.__hdl_name__+"."+x["destination"]["name"] +", "  +obj.__hdl_name__+"_sig." + x["source"]["name"]+ sig[0]["suffix"] +")" )
         return ret
         
     def getConnecting_procedure(self,obj, InOut_Filter,PushPull, procedureName=None):

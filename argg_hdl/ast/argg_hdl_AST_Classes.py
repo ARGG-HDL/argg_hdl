@@ -603,8 +603,9 @@ def body_unfold_Attribute(astParser,Node):
     if type(type(att)).__name__ == "EnumMeta": 
         return v_enum(att)
     
-
-    n = obj.__hdl_converter__._vhdl_get_attribute(obj,Node.attr)
+    parend = astParser.get_parant(obj)
+    set_v_classType(obj, parend)
+    n = hdl._vhdl_get_attribute(obj,Node.attr, parend)
     if type(att).__name__ == "str":
         att = to_v_object(att)
         
@@ -948,6 +949,7 @@ class v_re_assigne(v_ast_base):
 def body_LShift(astParser,Node):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
+    
     if issubclass( type(lhs),argg_hdl_base):
         lhs = lhs.__hdl_converter__._vhdl__reasign_type(lhs)
         if issubclass( type(rhs),argg_hdl_base):
@@ -962,11 +964,12 @@ def body_LShift(astParser,Node):
             lhs.__Driver__ = 'function'
         else:
             lhs << rhs
-            
+        
         return v_re_assigne(lhs, rhs,context=astParser.ContextName[-1],astParser=astParser)
+           
 
     var = astParser.get_variable(lhs.Value, Node)
-
+    #print(str(lhs) + " << " + str(rhs))     
     return v_re_assigne(var, rhs,context=astParser.ContextName[-1],astParser=astParser)
 
 def hasNumericalValue(symb):

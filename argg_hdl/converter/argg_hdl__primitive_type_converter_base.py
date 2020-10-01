@@ -28,10 +28,10 @@ class v_symbol_converter(hdl_converter_base):
         self.AliasType = None
         self.extractedTypes = []
 
-    def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
+    def make_constant(self, obj:"v_symbol", name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
         return ""
         
-    def prepare_for_conversion(self,obj):
+    def prepare_for_conversion(self,obj:"v_symbol"):
         
         
         if not obj.__hdl_converter__.extractedTypes:
@@ -42,10 +42,10 @@ class v_symbol_converter(hdl_converter_base):
                 continue 
             hdl.prepare_for_conversion(m)
     
-    def get_packet_file_name(self, obj):
+    def get_packet_file_name(self, obj:"v_symbol"):
         return "v_symbol_pack.vhd"
 
-    def get_packet_file_content(self, obj):
+    def get_packet_file_content(self, obj:"v_symbol"):
         
         includes = ""
         header = "" 
@@ -92,7 +92,7 @@ class v_symbol_converter(hdl_converter_base):
         ret = includes+ "\n\n\npackage v_symbol_pack is \n\n " + header  +   "\n\nend package;\n\npackage body v_symbol_pack is\n\n" + body +"\nend package body;\n"
         return ret
 
-    def get_dependency_objects(self, obj, depList):
+    def get_dependency_objects(self, obj:"v_symbol", depList):
         return obj
         
     def includes(self,obj, name,parent):
@@ -101,7 +101,7 @@ class v_symbol_converter(hdl_converter_base):
         return ret
 
 
-    def _vhdl__call_member_func(self, obj, name, args, astParser=None):
+    def _vhdl__call_member_func(self, obj:"v_symbol", name, args, astParser=None):
         
         call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
         
@@ -123,7 +123,7 @@ class v_symbol_converter(hdl_converter_base):
         astParser.Missing_template = True
         return None
 
-    def get_get_call_member_function(self, obj, name, args):
+    def get_get_call_member_function(self, obj:"v_symbol", name, args):
         ret = None
         args = [x.get_symbol() for x in args ]
         if name =="reset":
@@ -139,7 +139,7 @@ class v_symbol_converter(hdl_converter_base):
         }
         return ret
         
-    def recordMember(self,obj, name, parent,Inout=None):
+    def recordMember(self,obj:"v_symbol", name, parent,Inout=None):
         if obj.__isFreeType__:
             return []
 
@@ -148,7 +148,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
 
-    def recordMemberDefault(self, obj,name,parent,Inout=None):
+    def recordMemberDefault(self, obj:"v_symbol",name,parent,Inout=None):
         if obj.__isFreeType__:
             return []
         
@@ -157,7 +157,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
 
-    def getHeader(self, obj,name,parent):
+    def getHeader(self, obj:"v_symbol",name,parent):
         if obj.__hdl_name__:
             name = obj.__hdl_name__
 
@@ -166,20 +166,20 @@ class v_symbol_converter(hdl_converter_base):
             
         return name + " : " +obj._type +" := " +  hdl.get_constructor(obj) + "; \n"
 
-    def getFuncArg(self,obj, name,parent):
+    def getFuncArg(self,obj:"v_symbol", name,parent):
         return name + " : " + obj._type   
 
-    def _vhdl_slice(self,obj,sl,astParser=None):
+    def _vhdl_slice(self,obj:"v_symbol",sl,astParser=None):
         raise Exception("unexpected type")
 
 
-    def _vhdl__compare_int(self,obj, ops, rhs):
+    def _vhdl__compare_int(self,obj:"v_symbol", ops, rhs):
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
 
 
     
 
-    def _vhdl__compare(self,obj, ops, rhs, astParser):
+    def _vhdl__compare(self,obj:"v_symbol", ops, rhs, astParser):
         astParser.add_read(obj)
         obj._add_input()
         if issubclass(type(rhs),argg_hdl_base):
@@ -211,7 +211,7 @@ class v_symbol_converter(hdl_converter_base):
 
         return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.get_constructor(obj) + "; \n"    
     
-    def get_architecture_header(self, obj):
+    def get_architecture_header(self, obj:"v_symbol"):
 
         if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
             return ""
@@ -265,7 +265,7 @@ class v_symbol_converter(hdl_converter_base):
     
 
 
-    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
+    def _vhdl__reasign_rshift_(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
 
     def get_type_simple(self,obj:"v_symbol"):
@@ -324,7 +324,7 @@ class v_symbol_converter(hdl_converter_base):
 
         return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
     
-    def get_free_symbols(self,obj,name, parent_list=[]):
+    def get_free_symbols(self,obj:"v_symbol",name, parent_list=[]):
         if obj.__isFreeType__:
             suffix = join_str([x["name"] for x in parent_list],Delimeter="_",end="_"+name)
             ret = extracted_freeType(obj, suffix)
@@ -332,7 +332,7 @@ class v_symbol_converter(hdl_converter_base):
         
         return []
     
-    def get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
+    def get_init_values(self,obj:"v_symbol", parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
         ret =  hdl.get_constructor(obj)
         return ret
 

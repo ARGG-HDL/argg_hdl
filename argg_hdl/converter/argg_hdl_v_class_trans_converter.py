@@ -37,13 +37,13 @@ class v_class_trans_converter(v_class_converter):
 
 
 
-    def _vhdl_get_attribute(self,obj, attName):
+    def _vhdl_get_attribute(self,obj, attName,parent=None):
         attName = str(attName)
 
-        if obj._varSigConst == varSig.variable_t:
+        if is_handle_class(parent):
             return obj.get_vhdl_name() + "." +str(attName)
         
-
+        
         xs = obj.__hdl_converter__.extract_conversion_types(obj)
            
         for x in xs:

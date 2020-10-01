@@ -272,6 +272,7 @@ class AST_member_function_converter:
         self.astParser.pop_scope()
         return ret
 
+
     def unfold_body(self,Function_node):
         dummy_DefaultVarSig = getDefaultVarSig()
         setDefaultVarSig(varSig.variable_t)

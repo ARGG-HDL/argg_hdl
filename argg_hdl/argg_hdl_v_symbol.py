@@ -81,7 +81,7 @@ class v_symbol(argg_hdl_base):
         self.__value_Index__ = len(self.__value_list__) -1
         
             
-        self.__Driver__ = None
+        self.__Driver__dummy = None
         self.__Driver_IsInit__ = None
             
         self.__update_list__ = list()
@@ -97,7 +97,15 @@ class v_symbol(argg_hdl_base):
         self.__UpdateFlag__ = False
         self._Simulation_name = "NotSet"
 
+    @property
+    def __hdl_name__(self):
+        return self.__Driver__dummy
 
+    @__hdl_name__.setter
+    def __hdl_name__(self, value):
+        #print("setter of __isInst__ called")
+        self.__Driver__dummy = value
+        
     def __deepcopy__(self, memo):
         cls = self.__class__
         result = cls.__new__(cls)

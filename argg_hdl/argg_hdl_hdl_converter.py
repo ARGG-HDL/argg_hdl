@@ -105,8 +105,8 @@ def _vhdl_make_port(obj, name):
 def make_function_variable_assignment(obj, func_arg, arg):
     return obj.__hdl_converter__.make_function_variable_assignment(obj, func_arg, arg)
 
-def _vhdl_get_attribute(obj, attName):
-    return obj.__hdl_converter__._vhdl_get_attribute(obj, attName)
+def _vhdl_get_attribute(obj, attName,parent = None):
+    return obj.__hdl_converter__._vhdl_get_attribute(obj, attName, parent)
 
 
 def _vhdl_slice(obj, sl, astParser=None):

@@ -202,11 +202,11 @@ class getMemberArgs():
                 exclude_class_type= v_classType_t.transition_t,
                 filter_inout=internal_inout_filter
             )
-
+            type_name  = hdl.get_type_simple(sig[0]["symbol"])
             members_args.append(
                 varsig + "self_sig_" +  m["source"]["name"] + sig[0]["suffix"]  + 
                             " : out "  + 
-                sig[0]["symbol"].getType()+self.suffix
+                type_name+self.suffix
             )
 
         return members_args
@@ -221,12 +221,12 @@ class getMemberArgs():
         for x in xs:
             isSignal = x["symbol"]._varSigConst == varSig.signal_t
             varsig = if_true_get_first(isSignal, [" signal ", " "])
-            self_InOut = if_true_get_first(isSignal, [" in ", " inout "])
-
+            self_InOut = " inout "
+            type_name  = hdl.get_type_simple(x["symbol"])
             members_args.append(
                 varsig + "self" + x["suffix"]  +
                            " : " +
-                self_InOut + " "  + x["symbol"].getType()+self.suffix
+                self_InOut + " "  + type_name+self.suffix
             )
 
 
@@ -238,7 +238,7 @@ class getMemberArgs():
     def __str__(self):
         members_args = self.get_Self()
 
-        members = self.obj.getMember(self.InOut_Filter, VaribleSignalFilter=varSig.variable_t)
+        members = self.obj.getMember(self.InOut_Filter)
 
         for i in members:
             n_connector = _get_connector(i["symbol"])
@@ -253,8 +253,8 @@ class getMemberArgs():
                 varsig = " "
                 if n_connector._varSigConst == varSig.signal_t :
                     varsig = " signal "
-
-                members_args.append(varsig + i["name"] + " : " + self.InOut + " "  + x["symbol"].getType()+self.suffix)
+                type_name  = hdl.get_type_simple(x["symbol"])
+                members_args.append(varsig + i["name"] + " : " + self.InOut + " "  + type_name+self.suffix)
 
 
         ret=join_str(

@@ -25,10 +25,10 @@ remove_old_files()
 
 #dr.data_record_tb_sim("tests/data_record_tb_sim/")
 #dr.data_record_tb_2vhdl("tests/data_record_tb/")
-result, message =  fir_1.fir_basic_tb2vhdl("tests/fir_1")
+#result, message =  fir_1.fir_basic_tb2vhdl("tests/fir_1")
 
 #TX.TXReadout2vhdl("../vhdl_lecture/targetx")
-
+result, message =  Native_fifo.fifo_cc_tb_sim("tests/native_fifo_sim")
 #TX.TX_sampling_controller_sim("tests/targetx_sim2",20000)
 #TX.TX_write_handler_tb_sim("tests/targetx_sim3",20000)
 #TX.TX_write_handler2vhdl("../vhdl_lecture/targetx2")

@@ -13,6 +13,8 @@ def get_symbol(symbol):
         return symbol.get_symbol()
     if symbol is None:
         return None 
+    if type(symbol).__name__ != "dict":
+        return None
     if symbol["symbol"] is None:
         return None
     return symbol["symbol"].get_symbol()

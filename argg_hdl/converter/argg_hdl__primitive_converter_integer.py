@@ -14,8 +14,7 @@ class v_integer_converter(v_symbol_converter):
             astParser.add_write(obj)
         obj._add_output()
         target = str(obj)
-        if obj._varSigConst == varSig.signal_t and not (context_str and (context_str == "archetecture" or context_str== "process")):
-            target = target.replace(".","_")
+
 
         if issubclass(type(rhs),argg_hdl_base0)  and str( obj.__Driver__) != 'process':
             obj.__Driver__ = rhs

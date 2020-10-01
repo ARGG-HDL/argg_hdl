@@ -613,7 +613,7 @@ class v_class_converter(hdl_converter_base):
         return ret
 
 
-    def _vhdl_get_attribute(self,obj, attName):
+    def _vhdl_get_attribute(self,obj, attName, parent =None):
         attName = str(attName)
 
         

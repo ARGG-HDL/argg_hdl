@@ -165,14 +165,18 @@ class v_Arch_converter(hdl_converter_base):
         return header
 
 
-    def make_signal_list(self, obj, retList, objList):
+    def make_signal_list(self, obj, retList, objList, parent = None):
         
         for x in objList:
+            if parent:
+                set_v_classType(x["symbol"], parent)
+            parent1 = parent if parent else x['symbol']
             retList.append(x)
             obj.__hdl_converter__.make_signal_list(
                 obj,
                 retList, 
-                x['symbol'].getMember(VaribleSignalFilter=varSig.signal_t)
+                x['symbol'].getMember(VaribleSignalFilter=varSig.signal_t),
+                parent1
             )
 
   
@@ -182,10 +186,14 @@ class v_Arch_converter(hdl_converter_base):
         for x in objList:
             #print("=====")
             #print(str(x["name"]))
-
+            if is_handle_class(x['symbol']):
+                continue
                 
             if x['symbol'].__Driver__ is None:
                 #print("Has no Driver")
+                continue
+
+            if is_handle_class(x['symbol'].__Driver__):
                 continue
 
             if x['symbol'].DriverIsProcess():

@@ -275,6 +275,13 @@ class xgenAST:
             "readWrite" : None
         })
 
+    def get_parant(self, obj):
+        x = self.find_in_Function_obj_used_list(obj)
+        if x:
+            return self.get_parant(x["parent"])
+        
+        return obj
+
     def add_read(self, obj):
         x = self.find_in_Function_obj_used_list(obj)
         if x is not None:

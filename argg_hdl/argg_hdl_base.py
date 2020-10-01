@@ -715,3 +715,14 @@ def is_signal(obj):
         return obj._varSigConst == varSig.signal_t
 
     return False
+
+def is_handle_class(obj):
+    obj = get_symbol(obj)
+    if is_argg_hdl_obj(obj) and hasattr(obj,"__v_classType__"):
+        return obj.__v_classType__ == v_classType_t.Slave_t or obj.__v_classType__ == v_classType_t.Master_t 
+
+    return False
+
+def set_v_classType(obj,parant_obj):
+    if hasattr(obj,"__v_classType__") and hasattr(parant_obj,"__v_classType__"):
+        obj.__v_classType__ = parant_obj.__v_classType__

@@ -9,7 +9,7 @@ class v_signed_converter(v_symbol_converter):
         super().__init__(inc_str)
 
 
-    def _vhdl__compare(self ,obj, ops, rhs, astParser):
+    def _vhdl__compare(self ,obj:"v_symbol", ops, rhs, astParser):
         astParser.add_read(obj)
         obj._add_input()
         if issubclass(type(rhs) ,argg_hdl_base):
@@ -25,9 +25,7 @@ class v_signed_converter(v_symbol_converter):
             astParser.add_write(obj)
         obj._add_output()
         target = str(obj)
-        if obj._varSigConst == varSig.signal_t and not (
-                context_str and (context_str == "archetecture" or context_str == "process")):
-            target = target.replace(".", "_")
+
 
         if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process' and str(obj.__Driver__) != 'function':
             obj.__Driver__ = rhs
@@ -74,7 +72,7 @@ class v_signed_converter(v_symbol_converter):
 
         return target + asOp + str(rhs)
 
-    def _vhdl_slice(self, obj, sl, astParser=None):
+    def _vhdl_slice(self, obj:"v_symbol", sl, astParser=None):
         astParser.add_read(obj)
         obj._add_input()
         sl.set_source(obj)
@@ -88,7 +86,7 @@ class v_signed_converter(v_symbol_converter):
 
         return ret
 
-    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None, context_str=None):
+    def _vhdl__reasign_rshift_(self, obj:"v_symbol", rhs, astParser=None, context_str=None):
         if issubclass(type(obj), argg_hdl_base0) and issubclass(type(rhs), argg_hdl_base0):
             if "signed" in str(value(rhs._type)):
                 if astParser:

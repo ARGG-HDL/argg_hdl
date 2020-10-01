@@ -286,7 +286,7 @@ class hdl_converter_base:
         return ret
 
         
-    def _vhdl_get_attribute(self,obj, attName):
+    def _vhdl_get_attribute(self,obj, attName, parent = None):
         return str(obj) + "." +str(attName)
 
     def _vhdl_slice(self,obj, sl,astParser=None):

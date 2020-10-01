@@ -66,7 +66,7 @@ class v_entity_converter(hdl_converter_base):
             return self.astTree
 
         
-    def _vhdl_get_attribute(self,obj, attName):
+    def _vhdl_get_attribute(self,obj, attName,parent=None):
         if obj.__hdl_name__:
             return obj.__hdl_name__ +"_"+ attName
         

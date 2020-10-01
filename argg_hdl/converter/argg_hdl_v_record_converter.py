@@ -65,7 +65,7 @@ class v_record_converter(v_class_converter):
 
         return ret
 
-    def _vhdl_get_attribute(self,obj, attName):
+    def _vhdl_get_attribute(self,obj, attName,parent=None):
         return obj.get_vhdl_name() + "." +str(attName)
     
     def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
