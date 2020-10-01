@@ -54,9 +54,11 @@ class v_simulation():
     def change(self, var, value):
         self.writer.change(var, self.CurrentTime, value)
 
+
     def run_processor_timed(self, p_list):
         minNext = 1e100
         for x in p_list:
+            self.writer.flush()
             if self.CurrentTime <= x["next_time"]:
                 try:
                     val = next(x["gen"])
