@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="argg_hdl", # Replace with your own username
-    version="0.0.3",
+    version="0.0.4",
     author="Richard Peschke",
     author_email="rp40@hawaii.edu",
     description="High Level Object Oriented Hardware Description Library",
