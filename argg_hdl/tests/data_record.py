@@ -1,5 +1,4 @@
 from enum import Enum, auto
-import pandas as pd 
 from argg_hdl import *
 from  argg_hdl.examples import *
 
