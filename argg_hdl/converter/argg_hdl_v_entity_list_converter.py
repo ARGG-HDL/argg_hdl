@@ -23,7 +23,7 @@ class v_entity_list_converter(hdl_converter_base):
                     x["temp"] = True
                     tempName = obj.__hdl_name__ +"_"+ str(i) + "_" +type(x["symbol"]).__name__
                     x["symbol"].set_vhdl_name(tempName)
-                    ret += x["symbol"].__hdl_converter__.impl_architecture_header(x["symbol"])
+                    ret += hdl.impl_architecture_header(x["symbol"])
             ret += "-------------------------- end "+ obj.__hdl_name__  +"-----------------\n"
             return ret
 
@@ -40,7 +40,7 @@ class v_entity_list_converter(hdl_converter_base):
                     tempName = str(obj.__hdl_name__) +"_"+  str(i) + "_" +type(x["symbol"]).__name__
                     if not x["symbol"].__hdl_name__:
                         x["symbol"].set_vhdl_name(tempName)
-                    ret += start + x["symbol"].__hdl_converter__.impl_architecture_body(x["symbol"])
+                    ret += start + hdl.impl_architecture_body(x["symbol"])
                     start = ";\n  "
             
 
@@ -51,7 +51,7 @@ class v_entity_list_converter(hdl_converter_base):
             bufffer = ""
             
             for x in obj.nexted_entities:
-                bufffer += x["symbol"].__hdl_converter__.def_includes(x["symbol"], None, None)
+                bufffer += hdl.def_includes(x["symbol"], None, None)
 
             ret  = make_unique_includes(bufffer)
 

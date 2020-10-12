@@ -24,7 +24,7 @@ class v_enum_converter(hdl_converter_base):
 
 
     def def_includes(self,obj, name,parent):
-        PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
+        PackageName = hdl.get_type_simple(obj)+"_pack"
         return "  use work." + PackageName+".all;\n"
     def def_packet_header(self,obj, name,parent):
         if  parent and parent._issubclass_("v_class"):
@@ -43,12 +43,12 @@ class v_enum_converter(hdl_converter_base):
     
     def get_packet_file_name(self, obj):
 
-        return obj.__hdl_converter__.get_type_simple(obj)+"_pack.vhd"
+        return hdl.get_type_simple(obj)+"_pack.vhd"
 
     def get_packet_file_content(self, obj):
 
-        h1  = obj.__hdl_converter__.def_packet_header(obj,None,None)
-        PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
+        h1  = hdl.def_packet_header(obj,None,None)
+        PackageName = hdl.get_type_simple(obj)+"_pack"
         fileContent = """
 library IEEE;
 library work;
