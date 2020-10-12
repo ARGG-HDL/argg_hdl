@@ -66,7 +66,7 @@ class v_entity_converter(hdl_converter_base):
             return self.astTree
 
         
-    def _vhdl_get_attribute(self,obj, attName,parent=None):
+    def impl_get_attribute(self,obj, attName,parent=None):
         if obj.__hdl_name__:
             return obj.__hdl_name__ +"_"+ attName
         
@@ -93,7 +93,7 @@ class v_entity_converter(hdl_converter_base):
         
         for x in members:
             sym = x["symbol"]
-            symName = obj.__hdl_converter__._vhdl_get_attribute(obj,x["name"])
+            symName = obj.__hdl_converter__.impl_get_attribute(obj,x["name"])
             sym.__hdl_name__ = symName
             
             ret +=  sym.__hdl_converter__.get_architecture_header(sym)
@@ -118,7 +118,7 @@ class v_entity_converter(hdl_converter_base):
             sym = x["symbol"]
             if sym._Inout ==InOut_t.Internal_t:
                 continue
-            symName = obj.__hdl_converter__._vhdl_get_attribute(obj,x["name"])
+            symName = obj.__hdl_converter__.impl_get_attribute(obj,x["name"])
             sym.set_vhdl_name( symName,True)
             
             ret +=  hdl.get_architecture_header(sym)

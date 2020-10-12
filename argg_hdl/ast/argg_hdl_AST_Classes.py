@@ -605,7 +605,7 @@ def body_unfold_Attribute(astParser,Node):
     
     parend = astParser.get_parant(obj)
     set_v_classType(obj, parend)
-    n = hdl._vhdl_get_attribute(obj,Node.attr, parend)
+    n = hdl.impl_get_attribute(obj,Node.attr, parend)
     if type(att).__name__ == "str":
         att = to_v_object(att)
         

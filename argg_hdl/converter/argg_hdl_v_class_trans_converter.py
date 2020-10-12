@@ -37,7 +37,7 @@ class v_class_trans_converter(v_class_converter):
 
 
 
-    def _vhdl_get_attribute(self,obj, attName,parent=None):
+    def impl_get_attribute(self,obj, attName,parent=None):
         attName = str(attName)
 
         if is_handle_class(parent):
