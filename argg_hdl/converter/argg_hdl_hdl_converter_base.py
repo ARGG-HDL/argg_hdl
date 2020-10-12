@@ -420,20 +420,16 @@ class hdl_converter_base:
 
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj.DefaultValue +";\n"
     
-    def get_process_combinatorial_pull(self,obj,clk):
+    def impl_process_pull(self,obj,clk):
         return []
 
-    def get_process_combinatorial_push(self,obj,clk):
+    def impl_process_push(self,obj,clk):
         return []
 
     def get_free_symbols(self,obj,name,parent_list=[]):
         return []
 
-    def _vhdl__Pull(self,obj):
-        return ""
 
-    def _vhdl__push(self,obj):
-        return ""
 
     def get_assiment_op(self, obj):
         varSigConst = obj._varSigConst

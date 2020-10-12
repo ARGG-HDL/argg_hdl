@@ -454,7 +454,7 @@ class v_class_converter(hdl_converter_base):
 
            
         
-    def get_process_combinatorial_pull(self,obj, clk):
+    def impl_process_pull(self,obj, clk):
         ret = []
         Pull_Push_handle = vc_helper.vhdl__Pull_Push(obj,InOut_t.input_t, clk)
         st = str(Pull_Push_handle)
@@ -462,7 +462,7 @@ class v_class_converter(hdl_converter_base):
             ret +=[st]
         return ret
 
-    def get_process_combinatorial_push(self,obj,clk):
+    def impl_process_push(self,obj,clk):
         ret = []
         Pull_Push_handle = vc_helper.vhdl__Pull_Push(obj,InOut_t.output_t,clk)
         st = str(Pull_Push_handle)

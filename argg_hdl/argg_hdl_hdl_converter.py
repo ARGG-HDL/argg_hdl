@@ -191,19 +191,14 @@ def impl_process_header(obj):
 def impl_process_sensitivity_list(obj):
     return obj.__hdl_converter__.impl_process_sensitivity_list(obj)
 
-def get_process_combinatorial_pull(obj,clk):
-    return obj.__hdl_converter__.get_process_combinatorial_pull(obj,clk)
+def impl_process_pull(obj,clk):
+    return obj.__hdl_converter__.impl_process_pull(obj,clk)
     
-def get_process_combinatorial_push(obj,clk):
-    return obj.__hdl_converter__.get_process_combinatorial_push(obj,clk)
+def impl_process_push(obj,clk):
+    return obj.__hdl_converter__.impl_process_push(obj,clk)
 
 
-def _vhdl__Pull(obj):
-    return obj.__hdl_converter__._vhdl__Pull(obj)
 
-
-def _vhdl__push(obj):
-    return obj.__hdl_converter__._vhdl__push(obj)
 
 
 def get_assiment_op(obj):

@@ -210,14 +210,14 @@ class v_process_body_Def(v_ast_base):
 
     def get_combinatorial_pull(self):
         ret =[
-             hdl.get_process_combinatorial_pull(x,str(self.dec[0].argList[0]))
+             hdl.impl_process_pull(x,str(self.dec[0].argList[0]))
             for x in self.get_local_var()
         ]
         ret = join_str(ret,LineBeginning="  ",LineEnding=";\n",IgnoreIfEmpty=True)
         return ret
     def get_combinatorial_push(self):
         ret =[
-            hdl.get_process_combinatorial_push(x,str(self.dec[0].argList[0]))
+            hdl.impl_process_push(x,str(self.dec[0].argList[0]))
             for x in self.get_local_var()
         ]
         ret = join_str(ret,LineBeginning="  ",LineEnding=";\n",IgnoreIfEmpty=True)
