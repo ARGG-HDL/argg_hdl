@@ -172,8 +172,7 @@ class v_symbol_converter(hdl_converter_base):
         raise Exception("unexpected type")
 
 
-    def impl_compare_int(self,obj:"v_symbol", ops, rhs):
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
+
 
 
     
