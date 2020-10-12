@@ -23,7 +23,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
         """
 
-        ret += obj.Internal_Type.__hdl_converter__.def_includes(obj.Internal_Type,name,obj)
+        ret += hdl.def_includes(obj.Internal_Type,name,obj)
         return ret
 
 
@@ -48,12 +48,12 @@ use ieee.std_logic_unsigned.all;
     def def_entity_port(self,obj):
         ret = []
         obj.Internal_Type._Inout = obj._Inout
-        xs = obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
+        xs =hdl.extract_conversion_types(obj.Internal_Type)
 
         for x in xs:
             if x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
                 continue
-            inoutstr = " : "+ x["symbol"].__hdl_converter__.InOut_t2str(x["symbol"]) +" "
+            inoutstr = " : "+ hdl.InOut_t2str(x["symbol"]) +" "
             ret.append( obj.get_vhdl_name() +x["suffix"] + inoutstr +x["symbol"]._type + "_a(0 to "+ str(obj.size)   +") := (others => " + x["symbol"]._type + "_null)")
     
         return ret
@@ -81,7 +81,7 @@ use ieee.std_logic_unsigned.all;
         
         for x in obj.__hdl_converter__.obj_list:
             try:
-                ret = x.__hdl_converter__.InOut_t2str(x)
+                ret = hdl.InOut_t2str(x)
                 return ret
             except:
                 pass
@@ -93,7 +93,7 @@ use ieee.std_logic_unsigned.all;
         ret = []
         obj.Internal_Type.set_vhdl_name(obj.__hdl_name__, True)
 
-        xs =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type, 
+        xs =hdl.extract_conversion_types(obj.Internal_Type, 
                 exclude_class_type= v_classType_t.transition_t
             )
         for x in xs:
@@ -104,7 +104,7 @@ use ieee.std_logic_unsigned.all;
     def impl_architecture_header(self, obj):
         ret =""
 
-        obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
+        obj1 =hdl.extract_conversion_types(obj.Internal_Type)
         
         for x in obj1:
             if x["symbol"]._issubclass_("v_class") and x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
@@ -117,8 +117,8 @@ use ieee.std_logic_unsigned.all;
             ret += """  {VarSymb} {objName} : {objType}(0 to {size} - 1)  := (others => {defaults});\n""".format(
                 VarSymb=get_varSig(x["symbol"]._varSigConst),
                 objName=obj.get_vhdl_name(x["symbol"]._Inout),
-                objType=x["symbol"].__hdl_converter__.get_Name_array(x["symbol"]),
-                defaults=x["symbol"].__hdl_converter__.get_default_value(x["symbol"]),
+                objType=hdl.get_Name_array(x["symbol"]),
+                defaults=hdl.get_default_value(x["symbol"]),
                 size = obj.size
             )
         return ret
@@ -129,12 +129,12 @@ use ieee.std_logic_unsigned.all;
     def def_record_Member(self,obj, name,parent,Inout=None):
         ret =""
 
-        obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
+        obj1 =  hdl.extract_conversion_types(obj.Internal_Type)
         for x in obj1:
 
             ret += """{objName} : {objType}(0 to {size} - 1 )""".format(
                 objName=name,
-                objType=x["symbol"].__hdl_converter__.get_Name_array(x["symbol"]),
+                objType=hdl.get_Name_array(x["symbol"]),
                 size = obj.size
             )
         return ret
@@ -142,12 +142,12 @@ use ieee.std_logic_unsigned.all;
     def def_record_Member_Default(self, obj, name,parent,Inout=None):
         ret =""
 
-        obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
+        obj1 =hdl.extract_conversion_types(obj.Internal_Type)
         for x in obj1:
 
             ret += """{objName} => (others => {defaults})""".format(
                 objName=name,
-                defaults=x["symbol"].__hdl_converter__.get_default_value(x["symbol"]),
+                defaults=hdl.get_default_value(x["symbol"]),
                 size = obj.size
             )
         return ret
@@ -155,7 +155,7 @@ use ieee.std_logic_unsigned.all;
     
     def impl_slice(self,obj, sl,astParser=None):
         if issubclass(type(sl),argg_hdl_base0):
-            sl = sl.__hdl_converter__.impl_get_value(sl,ReturnToObj=v_int(),astParser=astParser)
+            sl = hdl.impl_get_value(sl,ReturnToObj=v_int(),astParser=astParser)
         
         ret = v_copy(obj.Internal_Type)
         ret._varSigConst = obj._varSigConst
@@ -172,7 +172,7 @@ use ieee.std_logic_unsigned.all;
     def impl_process_header(self,obj):
         ret =""
 
-        obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)
+        obj1 =hdl.extract_conversion_types(obj.Internal_Type)
         
         for x in obj1:
             if x["symbol"]._varSigConst != varSig.variable_t:
@@ -181,18 +181,18 @@ use ieee.std_logic_unsigned.all;
             ret += """  {VarSymb} {objName} : {objType}(0 to {size} - 1)  := (others => {defaults});\n""".format(
                 VarSymb=get_varSig(x["symbol"]._varSigConst),
                 objName=obj.get_vhdl_name(x["symbol"]._Inout),
-                objType=x["symbol"].__hdl_converter__.get_Name_array(x["symbol"]),
-                defaults=x["symbol"].__hdl_converter__.get_default_value(x["symbol"]),
+                objType=hdl.get_Name_array(x["symbol"]),
+                defaults=hdl.get_default_value(x["symbol"]),
                 size = obj.size
             )
         return ret
         
     def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
-        return name +" : " + obj.__hdl_converter__.InOut_t2str(obj)+"  " +obj.get_type()
+        return name +" : " + hdl.InOut_t2str(obj)+"  " +obj.get_type()
 
     def impl_reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
     #def impl_reasign(self, obj, rhs, context=None):
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
         return str(obj.__hdl_name__) + asOp +  str(rhs.__hdl_name__)
 
     def _vhdl__Pull(self,obj):

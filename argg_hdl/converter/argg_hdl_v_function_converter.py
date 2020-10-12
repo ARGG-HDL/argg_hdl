@@ -158,7 +158,7 @@ class v_Arch_converter(hdl_converter_base):
         for x in obj.Symbols:
             if x._type == "undef":
                 continue
-            header += x.__hdl_converter__.impl_architecture_header(x)
+            header += hdl.impl_architecture_header(x)
         
         for x in obj.Arch_vars:
             header += hdl.impl_architecture_header(x['symbol'])    
@@ -235,7 +235,7 @@ class v_Arch_converter(hdl_converter_base):
                 #print("Is sub connection")
                 continue
             #print("Connecting " +str(x['name']) )
-            ret += x['symbol'].__hdl_converter__.impl_reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
+            ret += hdl.impl_reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
 
         return ret
     def impl_architecture_body(self, obj):
@@ -244,12 +244,12 @@ class v_Arch_converter(hdl_converter_base):
         for x in obj.Symbols:
             if x._type == "undef":
                 continue
-            line = x.__hdl_converter__.impl_architecture_body(x) 
+            line = hdl.impl_architecture_body(x) 
             if line.strip():
                 body += "\n  " +line+";\n  "
         
         for x in obj.Arch_vars:
-            line = x['symbol'].__hdl_converter__.impl_architecture_body(x['symbol'])
+            line = hdl.impl_architecture_body(x['symbol'])
             if line.strip():
                 body += "\n  " + line  +";\n  "
         
