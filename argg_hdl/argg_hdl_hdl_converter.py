@@ -175,7 +175,17 @@ def impl_architecture_body(obj):
     return obj.__hdl_converter__.impl_architecture_body(obj)
 
 
+def impl_add(obj,args):
+    return obj.__hdl_converter__.impl_add(obj, args)
+    
+    
+def impl_sub(obj,args):
+    return obj.__hdl_converter__.impl_sub(obj, args)
+    
 
+def impl_multi(obj,args):
+    return obj.__hdl_converter__.impl_multi(obj, args)
+    
 
 
 

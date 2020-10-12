@@ -246,7 +246,7 @@ class xgenAST:
     def get_local_var_def(self):
         ret =""
         for x in self.LocalVar:
-            ret += x.__hdl_converter__.impl_symbol_instantiation(x)
+            ret += hdl.impl_symbol_instantiation(x)
         
         return ret
     def reset_buffers(self):

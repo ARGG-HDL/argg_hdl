@@ -92,6 +92,7 @@ class hdl_converter_base:
     
 
     def FlagFor_TemplateMissing(self, obj):
+        obj.__hdl_converter__.MissingTemplate  = True
         primary = hdl.get_primary_object(obj)
         primary.__hdl_converter__.MissingTemplate  = True
 
@@ -273,7 +274,7 @@ class hdl_converter_base:
 
     def impl_function_argument(self, obj,func_arg, arg):
         ret = []
-        ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
+        ys = hdl.extract_conversion_types(func_arg["symbol"])
         for y in ys:
             line = func_arg["name"] + y["suffix"]+ " => " + str(arg) + y["suffix"]
             ret.append(line)
