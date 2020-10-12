@@ -37,11 +37,11 @@ class v_package_converter(hdl_converter_base):
         
         return ret
 
-    def getBody(self,obj, name,parent):
+    def def_packet_body(self,obj, name,parent):
         ret = ""
         for t  in obj.PackageContent:
             t = to_v_object(t)
-            ret += t.__hdl_converter__.getBody(t,"",obj)
+            ret += t.__hdl_converter__.def_packet_body(t,"",obj)
         
         return ret
 

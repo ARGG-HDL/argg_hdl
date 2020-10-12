@@ -260,7 +260,7 @@ class hdl_converter_base:
     def getFuncArg(self,obj,name,parent):
         return ""
 
-    def getBody(self,obj, name,parent):
+    def def_packet_body(self,obj, name,parent):
         return ""
 
     def _vhdl_make_port(self, obj, name):

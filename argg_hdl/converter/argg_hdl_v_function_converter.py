@@ -29,7 +29,7 @@ class v_procedure_converter(hdl_converter_base):
         return ret
     
     
-    def getBody(self, obj, name,parent):
+    def def_packet_body(self, obj, name,parent):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent)
@@ -88,7 +88,7 @@ class v_function_converter(hdl_converter_base):
         return ret
     
     
-    def getBody(self, obj, name,parent):
+    def def_packet_body(self, obj, name,parent):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name(parent,True)
@@ -125,7 +125,7 @@ add_primitive_hdl_converter("v_function", v_function_converter)
 class v_process_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
-    def getBody(self, obj,name,parent):
+    def def_packet_body(self, obj,name,parent):
         ret = "process("+str(obj.SensitivityList)+") is\n" +str(obj.VariableList)+ "\n  begin\n"
         if obj.prefix:
             ret += "  if " + str(obj.prefix) + " then\n"
@@ -271,7 +271,7 @@ class v_Arch_converter(hdl_converter_base):
         print_cnvt("def_packet_header is dep")
         return ""
 
-    def getBody(self,obj, name,parent):
+    def def_packet_body(self,obj, name,parent):
         print_cnvt("def_packet_header is dep")
         return ""
 

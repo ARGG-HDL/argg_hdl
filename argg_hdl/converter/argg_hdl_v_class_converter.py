@@ -349,7 +349,7 @@ class v_class_converter(hdl_converter_base):
         return beforeConnecting, AfterConnecting, inout
 
 
-    def getBody(self,obj, name,parent):
+    def def_packet_body(self,obj, name,parent):
         if issubclass(type(parent),v_class):
             return ""
         start  = "-------------------------------------------------------------------------\n"
@@ -361,10 +361,10 @@ class v_class_converter(hdl_converter_base):
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
             if issubclass(type(t),argg_hdl_base):
-                start += hdl.getBody(t,x[0],obj)
+                start += hdl.def_packet_body(t,x[0],obj)
 
         content2 =  [
-            hdl.getBody(x,None,None) 
+            hdl.def_packet_body(x,None,None) 
             for x in obj.__hdl_converter__.__ast_functions__ 
             if not ("_onpull" in x.name.lower()   or  "_onpush" in x.name.lower() )
         ]

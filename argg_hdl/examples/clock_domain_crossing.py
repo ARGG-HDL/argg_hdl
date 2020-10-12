@@ -89,7 +89,7 @@ def main():
 #print(fun)
     for f in fun:
         print(f.def_packet_header("",None))
-        print(f.getBody("",None))
+        print(f.def_packet_body("",None))
     fileContent = pac.to_string()
     with open(args.OutputPath, "w", newline="\n") as f:
         f.write(fileContent)

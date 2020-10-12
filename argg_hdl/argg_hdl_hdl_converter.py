@@ -95,8 +95,8 @@ def getFuncArg(obj, name, parent):
     return obj.__hdl_converter__.getFuncArg(obj, name, parent)
 
 
-def getBody(obj, name, parent):
-    return obj.__hdl_converter__.getBody(obj, name, parent)
+def def_packet_body(obj, name, parent):
+    return obj.__hdl_converter__.def_packet_body(obj, name, parent)
 
 
 def _vhdl_make_port(obj, name):

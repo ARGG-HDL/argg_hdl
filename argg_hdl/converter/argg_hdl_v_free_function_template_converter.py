@@ -47,11 +47,11 @@ class v_free_function_template_converter(hdl_converter_base):
         return ret
     
     
-    def getBody(self, obj, name,parent):
+    def def_packet_body(self, obj, name,parent):
         ret = ""
         
         for x in obj.__hdl_converter__.__ast_functions__:
-            ret += hdl.getBody(x, name,parent) +"\n"
+            ret += hdl.def_packet_body(x, name,parent) +"\n"
         return ret
 
     def includes(self,obj, name,parent):

@@ -80,7 +80,7 @@ class v_package(argg_hdl_base):
             ret += "end " + self.PackageName + ";\n\n\n"
 
             ret += "package body "+ self.PackageName +" is\n\n"
-            ret += self.__hdl_converter__.getBody(self,None, self)
+            ret += self.__hdl_converter__.def_packet_body(self,None, self)
             ret += "end "+ self.PackageName +";\n\n"
         
         ret += self.__hdl_converter__.get_entity_definition(self)
