@@ -101,7 +101,7 @@ class v_symbol_converter(hdl_converter_base):
 
     def impl_function_call(self, obj:"v_symbol", name, args, astParser=None):
         
-        call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
+        call_obj = obj.__hdl_converter__.get_call_member_function(obj, name, args)
         
         args_str = [str(x.get_type()) for x in args]
         args_str=join_str(args_str, Delimeter=", ")
@@ -121,7 +121,7 @@ class v_symbol_converter(hdl_converter_base):
         astParser.Missing_template = True
         return None
 
-    def get_get_call_member_function(self, obj:"v_symbol", name, args):
+    def get_call_member_function(self, obj:"v_symbol", name, args):
         ret = None
         args = [x.get_symbol() for x in args ]
         if name =="reset":

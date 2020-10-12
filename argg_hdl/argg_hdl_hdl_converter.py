@@ -154,8 +154,8 @@ def impl_reasign_rshift_(obj, rhs, astParser=None, context_str=None):
     return obj.__hdl_converter__.impl_reasign_rshift_(obj, rhs, astParser, context_str)
 
 
-def get_get_call_member_function(obj, name, args):
-    return obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
+def get_call_member_function(obj, name, args):
+    return obj.__hdl_converter__.get_call_member_function(obj, name, args)
 
 
 def impl_function_call(obj, name, args, astParser=None):

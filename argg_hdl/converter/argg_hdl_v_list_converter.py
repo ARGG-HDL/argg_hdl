@@ -29,7 +29,7 @@ use ieee.std_logic_unsigned.all;
 
 
 
-    def get_get_call_member_function(self, obj, name, args):
+    def get_call_member_function(self, obj, name, args):
         ret = None
         args = [x.get_symbol() for x in args ]
         if name =="reset":

@@ -343,7 +343,7 @@ class hdl_converter_base:
     def impl_reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
         return hdl.impl_reasign(rhs, obj,astParser,context_str)
 
-    def get_get_call_member_function(self, obj, name, args):
+    def get_call_member_function(self, obj, name, args):
         args = [x.get_symbol() for x in args ]
 
  
@@ -373,7 +373,7 @@ class hdl_converter_base:
         obj.__hdl_converter__ = primary.__hdl_converter__
         
         
-        call_obj = hdl.get_get_call_member_function(obj, name, args)
+        call_obj = hdl.get_call_member_function(obj, name, args)
         ret = call_obj.HDL_Call(astParser, args, obj)
         return ret
 
