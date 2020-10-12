@@ -16,7 +16,7 @@ class v_unsigned_converter(v_symbol_converter):
             astParser.add_read(rhs)
             rhs._add_input()
 
-        return str(obj) + "  "+ obj.__hdl_converter__.ops2str(ops) +" " + str(rhs)
+        return str(obj) + "  "+ hdl.ops2str(ops) +" " + str(rhs)
 
 
 
@@ -30,7 +30,7 @@ class v_unsigned_converter(v_symbol_converter):
         if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process':
             obj.__Driver__ = rhs
 
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp + " (others => '0')"
 
@@ -42,7 +42,7 @@ class v_unsigned_converter(v_symbol_converter):
                     asOp=asOp
                 )
 
-            return target + asOp + str(rhs.__hdl_converter__.impl_get_value(rhs, obj, astParser=astParser))
+            return target + asOp + str(hdl.impl_get_value(rhs, obj, astParser=astParser))
 
         if type(rhs).__name__ == "v_Num":
             return """{dest} {asOp} to_unsigned({src}, {dest}'length)""".format(
@@ -69,7 +69,7 @@ class v_unsigned_converter(v_symbol_converter):
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(sl) + ")"
         else:
             ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
-            index = sl.__hdl_converter__.impl_get_value(sl, v_uint())
+            index = hdl.impl_get_value(sl, v_uint())
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(index) + ")"
 
         return ret
@@ -78,7 +78,7 @@ class v_unsigned_converter(v_symbol_converter):
         if issubclass(type(obj), argg_hdl_base0) and issubclass(type(rhs), argg_hdl_base0):
             if "unsigned" in rhs._type:
                 rhs._add_output()
-                asOp = rhs.__hdl_converter__.get_assiment_op(rhs)
+                asOp = hdl.get_assiment_op(rhs)
                 return str(rhs) + "(" + str(rhs) + "'range)" + asOp + str(obj) + "(" + str(rhs) + "'range)"
 
         return hdl.impl_reasign(rhs, obj, astParser, context_str)

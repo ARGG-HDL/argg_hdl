@@ -101,7 +101,7 @@ class v_symbol_converter(hdl_converter_base):
 
     def impl_function_call(self, obj:"v_symbol", name, args, astParser=None):
         
-        call_obj = obj.__hdl_converter__.get_call_member_function(obj, name, args)
+        call_obj = hdl.get_call_member_function(obj, name, args)
         
         args_str = [str(x.get_type()) for x in args]
         args_str=join_str(args_str, Delimeter=", ")
@@ -185,7 +185,7 @@ class v_symbol_converter(hdl_converter_base):
 
         
         
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
+        return str(obj) + " "+ hdl.ops2str(obj, ops)+" " +   str(rhs)
 
 
 
@@ -230,7 +230,7 @@ class v_symbol_converter(hdl_converter_base):
         return [
             obj.__hdl_name__ + 
             " : "+ 
-            obj.__hdl_converter__.InOut_t2str(obj) + 
+            hdl.InOut_t2str(obj) + 
             " " +  
             hdl.get_type_simple(obj) + 
             " := " + 
@@ -255,7 +255,7 @@ class v_symbol_converter(hdl_converter_base):
         if isProcess():
             obj.__Driver__ = 'process'
 
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)            
+        asOp = hdl.get_assiment_op(obj)            
         return target +asOp +  str(rhs)
     
 
@@ -305,7 +305,7 @@ class v_symbol_converter(hdl_converter_base):
         inoutstr =""
         if astParser:
             inout = astParser.get_function_arg_inout_type(obj)
-            inoutstr = obj.__hdl_converter__.InOut_t2str2(inout)
+            inoutstr = hdl.InOut_t2str2(obj, inout)
         
         varSigstr = ""
         if obj._varSigConst == varSig.signal_t:
@@ -315,9 +315,9 @@ class v_symbol_converter(hdl_converter_base):
             inoutstr = ""
         default_str = ""
         if withDefault and obj.__writeRead__ != InOut_t.output_t and obj._Inout != InOut_t.output_t:
-            default_str =  " := " + str(obj.__hdl_converter__.get_default_value(obj))
+            default_str =  " := " + str(hdl.get_default_value(obj))
 
-        return varSigstr + name + " : " + inoutstr +" " + obj.__hdl_converter__.get_type_func_arg(obj) + default_str
+        return varSigstr + name + " : " + inoutstr +" " + self.get_type_func_arg(obj) + default_str
     
     def get_free_symbols(self,obj:"v_symbol",name, parent_list=[]):
         if obj.__isFreeType__:
@@ -345,7 +345,7 @@ library work;
 
 
 def call_func_symb_reset(obj, name, args, astParser=None,func_args=None):
-    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
+    asOp = hdl.get_assiment_op(args[0])
     val = None
     if obj._type == "std_logic":
         val = "'0'"

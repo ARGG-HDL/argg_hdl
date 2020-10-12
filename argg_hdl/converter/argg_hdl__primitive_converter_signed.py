@@ -16,7 +16,7 @@ class v_signed_converter(v_symbol_converter):
             astParser.add_read(rhs)
             rhs._add_input()
 
-        return str(obj) + "  "+ obj.__hdl_converter__.ops2str(ops) +" " + str(rhs)
+        return str(obj) + "  "+ hdl.ops2str(ops) +" " + str(rhs)
 
 
 
@@ -30,7 +30,7 @@ class v_signed_converter(v_symbol_converter):
         if issubclass(type(rhs), argg_hdl_base0) and str(obj.__Driver__) != 'process' and str(obj.__Driver__) != 'function':
             obj.__Driver__ = rhs
 
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp + " (others => '0')"
 
@@ -52,7 +52,7 @@ class v_signed_converter(v_symbol_converter):
                     asOp=asOp
                 )
 
-            return target + asOp + str(rhs.__hdl_converter__.impl_get_value(rhs, obj, astParser=astParser))
+            return target + asOp + str(hdl.impl_get_value(rhs, obj, astParser=astParser))
 
 
         if type(rhs).__name__ == "v_Num":
@@ -81,7 +81,7 @@ class v_signed_converter(v_symbol_converter):
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(sl) + ")"
         else:
             ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
-            index = sl.__hdl_converter__.impl_get_value(sl, v_uint())
+            index = hdl.impl_get_value(sl, v_uint())
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(index) + ")"
 
         return ret
@@ -93,7 +93,7 @@ class v_signed_converter(v_symbol_converter):
                     astParser.add_write(rhs)
                 rhs._add_output()
                 obj._add_input()
-                asOp = rhs.__hdl_converter__.get_assiment_op(rhs)
+                asOp = hdl.get_assiment_op(rhs)
                 top = "ah_min(" + str(rhs) + "'length, "+str(obj) + "'length)"
                 return str(rhs) + "( " +top +" downto 0)" + asOp + str(obj) + "( " +top +" downto 0)"
 
