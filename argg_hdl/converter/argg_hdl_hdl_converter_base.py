@@ -292,7 +292,7 @@ class hdl_converter_base:
         raise Exception("Not implemented")
 
     
-    def _vhdl__compare(self,obj, ops, rhs, astParser =None):
+    def impl_compare(self,obj, ops, rhs, astParser =None):
         return str(obj) + " " + hdl.ops2str(obj,ops)+" " + str(rhs)
 
     def _vhdl__add(self,obj,args):

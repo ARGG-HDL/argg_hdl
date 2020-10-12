@@ -178,7 +178,7 @@ class v_symbol_converter(hdl_converter_base):
 
     
 
-    def _vhdl__compare(self,obj:"v_symbol", ops, rhs, astParser):
+    def impl_compare(self,obj:"v_symbol", ops, rhs, astParser):
         astParser.add_read(obj)
         obj._add_input()
         if issubclass(type(rhs),argg_hdl_base):

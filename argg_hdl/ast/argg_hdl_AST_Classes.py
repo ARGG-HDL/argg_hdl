@@ -525,7 +525,7 @@ class v_compare(v_ast_base):
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__compare(self.lhs, self.ops, self.rhs, self.astParser)
+            return self.lhs.__hdl_converter__.impl_compare(self.lhs, self.ops, self.rhs, self.astParser)
         
         return  str(self.lhs)  + " = " +   str(self.rhs) 
 
@@ -540,10 +540,10 @@ class v_compare(v_ast_base):
 
         if type(self.lhs).__name__ == "v_name":
             obj = astParser.get_variable(self.lhs.Value,None)
-            return obj.__hdl_converter__._vhdl__compare(obj, rhs)
+            return obj.__hdl_converter__.impl_compare(obj, rhs)
 
         if self.lhs._issubclass_("v_class"):
-            return self.lhs.__hdl_converter__._vhdl__compare(
+            return self.lhs.__hdl_converter__.impl_compare(
                     self.lhs,
                     self.ops, 
                     self.rhs,
@@ -551,7 +551,7 @@ class v_compare(v_ast_base):
                 )
         
         if issubclass(type(self.lhs),v_symbol):
-            return self.lhs.__hdl_converter__._vhdl__compare(
+            return self.lhs.__hdl_converter__.impl_compare(
                     self.lhs, 
                     self.ops ,
                     self.rhs,
@@ -559,7 +559,7 @@ class v_compare(v_ast_base):
                 )
 
         if issubclass(type(self.lhs),v_enum):
-            return self.lhs.__hdl_converter__._vhdl__compare(
+            return self.lhs.__hdl_converter__.impl_compare(
                     self.lhs, 
                     self.ops ,
                     self.rhs,

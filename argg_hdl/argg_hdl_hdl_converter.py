@@ -111,8 +111,8 @@ def impl_slice(obj, sl, astParser=None):
     return obj.__hdl_converter__.impl_slice(obj, sl, astParser)
 
 
-def _vhdl__compare(obj, ops, rhs, astParser=None):
-    return obj.__hdl_converter__._vhdl__compare(obj, ops, rhs, astParser)
+def impl_compare(obj, ops, rhs, astParser=None):
+    return obj.__hdl_converter__.impl_compare(obj, ops, rhs, astParser)
 
 
 def _vhdl__add(obj, args):
