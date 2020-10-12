@@ -298,7 +298,7 @@ class hdl_converter_base:
     def impl_compare(self,obj, ops, rhs, astParser =None):
         return str(obj) + " " + hdl.ops2str(obj,ops)+" " + str(rhs)
 
-    def _vhdl__add(self,obj,args):
+    def impl_add(self,obj,args):
         return str(obj) + " + " + str(args)
     
     def _vhdl__Sub(self,obj,args):

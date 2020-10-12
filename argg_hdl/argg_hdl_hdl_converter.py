@@ -118,8 +118,8 @@ def impl_compare(obj, ops, rhs, astParser=None):
     return obj.__hdl_converter__.impl_compare(obj, ops, rhs, astParser)
 
 
-def _vhdl__add(obj, args):
-    return obj.__hdl_converter__._vhdl__add(obj, args)
+def impl_add(obj, args):
+    return obj.__hdl_converter__.impl_add(obj, args)
 
 
 def _vhdl__Sub(obj, args):

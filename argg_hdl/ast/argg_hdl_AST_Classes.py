@@ -995,7 +995,7 @@ class v_add(v_ast_base):
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__add(self.lhs, self.rhs)
+            return self.lhs.__hdl_converter__.impl_add(self.lhs, self.rhs)
 
         return str(self.lhs) + " + " +  str(self.rhs) 
 
