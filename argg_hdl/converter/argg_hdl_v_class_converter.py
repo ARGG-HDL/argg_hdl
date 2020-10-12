@@ -214,7 +214,7 @@ class v_class_converter(hdl_converter_base):
         
 
 
-    def make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
+    def def_def_make_constant(self, obj, name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
         TypeName = hdl.get_type_simple(obj)
         member = obj.getMember()
 
@@ -263,7 +263,7 @@ class v_class_converter(hdl_converter_base):
 
     type {TypeName}_a is array (natural range <>) of {TypeName};
         """.format(
-          Default = obj.__hdl_converter__.make_constant(
+          Default = obj.__hdl_converter__.def_def_make_constant(
                 obj,
                 TypeName + "_null" , 
                 parent, 

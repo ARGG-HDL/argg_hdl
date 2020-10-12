@@ -28,8 +28,6 @@ class v_symbol_converter(hdl_converter_base):
         self.AliasType = None
         self.extractedTypes = []
 
-    def make_constant(self, obj:"v_symbol", name,parent=None,InOut_Filter=None, VaribleSignalFilter = None):
-        return ""
         
     def prepare_for_conversion(self,obj:"v_symbol"):
         
