@@ -10,7 +10,7 @@ from argg_hdl.converter.argg_hdl_hdl_converter_base import hdl_converter_base
 class v_procedure_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
-    def getHeader(self, obj,name, parent):
+    def def_packet_header(self, obj,name, parent):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent)
@@ -61,7 +61,7 @@ add_primitive_hdl_converter("v_procedure", v_procedure_converter)
 class v_function_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
-    def getHeader(self, obj, name, parent):
+    def def_packet_header(self, obj, name, parent):
         classDef =""
         if parent is not None and not obj.isFreeFunction:
             classDef = parent.__hdl_converter__.get_self_func_name (parent,True)
@@ -267,12 +267,12 @@ class v_Arch_converter(hdl_converter_base):
         return body
 
 
-    def getHeader(self, obj, name, parent):
-        print_cnvt("getHeader is dep")
+    def def_packet_header(self, obj, name, parent):
+        print_cnvt("def_packet_header is dep")
         return ""
 
     def getBody(self,obj, name,parent):
-        print_cnvt("getHeader is dep")
+        print_cnvt("def_packet_header is dep")
         return ""
 
 add_primitive_hdl_converter("v_Arch", v_Arch_converter)

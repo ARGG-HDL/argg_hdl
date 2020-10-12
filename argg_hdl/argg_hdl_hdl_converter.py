@@ -87,8 +87,8 @@ def recordMemberDefault(obj, name, parent, Inout=None):
     return obj.__hdl_converter__.recordMemberDefault(obj, name, parent, Inout)
 
 
-def getHeader(obj, name, parent):
-    return obj.__hdl_converter__.getHeader(obj, name, parent)
+def def_packet_header(obj, name, parent):
+    return obj.__hdl_converter__.def_packet_header(obj, name, parent)
 
 
 def getFuncArg(obj, name, parent):

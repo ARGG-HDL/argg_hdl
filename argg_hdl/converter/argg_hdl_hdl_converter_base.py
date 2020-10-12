@@ -255,7 +255,7 @@ class hdl_converter_base:
     def recordMemberDefault(self, obj,name,parent,Inout=None):
         return "" 
 
-    def getHeader(self,obj, name,parent):
+    def def_packet_header(self,obj, name,parent):
         return ""
     def getFuncArg(self,obj,name,parent):
         return ""

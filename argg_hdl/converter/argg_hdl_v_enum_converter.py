@@ -26,7 +26,7 @@ class v_enum_converter(hdl_converter_base):
     def includes(self,obj, name,parent):
         PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
         return "  use work." + PackageName+".all;\n"
-    def getHeader(self,obj, name,parent):
+    def def_packet_header(self,obj, name,parent):
         if  parent and parent._issubclass_("v_class"):
              return ""
             
@@ -47,7 +47,7 @@ class v_enum_converter(hdl_converter_base):
 
     def get_packet_file_content(self, obj):
 
-        h1  = obj.__hdl_converter__.getHeader(obj,None,None)
+        h1  = obj.__hdl_converter__.def_packet_header(obj,None,None)
         PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
         fileContent = """
 library IEEE;
@@ -76,7 +76,7 @@ end  {PackageName};
 
         return fileContent
     
-    def recordMember(self, obj, name, parent,Inout=None):
+    def def_recordMember(self, obj, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)
@@ -84,7 +84,7 @@ end  {PackageName};
        
         return ""
 
-    def recordMemberDefault(self, obj, name, parent,Inout=None):
+    def def_recordMemberDefault(self, obj, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)

@@ -39,11 +39,11 @@ class v_free_function_template_converter(hdl_converter_base):
         set_isConverting2VHDL(s)
         return fileContent
 
-    def getHeader(self, obj, name, parent):
+    def def_packet_header(self, obj, name, parent):
         ret = ""
         
         for x in obj.__hdl_converter__.__ast_functions__:
-            ret += hdl.getHeader(x, name,parent) +"\n"
+            ret += hdl.def_packet_header(x, name,parent) +"\n"
         return ret
     
     

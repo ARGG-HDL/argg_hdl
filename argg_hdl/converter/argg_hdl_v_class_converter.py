@@ -243,7 +243,7 @@ class v_class_converter(hdl_converter_base):
             hdl.prepare_for_conversion(m["symbol"])
 
 
-    def getHeader(self,obj, name,parent):
+    def def_packet_header(self,obj, name,parent):
         if issubclass(type(parent),v_class):
             return ""
 

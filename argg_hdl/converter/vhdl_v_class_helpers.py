@@ -136,7 +136,7 @@ class getHeader():
         for x in self.obj.__dict__.items():
             t = getattr(self.obj, x[0])
             if issubclass(type(t),argg_hdl_base) and not t._issubclass_("v_class"):
-                ret += t.__hdl_converter__.getHeader(t,x[0],self.obj)
+                ret += t.__hdl_converter__.def_packet_header(t,x[0],self.obj)
 
         return ret
 
@@ -154,7 +154,7 @@ class getHeader():
             if "_onpull" in x.name.lower()  or "_onpush" in x.name.lower() :
                 continue
 
-            funDeclaration = x.__hdl_converter__.getHeader(x,None,None)
+            funDeclaration = x.__hdl_converter__.def_packet_header(x,None,None)
             ret +=  funDeclaration
 
         return ret

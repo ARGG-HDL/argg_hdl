@@ -81,4 +81,4 @@ def var_sig_tb_2vhdl(OutputPath, f= None):
 def test_RamHandler_2vhdl():
     return var_sig_tb_2vhdl("tests/var_sig_class/") 
 
-add_test("var_sig_tb_2vhdl", test_RamHandler_2vhdl)
+#add_test("var_sig_tb_2vhdl", test_RamHandler_2vhdl)

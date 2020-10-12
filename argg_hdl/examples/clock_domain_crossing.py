@@ -88,7 +88,7 @@ def main():
     fun= list(xgenAST1.extractFunctionsForClass(clk_domain_crossing_master() ,pac ))
 #print(fun)
     for f in fun:
-        print(f.getHeader("",None))
+        print(f.def_packet_header("",None))
         print(f.getBody("",None))
     fileContent = pac.to_string()
     with open(args.OutputPath, "w", newline="\n") as f:

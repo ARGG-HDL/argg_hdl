@@ -157,7 +157,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
 
-    def getHeader(self, obj:"v_symbol",name,parent):
+    def def_packet_header(self, obj:"v_symbol",name,parent):
         if obj.__hdl_name__:
             name = obj.__hdl_name__
 

@@ -29,11 +29,11 @@ class v_package_converter(hdl_converter_base):
         ret = make_unique_includes(bufffer, obj.PackageName)
         return ret
 
-    def getHeader(self, obj, name,parent):
+    def def_packet_header(self, obj, name,parent):
         ret = ""
         for t  in obj.PackageContent:
             t = to_v_object(t)
-            ret += t.__hdl_converter__.getHeader(t,"",obj)
+            ret += t.__hdl_converter__.def_packet_header(t,"",obj)
         
         return ret
 

@@ -123,7 +123,7 @@ use ieee.std_logic_unsigned.all;
             )
         return ret
 
-    def getHeader(self,obj, name,parent):
+    def def_packet_header(self,obj, name,parent):
         return "-- v_list getHeader\n"    
     
     def recordMember(self,obj, name,parent,Inout=None):
