@@ -202,7 +202,7 @@ class v_process_body_Def(v_ast_base):
     def get_sensitivity_list(self):
         ret =[str(self.dec[0].argList[0])]
         ret += [
-            hdl.get_process_sensitivity_list(x)
+            hdl.impl_process_sensitivity_list(x)
             for x in self.get_local_var()
         ]
         ret = join_str(ret,Delimeter=", ",IgnoreIfEmpty=True)

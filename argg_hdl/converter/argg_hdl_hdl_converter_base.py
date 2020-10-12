@@ -406,7 +406,7 @@ class hdl_converter_base:
         return ""
 
 
-    def get_process_sensitivity_list(self, obj):
+    def impl_process_sensitivity_list(self, obj):
         return []
 
     def get_process_header(self,obj):

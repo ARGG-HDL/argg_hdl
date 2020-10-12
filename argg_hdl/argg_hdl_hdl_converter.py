@@ -188,8 +188,8 @@ def def_entity_port(obj):
 def get_process_header(obj):
     return obj.__hdl_converter__.get_process_header(obj)
 
-def get_process_sensitivity_list(obj):
-    return obj.__hdl_converter__.get_process_sensitivity_list(obj)
+def impl_process_sensitivity_list(obj):
+    return obj.__hdl_converter__.impl_process_sensitivity_list(obj)
 
 def get_process_combinatorial_pull(obj,clk):
     return obj.__hdl_converter__.get_process_combinatorial_pull(obj,clk)

@@ -190,7 +190,7 @@ class v_class_hanlde_converter(v_class_converter):
 
         return ret1
     
-    def get_process_sensitivity_list(self, obj):
+    def impl_process_sensitivity_list(self, obj):
         content = []
         for x in obj.getMember( ):
             n_connector = vc_helper._get_connector( x["symbol"])
