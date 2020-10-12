@@ -109,8 +109,8 @@ def impl_get_attribute(obj, attName,parent = None):
     return obj.__hdl_converter__.impl_get_attribute(obj, attName, parent)
 
 
-def _vhdl_slice(obj, sl, astParser=None):
-    return obj.__hdl_converter__._vhdl_slice(obj, sl, astParser)
+def impl_slice(obj, sl, astParser=None):
+    return obj.__hdl_converter__.impl_slice(obj, sl, astParser)
 
 
 def _vhdl__compare(obj, ops, rhs, astParser=None):

@@ -153,7 +153,7 @@ use ieee.std_logic_unsigned.all;
         return ret
         
     
-    def _vhdl_slice(self,obj, sl,astParser=None):
+    def impl_slice(self,obj, sl,astParser=None):
         if issubclass(type(sl),argg_hdl_base0):
             sl = sl.__hdl_converter__._vhdl__getValue(sl,ReturnToObj=v_int(),astParser=astParser)
         

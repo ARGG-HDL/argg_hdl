@@ -78,7 +78,7 @@ class v_slv_converter(v_symbol_converter):
         return target + asOp+  str(rhs) 
 
 
-    def _vhdl_slice(self,obj:"v_symbol",sl,astParser=None):
+    def impl_slice(self,obj:"v_symbol",sl,astParser=None):
         astParser.add_read(obj)
         obj._add_input()
         if type(sl).__name__ == "v_slice":

@@ -289,7 +289,7 @@ class hdl_converter_base:
     def impl_get_attribute(self,obj, attName, parent = None):
         return str(obj) + "." +str(attName)
 
-    def _vhdl_slice(self,obj, sl,astParser=None):
+    def impl_slice(self,obj, sl,astParser=None):
         raise Exception("Not implemented")
 
     

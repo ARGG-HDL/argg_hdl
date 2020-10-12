@@ -1326,7 +1326,7 @@ def body_UnaryOP(astParser,Node):
 def body_subscript(astParser,Node):
     value = astParser.Unfold_body(Node.value)
     sl  = astParser.Unfold_body(Node.slice)
-    return value.__hdl_converter__._vhdl_slice(value, sl,astParser)
+    return value.__hdl_converter__.impl_slice(value, sl,astParser)
 
 def body_index(astParser,Node):
     sl  = astParser.Unfold_body(Node.value)
