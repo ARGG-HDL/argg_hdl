@@ -1,18 +1,15 @@
 import ast
-import os
-import sys
-import inspect
-import time
 
 
-import debugpy
+
+
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_function import *
 from argg_hdl.argg_hdl_v_symbol  import *
 
 from argg_hdl.ast.argg_hdl_AST_Classes import * 
-from argg_hdl.ast.argg_hdl_AST_MemFunctionCalls import memFunctionCall, call_func, get_function_varSig_suffix, checkIfFunctionexists, hasMissingSymbol, GetNewArgList
+
 from argg_hdl.ast.argg_hdl_AST_FreeFunction import AST_FreeFunction
 from argg_hdl.ast.argg_hdl_AST_member_function_converter import AST_member_function_converter
 from argg_hdl.ast.argg_hdl_AST_entity_converter import AST_entity_converter, extractFunctionsForEntity
@@ -20,7 +17,7 @@ from argg_hdl.ast.argg_hdl_AST_entity_converter import AST_entity_converter, ext
 from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
 
 
-
+from argg_hdl.ast.ast_classes import g_ast_class_register
 
 
 
@@ -141,9 +138,6 @@ class xgenAST:
 
         self._Unfold_body={
             "FunctionDef"   : body_unfold_functionDef,
-            "Return"        : body_unfold_return,
-            "Compare"       : body_unfold_Compare,
-            "Attribute"     : body_unfold_Attribute,
             "Num"           : body_unfold_Num,
             "Assign"        : body_unfold_assign,
             "Name"          : body_unfold_Name,
@@ -152,29 +146,21 @@ class xgenAST:
             "BinOp"         : body_BinOP,
             "LShift"        : body_LShift,
             'RShift'        : body_RShift,
-            "BitOr"         : body_bitOr,
             "Str"           : body_unfold_str,
             'NameConstant'  : body_Named_constant,
             "Constant"      : body_Constant,
-            "If"            : body_if,
             "list"          : body_list,
-            "BoolOp"        : body_BoolOp,
             "UnaryOp"       : body_UnaryOP,
-            "Add"           : body_add,
             "Sub"           : body_sub,
-            "Mult"          : body_multi,
             'Subscript'     : body_subscript,
             "Index"         : body_index,
-            'Yield'         : body_unfold_yield,
-            "For"           : body_unfold_for,
             "Break"         : body_unfold_Break,
             "Continue"      : body_unfold_Continue,
-            'Slice'         : body_unfold_slice,
-            'BitAnd'        : body_unfold_BitAnd,
             'USub'          : body_unfol_USub,
             'Not'           : body_unfol_Not
 
         }
+        self._Unfold_body.update(g_ast_class_register)
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())
 

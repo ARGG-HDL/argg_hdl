@@ -1,10 +1,4 @@
 
-import copy
-
-
-import os
-import sys
-import inspect
 
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_enum import * 
@@ -13,6 +7,9 @@ from argg_hdl.argg_hdl_v_symbol  import *
 from argg_hdl.argg_hdl_v_function  import v_free_function_template
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
+
+from argg_hdl.ast.ast_classes.ast_base import v_ast_base ,gIndent
+from argg_hdl.ast.ast_classes.ast_type_to_bool import v_type_to_bool
 
 def Node_line_col_2_str(astParser, Node):
     return  "Error in File: "+ astParser.sourceFileName+" line: "+str(Node.lineno) + ".\n"
@@ -46,7 +43,7 @@ class GNames:
 
 
 
-gIndent = indent()
+
 
 
 def port_in_to_vhdl(astParser,Node,Keywords=None):
@@ -118,23 +115,7 @@ def v_int_to_vhdl(astParser,Node,Keywords=None):
 
 def v_bool_to_vhdl(astParser,Node,Keywords=None):
     return v_bool()
-class v_ast_base:
 
-    def __str__(self):
-        return type(self).__name__
-
-    def get_type(self):
-        return ""
-        
-    def impl_get_value(self,ReturnToObj=None,astParser=None):
-        self._vhdl__setReturnType(ReturnToObj, astParser)
-        return str(self)    
-
-    def _vhdl__setReturnType(self,ReturnToObj=None,astParser=None):
-        pass
-
-    def get_symbol(self):
-        return None
 
 class v_noop(v_ast_base):
     def __init__(self, *args, **kwargs):
@@ -490,141 +471,7 @@ def body_unfold_functionDef(astParser,Node):
     astParser.Context = localContext
     return v_funDef(ret,decorator_l)
 
-
-
-class v_return (v_ast_base):
-    def __init__(self,Value):
-        self.value = Value
-
-    def __str__(self):
-        if self.value is None:
-            return "return"
-        return "return "  + str(self.value) 
-    
-    def get_type(self):
-        if self.value is None:
-            return "None"
-        ty = get_symbol(self.value)
-        if ty is not None and type(ty).__name__ != "str" and ty.primitive_type != "base":
-            return ty.primitive_type
-
-        ty = get_type(self.value)
-        return ty
-
-def body_unfold_return(astParser,Node):
-    if Node.value is None: #procedure 
-        return v_return(None)
-    return v_return(astParser.Unfold_body(Node.value) )
-
-class v_compare(v_ast_base):
-    def __init__(self,lhs,ops,rhs,astParser):
-        self.lhs = lhs
-        self.rhs = rhs
-        self.ops = ops
-        self.astParser =astParser
-
-    def __str__(self):
-        if issubclass(type(self.lhs),argg_hdl_base):
-            return hdl.impl_compare(self.lhs, self.ops, self.rhs, self.astParser)
-        
-        return  str(self.lhs)  + " = " +   str(self.rhs) 
-
-    def get_type(self):
-        return "boolean"
-
-    def impl_to_bool(self,astParser):
-        if type(self.rhs).__name__ == "v_name":
-            rhs = astParser.get_variable(self.rhs.Value,None)
-        else:
-            rhs = self.rhs
-
-        if type(self.lhs).__name__ == "v_name":
-            obj = astParser.get_variable(self.lhs.Value,None)
-            return hdl.impl_compare(obj, rhs)
-
-        if self.lhs._issubclass_("v_class"):
-            return hdl.impl_compare(
-                    self.lhs,
-                    self.ops, 
-                    self.rhs,
-                    astParser
-                )
-        
-        if issubclass(type(self.lhs),v_symbol):
-            return hdl.impl_compare(
-                    self.lhs, 
-                    self.ops ,
-                    self.rhs,
-                    astParser
-                )
-
-        if issubclass(type(self.lhs),v_enum):
-            return hdl.impl_compare(
-                    self.lhs, 
-                    self.ops ,
-                    self.rhs,
-                    astParser
-                )
-        
-        raise Exception("unknown type",type(self.lhs).__name__ )
-
-def body_unfold_Compare(astParser,Node):
-    if len (Node.ops)>1:
-        raise Exception("unexpected number of operators")
-    return v_compare( 
-            astParser.Unfold_body(Node.left),
-            type(Node.ops[0]).__name__,  
-            astParser.Unfold_body(Node.comparators[0]),
-            astParser
-        )
-
-class v_Attribute(v_ast_base):
-    def __init__(self,Attribute,Obj):
-        self.obj = Obj 
-        self.att = getattr(self.obj["symbol"],Attribute)
-        self.att.set_vhdl_name(self.obj["symbol"].__hdl_name__+"."+Attribute)
-        self.Attribute = Attribute
-
-    def __str__(self):
-        return str(self.obj) +"." + str(self.Attribute)
-
-def body_unfold_Attribute(astParser,Node):
-    val = astParser.Unfold_body(Node.value)
-    
-    if type(val).__name__ == "str":
-
-        obj=astParser.getInstantByName(val)
-    else:
-        obj = val 
-    if issubclass(type(obj),v_enum):
-        return v_enum(getattr(obj._type,Node.attr))
-    att = getattr(obj,Node.attr)
-    
-    if type(type(att)).__name__ == "EnumMeta": 
-        return v_enum(att)
-    
-    parend = astParser.get_parant(obj)
-    set_v_classType(obj, parend)
-    n = hdl.impl_get_attribute(obj,Node.attr, parend)
-    if type(att).__name__ == "str":
-        att = to_v_object(att)
-        
-    att.set_vhdl_name(n,True)
-    att._add_used()
-    
-    astParser.add_child(obj, att)
-    
-
-
-#    att._Inout =  obj._Inout
-    astParser.FuncArgs.append({
-                    "name":att.__hdl_name__,
-                    "symbol": att,
-                    "ScopeType": obj._Inout
-
-        })
-    return att
-    
+  
 class v_Num(v_ast_base):
     def __init__(self,Value):
         self.value = Value
@@ -972,48 +819,8 @@ def body_LShift(astParser,Node):
     #print(str(lhs) + " << " + str(rhs))     
     return v_re_assigne(var, rhs,context=astParser.ContextName[-1],astParser=astParser)
 
-def hasNumericalValue(symb):
-    if type(symb).__name__ == "int":
-        return True
-    if type(symb).__name__ == "v_Num":
-        return True
 
-    return False
-class v_add(v_ast_base):
-    def __init__(self,lhs, rhs):
-        self.lhs = lhs
-        self.rhs = rhs
-        self._type = lhs._type
-        self.Value = str(self.lhs) + " + " +  str(self.rhs) 
-        
 
-    def get_value(self):
-        return value(self.lhs) + value(self.rhs)
-
-    def get_type(self):
-        return self._type
-
-    def __str__(self):
-        if issubclass(type(self.lhs),argg_hdl_base):
-            return hdl.impl_add(self.lhs, self.rhs)
-
-        return str(self.lhs) + " + " +  str(self.rhs) 
-
-    def get_symbol(self):
-        return self.lhs
-
-def body_add(astParser,Node):
-    rhs =  astParser.Unfold_body(Node.right)
-    lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),argg_hdl_base):
-        return v_add(lhs, rhs)
-
-    if hasNumericalValue(lhs) and hasNumericalValue(rhs):
-        return v_Num(value(lhs) + value(rhs))
-        
-    #var = astParser.get_variable(lhs.Value, Node)
-
-    return v_add(lhs, rhs)
 
 class v_sub(v_ast_base):
     def __init__(self,lhs, rhs):
@@ -1041,29 +848,6 @@ def body_sub(astParser,Node):
     return v_sub(var, rhs)
 
 
-
-class v_multi(v_ast_base):
-    def __init__(self,lhs, rhs):
-        self.lhs = lhs
-        self.rhs = rhs
-        self._type = lhs._type
-        
-
-        
-
-    def __str__(self):
-        if issubclass(type(self.lhs),argg_hdl_base):
-            return hdl.impl_multi(self.lhs, self.rhs)
-
-        return str(self.lhs) + " * " +  str(self.rhs) 
-
-def body_multi(astParser,Node):
-    rhs =  astParser.Unfold_body(Node.right)
-    lhs =  astParser.Unfold_body(Node.left)
-    
-    
-
-    return v_multi(lhs, rhs)
 
 class v_stream_assigne(v_ast_base):
     def __init__(self,lhs, rhs,StreamOut,lhsEntity,context=None):
@@ -1093,14 +877,7 @@ class v_stream_assigne(v_ast_base):
         return ret
 
 
-def body_bitOr(astParser,Node):
-    rhs =  astParser.Unfold_body(Node.right)
-    lhs =  astParser.Unfold_body(Node.left)
-    ret = lhs | rhs
-    
-    ret.astParser = astParser
-            
-    return ret
+
 
 
 def body_BinOP(astParser,Node):
@@ -1131,93 +908,6 @@ def body_Named_constant(astParser,Node):
     return v_named_C(Node.value)
 
 
-def v_type_to_bool(astParser,obj):
-
-
-    if type(obj).__name__ == "v_name":
-        obj = astParser.get_variable(obj.Value,None)
-
-    if type(obj).__name__ == "v_compare":
-        return obj.impl_to_bool( astParser)
-
-    if issubclass(type(obj),argg_hdl_base):
-        return hdl.impl_to_bool(obj, astParser)
-
-    if type(obj).__name__ == "v_call":
-        return  hdl.impl_to_bool(obj.symbol,astParser)
-
-
-
-
-    if obj.get_type() == 'boolean':
-        return obj
-class v_if(v_ast_base):
-    def __init__(self,ifEsleIfElse, test, body,oreEsle):
-        self.ifEsleIfElse = ifEsleIfElse    
-        self.test=test
-        self.body = body
-        self.oreEsle  = oreEsle
-        self.isElse = False
-
-
-    def __str__(self):
-        
-        if self.isElse:
-            gIndent.deinc()
-            ret ="\n" +str(gIndent) +  "elsif ("
-            gIndent.inc()
-        else:
-            ret ="\n" +str(gIndent) +  "if ("
-        
-            gIndent.inc()
-        
-        ret += str(self.test) +") then \n"+str(gIndent)
-        for x in self.body:
-            x_str =str(x)
-            if x_str:
-               # x_str.replace("\n","\n  ")
-                ret += x_str +";\n"+str(gIndent)
-
-        
-        oreelse =""
-        if len(self.oreEsle) > 0 and type(self.oreEsle[0]).__name__ != "v_if":
-            gIndent.deinc()
-            oreelse+="\n"+ str(gIndent) + "else"
-            gIndent.inc()
-            oreelse += "\n"+str(gIndent) 
-            for x in self.oreEsle:
-                oreelse += str(x)+";\n"+str(gIndent) 
-        
-        else:
-            for x in self.oreEsle:
-                x.isElse = True
-                oreelse += str(x)
-            
-
-        ret += oreelse
-        gIndent.deinc()
-        if self.isElse:
-            ret +=""
-        else:
-            ret +="\n" +str(gIndent) +  "end if" 
-        
-
-        return ret
-
-
-def body_if(astParser,Node):
-    
-    ifEsleIfElse = "if"
-    test =v_type_to_bool(astParser, astParser.Unfold_body(Node.test))
-    body = astParser.Unfold_body(Node.body)
-    localContext = astParser.Context
-    oreEsle = list ()
-    astParser.Context  = oreEsle
-    for x in Node.orelse:
-        oreEsle.append(astParser.Unfold_body(x))
-    astParser.Context =localContext 
-    return v_if(ifEsleIfElse, test, body,oreEsle)
-
 
 def body_list(astParser,Node):
     localContext = astParser.Context
@@ -1231,43 +921,6 @@ def body_list(astParser,Node):
 
 
 
-
-class v_boolOp(v_ast_base):
-    def __init__(self,elements,op):
-        self.elements = elements
- 
-        self.op = op
-
-    def __str__(self):
-        op = type(self.op).__name__
-        if op == "And":
-            op = " and "
-        elif op == "Or":
-            op = " or "
-        ret = "( "
-        start = ""
-        for x in self.elements:
-            ret += start + str(x) 
-            start = op
-        ret += ") "
-        return ret
-
-    def get_type(self):
-        return "boolean"
-
-
-
-
-def body_BoolOp(astParser, Node):
-    elements = list()
-    for x in Node.values:
-        e = astParser.Unfold_body(x)
-        e = v_type_to_bool(astParser,e)
-        elements.append(e)
-
-
-    op = Node.op
-    return v_boolOp(elements,op)
 
 class v_UnaryOP(v_ast_base):
     def __init__(self,obj,op):
@@ -1315,11 +968,7 @@ def body_unfol_USub(astParser,Node):
 def body_UnaryOP(astParser,Node):
     ftype = type(Node.op).__name__
     return astParser._Unfold_body[ftype](astParser,Node)
-    arg = astParser.Unfold_body(Node.operand)
-    arg = v_type_to_bool(astParser,arg)
-    #print_cnvt(arg)
 
-    return v_UnaryOP(arg, Node.op)
 
 
 
@@ -1356,143 +1005,8 @@ def handle_v_create(astParser, symb):
     raise Exception("function not implemented")
 
 
-class v_yield(v_ast_base):
-    def __init__(self,Arg):
-        self.arg = Arg
-
-    def __str__(self):
 
 
-        return   "wait for " + str(self.arg.symbol) 
-        
-def body_unfold_yield(astParser,Node):
-    
-    arg = astParser.Unfold_body(Node.value)
-    return v_yield(arg)
-
-
-
-class v_for(v_ast_base):
-    range_counter = 0
-    def __init__(self,arg,body):
-        self.arg = arg
-        self.body = body
-
-    def __str__(self):
-        start = "for " + str(self.arg) +" loop \n"
-        ind = str(gIndent)
-        gIndent.inc()
-        ret = join_str( self.body , start=start,end=ind+"end loop",LineEnding=";\n", LineBeginning=str(gIndent),IgnoreIfEmpty=True, RemoveEmptyElements = True)
-        gIndent.deinc()
-        return ret
-
-def v_for_reset():
-    v_for.range_counter = 0
-
-g_add_global_reset_function(v_for_reset)
-
-
-def body_unfold_for(astParser,Node):
-    if hasattr(Node.iter,"id"):
-        return for_loop_ranged_based(astParser,Node)
-
-    if type(Node.iter).__name__ == "Call" and Node.iter.func.id == "range":
-        return for_loop_indexed_based(astParser,Node)
-    
-    return for_loop_ranged_based2(astParser,Node)
-
-def for_body(astParser,Node):
-    localContext = astParser.Context
-    ret = list()
-    astParser.Context  = ret
-    for x in Node:
-        l = astParser.Unfold_body(x)
-        ret.append(l)
-    astParser.Context =localContext 
-    return ret
-
-def for_loop_ranged_based2(astParser,Node):
-        
-    obj=astParser.Unfold_body(Node.iter)
-
-    itt = "i"+str(v_for.range_counter)
-    v_for.range_counter += 1
-    arg = itt + " in 0 to " + str(hdl.length(obj)) +" -1"
-
-
-    vhdl_name = str(Node.target.id)
-    buff =  astParser.try_get_variable(vhdl_name)
-
-    if buff is None:
-        buff = v_copy(obj.Internal_Type)
-        buff.__hdl_name__ = str(obj) + "("+itt+")"
-        buff._varSigConst = varSig.reference_t
-        astParser.FuncArgs.append({'ScopeType':"", 'name' : vhdl_name,'symbol': buff})
-    else:
-        raise Exception("name already used")
-
-
-    body = for_body(astParser,Node.body)
-    astParser.FuncArgs =  [ x for x in astParser.FuncArgs if x['name'] != vhdl_name ]
-
-    return v_for(arg,body)
-
-
-def for_loop_ranged_based(astParser,Node):
-    itt = Node.iter.id
-    obj=astParser.getInstantByName(Node.iter.id)
-
-    itt = "i"+str(v_for.range_counter)
-    v_for.range_counter += 1
-    arg = itt + " in 0 to " + hdl.length(obj) +" -1"
-
-
-    vhdl_name = str(Node.target.id)
-    buff =  astParser.try_get_variable(vhdl_name)
-
-    if buff is None:
-        buff = v_copy(obj.Internal_Type)
-        buff.__hdl_name__ = str(obj) + "("+itt+")"
-        buff._varSigConst = varSig.reference_t
-        astParser.FuncArgs.append({'ScopeType':"", 'name' : vhdl_name,'symbol': buff})
-    else:
-        raise Exception("name already used")
-
-
-    body = for_body(astParser,Node.body)
-    astParser.FuncArgs =  [ x for x in astParser.FuncArgs if x['name'] != vhdl_name ]
-
-    return v_for(arg,body)
-
-def for_loop_indexed_based(astParser,Node):
-    args = list()
-    for x in Node.iter.args:
-        l = astParser.Unfold_body(x)
-        args.append(l)
-    
-    #obj=astParser.getInstantByName(Node.iter.id)
-
-    itt = "i"+str(v_for.range_counter)
-    v_for.range_counter += 1
-    arg = itt + " in 0 to " + str(args[0]) +" -1"
-
-
-    vhdl_name = str(Node.target.id)
-    buff =  astParser.try_get_variable(vhdl_name)
-
-    if buff is None:
-        buff = v_int()
-        buff.__hdl_name__ = itt
-        buff._varSigConst = varSig.reference_t
-        astParser.FuncArgs.append({'ScopeType':"", 'name' : vhdl_name,'symbol': buff})
-    else:
-        raise Exception("name already used")
-
-
-    body = for_body(astParser,Node.body)
-    astParser.FuncArgs =  [ x for x in astParser.FuncArgs if x['name'] != vhdl_name ]
-
-    return v_for(arg,body)
 
 def body_handle_len(astParser,args,keywords=None):
     l = astParser.Unfold_body(args[0])
@@ -1521,47 +1035,5 @@ def body_Constant(astParser,Node,keywords=None):
     return ret
 
 
-class v_slice(v_ast_base):
-    def __init__(self,lower,upper,step):
-        super().__init__()
-        self.lower = lower
-        self.upper = upper
-        self.step  = step
-        self.reversed  =  False
-        self.sourceOBJ  =  None
 
-    def set_source(self,sourceOBJ):
-        self.sourceOBJ = sourceOBJ
 
-    def __str__(self):
-
-        if self.upper is None:
-            upper = str(hdl.length(self.sourceOBJ)) + " -1 " 
-        else:
-            upper = str(self.upper) 
-            if upper.lstrip('-').isnumeric():
-                upper = int(upper)
-                if upper < 0 :
-                    upper = str(hdl.length(self.sourceOBJ)) + " - " + str( abs(upper - 1))
-                else:
-                    upper = str(int(upper) - 1 )
-            else:
-                upper += " - 1 "
-        
-        if self.reversed:
-            return str(self.lower) + " to "  + upper
-
-        return  upper  + "  downto  " + str(self.lower) 
-
-def body_unfold_slice(astParser,Node,keywords=None):
-    lower = astParser.Unfold_body( Node.lower) if Node.lower else None
-    upper = astParser.Unfold_body( Node.upper) if Node.upper else None
-    step = astParser.Unfold_body( Node.step) if Node.step else None
-    ret = v_slice(lower, upper, step)
-    return ret
-
-def body_unfold_BitAnd(astParser,Node,keywords=None):
-    rhs =  astParser.Unfold_body(Node.right)
-    lhs =  astParser.Unfold_body(Node.left)
-    ret = hdl.impl_bit_and(lhs, rhs,  astParser)
-    return ret
