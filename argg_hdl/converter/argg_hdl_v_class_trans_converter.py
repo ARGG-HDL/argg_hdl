@@ -16,7 +16,7 @@ class v_class_trans_converter(v_class_converter):
 
     def impl_reasign(self, obj, rhs, astParser=None,context_str=None):
         
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
 
         
         if rhs._Inout == InOut_t.Master_t:

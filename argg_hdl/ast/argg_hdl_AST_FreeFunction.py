@@ -165,7 +165,7 @@ class AST_FreeFunction:
 
     def make_function_or_procedure(self, returnType , bodystr, FuncArgsLocal):
         argList = [
-            x["symbol"].__hdl_converter__.to_arglist(
+            hdl.to_arglist(
                 x["symbol"], 
                 x['name'],
                 type(self.freeFunction).__name__, 
@@ -175,7 +175,7 @@ class AST_FreeFunction:
             for x in FuncArgsLocal
         ]
         ArglistProcedure = join_str(argList,Delimeter="; ")
-        actual_function_name = self.freeFunction.__hdl_converter__.function_name_modifier(self.freeFunction, self.freeFunction.FuncName, get_function_varSig_suffix(FuncArgsLocal))
+        actual_function_name = hdl.function_name_modifier(self.freeFunction, self.freeFunction.FuncName, get_function_varSig_suffix(FuncArgsLocal))
 
         
         if returnType is not None:

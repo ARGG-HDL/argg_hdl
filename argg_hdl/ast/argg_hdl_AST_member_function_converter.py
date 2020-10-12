@@ -109,10 +109,8 @@ class AST_member_function_converter:
 
 
         if self.astParser.Missing_template:
-            ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(
-                ClassInstance
-            )
-            ClassInstance.__hdl_converter__.MissingTemplate = True
+            hdl.FlagFor_TemplateMissing( ClassInstance  )
+      
 
         else:
             ret = v_Arch(
@@ -255,7 +253,7 @@ class AST_member_function_converter:
         
         bodystr= self.convert_to_string(body)
         argList = [
-            x["symbol"].__hdl_converter__.to_arglist(
+            hdl.to_arglist(
                 x["symbol"], 
                 x['name'],
                 type(self.ClassInstance).__name__, 
@@ -314,7 +312,7 @@ class AST_member_function_converter:
 
     def make_function_or_procedure(self,functionName, returnType , bodystr, FuncArgsLocal,ArglistProcedure, varSigSuffix):
     
-        actual_function_name = self.ClassInstance.__hdl_converter__.function_name_modifier(self.ClassInstance, functionName, varSigSuffix)
+        actual_function_name = hdl.function_name_modifier(self.ClassInstance, functionName, varSigSuffix)
         
         if returnType is not None:
             ArglistProcedure = ArglistProcedure.replace(" in "," ").replace(" out "," ").replace(" inout "," ")
