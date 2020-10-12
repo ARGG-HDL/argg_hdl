@@ -100,8 +100,8 @@ def def_packet_body(obj, name, parent):
 def impl_entity_port(obj, name):
     return obj.__hdl_converter__.impl_entity_port(obj, name)
 
-def make_function_variable_assignment(obj, func_arg, arg):
-    return obj.__hdl_converter__.make_function_variable_assignment(obj, func_arg, arg)
+def impl_function_argument(obj, func_arg, arg):
+    return obj.__hdl_converter__.impl_function_argument(obj, func_arg, arg)
 
 def impl_get_attribute(obj, attName,parent = None):
     return obj.__hdl_converter__.impl_get_attribute(obj, attName, parent)

@@ -268,7 +268,7 @@ class hdl_converter_base:
         ret.append(name + " => " + objName)
         return  ret
 
-    def make_function_variable_assignment(self, obj,func_arg, arg):
+    def impl_function_argument(self, obj,func_arg, arg):
         ret = []
         ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
         for y in ys:

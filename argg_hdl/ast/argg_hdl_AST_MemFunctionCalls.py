@@ -89,7 +89,7 @@ def call_func(obj, name, args, astParser=None,func_args=None):
     ret = []
 
     for arg,func_arg  in zip(args,func_args ):
-        ret += hdl.make_function_variable_assignment( func_arg["symbol"], func_arg ,arg )
+        ret += hdl.impl_function_argument( func_arg["symbol"], func_arg ,arg )
 
 
     varSigSuffix = get_function_varSig_suffix(func_args)
