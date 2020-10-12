@@ -249,7 +249,7 @@ class hdl_converter_base:
     def includes(self,obj, name,parent):
         return ""
 
-    def recordMember(self,obj, name,parent,Inout=None):
+    def def_record_Member(self,obj, name,parent,Inout=None):
         return ""
 
     def def_record_Member_Default(self, obj,name,parent,Inout=None):

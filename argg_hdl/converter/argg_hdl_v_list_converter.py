@@ -126,7 +126,7 @@ use ieee.std_logic_unsigned.all;
     def def_packet_header(self,obj, name,parent):
         return "-- v_list getHeader\n"    
     
-    def recordMember(self,obj, name,parent,Inout=None):
+    def def_record_Member(self,obj, name,parent,Inout=None):
         ret =""
 
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)

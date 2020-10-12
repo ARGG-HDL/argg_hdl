@@ -76,7 +76,7 @@ end  {PackageName};
 
         return fileContent
     
-    def def_recordMember(self, obj, name, parent,Inout=None):
+    def def_def_record_Member(self, obj, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)

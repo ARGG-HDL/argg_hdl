@@ -79,8 +79,8 @@ def includes(obj, name, parent):
     return obj.__hdl_converter__.includes(obj, name, parent)
 
 
-def recordMember(obj, name, parent, Inout=None):
-    return obj.__hdl_converter__.recordMember(obj, name, parent, Inout)
+def def_record_Member(obj, name, parent, Inout=None):
+    return obj.__hdl_converter__.def_record_Member(obj, name, parent, Inout)
 
 
 def def_record_Member_Default(obj, name, parent, Inout=None):

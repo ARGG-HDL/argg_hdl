@@ -82,7 +82,7 @@ class v_class_converter(hdl_converter_base):
 
 
 
-    def recordMember(self,obj, name,parent,Inout=None):
+    def def_record_Member(self,obj, name,parent,Inout=None):
         if not issubclass(type(parent),v_class):
             return []
 
@@ -275,7 +275,7 @@ class v_class_converter(hdl_converter_base):
 
         
         Content = [
-            hdl.recordMember(x["symbol"],x["name"],obj,InOut_Filter)
+            hdl.def_record_Member(x["symbol"],x["name"],obj,InOut_Filter)
             for x in member
         ]
         ret=join_str(Content,start= start ,end= end, IgnoreIfEmpty=True,LineEnding=";\n", LineBeginning="    ")
