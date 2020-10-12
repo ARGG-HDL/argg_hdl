@@ -562,7 +562,7 @@ class v_class_converter(hdl_converter_base):
         obj._add_output()
         
         if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
-            hdl_call = hdl._vhdl__call_member_func(obj, "__lshift__",[obj, rhs],astParser)
+            hdl_call = hdl.impl_function_call(obj, "__lshift__",[obj, rhs],astParser)
             if hdl_call is None:
                 astParser.Missing_template=True
                 return "-- $$ template missing $$"
@@ -576,7 +576,7 @@ class v_class_converter(hdl_converter_base):
     
     def impl_reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
         if obj.__v_classType__ == v_classType_t.Master_t or obj.__v_classType__ == v_classType_t.Slave_t:
-            hdl_call = hdl._vhdl__call_member_func(obj, "__rshift__",[obj, rhs],astParser)
+            hdl_call = hdl.impl_function_call(obj, "__rshift__",[obj, rhs],astParser)
             if hdl_call is None:
                 astParser.Missing_template=True
                 return "-- $$ template missing $$"

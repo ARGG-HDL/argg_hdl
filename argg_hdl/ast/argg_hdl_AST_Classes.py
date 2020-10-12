@@ -532,7 +532,7 @@ class v_compare(v_ast_base):
     def get_type(self):
         return "boolean"
 
-    def _to_hdl___bool__(self,astParser):
+    def impl_to_bool(self,astParser):
         if type(self.rhs).__name__ == "v_name":
             rhs = astParser.get_variable(self.rhs.Value,None)
         else:
@@ -824,11 +824,11 @@ def body_unfold_call_local_func(astParser,Node):
         f.description = v_free_function_template(f.funcrec,FuncName)
         gHDL_objectList.append(f.description)
         
-        vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
+        vhdl = hdl.impl_function_call(f.description, FuncName, args,astParser)
 
     if hasattr(f,"description") and f.description is not None: 
        
-        vhdl = hdl._vhdl__call_member_func(f.description, FuncName, args,astParser)
+        vhdl = hdl.impl_function_call(f.description, FuncName, args,astParser)
     else:
         start = ""
         vhdl = str(Node.func.id) +"(" 
@@ -877,7 +877,7 @@ def body_unfold_call(astParser,Node):
         set_isFunction(gf_type)
 
         r = v_copy(to_v_object(r))
-        vhdl = obj.__hdl_converter__._vhdl__call_member_func(obj, memFunc,[obj]+ args,astParser)
+        vhdl = obj.__hdl_converter__.impl_function_call(obj, memFunc,[obj]+ args,astParser)
         r.set_vhdl_name(vhdl)
         ret = v_call(memFunc,r, vhdl)
         return ret
@@ -1026,7 +1026,7 @@ class v_sub(v_ast_base):
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__Sub(self.lhs, self.rhs)
+            return self.lhs.__hdl_converter__.impl_sub(self.lhs, self.rhs)
 
         return str(self.lhs) + " - " +  str(self.rhs) 
 
@@ -1053,7 +1053,7 @@ class v_multi(v_ast_base):
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__multi(self.lhs, self.rhs)
+            return self.lhs.__hdl_converter__.impl_multi(self.lhs, self.rhs)
 
         return str(self.lhs) + " * " +  str(self.rhs) 
 
@@ -1138,13 +1138,13 @@ def v_type_to_bool(astParser,obj):
         obj = astParser.get_variable(obj.Value,None)
 
     if type(obj).__name__ == "v_compare":
-        return obj._to_hdl___bool__( astParser)
+        return obj.impl_to_bool( astParser)
 
     if issubclass(type(obj),argg_hdl_base):
-        return obj.__hdl_converter__._to_hdl___bool__(obj, astParser)
+        return obj.__hdl_converter__.impl_to_bool(obj, astParser)
 
     if type(obj).__name__ == "v_call":
-        return  obj.symbol.__hdl_converter__._to_hdl___bool__(obj.symbol,astParser)
+        return  obj.symbol.__hdl_converter__.impl_to_bool(obj.symbol,astParser)
 
 
 

@@ -301,13 +301,13 @@ class hdl_converter_base:
     def impl_add(self,obj,args):
         return str(obj) + " + " + str(args)
     
-    def _vhdl__Sub(self,obj,args):
+    def impl_sub(self,obj,args):
         return str(obj) + " - " + str(args)
 
-    def _vhdl__multi(self,obj,args):
+    def impl_multi(self,obj,args):
         return str(obj) + " * " + str(args)
         
-    def _to_hdl___bool__(self,obj, astParser):
+    def impl_to_bool(self,obj, astParser):
         obj._add_input()
         astParser.add_read(obj)
         return "to_bool(" + str(obj) + ") "
@@ -367,7 +367,7 @@ class hdl_converter_base:
         obj.IsConverted = False
         return x
 
-    def _vhdl__call_member_func(self, obj, name, args, astParser=None):
+    def impl_function_call(self, obj, name, args, astParser=None):
         
         primary = hdl.get_primary_object(obj)
         obj.__hdl_converter__ = primary.__hdl_converter__

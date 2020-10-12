@@ -122,12 +122,12 @@ def impl_add(obj, args):
     return obj.__hdl_converter__.impl_add(obj, args)
 
 
-def _vhdl__Sub(obj, args):
-    return obj.__hdl_converter__._vhdl__Sub(obj, args)
+def impl_sub(obj, args):
+    return obj.__hdl_converter__.impl_sub(obj, args)
 
 
-def _to_hdl___bool__(obj, astParser):
-    return obj.__hdl_converter__._to_hdl___bool__(obj, astParser)
+def impl_to_bool(obj, astParser):
+    return obj.__hdl_converter__.impl_to_bool(obj, astParser)
 
 
 def impl_bit_and(obj, rhs, astParser):
@@ -158,8 +158,8 @@ def get_get_call_member_function(obj, name, args):
     return obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
 
 
-def _vhdl__call_member_func(obj, name, args, astParser=None):
-    return obj.__hdl_converter__._vhdl__call_member_func(obj=obj, name=name, args=args, astParser=astParser)
+def impl_function_call(obj, name, args, astParser=None):
+    return obj.__hdl_converter__.impl_function_call(obj=obj, name=name, args=args, astParser=astParser)
 
 
 def impl_symbol_instantiation(obj, VarSymb="variable"):

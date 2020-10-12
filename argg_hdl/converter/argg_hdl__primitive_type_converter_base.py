@@ -99,7 +99,7 @@ class v_symbol_converter(hdl_converter_base):
         return ret
 
 
-    def _vhdl__call_member_func(self, obj:"v_symbol", name, args, astParser=None):
+    def impl_function_call(self, obj:"v_symbol", name, args, astParser=None):
         
         call_obj = obj.__hdl_converter__.get_get_call_member_function(obj, name, args)
         
