@@ -5,6 +5,7 @@ import argg_hdl.examples as  ahe
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation
 
+from argg_hdl.argg_hdl_test_handler import add_test
 
 @vhdl_conversion
 def clk_generator_test(OutputFolder):
@@ -12,7 +13,11 @@ def clk_generator_test(OutputFolder):
     clkgen = ahe.clk_generator()
     return clkgen
     
+def test_clk_generator():
+    return clk_generator_test("tests/example1/")
     
+
+add_test("clk_generator", test_clk_generator)
 
 
 
@@ -44,4 +49,9 @@ def clk_generator_test_sim(OutputFolder,f):
 
     tb = tb_clk_generator(f)
     return tb
+
+def test_clk_generator_sim():
+    return clk_generator_test_sim("tests/example2/") 
     
+
+add_test("clk_generator_sim", test_clk_generator_sim)

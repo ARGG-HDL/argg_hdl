@@ -2,7 +2,7 @@ from argg_hdl import *
 from  argg_hdl.examples import *
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
-
+from argg_hdl.argg_hdl_test_handler import add_test
 
 def dword():
     return v_slv(32)
@@ -144,8 +144,18 @@ def fifo_cc_tb_sim(OutputPath, f= None):
     return tb1
 
 
+def test_fifo_cc_tb_sim():
+    return fifo_cc_tb_sim("tests/native_fifo_sim") 
+
+add_test("fifo_cc_tb_sim", test_fifo_cc_tb_sim)
+
 @vhdl_conversion
 def fifo_cc_tb_2vhdl(OutputPath, f= None):
     
     tb1 = fifo_cc_tb()
     return tb1
+
+def test_fifo_cc_tb_2vhdl():
+    return fifo_cc_tb_2vhdl("tests/native_fifo") 
+
+add_test("fifo_cc_tb_2vhdl", test_fifo_cc_tb_2vhdl)

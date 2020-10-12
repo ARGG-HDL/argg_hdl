@@ -39,7 +39,7 @@ def print_diff_files(dcmp):
     for sub_dcmp in dcmp.subdirs.values():
         print_diff_files(sub_dcmp)
 
-def isSame(dcmp,message="\n\n====================\n"):
+def isSame(dcmp,message=""):
     ret = True
     if dcmp.right_only:
         ret = False

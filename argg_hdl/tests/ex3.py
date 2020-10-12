@@ -1,6 +1,8 @@
 from argg_hdl import *
 from  argg_hdl.examples import *
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation
+from argg_hdl.argg_hdl_test_handler import add_test
+
 
 class Counter(v_clk_entity):
     def __init__(self, clk , InputType=v_slv(32)):
@@ -54,5 +56,8 @@ def ex32vhdl(OutputPath):
         
     return tb1
 
+def test_ex32vhdl():
+    return ex32vhdl("tests/ex1_vhdl/")
 
-#run_simulation(tb1, 30000,"optional_t.vcd")
+#add_test("ex32vhdl", test_ex32vhdl)
+

@@ -2,6 +2,7 @@ from argg_hdl import *
 from  argg_hdl.examples import *
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
+from argg_hdl.argg_hdl_test_handler import add_test
 
 
 
@@ -65,8 +66,19 @@ def var_sig_tb_sim(OutputPath, f= None):
     tb1 = var_sig_tb()
     return tb1
 
+def test_var_sig_tb_sim():
+    return var_sig_tb_sim("tests/var_sig_class_sim/") 
+
+add_test("var_sig_tb_sim", test_var_sig_tb_sim)
+
+
 @vhdl_conversion
 def var_sig_tb_2vhdl(OutputPath, f= None):
     
     tb1 = var_sig_tb()
     return tb1
+
+def test_RamHandler_2vhdl():
+    return var_sig_tb_2vhdl("tests/var_sig_class/") 
+
+add_test("var_sig_tb_2vhdl", test_RamHandler_2vhdl)

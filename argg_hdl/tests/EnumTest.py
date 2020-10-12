@@ -5,7 +5,7 @@ from  argg_hdl.examples import *
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
 
-
+from argg_hdl.argg_hdl_test_handler import add_test
 
 class myStates(Enum):
     e_idle = auto()
@@ -63,9 +63,19 @@ def enum_TB_sim(OutputPath, f= None):
     
     tb1 = enum_TB()
     return tb1
+def test_enum_TB_sim():
+    return enum_TB_sim("tests/enumTest_sim") 
+
+add_test("enum_TB_sim", test_enum_TB_sim)
+
 
 @vhdl_conversion
 def enum_TB_2vhdl(OutputPath, f= None):
     
     tb1 = enum_TB()
     return tb1
+
+def test_enum_TB_2vhdl():
+    return enum_TB_2vhdl("tests/enumTest") 
+
+add_test("enum_TB_2vhdl", test_enum_TB_2vhdl)

@@ -11,6 +11,8 @@ import argg_hdl.examples as  ahe
 import argg_hdl.argg_hdl_debug_vis as debug_vis
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation
+from argg_hdl.argg_hdl_test_handler import add_test
+
 
 def clock_t():
     clk   =  v_sl() 
@@ -199,10 +201,18 @@ def InputDelay_sim(OutputPath, f):
 
     
     
+def test_InputDelay_sim():
+    return InputDelay_sim("tests/ex1/")
 
+add_test("InputDelay_sim", test_InputDelay_sim)
 
 @vhdl_conversion
 def InputDelay2vhdl(OutputPath):
 
     tb  =InputDelay_tb()
     return tb
+
+def test_InputDelay2vhdl():
+    return InputDelay2vhdl("tests/ex1_vhdl/")
+
+add_test("InputDelay2vhdl", test_InputDelay2vhdl)

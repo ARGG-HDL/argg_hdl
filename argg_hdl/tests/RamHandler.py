@@ -4,7 +4,7 @@ from  argg_hdl.examples import *
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
 #tb3 = InputDelay_tb()
 #convert_to_hdl(tb3, "pyhdl_waveform")
-
+from argg_hdl.argg_hdl_test_handler import add_test
 
 
 
@@ -159,8 +159,18 @@ def RamHandler_sim(OutputPath, f= None):
     tb1 = ramHandler_tb()
     return tb1
 
+def test_RamHandler_sim():
+    return RamHandler_sim("tests/RamHandler_sim/") 
+
+add_test("RamHandler_sim", test_RamHandler_sim)
+
 @vhdl_conversion
 def RamHandler_2vhdl(OutputPath, f= None):
     
     tb1 = ramHandler_tb()
     return tb1
+
+def test_RamHandler_2vhdl():
+    return RamHandler_2vhdl("tests/RamHandler/") 
+
+add_test("RamHandler_2vhdl", test_RamHandler_2vhdl)

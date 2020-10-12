@@ -5,6 +5,7 @@ from  argg_hdl.examples import *
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf
 
+from argg_hdl.argg_hdl_test_handler import add_test
 
 
 
@@ -69,8 +70,19 @@ def slice_TB_sim(OutputPath, f= None):
     tb1 = slice_TB()
     return tb1
 
+def test_slice_TB_sim():
+    return slice_TB_sim("tests/slice_TB_sim/") 
+
+add_test("slice_TB_sim", test_slice_TB_sim)
+
 @vhdl_conversion
 def slice_TB_2vhdl(OutputPath, f= None):
     
     tb1 = slice_TB()
     return tb1
+
+
+def test_slice_TB_2vhdl():
+    return slice_TB_2vhdl("tests/slice_TB/") 
+
+add_test("slice_TB_2vhdl", test_slice_TB_2vhdl)

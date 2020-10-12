@@ -3,7 +3,7 @@ from argg_hdl import *
 from  argg_hdl.examples import *
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf, printff
-
+from argg_hdl.argg_hdl_test_handler import add_test
 
 def sr_clk_t(val=0):
     return v_slv(8,val)
@@ -105,8 +105,18 @@ def data_record_tb_sim(OutputPath, f= None):
     tb1 = data_record_tb()
     return tb1
 
+def test_data_record_tb_sim():
+    return data_record_tb_sim("tests/data_record_tb_sim/") 
+
+add_test("data_record_tb_sim", test_data_record_tb_sim)
+
 @vhdl_conversion
 def data_record_tb_2vhdl(OutputPath, f= None):
     
     tb1 = data_record_tb()
     return tb1
+
+def test_data_record_tb_2vhdl():
+    return data_record_tb_2vhdl("tests/data_record_tb/") 
+
+add_test("data_record_tb_2vhdl", test_data_record_tb_2vhdl)

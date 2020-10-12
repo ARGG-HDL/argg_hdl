@@ -4,7 +4,7 @@ from argg_hdl import *
 from  argg_hdl.examples import *
 
 from .helpers import Folders_isSame, vhdl_conversion, do_simulation,printf, printff
-
+from argg_hdl.argg_hdl_test_handler import add_test
 
 def t_data_pipe():
     return v_list(v_signed(8),4)
@@ -117,8 +117,20 @@ def fir_basic_tb_sim(OutputPath, f= None):
     tb = fir_basic_tb()
     return tb
 
+
+def test_fir_basic_tb_sim():
+    return fir_basic_tb_sim("tests/fir_1_sim",20000) 
+
+add_test("fir_basic_tb_sim", test_fir_basic_tb_sim)
+
 @vhdl_conversion
 def  fir_basic_tb2vhdl(OutputPath):
     gSystem = system_globals()
     tb1 =  fir_basic( v_sl())
     return tb1
+
+
+def test_fir_basic_tb2vhdl():
+    return fir_basic_tb2vhdl("tests/fir_1") 
+
+add_test("fir_basic_tb2vhdl", test_fir_basic_tb2vhdl)

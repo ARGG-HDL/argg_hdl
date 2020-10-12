@@ -285,7 +285,7 @@ class TX_sampling_controller_tp(v_entity):
         tx = get_handle(dut.config_in)
         rx = get_handle(dut.config_out)
         buffer = get_buffer(dut.config_in)
-        buffer2 = get_buffer(dut.config_in)
+        buffer2 = get_buffer(dut.config_out)
 
         regStorage.set_register(register_addr.clr_start,10)
         regStorage.set_register(register_addr.clr_stop,11)

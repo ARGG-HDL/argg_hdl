@@ -377,4 +377,4 @@ add_primitive_hdl_converter("base",v_symbol_converter )
 def reset_v_symbols():
     v_symbol_converter.defined_types = []
 
-#g_add_global_reset_function(reset_v_symbols)
+g_add_global_reset_function(reset_v_symbols)
