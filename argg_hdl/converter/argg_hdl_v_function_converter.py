@@ -238,18 +238,18 @@ class v_Arch_converter(hdl_converter_base):
             ret += x['symbol'].__hdl_converter__.impl_reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
 
         return ret
-    def get_architecture_body(self, obj):
+    def impl_architecture_body(self, obj):
         body = ""  
         body += str(obj.body)
         for x in obj.Symbols:
             if x._type == "undef":
                 continue
-            line = x.__hdl_converter__.get_architecture_body(x) 
+            line = x.__hdl_converter__.impl_architecture_body(x) 
             if line.strip():
                 body += "\n  " +line+";\n  "
         
         for x in obj.Arch_vars:
-            line = x['symbol'].__hdl_converter__.get_architecture_body(x['symbol'])
+            line = x['symbol'].__hdl_converter__.impl_architecture_body(x['symbol'])
             if line.strip():
                 body += "\n  " + line  +";\n  "
         

@@ -78,7 +78,7 @@ class v_entity_converter(hdl_converter_base):
 
         ret +=  obj.__hdl_converter__.impl_architecture_header_def(obj)
         ret += "\nbegin\n"
-        ret +=  obj.__hdl_converter__.get_architecture_body_def(obj)
+        ret +=  obj.__hdl_converter__.impl_architecture_body_def(obj)
         ret += "\nend architecture;\n"
         ret = hdl_string_fix_semicolons(ret)
         return ret 
@@ -127,7 +127,7 @@ class v_entity_converter(hdl_converter_base):
         return ret 
 
 
-    def get_architecture_body(self, obj):
+    def impl_architecture_body(self, obj):
         type_name  = self.get_type_simple(obj)
         content = []
 
@@ -145,11 +145,11 @@ class v_entity_converter(hdl_converter_base):
         return ret
  
 
-    def get_architecture_body_def(self, obj):
+    def impl_architecture_body_def(self, obj):
         ret = ""
         for x in obj.__processList__:
             x.isEntity = True
-            ret += x.__hdl_converter__.get_architecture_body(x)
+            ret += x.__hdl_converter__.impl_architecture_body(x)
         return ret 
 
 

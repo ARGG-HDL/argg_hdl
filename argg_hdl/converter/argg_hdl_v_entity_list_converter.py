@@ -28,7 +28,7 @@ class v_entity_list_converter(hdl_converter_base):
             return ret
 
 
-        def get_architecture_body(self, obj):
+        def impl_architecture_body(self, obj):
             
             ret = ""
             i = 0
@@ -40,7 +40,7 @@ class v_entity_list_converter(hdl_converter_base):
                     tempName = str(obj.__hdl_name__) +"_"+  str(i) + "_" +type(x["symbol"]).__name__
                     if not x["symbol"].__hdl_name__:
                         x["symbol"].set_vhdl_name(tempName)
-                    ret += start + x["symbol"].__hdl_converter__.get_architecture_body(x["symbol"])
+                    ret += start + x["symbol"].__hdl_converter__.impl_architecture_body(x["symbol"])
                     start = ";\n  "
             
 

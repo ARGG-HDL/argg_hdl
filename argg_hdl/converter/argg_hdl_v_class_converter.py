@@ -410,12 +410,12 @@ class v_class_converter(hdl_converter_base):
 
         return ret
         
-    def get_architecture_body(self, obj):
+    def impl_architecture_body(self, obj):
         primary = hdl.get_primary_object(obj)
         obj.__hdl_converter__ = primary.__hdl_converter__
         ret = []
         for x in obj.__hdl_converter__.archetecture_list:
-            ret.append(hdl.get_architecture_body(x["symbol"]))
+            ret.append(hdl.impl_architecture_body(x["symbol"]))
         
         ret=join_str(
             ret, 

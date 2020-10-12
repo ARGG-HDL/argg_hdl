@@ -683,7 +683,7 @@ class v_variable_cration(v_ast_base):
     def __str__(self):
         #return str(self.lhs.__hdl_name__) +" := "+ str(self.lhs.get_value()) 
         self.lhs.__hdl_name__ = self.rhs
-        return self.lhs.__hdl_converter__.get_architecture_body(self.lhs)
+        return self.lhs.__hdl_converter__.impl_architecture_body(self.lhs)
 
 
 

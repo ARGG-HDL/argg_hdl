@@ -398,7 +398,7 @@ class hdl_converter_base:
 
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
         
-    def get_architecture_body(self, obj):
+    def impl_architecture_body(self, obj):
         return ""
 
     def get_packet_definition(self, obj):
