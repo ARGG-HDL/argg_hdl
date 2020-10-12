@@ -198,7 +198,7 @@ class v_entity_converter(hdl_converter_base):
         ret = ret.strip()
         return ret
 
-    def get_process_header(self,obj):
+    def impl_process_header(self,obj):
         return ""
         
 

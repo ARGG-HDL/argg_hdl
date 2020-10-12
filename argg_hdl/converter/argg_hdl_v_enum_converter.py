@@ -93,7 +93,7 @@ end  {PackageName};
 
         return ""
     
-    def get_process_header(self,obj):
+    def impl_process_header(self,obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
         

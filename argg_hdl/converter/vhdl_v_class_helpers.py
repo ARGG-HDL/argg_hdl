@@ -399,10 +399,10 @@ class extracted_record_t:
             return []
 
         type_name  = hdl.get_type_simple(self.symbol)
-        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + type_name + " := " + hdl.get_init_values(obj = obj, parent = self.symbol) +";\n"]
+        return [ "signal   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + type_name + " := " + hdl.impl_get_init_values(obj = obj, parent = self.symbol) +";\n"]
         
 
-    def get_process_header(self, obj):
+    def impl_process_header(self, obj):
         
         if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
             return []
@@ -415,7 +415,7 @@ class extracted_record_t:
 
 
         type_name  = hdl.get_type_simple(self.symbol)
-        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + type_name + " := " +  hdl.get_init_values(obj = obj, parent = self.symbol) +";\n"]
+        return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + type_name + " := " +  hdl.impl_get_init_values(obj = obj, parent = self.symbol) +";\n"]
         
     def def_entity_port(self, obj):
         inout = hdl.get_Inout(self.symbol, obj)
@@ -425,7 +425,7 @@ class extracted_record_t:
             
         inoutstr = " : "+ hdl.InOut_t2str2(self.symbol,  inout) +" "
         type_name  = hdl.get_type_simple(self.symbol)
-        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + type_name + " := " +   hdl.get_init_values(obj = obj, parent = self.symbol)  ]
+        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + type_name + " := " +   hdl.impl_get_init_values(obj = obj, parent = self.symbol)  ]
     
     def vhdl_make_port(self, obj, name):
         inout = hdl.get_Inout( self.symbol, obj)

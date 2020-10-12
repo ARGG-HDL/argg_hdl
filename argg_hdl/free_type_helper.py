@@ -32,10 +32,10 @@ class extracted_freeType:
         if driver is not x:
             return []
 
-        return [ "signal   " + hdl.get_HDL_name(x, obj ,self.suffix)  + " : " + x._type+ " := " + hdl.get_init_values(x) +";\n"]
+        return [ "signal   " + hdl.get_HDL_name(x, obj ,self.suffix)  + " : " + x._type+ " := " + hdl.impl_get_init_values(x) +";\n"]
         
 
-    def get_process_header(self, obj):
+    def impl_process_header(self, obj):
         return []
 
 
@@ -47,7 +47,7 @@ class extracted_freeType:
             return []       
             
         inoutstr = " : "+ hdl.InOut_t2str2(self.symbol,  inout) +" "
-        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +  hdl.get_init_values(self.symbol) ]
+        return [hdl.get_HDL_name(self.symbol, obj, self.suffix) + inoutstr + self.symbol._type + " := " +  hdl.impl_get_init_values(self.symbol) ]
     
     def vhdl_make_port(self, obj, name):
         x = self.get_symbol(obj)

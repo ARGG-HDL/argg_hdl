@@ -112,7 +112,7 @@ class v_class_converter(hdl_converter_base):
             Inout = InoutFlip(Inout)
         
         if not( obj._varSigConst == varSig.signal_t and Inout == InOut_t.InOut_tt):
-            return name + " => " + obj.__hdl_converter__.get_init_values(obj, parent=parent, InOut_Filter=Inout)
+            return name + " => " + hdl.impl_get_init_values(obj, parent=parent, InOut_Filter=Inout)
         
         ret = []
         xs = hdl.extract_conversion_types(
@@ -120,7 +120,7 @@ class v_class_converter(hdl_converter_base):
             exclude_class_type=v_classType_t.transition_t
         )
         for x in xs:
-            ret.append(name + x["suffix"] + " => " + x["symbol"].__hdl_converter__.get_init_values(x["symbol"])  )
+            ret.append(name + x["suffix"] + " => " + hdl.impl_constructor(x["symbol"])  )
         return ret
             
 
@@ -139,7 +139,7 @@ class v_class_converter(hdl_converter_base):
         return primary.__hdl_converter__.Constructor_Default_arguments
 
 
-    def get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
+    def impl_get_init_values(self,obj, parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
         primary = hdl.get_primary_object(obj)
         
         if ForceExpand:
@@ -218,7 +218,7 @@ class v_class_converter(hdl_converter_base):
         TypeName = hdl.get_type_simple(obj)
         member = obj.getMember()
 
-        defaults  = obj.__hdl_converter__.get_init_values(
+        defaults  = hdl.impl_get_init_values(
             obj=obj,
             parent=parent, 
             InOut_Filter=InOut_Filter, 
@@ -386,7 +386,7 @@ class v_class_converter(hdl_converter_base):
 
         
         TypeName = hdl.get_type_simple(obj)
-        return VarSymb +" " +str(obj) + " : " + TypeName +" := " + obj.__hdl_converter__.get_init_values(obj) +";\n"
+        return VarSymb +" " +str(obj) + " : " + TypeName +" := " + hdl.impl_constructor(obj) +";\n"
     
 
     def impl_architecture_header(self, obj):
@@ -629,14 +629,14 @@ class v_class_converter(hdl_converter_base):
            
         return obj.get_vhdl_name() + "." +str(attName)
    
-    def get_process_header(self,obj):
+    def impl_process_header(self,obj):
 
         
 
         ret = []
 
         for x in hdl.get_extractedTypes(obj): 
-            ret += x.get_process_header(obj)
+            ret += x.impl_process_header(obj)
         
         
         ret=join_str(

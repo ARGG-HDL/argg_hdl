@@ -224,10 +224,10 @@ class v_process_body_Def(v_ast_base):
         return ret
 
 
-    def get_process_header(self):
+    def impl_process_header(self):
         process_header = ""
         for x in self.LocalVar:
-            process_header += hdl.get_process_header(x)
+            process_header += hdl.impl_process_header(x)
         return process_header
 
     def get_body(self):
@@ -246,7 +246,7 @@ class v_process_body_Def(v_ast_base):
     def __str__(self):
 
         sensitivity_list = self.get_sensitivity_list()
-        process_header = self.get_process_header()
+        process_header = self.impl_process_header()
         body = self.get_body() 
         process_decorator = self.get_process_decorator()
         combinatorial_pull = self.get_combinatorial_pull()

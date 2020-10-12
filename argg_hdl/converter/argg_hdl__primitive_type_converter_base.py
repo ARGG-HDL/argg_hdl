@@ -327,7 +327,7 @@ class v_symbol_converter(hdl_converter_base):
         
         return []
     
-    def get_init_values(self,obj:"v_symbol", parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
+    def impl_get_init_values(self,obj:"v_symbol", parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
         ret =  hdl.impl_constructor(obj)
         return ret
 

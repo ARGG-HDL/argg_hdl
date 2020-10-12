@@ -409,7 +409,7 @@ class hdl_converter_base:
     def impl_process_sensitivity_list(self, obj):
         return []
 
-    def get_process_header(self,obj):
+    def impl_process_header(self,obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
         
