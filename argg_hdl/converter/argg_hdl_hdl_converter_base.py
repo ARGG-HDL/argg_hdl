@@ -309,7 +309,7 @@ class hdl_converter_base:
         astParser.add_read(obj)
         return "to_bool(" + str(obj) + ") "
 
-    def _vhdl__BitAnd(self,obj,rhs,astParser):
+    def impl_bit_and(self,obj,rhs,astParser):
         raise Exception("not Implemented")
         
 

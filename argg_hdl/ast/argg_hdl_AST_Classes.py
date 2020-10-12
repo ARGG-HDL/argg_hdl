@@ -1563,5 +1563,5 @@ def body_unfold_slice(astParser,Node,keywords=None):
 def body_unfold_BitAnd(astParser,Node,keywords=None):
     rhs =  astParser.Unfold_body(Node.right)
     lhs =  astParser.Unfold_body(Node.left)
-    ret = lhs.__hdl_converter__._vhdl__BitAnd(lhs, rhs,  astParser)
+    ret = lhs.__hdl_converter__.impl_bit_and(lhs, rhs,  astParser)
     return ret

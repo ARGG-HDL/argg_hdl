@@ -127,8 +127,8 @@ def _to_hdl___bool__(obj, astParser):
     return obj.__hdl_converter__._to_hdl___bool__(obj, astParser)
 
 
-def _vhdl__BitAnd(obj, rhs, astParser):
-    return obj.__hdl_converter__._vhdl__BitAnd(obj, rhs, astParser)
+def impl_bit_and(obj, rhs, astParser):
+    return obj.__hdl_converter__.impl_bit_and(obj, rhs, astParser)
 
 
 def function_name_modifier(obj, name, varSigSuffix):

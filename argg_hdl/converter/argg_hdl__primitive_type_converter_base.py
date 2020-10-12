@@ -191,7 +191,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
 
-    def _vhdl__BitAnd(self,obj:"v_symbol",rhs,astParser) -> "v_symbol":
+    def impl_bit_and(self,obj:"v_symbol",rhs,astParser) -> "v_symbol":
         ret = v_slv()
         ret.set_vhdl_name(str(obj)+ " & " +str(rhs) ,True)
         return ret
