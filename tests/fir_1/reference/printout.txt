@@ -35,8 +35,8 @@
       <processing name="resize" MemfunctionCalls="2">
         <request_new_template name="resize"/>
       </processing>
-_vhdl__DefineSymbol is deprecated
-_vhdl__DefineSymbol is deprecated
+impl_symbol_instantiation is deprecated
+impl_symbol_instantiation is deprecated
       <status ="sucess">
     </package_conversion>
   </Converting>

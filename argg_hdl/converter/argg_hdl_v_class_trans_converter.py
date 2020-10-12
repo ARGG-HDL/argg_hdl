@@ -124,8 +124,8 @@ class v_class_trans_converter(v_class_converter):
         return ret     
 
         
-    def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
-        print_cnvt("_vhdl__DefineSymbol is deprecated")
+    def impl_symbol_instantiation(self, obj ,VarSymb=None):
+        print_cnvt("impl_symbol_instantiation is deprecated")
         if not VarSymb:
             VarSymb = get_varSig(obj._varSigConst)
 

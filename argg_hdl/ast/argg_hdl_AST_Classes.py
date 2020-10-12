@@ -317,7 +317,7 @@ class v_process_body_timed_Def(v_ast_base):
         ret =  "\n"
         
         for x in self.LocalVar:
-            ret += x.__hdl_converter__._vhdl__DefineSymbol(x, "variable")
+            ret += x.__hdl_converter__.impl_symbol_instantiation(x, "variable")
         ret += "begin\n  " 
         
         ret += pull

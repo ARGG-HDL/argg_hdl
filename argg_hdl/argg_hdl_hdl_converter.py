@@ -159,8 +159,8 @@ def _vhdl__call_member_func(obj, name, args, astParser=None):
     return obj.__hdl_converter__._vhdl__call_member_func(obj=obj, name=name, args=args, astParser=astParser)
 
 
-def _vhdl__DefineSymbol(obj, VarSymb="variable"):
-    return obj.__hdl_converter__._vhdl__DefineSymbol(obj, VarSymb)
+def impl_symbol_instantiation(obj, VarSymb="variable"):
+    return obj.__hdl_converter__.impl_symbol_instantiation(obj, VarSymb)
 
 
 def get_architecture_header(obj):

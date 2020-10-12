@@ -376,8 +376,8 @@ class v_class_converter(hdl_converter_base):
 
         return ret
     
-    def _vhdl__DefineSymbol(self, obj ,VarSymb=None):
-        print_cnvt("_vhdl__DefineSymbol is deprecated")
+    def impl_symbol_instantiation(self, obj ,VarSymb=None):
+        print_cnvt("impl_symbol_instantiation is deprecated")
         
         VarSymb =  VarSymb if VarSymb else  get_varSig(obj._varSigConst)
 

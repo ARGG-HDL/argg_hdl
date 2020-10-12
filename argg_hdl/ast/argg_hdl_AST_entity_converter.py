@@ -118,7 +118,7 @@ def extractFunctionsForEntity(astParser, ClassInstance, parent):
         for x in astParser.LocalVar:
             if x._type == "undef":
                 continue
-            header += x.__hdl_converter__._vhdl__DefineSymbol(x, "variable")
+            header += x.__hdl_converter__.impl_symbol_instantiation(x, "variable")
         pull =""
         for x in astParser.LocalVar:
             if x._type == "undef":

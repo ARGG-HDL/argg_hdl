@@ -379,8 +379,8 @@ class hdl_converter_base:
 
     
 
-    def _vhdl__DefineSymbol(self,obj, VarSymb="variable"):
-        print_cnvt("_vhdl__DefineSymbol is deprecated")
+    def impl_symbol_instantiation(self,obj, VarSymb="variable"):
+        print_cnvt("impl_symbol_instantiation is deprecated")
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
         #return " -- No Generic symbol definition for object " + self.getName()
 
