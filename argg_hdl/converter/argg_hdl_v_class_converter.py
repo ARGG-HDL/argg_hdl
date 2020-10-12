@@ -46,16 +46,16 @@ class v_class_converter(hdl_converter_base):
         self.extractedTypes = []
         self.Constructor_Default_arguments=[]
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         ret = ""
         for x in obj.__dict__.items():
             t = getattr(obj, x[0])
             if issubclass(type(t),argg_hdl_base):
                         
-                ret += hdl.includes(t,x[0],obj)
+                ret += hdl.def_includes(t,x[0],obj)
         
         for x in obj.__hdl_converter__.__ast_functions__:
-            ret += hdl.includes(x,None,obj)
+            ret += hdl.def_includes(x,None,obj)
 
         ret += "use work."+ hdl.get_type_simple(obj)+"_pack.all;"
         return ret

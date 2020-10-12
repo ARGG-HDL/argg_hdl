@@ -144,13 +144,13 @@ class v_Arch_converter(hdl_converter_base):
         super().__init__()
         
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         inc_str = ""
         for x in obj.Symbols:
-            inc_str +=  x.__hdl_converter__.includes(x, x.__hdl_name__,obj)
+            inc_str +=  hdl.def_includes(x, x.__hdl_name__,obj)
         
         for x in obj.Arch_vars:
-            inc_str +=  hdl.includes(x['symbol'], x['name'],obj)
+            inc_str +=  hdl.def_includes(x['symbol'], x['name'],obj)
         return inc_str
 
     def impl_architecture_header(self, obj):

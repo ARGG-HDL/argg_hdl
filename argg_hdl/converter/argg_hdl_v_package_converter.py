@@ -17,15 +17,15 @@ class v_package_converter(hdl_converter_base):
             t.__hdl_converter__.parse_file(t)
 
 
-    def includes(self, obj, name,parent):
+    def def_includes(self, obj, name,parent):
         #print(obj.PackageName)
         bufffer  = ""
         for t  in obj.PackageContent:
             t = to_v_object(t)
-            bufffer += t.__hdl_converter__.includes(t,"",obj)
+            bufffer += t.__hdl_converter__.def_includes(t,"",obj)
             dep_list = t.__hdl_converter__.get_dependency_objects(t,[])
             for y in dep_list:
-                bufffer += y.__hdl_converter__.includes(y,"",obj)
+                bufffer += y.__hdl_converter__.def_includes(y,"",obj)
         ret = make_unique_includes(bufffer, obj.PackageName)
         return ret
 

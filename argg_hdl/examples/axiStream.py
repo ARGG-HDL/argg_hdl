@@ -15,7 +15,7 @@ class axisStream_converter(v_class_trans_converter):
         super().__init__()
 
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         ret =""
         typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
         
@@ -24,7 +24,7 @@ class axisStream_converter(v_class_trans_converter):
         ret += "use work.axisStream_"+str(typeName)+".all;\n"
         members = obj.getMember() 
         for x in members:
-            ret += x["symbol"].__hdl_converter__.includes(x["symbol"],name,parent)
+            ret += x["symbol"].__hdl_converter__.def_includes(x["symbol"],name,parent)
 
         return ret
     
@@ -59,7 +59,7 @@ class axisStream_slave_converter(v_class_slave_converter):
     def __init__(self):
         super().__init__()
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         ret =""
         typeName = obj.data.__hdl_converter__.get_type_simple(obj.data)
         
@@ -68,7 +68,7 @@ class axisStream_slave_converter(v_class_slave_converter):
         ret += "use work.axisStream_"+str(typeName)+".all;\n"
         members = obj.getMember() 
         for x in members:
-            ret += x["symbol"].__hdl_converter__.includes(x["symbol"],name,parent)
+            ret += x["symbol"].__hdl_converter__.def_includes(x["symbol"],name,parent)
 
         return ret
     
@@ -115,7 +115,7 @@ class axisStream_slave_converter(v_class_slave_converter):
         astParser.AddStatementBefore(hdl)
         return buff
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         
 
         return ""
@@ -231,8 +231,8 @@ class axisStream_master_converter(v_class_master_converter):
         return ret
 
 
-    def includes(self,obj, name,parent):
-        ret = obj.tx.__hdl_converter__.includes(obj.tx, name, parent)
+    def def_includes(self,obj, name,parent):
+        ret = obj.tx.__hdl_converter__.def_includes(obj.tx, name, parent)
         return ret
 
 

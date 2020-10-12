@@ -54,7 +54,7 @@ class v_free_function_template_converter(hdl_converter_base):
             ret += hdl.def_packet_body(x, name,parent) +"\n"
         return ret
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         PackageName = self.get_packet_name(obj)
         ret = "use work." +  PackageName +".all;\n" 
         return ret

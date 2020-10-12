@@ -23,7 +23,7 @@ class v_enum_converter(hdl_converter_base):
         return ret 
 
 
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         PackageName = obj.__hdl_converter__.get_type_simple(obj)+"_pack"
         return "  use work." + PackageName+".all;\n"
     def def_packet_header(self,obj, name,parent):

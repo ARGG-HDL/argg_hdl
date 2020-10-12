@@ -246,7 +246,10 @@ class hdl_converter_base:
     def parse_file(self,obj):
         return ""
 
-    def includes(self,obj, name,parent):
+    def impl_includes(self,obj, name,parent):
+        return self.def_includes(obj,name,parent)
+        
+    def def_includes(self,obj, name,parent):
         return ""
 
     def def_record_Member(self,obj, name,parent,Inout=None):

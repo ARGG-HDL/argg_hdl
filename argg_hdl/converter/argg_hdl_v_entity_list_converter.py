@@ -47,11 +47,11 @@ class v_entity_list_converter(hdl_converter_base):
 
             return ret
 
-        def includes(self,obj, name,parent):
+        def def_includes(self,obj, name,parent):
             bufffer = ""
             
             for x in obj.nexted_entities:
-                bufffer += x["symbol"].__hdl_converter__.includes(x["symbol"], None, None)
+                bufffer += x["symbol"].__hdl_converter__.def_includes(x["symbol"], None, None)
 
             ret  = make_unique_includes(bufffer)
 

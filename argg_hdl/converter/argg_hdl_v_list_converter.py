@@ -15,7 +15,7 @@ class v_list_converter(hdl_converter_base):
     def __init__(self):
         super().__init__()
         self.obj_list = []
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         ret  = """
 library IEEE;
 use IEEE.numeric_std.all;
@@ -23,7 +23,7 @@ use IEEE.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
         """
 
-        ret += obj.Internal_Type.__hdl_converter__.includes(obj.Internal_Type,name,obj)
+        ret += obj.Internal_Type.__hdl_converter__.def_includes(obj.Internal_Type,name,obj)
         return ret
 
 

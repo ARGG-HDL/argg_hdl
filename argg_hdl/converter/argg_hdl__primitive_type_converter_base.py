@@ -84,7 +84,7 @@ class v_symbol_converter(hdl_converter_base):
 
             header += subtype_def +null_const +array_of_subtype+ func_declaration +"\n\n"
             body += func_definition 
-            includes += hdl.includes(obj,"", None)
+            includes += hdl.def_includes(obj,"", None)
 
 
         includes = make_unique_includes(includes, "v_symbol_pack")
@@ -95,7 +95,7 @@ class v_symbol_converter(hdl_converter_base):
     def get_dependency_objects(self, obj:"v_symbol", depList):
         return obj
         
-    def includes(self,obj, name,parent):
+    def def_includes(self,obj, name,parent):
         ret = slv_includes
         ret += self.inc_str
         return ret

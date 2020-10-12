@@ -75,8 +75,11 @@ def parse_file(obj):
     return obj.__hdl_converter__.parse_file(obj)
 
 
-def includes(obj, name, parent):
-    return obj.__hdl_converter__.includes(obj, name, parent)
+def impl_includes(obj, name, parent):
+    return obj.__hdl_converter__.impl_includes(obj, name, parent)
+
+def def_includes(obj, name, parent):
+    return obj.__hdl_converter__.def_includes(obj, name, parent)
 
 
 def def_record_Member(obj, name, parent, Inout=None):
