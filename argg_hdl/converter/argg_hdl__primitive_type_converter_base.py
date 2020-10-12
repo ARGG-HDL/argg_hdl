@@ -278,7 +278,7 @@ class v_symbol_converter(hdl_converter_base):
     def get_constructor(self,obj):
         return obj.primitive_type+"_ctr(" +str(value(obj))+ ", " + str(obj.Bitwidth_raw) + ")"
     
-    def _vhdl__getValue(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
+    def impl_get_value(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
         if astParser:
             astParser.add_read(obj)
         obj._add_input()

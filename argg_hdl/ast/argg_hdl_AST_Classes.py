@@ -126,7 +126,7 @@ class v_ast_base:
     def get_type(self):
         return ""
         
-    def _vhdl__getValue(self,ReturnToObj=None,astParser=None):
+    def impl_get_value(self,ReturnToObj=None,astParser=None):
         self._vhdl__setReturnType(ReturnToObj, astParser)
         return str(self)    
 
@@ -635,7 +635,7 @@ class v_Num(v_ast_base):
     def get_type(self):
         return "integer"
 
-    def _vhdl__getValue(self,ReturnToObj=None,astParser=None):
+    def impl_get_value(self,ReturnToObj=None,astParser=None):
         if ReturnToObj._type =="std_logic":
             return  "'" + str(self.value)+ "'"
         if  "std_logic_vector" in ReturnToObj._type:
@@ -759,9 +759,9 @@ class handle_v_switch_cl(v_ast_base):
     def __str__(self):
         ret = "\n    " 
         for x in self.cases:
-            x = x._vhdl__getValue(self.ReturnToObj)
+            x = x.impl_get_value(self.ReturnToObj)
             ret += str(x)
-        default = self.Default.__hdl_converter__._vhdl__getValue(self.Default, self.ReturnToObj)
+        default = self.Default.__hdl_converter__.impl_get_value(self.Default, self.ReturnToObj)
         
         ret += str(default) 
         return ret
@@ -953,9 +953,9 @@ def body_LShift(astParser,Node):
     if issubclass( type(lhs),argg_hdl_base):
         lhs = lhs.__hdl_converter__._vhdl__reasign_type(lhs)
         if issubclass( type(rhs),argg_hdl_base):
-            rhs = rhs.__hdl_converter__._vhdl__getValue(rhs, lhs,astParser)
+            rhs = rhs.__hdl_converter__.impl_get_value(rhs, lhs,astParser)
         else:
-            rhs = rhs._vhdl__getValue(lhs,astParser)
+            rhs = rhs.impl_get_value(lhs,astParser)
 
 
         if astParser.ContextName[-1] == 'process':

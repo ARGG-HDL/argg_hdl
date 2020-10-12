@@ -110,7 +110,7 @@ class xgenAST:
             "__init__",
             "create",
             '_to_hdl___bool__',
-            '_vhdl__getValue',
+            'impl_get_value',
             "_vhdl__reasign",
             '_connect',
             "_sim_get_value",

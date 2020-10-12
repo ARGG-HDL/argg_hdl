@@ -52,7 +52,7 @@ class v_signed_converter(v_symbol_converter):
                     asOp=asOp
                 )
 
-            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj, astParser=astParser))
+            return target + asOp + str(rhs.__hdl_converter__.impl_get_value(rhs, obj, astParser=astParser))
 
 
         if type(rhs).__name__ == "v_Num":
@@ -81,7 +81,7 @@ class v_signed_converter(v_symbol_converter):
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(sl) + ")"
         else:
             ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
-            index = sl.__hdl_converter__._vhdl__getValue(sl, v_uint())
+            index = sl.__hdl_converter__.impl_get_value(sl, v_uint())
             ret.__hdl_name__ = obj.__hdl_name__ + "(" + str(index) + ")"
 
         return ret
@@ -109,7 +109,7 @@ class v_signed_converter(v_symbol_converter):
         ret = "signed" + str(sp3)
         return ret
 
-    def _vhdl__getValue(self, obj: "v_symbol", ReturnToObj=None, astParser=None):
+    def impl_get_value(self, obj: "v_symbol", ReturnToObj=None, astParser=None):
         if astParser:
             astParser.add_read(obj)
         obj._add_input()

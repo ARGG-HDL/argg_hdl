@@ -43,7 +43,7 @@ class v_sl_converter(v_symbol_converter):
         
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
-            return target + asOp + str(rhs.__hdl_converter__._vhdl__getValue(rhs, obj)) 
+            return target + asOp + str(rhs.__hdl_converter__.impl_get_value(rhs, obj)) 
         return target + asOp+  str(rhs) 
 
 

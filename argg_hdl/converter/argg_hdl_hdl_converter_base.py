@@ -324,7 +324,7 @@ class hdl_converter_base:
             return "get_value" + varSigSuffix+"_rshift"
         return name + varSigSuffix
 
-    def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
+    def impl_get_value(self,obj, ReturnToObj=None,astParser=None):
 
         astParser.add_read(obj)
         obj._add_input()

@@ -155,7 +155,7 @@ use ieee.std_logic_unsigned.all;
     
     def impl_slice(self,obj, sl,astParser=None):
         if issubclass(type(sl),argg_hdl_base0):
-            sl = sl.__hdl_converter__._vhdl__getValue(sl,ReturnToObj=v_int(),astParser=astParser)
+            sl = sl.__hdl_converter__.impl_get_value(sl,ReturnToObj=v_int(),astParser=astParser)
         
         ret = v_copy(obj.Internal_Type)
         ret._varSigConst = obj._varSigConst

@@ -91,7 +91,7 @@ class axisStream_slave_converter(v_class_slave_converter):
             return "-- $$ template missing $$"
         return hdl
 
-    def _vhdl__getValue(self,obj, ReturnToObj=None,astParser=None):
+    def impl_get_value(self,obj, ReturnToObj=None,astParser=None):
 
         vhdl_name = str(obj) + "_buff"
         buff =  astParser.try_get_variable(vhdl_name)
