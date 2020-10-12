@@ -88,7 +88,7 @@ class v_list(argg_hdl_base, Generic[T]):
         self.size = size
         self._varSigConst = get_value_or_default(varSigConst, getDefaultVarSig())
         self.__hdl_name__ = None
-        self._type = self.Internal_Type.__hdl_converter__.get_type_simple(self.Internal_Type)+"_a"
+        self._type = hdl.get_type_simple(self.Internal_Type)+"_a"
 
     def append(self, obj):
         self.content.append(obj)
@@ -224,7 +224,7 @@ class v_list(argg_hdl_base, Generic[T]):
             x.reset()
 
 def call_func_v_list_reset(obj, name, args, astParser=None,func_args=None):
-    asOp = args[0].__hdl_converter__.get_assiment_op(args[0])
+    asOp = hdl.get_assiment_op(args[0])
 
     val = "(others => (others => '0'))"
     if val is None:

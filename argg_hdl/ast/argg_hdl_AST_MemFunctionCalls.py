@@ -93,7 +93,7 @@ def call_func(obj, name, args, astParser=None,func_args=None):
 
 
     varSigSuffix = get_function_varSig_suffix(func_args)
-    actual_function_name = func_args[0]["symbol"].__hdl_converter__.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)
+    actual_function_name =  hdl.function_name_modifier(func_args[0]["symbol"], name, varSigSuffix)
     ret = join_str(ret, Delimeter=", ", start= actual_function_name +"(" ,end=")")
     #print_cnvt(ret)
     return ret

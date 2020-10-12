@@ -32,7 +32,7 @@ class AST_entity_converter:
                 continue
 
             self.astParser.Missing_template = False
-            ClassInstance.__hdl_converter__.reset_TemplateMissing(ClassInstance)
+            hdl.reset_TemplateMissing(ClassInstance)
             self.astParser.reset_buffers()
 
             self.astParser.parent = parent
@@ -65,8 +65,8 @@ class AST_entity_converter:
             
 
             if self.astParser.Missing_template:
-                ClassInstance.__hdl_converter__.FlagFor_TemplateMissing(ClassInstance)
-                ClassInstance.__hdl_converter__.MissingTemplate = True
+                hdl.FlagFor_TemplateMissing(ClassInstance)
+
             else:
                 proc = v_Arch(
                     body=body,
@@ -118,7 +118,7 @@ def extractFunctionsForEntity(astParser, ClassInstance, parent):
         for x in astParser.LocalVar:
             if x._type == "undef":
                 continue
-            header += x.__hdl_converter__.impl_symbol_instantiation(x, "variable")
+            header += hdl.impl_symbol_instantiation(x, "variable")
         pull =""
         for x in astParser.LocalVar:
             if x._type == "undef":
