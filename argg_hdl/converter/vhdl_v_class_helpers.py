@@ -3,7 +3,7 @@ from argg_hdl.argg_hdl_base import v_classType_t,varSig,InOut_t,join_str,argg_hd
 import argg_hdl.argg_hdl_v_function as ah_func
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
-from argg_hdl.argg_hdl_object_factory import get_Constructor
+from argg_hdl.argg_hdl_object_factory import impl_constructor
 #from argg_hdl.tests.ex4 import memo
 
 
@@ -441,7 +441,7 @@ def extract_primitive_records(obj):
     for t in ts:
         name    = hdl.get_type_simple(obj)
         suffix =  t["suffix"]
-        record_obj = get_Constructor("v_data_record")( name+suffix, t["symbol"]._varSigConst )
+        record_obj = impl_constructor("v_data_record")( name+suffix, t["symbol"]._varSigConst )
         record_obj._Inout =  t["symbol"]._Inout if len(ts) >1 else InOut_t.Default_t
         members = t["symbol"].getMember()
         record_obj.__v_classType__ = t["symbol"].__v_classType__

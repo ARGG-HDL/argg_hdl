@@ -68,8 +68,8 @@ def get_type_simple(obj):
 def get_type_simple_template(obj):
     return obj.__hdl_converter__.get_type_simple_template(obj)
     
-def get_constructor(obj):
-    return obj.__hdl_converter__.get_constructor(obj)
+def impl_constructor(obj):
+    return obj.__hdl_converter__.impl_constructor(obj)
 
 def parse_file(obj):
     return obj.__hdl_converter__.parse_file(obj)

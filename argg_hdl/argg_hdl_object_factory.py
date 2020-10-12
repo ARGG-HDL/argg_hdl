@@ -4,7 +4,7 @@ g_objects_constructors = {
 }
 
 
-def get_Constructor(typeName):
+def impl_constructor(typeName):
     return g_objects_constructors[typeName]
 
 

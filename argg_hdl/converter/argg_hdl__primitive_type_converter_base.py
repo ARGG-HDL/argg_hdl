@@ -153,7 +153,7 @@ class v_symbol_converter(hdl_converter_base):
             return []
         
 
-        return name + " => " + hdl.get_constructor(obj)
+        return name + " => " + hdl.impl_constructor(obj)
 
 
 
@@ -164,7 +164,7 @@ class v_symbol_converter(hdl_converter_base):
         if parent._issubclass_("v_class"):
              return ""
             
-        return name + " : " +obj._type +" := " +  hdl.get_constructor(obj) + "; \n"
+        return name + " : " +obj._type +" := " +  hdl.impl_constructor(obj) + "; \n"
 
 
 
@@ -206,7 +206,7 @@ class v_symbol_converter(hdl_converter_base):
             return ""
 
 
-        return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.get_constructor(obj) + "; \n"    
+        return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.impl_constructor(obj) + "; \n"    
     
     def impl_architecture_header(self, obj:"v_symbol"):
 
@@ -219,7 +219,7 @@ class v_symbol_converter(hdl_converter_base):
         if obj.__isFreeType__ and obj._Inout == InOut_t.output_t:
             return ""
         VarSymb = get_varSig(obj._varSigConst)
-        ret = "  " +VarSymb + " " + str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.get_constructor(obj) + "; \n"   
+        ret = "  " +VarSymb + " " + str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.impl_constructor(obj) + "; \n"   
         return  ret
 
     def def_entity_port(self,obj:"v_symbol"):
@@ -236,7 +236,7 @@ class v_symbol_converter(hdl_converter_base):
             " " +  
             hdl.get_type_simple(obj) + 
             " := " + 
-            hdl.get_constructor(obj)]
+            hdl.impl_constructor(obj)]
         
 
 
@@ -273,7 +273,7 @@ class v_symbol_converter(hdl_converter_base):
             return "c_" + obj._type + "_" + str(value(obj))
         return obj._type
     
-    def get_constructor(self,obj):
+    def impl_constructor(self,obj):
         return obj.primitive_type+"_ctr(" +str(value(obj))+ ", " + str(obj.Bitwidth_raw) + ")"
     
     def impl_get_value(self,obj:"v_symbol", ReturnToObj=None,astParser=None):
@@ -330,7 +330,7 @@ class v_symbol_converter(hdl_converter_base):
         return []
     
     def get_init_values(self,obj:"v_symbol", parent=None, InOut_Filter=None, VaribleSignalFilter = None,ForceExpand=False):
-        ret =  hdl.get_constructor(obj)
+        ret =  hdl.impl_constructor(obj)
         return ret
 
 
