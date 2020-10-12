@@ -148,7 +148,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
 
-    def recordMemberDefault(self, obj:"v_symbol",name,parent,Inout=None):
+    def def_record_Member_Default(self, obj:"v_symbol",name,parent,Inout=None):
         if obj.__isFreeType__:
             return []
         

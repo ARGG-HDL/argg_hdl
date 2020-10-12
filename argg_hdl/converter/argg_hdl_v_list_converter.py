@@ -139,7 +139,7 @@ use ieee.std_logic_unsigned.all;
             )
         return ret
     
-    def recordMemberDefault(self, obj, name,parent,Inout=None):
+    def def_record_Member_Default(self, obj, name,parent,Inout=None):
         ret =""
 
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)

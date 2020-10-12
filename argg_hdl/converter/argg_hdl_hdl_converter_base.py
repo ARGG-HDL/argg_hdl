@@ -252,7 +252,7 @@ class hdl_converter_base:
     def recordMember(self,obj, name,parent,Inout=None):
         return ""
 
-    def recordMemberDefault(self, obj,name,parent,Inout=None):
+    def def_record_Member_Default(self, obj,name,parent,Inout=None):
         return "" 
 
     def def_packet_header(self,obj, name,parent):

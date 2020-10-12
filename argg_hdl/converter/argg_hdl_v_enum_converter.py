@@ -84,7 +84,7 @@ end  {PackageName};
        
         return ""
 
-    def def_recordMemberDefault(self, obj, name, parent,Inout=None):
+    def def_def_record_Member_Default(self, obj, name, parent,Inout=None):
         if parent._issubclass_("v_class"):
             if obj._Inout == InOut_t.Slave_t:
                 Inout = InoutFlip(Inout)

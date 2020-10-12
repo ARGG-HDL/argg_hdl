@@ -104,7 +104,7 @@ class v_class_converter(hdl_converter_base):
         
         
 
-    def recordMemberDefault(self, obj, name,parent,Inout=None):
+    def def_record_Member_Default(self, obj, name,parent,Inout=None):
         
 
         
@@ -145,7 +145,7 @@ class v_class_converter(hdl_converter_base):
         if ForceExpand:
             member = obj.getMember()
             Content = [
-                hdl.recordMemberDefault(
+                hdl.def_record_Member_Default(
                 x["symbol"], 
                 x["name"],
                 obj.getMember(name=x["name"]),

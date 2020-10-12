@@ -83,8 +83,8 @@ def recordMember(obj, name, parent, Inout=None):
     return obj.__hdl_converter__.recordMember(obj, name, parent, Inout)
 
 
-def recordMemberDefault(obj, name, parent, Inout=None):
-    return obj.__hdl_converter__.recordMemberDefault(obj, name, parent, Inout)
+def def_record_Member_Default(obj, name, parent, Inout=None):
+    return obj.__hdl_converter__.def_record_Member_Default(obj, name, parent, Inout)
 
 
 def def_packet_header(obj, name, parent):
