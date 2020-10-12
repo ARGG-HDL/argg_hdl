@@ -222,7 +222,7 @@ class v_symbol_converter(hdl_converter_base):
         ret = "  " +VarSymb + " " + str( obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " + hdl.get_constructor(obj) + "; \n"   
         return  ret
 
-    def get_port_list(self,obj:"v_symbol"):
+    def def_entity_port(self,obj:"v_symbol"):
         if obj._Inout == InOut_t.Internal_t:
             return []
         

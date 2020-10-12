@@ -180,9 +180,9 @@ def get_entity_definition(obj):
     return obj.__hdl_converter__.get_entity_definition(obj)
 
 
-def get_port_list(obj):
+def def_entity_port(obj):
     prepare_for_conversion(obj)
-    return obj.__hdl_converter__.get_port_list(obj)
+    return obj.__hdl_converter__.def_entity_port(obj)
 
 
 def get_process_header(obj):

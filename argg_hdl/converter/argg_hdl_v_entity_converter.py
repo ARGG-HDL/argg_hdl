@@ -177,7 +177,7 @@ class v_entity_converter(hdl_converter_base):
         for x in obj.__hdl_converter__.getMember(obj):
             sym = x["symbol"]
             sym.__hdl_name__ = x["name"]
-            portdef += hdl.get_port_list(sym)
+            portdef += hdl.def_entity_port(sym)
 
       
         ret = "entity " + type_name + " is \n" 

@@ -417,7 +417,7 @@ class extracted_record_t:
         type_name  = hdl.get_type_simple(self.symbol)
         return [ "variable   " + hdl.get_HDL_name(self.symbol, obj ,self.suffix)  + " : " + type_name + " := " +  hdl.get_init_values(obj = obj, parent = self.symbol) +";\n"]
         
-    def get_port_list(self, obj):
+    def def_entity_port(self, obj):
         inout = hdl.get_Inout(self.symbol, obj)
 
         if not (inout  == InOut_t.input_t or inout  == InOut_t.output_t ):

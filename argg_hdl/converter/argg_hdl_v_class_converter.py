@@ -425,10 +425,10 @@ class v_class_converter(hdl_converter_base):
         return ret
 
 
-    def get_port_list(self,obj):
+    def def_entity_port(self,obj):
         ret = []
         for x in hdl.get_extractedTypes(obj):
-            ret += x.get_port_list(obj)
+            ret += x.def_entity_port(obj)
 
         return ret
 

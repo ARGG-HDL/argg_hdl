@@ -404,7 +404,7 @@ class hdl_converter_base:
     def get_entity_definition(self, obj):
         return ""
 
-    def get_port_list(self,obj):
+    def def_entity_port(self,obj):
         return ""
 
 

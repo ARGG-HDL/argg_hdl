@@ -45,7 +45,7 @@ use ieee.std_logic_unsigned.all;
         return ret
  
 
-    def get_port_list(self,obj):
+    def def_entity_port(self,obj):
         ret = []
         obj.Internal_Type._Inout = obj._Inout
         xs = obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)

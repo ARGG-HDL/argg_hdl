@@ -39,7 +39,7 @@ class extracted_freeType:
         return []
 
 
-    def get_port_list(self, obj):
+    def def_entity_port(self, obj):
         x = self.get_symbol(obj)
         inout =x._Inout
 
