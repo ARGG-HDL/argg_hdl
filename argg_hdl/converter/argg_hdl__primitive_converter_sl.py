@@ -22,7 +22,7 @@ class v_sl_converter(v_symbol_converter):
             rhs = "1"
         elif value == "false":
             rhs = "0"            
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" '" +  str(rhs) +"'"
+        return str(obj) + " "+ hdl.ops2str(obj, ops) +" '" +  str(rhs) +"'"
 
 
 
@@ -41,9 +41,9 @@ class v_sl_converter(v_symbol_converter):
         if isProcess():
             obj.__Driver__ = 'process'
         
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
         if issubclass(type(rhs),argg_hdl_base0):
-            return target + asOp + str(rhs.__hdl_converter__.impl_get_value(rhs, obj)) 
+            return target + asOp + str(hdl.impl_get_value(rhs, obj)) 
         return target + asOp+  str(rhs) 
 
 

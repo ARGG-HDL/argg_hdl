@@ -17,7 +17,7 @@ class v_slv_converter(v_symbol_converter):
             astParser.add_read(rhs)
             rhs._add_input()
         
-        return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
+        return str(obj) + " "+ hdl.ops2str(obj, ops) +" " +   str(rhs)
 
     
 
@@ -33,7 +33,7 @@ class v_slv_converter(v_symbol_converter):
             obj.__Driver__ = rhs    
 
         
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
         if str(rhs) == '0':
             return target + asOp+ " (others => '0')"
         
@@ -58,7 +58,7 @@ class v_slv_converter(v_symbol_converter):
                     src = str(rhs),
                     asOp=asOp
                 )
-            return target + asOp +  str(rhs.__hdl_converter__.impl_get_value(rhs, obj,astParser=astParser)) 
+            return target + asOp +  str(hdl.impl_get_value(rhs, obj,astParser=astParser)) 
         
         if  type(rhs).__name__=="v_Num":
             return  """{dest} {asOp} std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
@@ -86,7 +86,7 @@ class v_slv_converter(v_symbol_converter):
             ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
         else:
             ret = v_sl(Inout=obj._Inout, varSigConst=obj._varSigConst)
-            index = sl.__hdl_converter__.impl_get_value(sl,v_uint())
+            index = hdl.impl_get_value(sl,v_uint())
             ret.__hdl_name__ = obj.__hdl_name__+"("+str(index)+")"
             
             
@@ -98,7 +98,7 @@ class v_slv_converter(v_symbol_converter):
         if issubclass(type(obj),argg_hdl_base0) and issubclass(type(rhs),argg_hdl_base0):
             if  "std_logic_vector" in rhs._type:
                 rhs._add_output()
-                asOp = rhs.__hdl_converter__.get_assiment_op(rhs)            
+                asOp = hdl.get_assiment_op(rhs)            
                 return str(rhs)+"("+ str(rhs) +"'range)" +asOp +  str(obj)+"("+ str(rhs) +"'range)" 
 
         return hdl.impl_reasign(rhs, obj,astParser,context_str)

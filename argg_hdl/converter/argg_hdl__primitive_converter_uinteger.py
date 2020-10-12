@@ -22,7 +22,7 @@ class v_uinteger_converter(v_symbol_converter):
         if isProcess():
             obj.__Driver__ = 'process'
 
-        asOp = obj.__hdl_converter__.get_assiment_op(obj)
+        asOp = hdl.get_assiment_op(obj)
 
         if issubclass(type(rhs), argg_hdl_base) and "std_logic_vector" in rhs._type:
             return target + asOp + " to_integer(unsigned(" + str(rhs) + "))"
