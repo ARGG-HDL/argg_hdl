@@ -472,17 +472,6 @@ class hdl_converter_base:
             return " inout "
         
         return " in "
-        inOut = obj.__writeRead__
-        if inOut == InOut_t.input_t:
-            return " in "
-        
-        if inOut == InOut_t.output_t:
-            return " out "
-        
-        if inOut == InOut_t.InOut_tt:
-            return " inout "
-        
-        raise Exception("unkown Inout type",inOut)
 
     def InOut_t2str3(self, obj, parent):
         inOut = obj._Inout
