@@ -172,7 +172,7 @@ class v_symbol_converter(hdl_converter_base):
         raise Exception("unexpected type")
 
 
-    def _vhdl__compare_int(self,obj:"v_symbol", ops, rhs):
+    def impl_compare_int(self,obj:"v_symbol", ops, rhs):
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops) +" " +   str(rhs)
 
 
@@ -185,8 +185,7 @@ class v_symbol_converter(hdl_converter_base):
             astParser.add_read(rhs)
             rhs._add_input()
     
-        if obj._type == "integer":
-            return obj.__hdl_converter__._vhdl__compare_int(obj, ops, rhs)
+
         
         
         return str(obj) + " "+ obj.__hdl_converter__.ops2str(ops)+" " +   str(rhs)
