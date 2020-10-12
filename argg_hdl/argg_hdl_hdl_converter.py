@@ -175,12 +175,9 @@ def impl_architecture_body(obj):
     return obj.__hdl_converter__.impl_architecture_body(obj)
 
 
-def get_packet_definition(obj):
-    return obj.__hdl_converter__.get_packet_definition(obj)
 
 
-def get_entity_definition(obj):
-    return obj.__hdl_converter__.get_entity_definition(obj)
+
 
 
 def def_entity_port(obj):

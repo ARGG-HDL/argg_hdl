@@ -83,7 +83,7 @@ class v_package(argg_hdl_base):
             ret += self.__hdl_converter__.def_packet_body(self,None, self)
             ret += "end "+ self.PackageName +";\n\n"
         
-        ret += self.__hdl_converter__.get_entity_definition(self)
+
 
         set_isConverting2VHDL(s)
         return ret

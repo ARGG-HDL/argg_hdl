@@ -43,7 +43,7 @@ class v_entity_converter(hdl_converter_base):
         ret += obj.__hdl_converter__.def_includes(obj, None, obj)
         ret += "\n\n"
         
-        ret += obj.__hdl_converter__.get_entity_definition(obj)
+        ret += obj.__hdl_converter__.get_definition(obj)
         
         if astparser.Missing_template:
                 obj.__hdl_converter__.FlagFor_TemplateMissing(obj)
@@ -195,15 +195,14 @@ class v_entity_converter(hdl_converter_base):
         ret += obj.__hdl_converter__.get_declaration(obj)
         ret += "\n\n"
         ret += obj.__hdl_converter__.get_archhitecture(obj)
+        ret = ret.strip()
         return ret
 
     def get_process_header(self,obj):
         return ""
         
 
-    def get_entity_definition(self, obj):
-        ret = obj.__hdl_converter__.get_definition(obj)
-        return ret.strip()
+
 
 
 add_primitive_hdl_converter("v_entity",v_entity_converter )

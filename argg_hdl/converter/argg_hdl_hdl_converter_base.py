@@ -401,11 +401,6 @@ class hdl_converter_base:
     def impl_architecture_body(self, obj):
         return ""
 
-    def get_packet_definition(self, obj):
-        return ""
-
-    def get_entity_definition(self, obj):
-        return ""
 
     def def_entity_port(self,obj):
         return ""
