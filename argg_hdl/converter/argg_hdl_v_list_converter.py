@@ -190,8 +190,8 @@ use ieee.std_logic_unsigned.all;
     def to_arglist(self,obj, name,parent,withDefault = False,astParser=None):
         return name +" : " + obj.__hdl_converter__.InOut_t2str(obj)+"  " +obj.get_type()
 
-    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
-    #def _vhdl__reasign(self, obj, rhs, context=None):
+    def impl_reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+    #def impl_reasign(self, obj, rhs, context=None):
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
         return str(obj.__hdl_name__) + asOp +  str(rhs.__hdl_name__)
 

@@ -68,7 +68,7 @@ class v_record_converter(v_class_converter):
     def impl_get_attribute(self,obj, attName,parent=None):
         return obj.get_vhdl_name() + "." +str(attName)
     
-    def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
+    def impl_reasign(self, obj, rhs, astParser=None,context_str=None):
 
         if rhs._Inout == InOut_t.Master_t:
             raise Exception("cannot read from Master")
@@ -83,8 +83,8 @@ class v_record_converter(v_class_converter):
         obj._add_output()
         return obj.get_vhdl_name() + asOp +  rhs.get_vhdl_name()
     
-    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        return hdl._vhdl__reasign(rhs,obj,astParser,context_str)
+    def impl_reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
+        return hdl.impl_reasign(rhs,obj,astParser,context_str)
     
 def call_func_record_reset(obj, name, args, astParser=None,func_args=None):
     asOp = hdl.get_assiment_op(args[0])

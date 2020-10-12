@@ -243,7 +243,7 @@ class v_symbol_converter(hdl_converter_base):
 
 
 
-    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+    def impl_reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         if astParser:
             astParser.add_write(obj)
         obj._add_output()
@@ -262,8 +262,8 @@ class v_symbol_converter(hdl_converter_base):
     
 
 
-    def _vhdl__reasign_rshift_(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
-        return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
+    def impl_reasign_rshift_(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+        return hdl.impl_reasign(rhs, obj,astParser,context_str)
 
     def get_type_simple(self,obj:"v_symbol"):
         return obj._type

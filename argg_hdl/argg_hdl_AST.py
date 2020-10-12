@@ -111,7 +111,7 @@ class xgenAST:
             "create",
             '_to_hdl___bool__',
             'impl_get_value',
-            "_vhdl__reasign",
+            "impl_reasign",
             '_connect',
             "_sim_get_value",
             "get_master",

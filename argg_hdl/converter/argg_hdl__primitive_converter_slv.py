@@ -22,7 +22,7 @@ class v_slv_converter(v_symbol_converter):
     
 
 
-    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+    def impl_reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         if astParser:
             astParser.add_write(obj)
         obj._add_output()
@@ -94,14 +94,14 @@ class v_slv_converter(v_symbol_converter):
 
         
         
-    def _vhdl__reasign_rshift_(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+    def impl_reasign_rshift_(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         if issubclass(type(obj),argg_hdl_base0) and issubclass(type(rhs),argg_hdl_base0):
             if  "std_logic_vector" in rhs._type:
                 rhs._add_output()
                 asOp = rhs.__hdl_converter__.get_assiment_op(rhs)            
                 return str(rhs)+"("+ str(rhs) +"'range)" +asOp +  str(obj)+"("+ str(rhs) +"'range)" 
 
-        return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
+        return hdl.impl_reasign(rhs, obj,astParser,context_str)
 
     def get_type_simple(self,obj:"v_symbol"):
         if not self.AliasType:

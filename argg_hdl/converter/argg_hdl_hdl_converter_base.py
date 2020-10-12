@@ -330,15 +330,15 @@ class hdl_converter_base:
         obj._add_input()
         return obj
 
-    def _vhdl__reasign_type(self, obj ):
+    def impl_reasign_type(self, obj ):
         return obj
 
-    def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
+    def impl_reasign(self, obj, rhs, astParser=None,context_str=None):
         asOp = hdl.get_assiment_op(obj)    
         return str(obj) +asOp +  str(rhs)
 
-    def _vhdl__reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
-        return hdl._vhdl__reasign(rhs, obj,astParser,context_str)
+    def impl_reasign_rshift_(self, obj, rhs, astParser=None,context_str=None):
+        return hdl.impl_reasign(rhs, obj,astParser,context_str)
 
     def get_get_call_member_function(self, obj, name, args):
         args = [x.get_symbol() for x in args ]

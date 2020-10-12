@@ -908,7 +908,7 @@ class v_re_assigne_rhsift(v_ast_base):
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__reasign_rshift_(self.lhs, self.rhs, astParser=self.astParser, context_str=self.context )
+            return self.lhs.__hdl_converter__.impl_reasign_rshift_(self.lhs, self.rhs, astParser=self.astParser, context_str=self.context )
 
         return str(self.lhs) + " := " +  str(self.rhs) 
 
@@ -942,7 +942,7 @@ class v_re_assigne(v_ast_base):
 
     def __str__(self):
         if issubclass(type(self.lhs),argg_hdl_base):
-            return self.lhs.__hdl_converter__._vhdl__reasign(self.lhs, self.rhs, astParser=self.astParser, context_str=self.context )
+            return self.lhs.__hdl_converter__.impl_reasign(self.lhs, self.rhs, astParser=self.astParser, context_str=self.context )
 
         return str(self.lhs) + " := " +  str(self.rhs) 
 
@@ -951,7 +951,7 @@ def body_LShift(astParser,Node):
     lhs =  astParser.Unfold_body(Node.left)
     
     if issubclass( type(lhs),argg_hdl_base):
-        lhs = lhs.__hdl_converter__._vhdl__reasign_type(lhs)
+        lhs = lhs.__hdl_converter__.impl_reasign_type(lhs)
         if issubclass( type(rhs),argg_hdl_base):
             rhs = rhs.__hdl_converter__.impl_get_value(rhs, lhs,astParser)
         else:
@@ -1085,7 +1085,7 @@ class v_stream_assigne(v_ast_base):
             ret+= str(self.lhsEntity) +";\n  "
             
         if issubclass(type(self.lhs),argg_hdl_base):
-            ret += self.lhs.__hdl_converter__._vhdl__reasign(self.lhs, self.rhs)
+            ret += self.lhs.__hdl_converter__.impl_reasign(self.lhs, self.rhs)
 
         else:
             ret += str(self.lhs) + " := " +  str(self.rhs) 

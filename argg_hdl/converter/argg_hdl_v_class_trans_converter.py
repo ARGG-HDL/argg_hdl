@@ -14,7 +14,7 @@ class v_class_trans_converter(v_class_converter):
     def __init__(self):
         super().__init__()
 
-    def _vhdl__reasign(self, obj, rhs, astParser=None,context_str=None):
+    def impl_reasign(self, obj, rhs, astParser=None,context_str=None):
         
         asOp = obj.__hdl_converter__.get_assiment_op(obj)
 

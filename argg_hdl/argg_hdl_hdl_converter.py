@@ -139,16 +139,16 @@ def impl_get_value(obj, ReturnToObj=None, astParser=None):
     return obj.__hdl_converter__.impl_get_value(obj, ReturnToObj, astParser)
 
 
-def _vhdl__reasign_type(obj):
-    return obj.__hdl_converter__._vhdl__reasign_type(obj)
+def impl_reasign_type(obj):
+    return obj.__hdl_converter__.impl_reasign_type(obj)
 
 
-def _vhdl__reasign(obj, rhs, astParser=None, context_str=None):
-    return obj.__hdl_converter__._vhdl__reasign(obj, rhs, astParser, context_str)
+def impl_reasign(obj, rhs, astParser=None, context_str=None):
+    return obj.__hdl_converter__.impl_reasign(obj, rhs, astParser, context_str)
 
 
-def _vhdl__reasign_rshift_(obj, rhs, astParser=None, context_str=None):
-    return obj.__hdl_converter__._vhdl__reasign_rshift_(obj, rhs, astParser, context_str)
+def impl_reasign_rshift_(obj, rhs, astParser=None, context_str=None):
+    return obj.__hdl_converter__.impl_reasign_rshift_(obj, rhs, astParser, context_str)
 
 
 def get_get_call_member_function(obj, name, args):

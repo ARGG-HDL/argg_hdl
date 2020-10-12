@@ -235,7 +235,7 @@ class v_Arch_converter(hdl_converter_base):
                 #print("Is sub connection")
                 continue
             #print("Connecting " +str(x['name']) )
-            ret += x['symbol'].__hdl_converter__._vhdl__reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
+            ret += x['symbol'].__hdl_converter__.impl_reasign(x['symbol'],x['symbol'].__Driver__,context_str = "archetecture")  +";\n  "
 
         return ret
     def get_architecture_body(self, obj):

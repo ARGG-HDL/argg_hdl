@@ -28,7 +28,7 @@ class v_sl_converter(v_symbol_converter):
 
 
 
-    def _vhdl__reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
+    def impl_reasign(self, obj:"v_symbol", rhs, astParser=None,context_str=None):
         if astParser:
             astParser.add_write(obj)
         obj._add_output()
