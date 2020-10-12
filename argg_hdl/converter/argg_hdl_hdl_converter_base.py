@@ -257,8 +257,7 @@ class hdl_converter_base:
 
     def def_packet_header(self,obj, name,parent):
         return ""
-    def getFuncArg(self,obj,name,parent):
-        return ""
+
 
     def def_packet_body(self,obj, name,parent):
         return ""

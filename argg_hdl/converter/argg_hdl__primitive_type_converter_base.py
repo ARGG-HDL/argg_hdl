@@ -166,8 +166,7 @@ class v_symbol_converter(hdl_converter_base):
             
         return name + " : " +obj._type +" := " +  hdl.get_constructor(obj) + "; \n"
 
-    def getFuncArg(self,obj:"v_symbol", name,parent):
-        return name + " : " + obj._type   
+
 
     def impl_slice(self,obj:"v_symbol",sl,astParser=None):
         raise Exception("unexpected type")

@@ -91,8 +91,6 @@ def def_packet_header(obj, name, parent):
     return obj.__hdl_converter__.def_packet_header(obj, name, parent)
 
 
-def getFuncArg(obj, name, parent):
-    return obj.__hdl_converter__.getFuncArg(obj, name, parent)
 
 
 def def_packet_body(obj, name, parent):
