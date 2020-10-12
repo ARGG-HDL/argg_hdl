@@ -263,7 +263,7 @@ class hdl_converter_base:
     def def_packet_body(self,obj, name,parent):
         return ""
 
-    def _vhdl_make_port(self, obj, name):
+    def impl_make_port(self, obj, name):
         ret =[]
         objName = str(obj)
         ret.append(name + " => " + objName)

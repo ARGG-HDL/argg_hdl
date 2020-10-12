@@ -433,7 +433,7 @@ class v_class_converter(hdl_converter_base):
         return ret
 
 
-    def _vhdl_make_port(self, obj, name):
+    def impl_make_port(self, obj, name):
         ret = []
         for x in  hdl.get_extractedTypes(obj):
             ret += x.vhdl_make_port(obj,name)

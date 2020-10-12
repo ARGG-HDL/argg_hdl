@@ -99,8 +99,8 @@ def def_packet_body(obj, name, parent):
     return obj.__hdl_converter__.def_packet_body(obj, name, parent)
 
 
-def _vhdl_make_port(obj, name):
-    return obj.__hdl_converter__._vhdl_make_port(obj, name)
+def impl_make_port(obj, name):
+    return obj.__hdl_converter__.impl_make_port(obj, name)
 
 def make_function_variable_assignment(obj, func_arg, arg):
     return obj.__hdl_converter__.make_function_variable_assignment(obj, func_arg, arg)

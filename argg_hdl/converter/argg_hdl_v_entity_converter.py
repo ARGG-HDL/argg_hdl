@@ -137,7 +137,7 @@ class v_entity_converter(hdl_converter_base):
             if not x["symbol"].__hdl_name__:
                 x["symbol"].set_vhdl_name(str(obj.__hdl_name__)+"_"+ x["name"])
 
-            content += x["symbol"].__hdl_converter__._vhdl_make_port(x["symbol"], x["name"] )
+            content += x["symbol"].__hdl_converter__.impl_make_port(x["symbol"], x["name"] )
 
 
         start = str(obj.__hdl_name__) +" : entity work." + type_name +" port map (\n    "

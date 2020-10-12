@@ -89,7 +89,7 @@ use ieee.std_logic_unsigned.all;
 
         raise Exception("unkown Inout type",inOut)
 
-    def _vhdl_make_port(self, obj, name):
+    def impl_make_port(self, obj, name):
         ret = []
         obj.Internal_Type.set_vhdl_name(obj.__hdl_name__, True)
 
