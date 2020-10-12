@@ -47,7 +47,7 @@ class vhdl__Pull_Push():
     def get_selfHandles(self):
         selfHandles = []
 
-        xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj)
+        xs = hdl.extract_conversion_types(self.obj)
         for x in xs:
             arg = "self"+x["suffix"] + "  =>  " +str(self.obj) + x["suffix"]
             selfHandles.append(arg)
@@ -136,7 +136,7 @@ class getHeader():
         for x in self.obj.__dict__.items():
             t = getattr(self.obj, x[0])
             if issubclass(type(t),argg_hdl_base) and not t._issubclass_("v_class"):
-                ret += t.__hdl_converter__.def_packet_header(t,x[0],self.obj)
+                ret += hdl.def_packet_header(t,x[0],self.obj)
 
         return ret
 
@@ -154,7 +154,7 @@ class getHeader():
             if "_onpull" in x.name.lower()  or "_onpush" in x.name.lower() :
                 continue
 
-            funDeclaration = x.__hdl_converter__.def_packet_header(x,None,None)
+            funDeclaration = hdl.def_packet_header(x,None,None)
             ret +=  funDeclaration
 
         return ret
@@ -197,7 +197,7 @@ class getMemberArgs():
             internal_inout_filter = InoutFlip_if(self.InOut_Filter, m["type"] == 'sig2var')
 
 
-            sig = m["source"]["symbol"].__hdl_converter__.extract_conversion_types(
+            sig = hdl.extract_conversion_types(
                 m["source"]["symbol"],
                 exclude_class_type= v_classType_t.transition_t,
                 filter_inout=internal_inout_filter
@@ -217,7 +217,7 @@ class getMemberArgs():
         if not self.IncludeSelf:
             return members_args
 
-        xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
+        xs = hdl.extract_conversion_types(self.obj )
         for x in xs:
             isSignal = x["symbol"]._varSigConst == varSig.signal_t
             varsig = if_true_get_first(isSignal, [" signal ", " "])
@@ -242,7 +242,7 @@ class getMemberArgs():
 
         for i in members:
             n_connector = _get_connector(i["symbol"])
-            xs = i["symbol"].__hdl_converter__.extract_conversion_types(
+            xs = hdl.extract_conversion_types(
                     i["symbol"],
                     exclude_class_type= v_classType_t.transition_t,
                     filter_inout=self.InOut_Filter
@@ -303,7 +303,7 @@ class getConnecting_procedure_vector():
     def get_self_args(self) :
         content = []
 
-        xs = self.obj.__hdl_converter__.extract_conversion_types(self.obj )
+        xs = hdl.extract_conversion_types(self.obj )
         for x in xs:
             line = "self" + x["suffix"] + " =>  self" + x["suffix"]+"(i)"
             content.append(line)
@@ -319,7 +319,7 @@ class getConnecting_procedure_vector():
         for x in members:
             inout_local = InoutFlip_if(self.InOut_Filter, x["type"] == 'sig2var')
 
-            sig = x["destination"]["symbol"].__hdl_converter__.extract_conversion_types(
+            sig = hdl.extract_conversion_types(
                 x["destination"]["symbol"],
                 exclude_class_type=v_classType_t.transition_t,
                 filter_inout=inout_local
