@@ -163,9 +163,9 @@ def impl_symbol_instantiation(obj, VarSymb="variable"):
     return obj.__hdl_converter__.impl_symbol_instantiation(obj, VarSymb)
 
 
-def get_architecture_header(obj):
+def impl_architecture_header(obj):
     prepare_for_conversion(obj)
-    return obj.__hdl_converter__.get_architecture_header(obj)
+    return obj.__hdl_converter__.impl_architecture_header(obj)
 
 
 def get_architecture_body(obj):

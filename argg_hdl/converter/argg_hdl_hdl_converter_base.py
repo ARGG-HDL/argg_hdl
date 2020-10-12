@@ -384,7 +384,7 @@ class hdl_converter_base:
         return VarSymb +" " +str(obj) + " : " +obj._type +" := " + obj._type+"_null;\n"
         #return " -- No Generic symbol definition for object " + self.getName()
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
         

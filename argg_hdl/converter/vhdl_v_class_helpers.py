@@ -387,7 +387,7 @@ class extracted_record_t:
             )
         return ret
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         
         if  self.symbol.__v_classType__ ==  v_classType_t.transition_t:
             return []

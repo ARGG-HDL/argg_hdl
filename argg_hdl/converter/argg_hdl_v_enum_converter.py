@@ -105,7 +105,7 @@ end  {PackageName};
         return VarSymb +" " +str(obj) + " : " +  hdl.get_type_simple(obj) +" := " + obj._type(value(obj.symbol)).name +";\n"
 
     
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         if obj._Inout != InOut_t.Internal_t:
             return ""
         

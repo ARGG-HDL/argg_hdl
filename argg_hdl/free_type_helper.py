@@ -19,7 +19,7 @@ class extracted_freeType:
         return ""
 
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         x = self.get_symbol(obj)
         
         if x._Inout != InOut_t.Internal_t and not x.__isInst__:

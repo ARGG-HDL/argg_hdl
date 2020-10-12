@@ -389,15 +389,15 @@ class v_class_converter(hdl_converter_base):
         return VarSymb +" " +str(obj) + " : " + TypeName +" := " + obj.__hdl_converter__.get_init_values(obj) +";\n"
     
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         ret = []
 
         for x in hdl.get_extractedTypes(obj):
-            ret +=  x.get_architecture_header(obj)
+            ret +=  x.impl_architecture_header(obj)
             
         
         for x in obj.__hdl_converter__.archetecture_list:
-            ret.append( hdl.get_architecture_header(x["symbol"]))
+            ret.append( hdl.impl_architecture_header(x["symbol"]))
 
 
 

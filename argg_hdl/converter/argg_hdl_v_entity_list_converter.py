@@ -13,7 +13,7 @@ from argg_hdl.converter.argg_hdl_hdl_converter_base import hdl_converter_base
 class v_entity_list_converter(hdl_converter_base):
         def __init__(self):
             super().__init__()
-        def get_architecture_header(self, obj):
+        def impl_architecture_header(self, obj):
             ret = "--------------------------"+ obj.__hdl_name__  +"-----------------\n"
             VarSymb = "signal"
             i = 0
@@ -23,7 +23,7 @@ class v_entity_list_converter(hdl_converter_base):
                     x["temp"] = True
                     tempName = obj.__hdl_name__ +"_"+ str(i) + "_" +type(x["symbol"]).__name__
                     x["symbol"].set_vhdl_name(tempName)
-                    ret += x["symbol"].__hdl_converter__.get_architecture_header(x["symbol"])
+                    ret += x["symbol"].__hdl_converter__.impl_architecture_header(x["symbol"])
             ret += "-------------------------- end "+ obj.__hdl_name__  +"-----------------\n"
             return ret
 

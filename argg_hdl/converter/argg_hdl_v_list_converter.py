@@ -101,7 +101,7 @@ use ieee.std_logic_unsigned.all;
 
         return ret
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         ret =""
 
         obj1 =obj.Internal_Type.__hdl_converter__.extract_conversion_types(obj.Internal_Type)

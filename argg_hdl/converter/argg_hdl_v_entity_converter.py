@@ -76,14 +76,14 @@ class v_entity_converter(hdl_converter_base):
         type_name  = self.get_type_simple(obj)
         ret = "architecture rtl of "+ type_name +" is\n\n"
 
-        ret +=  obj.__hdl_converter__.get_architecture_header_def(obj)
+        ret +=  obj.__hdl_converter__.impl_architecture_header_def(obj)
         ret += "\nbegin\n"
         ret +=  obj.__hdl_converter__.get_architecture_body_def(obj)
         ret += "\nend architecture;\n"
         ret = hdl_string_fix_semicolons(ret)
         return ret 
 
-    def get_architecture_header_def(self, obj):
+    def impl_architecture_header_def(self, obj):
         if obj.__hdl_name__:
             name = obj.__hdl_name__
         else :
@@ -96,17 +96,17 @@ class v_entity_converter(hdl_converter_base):
             symName = obj.__hdl_converter__.impl_get_attribute(obj,x["name"])
             sym.__hdl_name__ = symName
             
-            ret +=  sym.__hdl_converter__.get_architecture_header(sym)
+            ret +=  sym.__hdl_converter__.impl_architecture_header(sym)
 
 
         for x in obj.__processList__:
-            ret += x.__hdl_converter__.get_architecture_header(x)
+            ret += x.__hdl_converter__.impl_architecture_header(x)
 
         ret += "-------------------------- end "+ name  +"-----------------\n"
         return ret 
 
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         if obj.__hdl_name__:
             name = obj.__hdl_name__
         else :
@@ -121,7 +121,7 @@ class v_entity_converter(hdl_converter_base):
             symName = obj.__hdl_converter__.impl_get_attribute(obj,x["name"])
             sym.set_vhdl_name( symName,True)
             
-            ret +=  hdl.get_architecture_header(sym)
+            ret +=  hdl.impl_architecture_header(sym)
 
         ret += "-------------------------- end "+ name  +"-----------------\n"
         return ret 

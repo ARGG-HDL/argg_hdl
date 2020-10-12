@@ -153,15 +153,15 @@ class v_Arch_converter(hdl_converter_base):
             inc_str +=  hdl.includes(x['symbol'], x['name'],obj)
         return inc_str
 
-    def get_architecture_header(self, obj):
+    def impl_architecture_header(self, obj):
         header = ""
         for x in obj.Symbols:
             if x._type == "undef":
                 continue
-            header += x.__hdl_converter__.get_architecture_header(x)
+            header += x.__hdl_converter__.impl_architecture_header(x)
         
         for x in obj.Arch_vars:
-            header += hdl.get_architecture_header(x['symbol'])    
+            header += hdl.impl_architecture_header(x['symbol'])    
         return header
 
 

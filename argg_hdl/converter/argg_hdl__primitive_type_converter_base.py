@@ -208,7 +208,7 @@ class v_symbol_converter(hdl_converter_base):
 
         return  VarSymb+ " " + str(obj.__hdl_name__) + " : " + hdl.get_type_simple(obj) +" := " +  hdl.get_constructor(obj) + "; \n"    
     
-    def get_architecture_header(self, obj:"v_symbol"):
+    def impl_architecture_header(self, obj:"v_symbol"):
 
         if obj._Inout != InOut_t.Internal_t and not obj.__isInst__:
             return ""
