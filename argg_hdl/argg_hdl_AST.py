@@ -136,19 +136,15 @@ class xgenAST:
         self._unfold_symbol_fun_arg.update(g_ast_function_call)
 
         self._Unfold_body={
-            "Num"           : body_unfold_Num,
-            "Assign"        : body_unfold_assign,
             "Name"          : body_unfold_Name,
             "Call"          : body_unfold_call,
             "Expr"          : body_expr,
-            "BinOp"         : body_BinOP,
             "LShift"        : body_LShift,
             'RShift'        : body_RShift,
             "Str"           : body_unfold_str,
             "Constant"      : body_Constant,
             "list"          : body_list,
             "UnaryOp"       : body_UnaryOP,
-            "Sub"           : body_sub,
             'Subscript'     : body_subscript,
             "Index"         : body_index,
 

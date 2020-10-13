@@ -13,8 +13,7 @@ from argg_hdl.ast.ast_classes.ast_type_to_bool import v_type_to_bool
 from argg_hdl.ast.ast_classes.ast_noop import v_noop
 
 
-def Node_line_col_2_str(astParser, Node):
-    return  "Error in File: "+ astParser.sourceFileName+" line: "+str(Node.lineno) + ".\n"
+
 
 
 def unfold_Str(astParser, strNode):
@@ -112,43 +111,6 @@ def v_bool_to_vhdl(astParser,Node,Keywords=None):
 
 
 
-
-  
-class v_Num(v_ast_base):
-    def __init__(self,Value):
-        self.value = Value
-
-    def __str__(self):
-        return str(self.value)
-
-    def get_type(self):
-        return "integer"
-
-    def impl_get_value(self,ReturnToObj=None,astParser=None):
-        if ReturnToObj._type =="std_logic":
-            return  "'" + str(self.value)+ "'"
-        if  "std_logic_vector" in ReturnToObj._type:
-            if str(self) == '0':
-                return " (others => '0')"
-            
-            return  """std_logic_vector(to_unsigned({src}, {dest}'length))""".format(
-                    dest=str(ReturnToObj),
-                    src = str(self.value)
-            )
-
-        if ReturnToObj._type =="integer":
-            return  str(self.value)
-            
-        if str(self) == '0':
-            ret = v_copy(ReturnToObj)
-            ret.__hdl_name__ = ReturnToObj._type + "_null"
-            return ret
-
-        return "convert2"+ ReturnToObj.get_type().replace(" ","") + "(" + str(self) +")"
-        
-def body_unfold_Num(astParser,Node):
-    return v_Num(Node.n)
-
 class v_Str(v_ast_base):
     def __init__(self,Value):
         self.value = Value
@@ -162,63 +124,8 @@ class v_Str(v_ast_base):
 def body_unfold_str(astParser,Node):
     return v_Str(Node.s)
 
-class v_variable_cration(v_ast_base):
-    def __init__(self,rhs,lhs):
-        self.rhs = rhs
-        self.lhs = lhs
 
 
-
-    def __str__(self):
-        #return str(self.lhs.__hdl_name__) +" := "+ str(self.lhs.get_value()) 
-        self.lhs.__hdl_name__ = self.rhs
-        return hdl.impl_architecture_body(self.lhs)
-
-
-
-    def get_type(self):
-        return None
-
-def  body_unfold_assign(astParser,Node):
-    if len(Node.targets)>1:
-        raise Exception(Node_line_col_2_str(astParser, Node)+"Multible Targets are not supported")
-
-
-    for x in astParser.Archetecture_vars:
-        if x["name"] == Node.targets[0].id:
-            x["symbol"].set_vhdl_name(Node.targets[0].id,True)
-            return v_noop()
-    for x in astParser.LocalVar:
-        if Node.targets[0].id in x.__hdl_name__:
-            raise Exception(Node_line_col_2_str(astParser, Node)+" Target already exist. Use << operate to assigne new value to existing object.")
-
-    for x in astParser.FuncArgs:
-        if Node.targets[0].id == x["name"]:
-            raise Exception(Node_line_col_2_str(astParser, Node)+" Target already exist. Use << operate to assigne new value to existing object.")
-            
-
-
-    if type(Node.targets[0]).__name__ != "Name":
-        raise Exception(Node_line_col_2_str(astParser, Node)+" unknown type")
-    if not astParser.get_scope_name():
-        raise Exception(Node_line_col_2_str(astParser, Node)+" Symbol is not defined. use end_architecture() function at the end of the archetecture ")
-    lhs = v_name (Node.targets[0].id)
-    rhs =  astParser.Unfold_body(Node.value)
-    rhs =  to_v_object(rhs)
-    rhs.set_vhdl_name(lhs.Value, True)
-    astParser.LocalVar.append(rhs)
-    ret = v_variable_cration( lhs,  rhs)
-    return ret
-
-
-class v_name(v_ast_base):
-    def __init__(self,Value):
-        self.Value = Value
-
-        
-
-    def __str__(self):
-        return str(self.Value)
 
 
     
@@ -421,32 +328,6 @@ def body_LShift(astParser,Node):
 
 
 
-class v_sub(v_ast_base):
-    def __init__(self,lhs, rhs):
-        self.lhs = lhs
-        self.rhs = rhs
-        self._type = lhs._type
-        
-
-        
-
-    def __str__(self):
-        if issubclass(type(self.lhs),argg_hdl_base):
-            return hdl.impl_sub(self.lhs, self.rhs)
-
-        return str(self.lhs) + " - " +  str(self.rhs) 
-
-def body_sub(astParser,Node):
-    rhs =  astParser.Unfold_body(Node.right)
-    lhs =  astParser.Unfold_body(Node.left)
-    if issubclass( type(lhs),argg_hdl_base):
-        return v_sub(lhs, rhs)
-
-    var = astParser.get_variable(lhs.Value, Node)
-
-    return v_sub(var, rhs)
-
-
 
 class v_stream_assigne(v_ast_base):
     def __init__(self,lhs, rhs,StreamOut,lhsEntity,context=None):
@@ -479,10 +360,6 @@ class v_stream_assigne(v_ast_base):
 
 
 
-def body_BinOP(astParser,Node):
-    optype = type(Node.op).__name__
-        
-    return astParser._Unfold_body[optype](astParser,Node)
 
 
 
