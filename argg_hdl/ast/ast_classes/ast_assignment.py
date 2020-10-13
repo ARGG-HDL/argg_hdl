@@ -1,4 +1,4 @@
-from argg_hdl.ast.ast_classes.ast_base import v_ast_base, add_class,gIndent
+from argg_hdl.ast.ast_classes.ast_base import v_ast_base, add_class,gIndent,Node_line_col_2_str 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 from argg_hdl.argg_hdl_to_v_object import to_v_object
 from argg_hdl.ast.ast_classes.ast_noop import v_noop
@@ -9,8 +9,7 @@ class v_name(v_ast_base):
     def __str__(self):
         return str(self.Value)
 
-def Node_line_col_2_str(astParser, Node):
-    return  "Error in File: "+ astParser.sourceFileName+" line: "+str(Node.lineno) + ".\n"
+
 
 class v_variable_cration(v_ast_base):
     def __init__(self,rhs,lhs):

@@ -27,7 +27,15 @@ import argg_hdl.ast.ast_classes.ast_op
 import argg_hdl.ast.ast_classes.ast_assignment
 import argg_hdl.ast.ast_classes.ast_op_stream_out
 import argg_hdl.ast.ast_classes.ast_op_stream_in
+import argg_hdl.ast.ast_classes.ast_subscript
+import argg_hdl.ast.ast_classes.ast_function_call
+import argg_hdl.ast.ast_classes.ast_name
+import argg_hdl.ast.ast_classes.ast_expr
+import argg_hdl.ast.ast_classes.ast_constant
+import argg_hdl.ast.ast_classes.ast_list
+import argg_hdl.ast.ast_classes.ast_op_unary
 
 
 g_ast_class_register  = ast_base.g_ast_class_register
 g_ast_function_call  = ast_base.g_ast_function_call
+Node_line_col_2_str  = ast_base.Node_line_col_2_str

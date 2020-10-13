@@ -17,7 +17,7 @@ from argg_hdl.ast.argg_hdl_AST_entity_converter import AST_entity_converter, ext
 from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
 
 
-from argg_hdl.ast.ast_classes import g_ast_class_register,g_ast_function_call
+from argg_hdl.ast.ast_classes import g_ast_class_register,g_ast_function_call, Node_line_col_2_str
 
 
 
@@ -135,19 +135,7 @@ class xgenAST:
         }
         self._unfold_symbol_fun_arg.update(g_ast_function_call)
 
-        self._Unfold_body={
-            "Name"          : body_unfold_Name,
-            "Call"          : body_unfold_call,
-            "Expr"          : body_expr,
-            "Str"           : body_unfold_str,
-            "Constant"      : body_Constant,
-            "list"          : body_list,
-            "UnaryOp"       : body_UnaryOP,
-            'Subscript'     : body_subscript,
-            "Index"         : body_index,
-
-        }
-        self._Unfold_body.update(g_ast_class_register)
+        self._Unfold_body= g_ast_class_register
         with open(sourceFileName, "r") as source:
             self.tree = ast.parse(source.read())
 
