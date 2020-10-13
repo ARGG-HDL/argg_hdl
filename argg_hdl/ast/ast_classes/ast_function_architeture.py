@@ -1,6 +1,6 @@
-from argg_hdl.ast.ast_classes.ast_base import v_ast_base, add_class
+from argg_hdl.ast.ast_classes.ast_base import v_ast_base, add_class, add_ast_function_call
 from argg_hdl.argg_hdl_lib_enums import getDefaultVarSig, setDefaultVarSig,varSig
-
+from argg_hdl.ast.ast_classes.ast_noop import v_noop
 
 class architecure_body(v_ast_base):
     def __init__(self, Name, BodyList):
@@ -43,3 +43,8 @@ def body_unfold_architecture_body(astParser,Node):
 
 
 add_class("architecture",body_unfold_architecture_body)
+
+def  body_end_architecture(astParser,args,keywords=None):
+    return v_noop()
+
+add_ast_function_call("end_architecture",body_end_architecture)

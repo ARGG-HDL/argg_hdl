@@ -25,3 +25,9 @@ g_ast_class_register = {}
 def add_class(Node_name,class_factory):
     g_ast_class_register[Node_name] = class_factory
 
+
+g_ast_function_call = {}
+
+def add_ast_function_call(Node_name,class_factory):
+    g_ast_class_register[Node_name] = class_factory
+

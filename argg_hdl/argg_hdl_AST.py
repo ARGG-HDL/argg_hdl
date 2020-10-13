@@ -17,7 +17,7 @@ from argg_hdl.ast.argg_hdl_AST_entity_converter import AST_entity_converter, ext
 from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
 
 
-from argg_hdl.ast.ast_classes import g_ast_class_register
+from argg_hdl.ast.ast_classes import g_ast_class_register,g_ast_function_call
 
 
 
@@ -130,11 +130,10 @@ class xgenAST:
             "rising_edge" : handle_rising_edge,
             "print"       : handle_print,
             "printf"      : handle_print,
-            "v_switch"  : handle_v_switch,
-            "v_case"    : handle_v_case,
             "len"       : body_handle_len,
             "end_architecture" : body_end_architecture
         }
+        self._unfold_symbol_fun_arg.update(g_ast_function_call)
 
         self._Unfold_body={
             "Num"           : body_unfold_Num,
@@ -152,10 +151,6 @@ class xgenAST:
             "Sub"           : body_sub,
             'Subscript'     : body_subscript,
             "Index"         : body_index,
-            "Break"         : body_unfold_Break,
-            "Continue"      : body_unfold_Continue,
-
-            
 
         }
         self._Unfold_body.update(g_ast_class_register)

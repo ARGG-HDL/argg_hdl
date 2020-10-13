@@ -10,6 +10,7 @@ from argg_hdl.ast.argg_hdl_ast_hdl_error import argg_hdl_error
 
 from argg_hdl.ast.ast_classes.ast_base import v_ast_base ,gIndent
 from argg_hdl.ast.ast_classes.ast_type_to_bool import v_type_to_bool
+from argg_hdl.ast.ast_classes.ast_noop import v_noop
 
 
 def Node_line_col_2_str(astParser, Node):
@@ -108,13 +109,6 @@ def v_bool_to_vhdl(astParser,Node,Keywords=None):
     return v_bool()
 
 
-class v_noop(v_ast_base):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __str__(self):
-
-        return ""
 
 
 
@@ -238,50 +232,7 @@ def  body_unfold_Name(astParser,Node):
 def handle_print(astParser,args,keywords=None):
     return v_noop()
 
-class handle_v_switch_cl(v_ast_base):
-    def __init__(self,Default, cases):
-        self.Default = Default
-        self.cases = cases
-        self.ReturnToObj = None
 
-    def _vhdl__setReturnType(self,ReturnToObj=None,astParser=None):
-        self.ReturnToObj = ReturnToObj
-        for x in self.cases:
-            x._vhdl__setReturnType(ReturnToObj, astParser)
-
-
-
-    def __str__(self):
-        ret = "\n    " 
-        for x in self.cases:
-            x = x.impl_get_value(self.ReturnToObj)
-            ret += str(x)
-        default = hdl.impl_get_value(self.Default, self.ReturnToObj)
-        
-        ret += str(default) 
-        return ret
-
-def handle_v_switch(astParser,args,keywords=None):
-    body = list()
-    for x in args[1].elts:
-        body.append(astParser.Unfold_body(x))
-
-    return handle_v_switch_cl(astParser.Unfold_body(args[0]),body)
-
-
-class handle_v_case_cl(v_ast_base):
-    def __init__(self, value,pred):
-        self.value = value
-        self.pred = pred 
-
-    def __str__(self):
-        
-        ret = str(self.value) + " when " + str(self.pred) + " else\n    "
-        return ret
-
-def handle_v_case(astParser,args,keywords=None):
-    test =v_type_to_bool(astParser,astParser.Unfold_body(args[0]))
-    return handle_v_case_cl(astParser.Unfold_body(args[1]), test)
 
 class v_call(v_ast_base):
     def __init__(self,memFunc, symbol, vhdl):
@@ -603,11 +554,6 @@ def  body_end_architecture(astParser,args,keywords=None):
     return v_noop()
 
 
-def body_unfold_Break(astParser,args,keywords=None):
-    return "exit"
-
-def body_unfold_Continue(astParser,args,keywords=None):
-    return "next"
 
 def body_Constant(astParser,Node,keywords=None):
     if type(Node.value).__name__== 'bool':

@@ -19,5 +19,10 @@ import argg_hdl.ast.ast_classes.ast_function_porcess_timed
 import argg_hdl.ast.ast_classes.ast_function_process
 import argg_hdl.ast.ast_classes.ast_function_process_body
 import argg_hdl.ast.ast_classes.ast_FunctionDef
+import argg_hdl.ast.ast_classes.ast_switch
+import argg_hdl.ast.ast_classes.ast_continue
+
+
 
 g_ast_class_register  = ast_base.g_ast_class_register
+g_ast_function_call  = ast_base.g_ast_function_call
