@@ -84,7 +84,6 @@ def body_unfold_call(astParser,Node):
         
         gf_type = isFunction()
         set_isFunction(True)
-        r =None
         if len(args) == 0:
             r = f()  # find out how to forward args 
         elif len(Node.args) == 1:
@@ -92,8 +91,6 @@ def body_unfold_call(astParser,Node):
         elif len(Node.args) == 2:
             r = f(args[0],args[1])  # find out how to forward args
         set_isFunction(gf_type)
-        if r is None:
-            raise Exception("Unknown call type")
 
         r = v_copy(to_v_object(r))
         vhdl =hdl.impl_function_call(obj, memFunc,[obj]+ args,astParser)
