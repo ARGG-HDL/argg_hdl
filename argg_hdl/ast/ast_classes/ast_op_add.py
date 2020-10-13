@@ -2,13 +2,7 @@ from argg_hdl.ast.ast_classes.ast_base import v_ast_base, add_class
 from argg_hdl.argg_hdl_base import argg_hdl_base, value
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
-def hasNumericalValue(symb):
-    if type(symb).__name__ == "int":
-        return True
-    if type(symb).__name__ == "v_Num":
-        return True
 
-    return False
 
 class v_add(v_ast_base):
     def __init__(self,lhs, rhs):

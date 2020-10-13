@@ -137,7 +137,6 @@ class xgenAST:
         }
 
         self._Unfold_body={
-            "FunctionDef"   : body_unfold_functionDef,
             "Num"           : body_unfold_Num,
             "Assign"        : body_unfold_assign,
             "Name"          : body_unfold_Name,
@@ -147,7 +146,6 @@ class xgenAST:
             "LShift"        : body_LShift,
             'RShift'        : body_RShift,
             "Str"           : body_unfold_str,
-            'NameConstant'  : body_Named_constant,
             "Constant"      : body_Constant,
             "list"          : body_list,
             "UnaryOp"       : body_UnaryOP,
@@ -156,8 +154,8 @@ class xgenAST:
             "Index"         : body_index,
             "Break"         : body_unfold_Break,
             "Continue"      : body_unfold_Continue,
-            'USub'          : body_unfol_USub,
-            'Not'           : body_unfol_Not
+
+            
 
         }
         self._Unfold_body.update(g_ast_class_register)

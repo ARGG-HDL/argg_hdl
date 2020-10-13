@@ -11,5 +11,13 @@ import argg_hdl.ast.ast_classes.ast_op_bit_or as ast_op_bit_or
 import argg_hdl.ast.ast_classes.ast_op_multi as ast_op_multi
 import argg_hdl.ast.ast_classes.ast_op_bit_and as ast_op_bit_and
 import argg_hdl.ast.ast_classes.ast_op_add as ast_op_add
+import argg_hdl.ast.ast_classes.ast_op_not as ast_op_not
+import argg_hdl.ast.ast_classes.ast_op_unitarty_sub as ast_op_unitarty_sub
+import argg_hdl.ast.ast_classes.ast_function_architeture
+import argg_hdl.ast.ast_classes.ast_function_porcess_combinational
+import argg_hdl.ast.ast_classes.ast_function_porcess_timed
+import argg_hdl.ast.ast_classes.ast_function_process
+import argg_hdl.ast.ast_classes.ast_function_process_body
+import argg_hdl.ast.ast_classes.ast_FunctionDef
 
 g_ast_class_register  = ast_base.g_ast_class_register
