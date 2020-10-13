@@ -139,8 +139,6 @@ class xgenAST:
             "Name"          : body_unfold_Name,
             "Call"          : body_unfold_call,
             "Expr"          : body_expr,
-            "LShift"        : body_LShift,
-            'RShift'        : body_RShift,
             "Str"           : body_unfold_str,
             "Constant"      : body_Constant,
             "list"          : body_list,

@@ -25,7 +25,8 @@ import argg_hdl.ast.ast_classes.ast_op_sub
 import argg_hdl.ast.ast_classes.ast_Num
 import argg_hdl.ast.ast_classes.ast_op
 import argg_hdl.ast.ast_classes.ast_assignment
-
+import argg_hdl.ast.ast_classes.ast_op_stream_out
+import argg_hdl.ast.ast_classes.ast_op_stream_in
 
 
 g_ast_class_register  = ast_base.g_ast_class_register
