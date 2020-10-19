@@ -535,6 +535,9 @@ def v_const(symbol: T) ->T:
     return ret
 
 def port_out(symbol: T) ->T:
+    if is_trans_class(symbol):
+        return port_Master(symbol)
+        
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -553,6 +556,8 @@ def variable_port_out(symbol: T) ->T:
     return ret
 
 def port_in(symbol: T) ->T:
+    if is_trans_class(symbol):
+        return port_Slave(symbol)
     ret= copy.deepcopy(symbol)
     ret._sim_get_new_storage()
     ret.__isInst__ = False
@@ -722,6 +727,13 @@ def is_handle_class(obj):
         return obj.__v_classType__ == v_classType_t.Slave_t or obj.__v_classType__ == v_classType_t.Master_t 
 
     return False
+def is_trans_class(obj):
+    obj = get_symbol(obj)
+    if is_argg_hdl_obj(obj) and hasattr(obj,"__v_classType__"):
+        return obj.__v_classType__ == v_classType_t.transition_t  
+
+    return False
+
 
 def set_v_classType(obj,parant_obj):
     if hasattr(obj,"__v_classType__") and hasattr(parant_obj,"__v_classType__"):
