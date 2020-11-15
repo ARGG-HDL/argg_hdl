@@ -6,7 +6,7 @@ from typing import TypeVar, Generic
 from argg_hdl.argg_hdl_base import *
 from argg_hdl.argg_hdl_v_symbol import *
 
-    
+import argg_hdl.argg_hdl_type_queries as aq
     
 
 class v_list_slice(argg_hdl_base):
@@ -194,6 +194,15 @@ class v_list(argg_hdl_base, Generic[T]):
         if Inout== InOut_t.output_t:
             return self.__hdl_name__+"_m2s"
         
+
+        if aq.is_symbol(self.Internal_Type):
+            return self.__hdl_name__
+
+        if is_signal(self):
+            return self.__hdl_name__+"_sig"
+
+        
+
         return self.__hdl_name__
 
     def _sim_append_update_list(self,up):
@@ -222,6 +231,52 @@ class v_list(argg_hdl_base, Generic[T]):
     def reset(self):
         for x in self.content:
             x.reset()
+
+    def get_m2s_signals(self):
+        linput = InOut_t.input_t
+        louput = InOut_t.output_t
+
+
+
+
+        if self.__v_classType__ ==v_classType_t.Record_t :
+            self_members = self.getMember()
+            return self_members
+                
+        if  self._Inout == InOut_t.Master_t:
+            self_members = self.getMember(louput)
+            return self_members
+            
+        if  self._Inout == InOut_t.Slave_t:
+            self_members = self.getMember(linput)
+            return self_members
+        
+        if  self._Inout == InOut_t.Internal_t:
+            self_members = self.getMember(louput)
+            return self_members            
+        
+    def get_s2m_signals(self):
+        linput = InOut_t.input_t
+        louput = InOut_t.output_t
+
+
+
+        if self.__v_classType__ ==v_classType_t.Record_t:
+            return []
+        
+        if  self._Inout == InOut_t.Master_t:
+            self_members = self.getMember(linput)
+            return self_members
+            
+        if  self._Inout == InOut_t.Slave_t:
+            self_members = self.getMember(louput)
+            return self_members
+        
+        if  self._Inout == InOut_t.Internal_t:
+            self_members = self.getMember(linput)
+            return self_members      
+            
+ 
 
 def call_func_v_list_reset(obj, name, args, astParser=None,func_args=None):
     asOp = hdl.get_assiment_op(args[0])

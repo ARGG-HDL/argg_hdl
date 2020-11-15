@@ -5,5 +5,5 @@ import argg_hdl.argg_hdl_test_handler as argg_test
 remove_old_files()
 
 argg_test.run_all_tests()
-#result, message = argg_test.run_test('fifo_cc_tb_sim')
+#result, message = argg_test.run_test('trigger_bits_test2vhdl')
 #print(result , message)

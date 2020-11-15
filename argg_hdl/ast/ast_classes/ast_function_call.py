@@ -26,14 +26,17 @@ def body_unfold_call_local_func(astParser,Node):
 
     FuncName = Node.func.id
     args = list()
+    args_2 = list()
     for x in Node.args:
-        args.append(astParser.Unfold_body(x))
+        ar_local = astParser.Unfold_body(x)
+        args.append(ar_local)
+        args_2.append(get_symbol(ar_local))
 
     kwargs = {}
     for x in Node.keywords:
-        kwargs[x.arg] = astParser.Unfold_body(x.value) 
+        kwargs[x.arg] = get_symbol(astParser.Unfold_body(x.value))
     
-    r = astParser.local_function[Node.func.id](*args,**kwargs)
+    r = astParser.local_function[Node.func.id](*args_2,**kwargs)
     
     f = astParser.local_function[Node.func.id]
     if hasattr(f,"description") and f.description is None: 

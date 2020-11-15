@@ -7,9 +7,9 @@ import argg_hdl as ah
 
 
 def to_v_object(ObjIn):
-    if issubclass(type(ObjIn),ah.base):
+    if issubclass(type(ObjIn),ah.argg_hdl_base):
         return ObjIn
-    if issubclass(type(ObjIn),ah.base0):
+    if issubclass(type(ObjIn),ah.argg_hdl_base0):
         return ObjIn
     elif type(ObjIn).__name__ == "v_stream_assigne":
         return ObjIn

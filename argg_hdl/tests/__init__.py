@@ -9,7 +9,8 @@ from argg_hdl.tests import Native_fifo as ct8
 from argg_hdl.tests import RamHandler as ct9
 from argg_hdl.tests import Signal_Variable_class as ct10
 from argg_hdl.tests import slice_testing as ct11
-
+from argg_hdl.tests import TX_Trigger_bit_readout as ct1112
 
 
 from argg_hdl.tests import test_axi_fifo as ct2
+from argg_hdl.tests import command_reader as command_reader1

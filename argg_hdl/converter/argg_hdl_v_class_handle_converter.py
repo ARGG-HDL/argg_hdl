@@ -10,6 +10,15 @@ from argg_hdl.argg_hdl_v_class import   v_class
 from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_converter
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
 
+
+
+def append_suffex(name,suffix):
+    sp = name.split("(")
+    ret = sp[0] + suffix 
+    if len(sp)>1:
+        ret += "(" + sp[1]
+    return ret
+
 class v_class_hanlde_converter(v_class_converter):
     def __init__(self):
         super().__init__()
@@ -218,7 +227,7 @@ class v_class_hanlde_converter(v_class_converter):
         ret = []
         ys =func_arg["symbol"].__hdl_converter__.extract_conversion_types(func_arg["symbol"])
         for y in ys:
-            line = func_arg["name"] + y["suffix"]+ " => " + str(arg) + y["suffix"]
+            line = func_arg["name"] + y["suffix"]+ " => " + append_suffex(str(arg) , y["suffix"])
             ret.append(line)
 
         return ret

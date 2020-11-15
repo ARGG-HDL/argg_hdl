@@ -18,7 +18,12 @@ from argg_hdl.argg_hdl_object_factory import add_constructor
 
 from argg_hdl.argg_hdl__primitive_type_converter  import add_primitive_hdl_converter
 
-
+def append_suffex(name,suffix):
+    sp = name.split("(")
+    ret = sp[0] + suffix 
+    if len(sp)>1:
+        ret += "(" + sp[1]
+    return ret
 
 def flat_member_list(obj, name):
     ret = []
@@ -623,7 +628,7 @@ class v_class_converter(hdl_converter_base):
         for x in xs:
             for y in x["symbol"].getMember():
                 if y["name"] == attName:
-                    return obj.get_vhdl_name() + x["suffix"] + "." +   attName
+                    return  append_suffex (obj.get_vhdl_name() , x["suffix"]) + "." +   attName
 
 
            

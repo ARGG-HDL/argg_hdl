@@ -81,7 +81,7 @@ class v_slv_converter(v_symbol_converter):
     def impl_slice(self,obj:"v_symbol",sl,astParser=None):
         astParser.add_read(obj)
         obj._add_input()
-        if type(sl).__name__ == "v_slice":
+        if type(sl).__name__ == "v_slice" or type(sl).__name__ == "index_handler":
             ret = v_slv( Inout = obj._Inout,varSigConst=obj._varSigConst)
             ret.__hdl_name__ = obj.__hdl_name__+"("+str(sl)+")"
         else:

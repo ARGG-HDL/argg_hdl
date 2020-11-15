@@ -531,6 +531,6 @@ class hdl_converter_base:
         return False
     
     def get_HDL_name(self, obj, parent,suffix):
-        return parent.__hdl_name__ + suffix
+        return str(parent.__hdl_name__) + suffix
 
 add_primitive_hdl_converter("argg_hdl_base0",hdl_converter_base )

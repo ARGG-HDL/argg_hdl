@@ -10,10 +10,12 @@ from  argg_hdl.argg_hdl_lib_enums import *
 from argg_hdl.argg_hdl_global_settings import *
 import  functools 
 import  argg_hdl.argg_hdl_hdl_converter as  hdl
-
+from argg_hdl.argg_hdl_object_factory import add_constructor
 from argg_hdl.argg_hdl_type_info import typeInfo
 
 from typing import Sequence, TypeVar
+
+
 T = TypeVar('T', bound='Copyable')
 
 def architecture(func):
@@ -22,7 +24,10 @@ def architecture(func):
     return wrap
 
 def end_architecture():
-    add_symbols_to_entiy()
+    add_symbols_to_entiy("architecture")
+
+def end_constructor():
+    add_symbols_to_entiy("__init__")
 
 def hdl_export(description=None):
     funcrec = inspect.stack()
@@ -152,7 +157,7 @@ def get_fileName_of_object_def(obj):
 def get_variables_from_function_in_callstack(FunctionName):
     funcrec = inspect.stack()
     for x in funcrec:
-            #print (x.function)
+        #print (x.function)
         if x.function == FunctionName:
             f_locals = x.frame.f_locals
             return f_locals
@@ -160,12 +165,14 @@ def get_variables_from_function_in_callstack(FunctionName):
     raise Exception("unable to find Function in callstack. Function Name", FunctionName)
 
 
-def add_symbols_to_entiy():
-    f_locals = get_variables_from_function_in_callstack("architecture")
+def add_symbols_to_entiy(funcName):
+    f_locals = get_variables_from_function_in_callstack(funcName)
+
     for y in f_locals:
         if y != "self" and issubclass(type(f_locals[y]), argg_hdl_base0):
             f_locals["self"]._add_symbol(y,f_locals[y])
-            
+    
+
 
 
 
@@ -622,6 +629,20 @@ def port_Stream_Master(symbol: T) ->T:
     ret._remove_drivers()
     return ret
 
+def pipeline_out(symbol: T) -> T:
+    ret = port_Master(symbol)
+    ret._sim_get_new_storage()
+    ret.__isInst__ = False
+    funcrec = inspect.stack()[1]
+
+    f_locals = funcrec.frame.f_locals
+
+    raise_if(f_locals["self"]._StreamOut is not None, "the _StreamOut is already set")
+
+    f_locals["self"]._StreamOut = ret
+    ret._remove_drivers()
+    return ret
+
 
 def signal_port_Slave(symbol: T) ->T:
     ret = copy.deepcopy(symbol)
@@ -666,6 +687,18 @@ def port_Stream_Slave(symbol: T) ->T:
     ret._remove_drivers()
     return ret
 
+def pipeline_in(symbol: T) -> T:
+    ret = port_Slave(symbol)
+    ret._sim_get_new_storage()
+    ret.__isInst__ = False
+    funcrec = inspect.stack()[1]
+
+    f_locals = funcrec.frame.f_locals
+    raise_if(f_locals["self"]._StreamIn is not None, "the _StreamIn is already set")
+
+    f_locals["self"]._StreamIn = ret
+    ret._remove_drivers()
+    return ret
 
 def v_copy(symbol:T, varSig_=None)->T:
     ret = copy.deepcopy(symbol)
@@ -703,7 +736,7 @@ def is_argg_hdl_obj(obj):
     obj = get_symbol(obj)
     return issubclass(type(obj),argg_hdl_base0)
         
-    
+add_constructor("is_argg_hdl_obj", is_argg_hdl_obj)
 
 
 def is_variable(obj):
@@ -713,6 +746,8 @@ def is_variable(obj):
 
     return False
     
+add_constructor("is_variable", is_variable)
+
 
 def is_signal(obj):
     obj = get_symbol(obj)
@@ -720,6 +755,8 @@ def is_signal(obj):
         return obj._varSigConst == varSig.signal_t
 
     return False
+add_constructor("is_signal", is_signal)
+
 
 def is_handle_class(obj):
     obj = get_symbol(obj)
@@ -727,6 +764,10 @@ def is_handle_class(obj):
         return obj.__v_classType__ == v_classType_t.Slave_t or obj.__v_classType__ == v_classType_t.Master_t 
 
     return False
+
+add_constructor("is_handle_class", is_handle_class)
+
+
 def is_trans_class(obj):
     obj = get_symbol(obj)
     if is_argg_hdl_obj(obj) and hasattr(obj,"__v_classType__"):
@@ -734,7 +775,11 @@ def is_trans_class(obj):
 
     return False
 
+add_constructor("is_trans_class", is_trans_class)
+
 
 def set_v_classType(obj,parant_obj):
     if hasattr(obj,"__v_classType__") and hasattr(parant_obj,"__v_classType__"):
         obj.__v_classType__ = parant_obj.__v_classType__
+
+add_constructor("set_v_classType", set_v_classType)

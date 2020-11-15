@@ -48,13 +48,14 @@ use ieee.std_logic_unsigned.all;
     def def_entity_port(self,obj):
         ret = []
         obj.Internal_Type._Inout = obj._Inout
+
         xs =hdl.extract_conversion_types(obj.Internal_Type)
 
         for x in xs:
-            if x["symbol"].__v_classType__ ==  v_classType_t.transition_t:
+            if is_trans_class(x):
                 continue
             inoutstr = " : "+ hdl.InOut_t2str(x["symbol"]) +" "
-            ret.append( obj.get_vhdl_name() +x["suffix"] + inoutstr +x["symbol"]._type + "_a(0 to "+ str(obj.size)   +") := (others => " + x["symbol"]._type + "_null)")
+            ret.append( obj.get_vhdl_name() +x["suffix"] + inoutstr +hdl.get_type_simple(x["symbol"])+ "_a(0 to "+ str(obj.size)   +") := (others => " + hdl.get_type_simple(x["symbol"]) + "_null)")
     
         return ret
 

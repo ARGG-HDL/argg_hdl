@@ -291,6 +291,9 @@ class v_class(argg_hdl_base):
     def _conect_members(self,rhs):
         self_members  = self.get_s2m_signals()
         rhs_members  = rhs.get_s2m_signals()
+        if self_members is None:
+            print("break")
+            self_members  = self.get_s2m_signals()
 
         for i,x in enumerate(self_members):
             rhs_members[i]['symbol'] << self_members[i]['symbol']
@@ -415,6 +418,8 @@ class v_class(argg_hdl_base):
             self_members = self.getMember(louput)
             return self_members            
         
+        return []
+
     def get_s2m_signals(self):
         linput = InOut_t.input_t
         louput = InOut_t.output_t
@@ -436,6 +441,7 @@ class v_class(argg_hdl_base):
             self_members = self.getMember(linput)
             return self_members      
             
+        return []
  
 
     def _remove_drivers(self):

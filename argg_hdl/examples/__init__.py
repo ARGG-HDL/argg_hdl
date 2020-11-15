@@ -1,4 +1,4 @@
-from argg_hdl.examples import axiStream as ax
+from argg_hdl.examples.axiStream import axisStream , axisStream_slave,axisStream_master
 #import argg_hdl.examples.axiStream as ax
 from argg_hdl.examples import clk_generator as clk_gen 
 from argg_hdl.examples import counter   as cntr
@@ -15,10 +15,7 @@ from argg_hdl.examples import axi_fifo as ax_fifo
 
 from argg_hdl.examples import axiPrint as axiPrint
 
-## argg_hdl.examples.axiStream
-axisStream = ax.axisStream
-axisStream_slave = ax.axisStream_slave
-axisStream_master = ax.axisStream_master
+
 
 
 ## argg_hdl.examples.clk_generator

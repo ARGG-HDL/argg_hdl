@@ -686,3 +686,9 @@ def resize(symbol : v_symbol, newSize:int):
     return ret
 
 add_constructor("v_symbol",v_symbol)
+
+
+def is_symbol(obj):
+    return issubclass(type(obj),v_symbol) 
+
+add_constructor("is_symbol", is_symbol)
